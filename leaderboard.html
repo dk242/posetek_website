@@ -640,7 +640,7 @@
                     <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
                     <tbody id="overallBody"></tbody>
                 </table>
-                <p class="overall-note" id="overallNote">Overall score = 50% Jump + 50% Kicking. Athletes who haven't completed a kick will have a lower overall score.</p>
+                <p class="overall-note" id="overallNote">Overall score is averaged across whichever disciplines the athlete has recorded — jump, sprint, and/or kick. Missing a discipline does not penalize the score.</p>
             </div>
         </div>
 
@@ -743,21 +743,98 @@
         }
 
         // ── Data fetching ──
-        // Stats come from players/{docId}.stats (jump_height, strike_velocity, max_velocity)
+        // Stats come from players/{docId}.best_reps (written by mobile app),
+        // falling back to players/{docId}.stats, then computed from the reps subcollection.
+
+        async function getPlayerStatsFromReps(playerDocId) {
+            try {
+                const MS_TO_MPH = 2.23694;
+                const repsSnap = await db.collection('players').doc(playerDocId).collection('reps').get();
+                console.log(`[LB:reps] ${playerDocId} — ${repsSnap.size} rep docs`);
+                let maxJump = 0, maxSprintMs = 0, maxKick = 0;
+                repsSnap.forEach(doc => {
+                    const d = doc.data();
+                    console.log(`  [LB:rep] docId=${doc.id} repType=${d.repType ?? '?'} max_velocity=${d.max_velocity ?? '—'} velocity=${d.velocity ?? '—'} jump_height_in=${d.jump_height_in ?? '—'}`);
+                    if (d.repType === 'jump') {
+                        const h = Number(d.jump_height_in ?? d.jump_height_inches ?? 0) ||
+                                  (d.jump_height_m ? Number(d.jump_height_m) * 39.3701 : 0);
+                        if (h > maxJump) maxJump = h;
+                    } else if (d.repType === 'sprint' && d.max_velocity != null) {
+                        const v = Number(d.max_velocity) || 0;
+                        if (v > maxSprintMs) maxSprintMs = v;
+                    } else if (d.repType === 'side_kick' && d.velocity != null) {
+                        const v = Number(d.velocity) || 0;
+                        if (v > maxKick) maxKick = v;
+                    }
+                });
+                const result = { jump_height: maxJump, strike_velocity: maxKick, max_velocity: maxSprintMs * MS_TO_MPH };
+                console.log(`[LB:reps] ${playerDocId} — computed from reps:`, result);
+                return result;
+            } catch (e) {
+                console.error(`[LB:reps] ${playerDocId} — failed:`, e);
+                return { jump_height: 0, strike_velocity: 0, max_velocity: 0 };
+            }
+        }
 
         async function getPlayerStats(playerDocId) {
             try {
                 const snap = await db.collection('players').doc(playerDocId).get();
-                if (!snap.exists) return { jump_height: 0, strike_velocity: 0, max_velocity: 0 };
+                if (!snap.exists) {
+                    console.warn(`[LB:stats] ${playerDocId} — player doc not found, falling back to reps`);
+                    return getPlayerStatsFromReps(playerDocId);
+                }
                 const data = snap.data() || {};
-                const nested = data.stats || {};
-                return {
-                    jump_height: Number(nested.jump_height ?? data["stats.jump_height"]) || 0,
-                    strike_velocity: Number(nested.strike_velocity ?? data["stats.strike_velocity"]) || 0,
-                    max_velocity: Number(nested.max_velocity ?? data["stats.max_velocity"]) || 0
-                };
-            } catch {
-                return { jump_height: 0, strike_velocity: 0, max_velocity: 0 };
+                console.log(`[LB:stats] ${playerDocId} — raw doc fields relevant to stats:`, {
+                    'best_reps (map)':          data.best_reps          ?? 'missing',
+                    'stats (map)':              data.stats              ?? 'missing',
+                    'best_reps.sprint_speed':   data['best_reps.sprint_speed']   ?? 'missing',
+                    'best_reps.jump_height':    data['best_reps.jump_height']    ?? 'missing',
+                    'best_reps.jump_height_in': data['best_reps.jump_height_in'] ?? 'missing',
+                    'best_reps.kick_speed':     data['best_reps.kick_speed']     ?? 'missing',
+                    'best_reps.strike_velocity':data['best_reps.strike_velocity']?? 'missing',
+                    'best_reps.velocity':       data['best_reps.velocity']       ?? 'missing',
+                    'stats.max_velocity':       data['stats.max_velocity']       ?? 'missing',
+                    'stats.sprint_speed':       data['stats.sprint_speed']       ?? 'missing',
+                    'stats.jump_height':        data['stats.jump_height']        ?? 'missing',
+                    'stats.strike_velocity':    data['stats.strike_velocity']    ?? 'missing',
+                    'stats.velocity':           data['stats.velocity']           ?? 'missing',
+                });
+
+                const MS_TO_MPH = 2.23694;
+
+                // Try best_reps map (written by mobile app) first, then stats map, then flat dot-notation fields
+                const br = data.best_reps || {};
+                const st = data.stats || {};
+
+                // sprint is stored in m/s — convert to mph to match kickingview display
+                const sprintMs = Number(
+                    br.sprint_speed ?? data['best_reps.sprint_speed'] ??
+                    st.max_velocity ?? data['stats.max_velocity']
+                ) || 0;
+                const sprint = sprintMs * MS_TO_MPH;
+
+                const jump = Number(
+                    br.jump_height ?? br.jump_height_in ?? data['best_reps.jump_height'] ?? data['best_reps.jump_height_in'] ??
+                    st.jump_height ?? data['stats.jump_height']
+                ) || 0;
+
+                const kick = Number(
+                    br.kick_speed ?? br.strike_velocity ?? br.velocity ?? data['best_reps.kick_speed'] ?? data['best_reps.strike_velocity'] ??
+                    st.strike_velocity ?? data['stats.strike_velocity']
+                ) || 0;
+
+                console.log(`[LB:stats] ${playerDocId} — resolved: jump=${jump} sprint=${sprint.toFixed(2)}mph (raw m/s=${sprintMs}) kick=${kick}`);
+
+                // If the player doc fields are all zero, compute from the reps subcollection
+                if (sprint === 0 && jump === 0 && kick === 0) {
+                    console.log(`[LB:stats] ${playerDocId} — all zeros from doc, falling back to reps subcollection`);
+                    return getPlayerStatsFromReps(playerDocId);
+                }
+
+                return { jump_height: jump, strike_velocity: kick, max_velocity: sprint };
+            } catch (e) {
+                console.error(`[LB:stats] ${playerDocId} — error:`, e);
+                return getPlayerStatsFromReps(playerDocId);
             }
         }
 
@@ -777,9 +854,14 @@
 
         async function loadPlayersForCoach(coachId) {
             try {
+                console.log(`[LB:coach] Loading coach doc: ${coachId}`);
                 const coachDoc = await db.collection('coaches').doc(coachId).get();
-                if (!coachDoc.exists) return [];
+                if (!coachDoc.exists) {
+                    console.warn(`[LB:coach] Coach doc not found: ${coachId}`);
+                    return [];
+                }
                 const coachData = coachDoc.data();
+                console.log(`[LB:coach] Coach found: ${coachData.firstName || ''} — members: ${(coachData.members || []).length}`);
                 const players = [];
                 if (coachData.members && coachData.members.length > 0) {
                     const chunks = [];
@@ -788,43 +870,66 @@
                         const snap = await db.collection('players').where(firebase.firestore.FieldPath.documentId(), 'in', chunk).get();
                         snap.forEach(doc => {
                             const d = doc.data();
-                            players.push({
+                            const p = {
                                 docId: doc.id,
-                                uid: d.userUID || null,
+                                uid: d.userUID || d.authenticationUID || null,
                                 name: `${d.firstName || ''} ${d.lastName || ''}`.trim(),
                                 firstName: d.firstName || '',
                                 lastName: d.lastName || '',
                                 initials: getInitials(d.firstName, d.lastName)
-                            });
+                            };
+                            console.log(`[LB:player] ${p.name} docId=${p.docId} uid=${p.uid ?? 'none'}`);
+                            players.push(p);
                         });
                     }
                 }
+                console.log(`[LB:coach] Total players loaded: ${players.length}`);
                 return players;
-            } catch { return []; }
+            } catch (e) {
+                console.error('[LB:coach] Failed to load players:', e);
+                return [];
+            }
         }
 
         async function loadAllPlayerStats(players) {
+            console.log(`[LB] Loading stats for ${players.length} players...`);
             const results = [];
             for (const p of players) {
                 const [stats, sessions] = await Promise.all([
                     getPlayerStats(p.docId),
                     getTotalSessions(p.docId, p.uid)
                 ]);
-                results.push({
+                const row = {
                     ...p,
                     maxJumpHeightInches: stats.jump_height,
                     maxSprintSpeedMph: stats.max_velocity,
                     maxKickSpeedMph: stats.strike_velocity,
                     totalSessions: sessions,
                     stats
-                });
+                };
+                console.log(`[LB:summary] ${p.name} — jump=${stats.jump_height.toFixed(2)}in sprint=${stats.max_velocity.toFixed(2)}mph kick=${stats.strike_velocity.toFixed(2)}mph sessions=${sessions}`);
+                results.push(row);
             }
             return results;
         }
 
         function computeOverallScores(players) {
+            // Normalize each metric to a 0–100 scale using reference maximums,
+            // then average only the categories the player has actually recorded.
+            // This way a player who only did sprint + kick is not penalized for
+            // having no jump data — their overall reflects what they've done.
+            const REF_JUMP_IN   = 50;   // inches — elite vertical
+            const REF_SPRINT_MPH = 20;  // mph — elite sprint speed
+            const REF_KICK_MPH   = 80;  // mph — elite kick velocity
+
             players.forEach(p => {
-                p.overallScore = 0.5 * (p.stats.jump_height || 0) + 0.5 * (p.stats.strike_velocity || 0);
+                const components = [];
+                if (p.stats.jump_height   > 0) components.push(Math.min(100, (p.stats.jump_height   / REF_JUMP_IN)    * 100));
+                if (p.stats.max_velocity  > 0) components.push(Math.min(100, (p.stats.max_velocity  / REF_SPRINT_MPH) * 100));
+                if (p.stats.strike_velocity > 0) components.push(Math.min(100, (p.stats.strike_velocity / REF_KICK_MPH) * 100));
+                p.overallScore = components.length > 0
+                    ? components.reduce((a, b) => a + b, 0) / components.length
+                    : 0;
             });
         }
 
