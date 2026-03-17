@@ -914,21 +914,22 @@
         }
 
         function computeOverallScores(players) {
-            // Normalize each metric to a 0–100 scale using reference maximums,
-            // then average only the categories the player has actually recorded.
-            // This way a player who only did sprint + kick is not penalized for
-            // having no jump data — their overall reflects what they've done.
-            const REF_JUMP_IN   = 50;   // inches — elite vertical
-            const REF_SPRINT_MPH = 20;  // mph — elite sprint speed
-            const REF_KICK_MPH   = 80;  // mph — elite kick velocity
+            // For each category, the highest scorer = 100. Others are scaled proportionally (0–1).
+            // Overall = average of proportions across all categories that have leaderboard data.
+            // If a player has no data in a category, they get 0 for that category.
+            const maxJump = Math.max(0, ...players.map(p => p.stats.jump_height || 0));
+            const maxSprint = Math.max(0, ...players.map(p => p.stats.max_velocity || 0));
+            const maxKick = Math.max(0, ...players.map(p => p.stats.strike_velocity || 0));
 
             players.forEach(p => {
-                const components = [];
-                if (p.stats.jump_height   > 0) components.push(Math.min(100, (p.stats.jump_height   / REF_JUMP_IN)    * 100));
-                if (p.stats.max_velocity  > 0) components.push(Math.min(100, (p.stats.max_velocity  / REF_SPRINT_MPH) * 100));
-                if (p.stats.strike_velocity > 0) components.push(Math.min(100, (p.stats.strike_velocity / REF_KICK_MPH) * 100));
-                p.overallScore = components.length > 0
-                    ? components.reduce((a, b) => a + b, 0) / components.length
+                const proportions = [
+                    maxJump > 0 && (p.stats.jump_height || 0) / maxJump,
+                    maxSprint > 0 && (p.stats.max_velocity || 0) / maxSprint,
+                    maxKick > 0 && (p.stats.strike_velocity || 0) / maxKick
+                ].filter(v => typeof v === 'number');
+
+                p.overallScore = proportions.length > 0
+                    ? (proportions.reduce((a, b) => a + b, 0) / proportions.length) * 100
                     : 0;
             });
         }
