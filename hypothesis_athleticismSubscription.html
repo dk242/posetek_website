@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PoseTek - Soccer Performance Testing</title>
+    <title>PoseTek - Soccer Athleticism Tracking</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -142,7 +142,7 @@
             color: var(--text-mid);
             line-height: 1.75;
             margin-bottom: 2rem;
-            max-width: 480px;
+            max-width: 500px;
         }
 
         .hero-proof {
@@ -181,61 +181,113 @@
             flex-wrap: wrap;
         }
 
-        @keyframes ring-pulse {
-            0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.55; }
-            100% { transform: translate(-50%, -50%) scale(1.85); opacity: 0; }
+        .hero-waitlist-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
         }
 
-        @keyframes arrow-nudge {
-            0%, 100% { transform: translateX(0); }
-            50%       { transform: translateX(5px); }
+        .hero-waitlist-active {
+            transition: opacity 0.35s ease;
         }
 
-        .btn-primary {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--white);
-            background-color: var(--green-dark);
-            padding: 0.95rem 2.2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: var(--transition);
-            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
-            overflow: visible;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary::before,
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 100%;
-            border-radius: 50px;
-            border: 2px solid rgba(76, 140, 106, 0.7);
-            animation: ring-pulse 3.6s ease-out infinite;
+        .hero-waitlist-active--exit {
+            opacity: 0;
             pointer-events: none;
         }
 
-        .btn-primary::after { animation-delay: 1.8s; }
+        .hero-waitlist-form {
+            display: flex;
+            gap: 0.55rem;
+            align-items: stretch;
+        }
 
-        .btn-primary:hover {
+        .hero-waitlist-email {
+            font-size: 0.95rem;
+            font-family: inherit;
+            padding: 0.8rem 1.1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(26, 58, 46, 0.22);
+            background: var(--white);
+            color: var(--text-dark);
+            min-width: 220px;
+            transition: var(--transition);
+        }
+
+        .hero-waitlist-email::placeholder { color: #888; }
+
+        .hero-waitlist-email:focus {
+            outline: none;
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.2);
+        }
+
+        .hero-waitlist-submit {
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--white);
+            background-color: var(--green-dark);
+            padding: 0.8rem 1.6rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
+            white-space: nowrap;
+        }
+
+        .hero-waitlist-submit:hover:not(:disabled) {
             background-color: var(--green-mid);
             transform: translateY(-2px);
             box-shadow: 0 8px 28px rgba(26, 58, 46, 0.4);
         }
 
-        .btn-primary:hover::before,
-        .btn-primary:hover::after { animation-play-state: paused; }
+        .hero-waitlist-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-        .btn-primary .btn-arrow {
-            display: inline-block;
-            animation: arrow-nudge 1.2s ease-in-out infinite;
+        .hero-waitlist-status {
+            font-size: 0.85rem;
+            margin-top: 0.6rem;
+            min-height: 1.4em;
+        }
+
+        .hero-waitlist-status.error { color: #b42318; }
+        .hero-waitlist-status.success { color: var(--green-mid); }
+
+        .hero-waitlist-check-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .hero-waitlist-success-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--green-dark);
+        }
+
+        .hero-waitlist-success-panel {
+            display: none;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.45s ease;
+        }
+
+        .hero-waitlist-success-panel:not([hidden]) {
+            display: flex;
+        }
+
+        .hero-waitlist-success-panel.is-visible {
+            opacity: 1;
         }
 
         .btn-secondary {
@@ -415,7 +467,7 @@
             font-size: 1.1rem;
             line-height: 1.8;
             color: var(--text-mid);
-            max-width: 620px;
+            max-width: 640px;
             margin: 0 auto 3.5rem;
         }
 
@@ -497,7 +549,7 @@
         .how-header p {
             font-size: 1.1rem;
             color: var(--text-mid);
-            max-width: 560px;
+            max-width: 580px;
             margin: 0 auto;
         }
 
@@ -714,34 +766,25 @@
         .pricing-header p {
             font-size: 1.1rem;
             color: var(--text-mid);
-            max-width: 520px;
+            max-width: 560px;
             margin: 0 auto;
-        }
-
-        .pricing-cards {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
         }
 
         .pricing-card {
             background: var(--white);
             border-radius: 22px;
             padding: 2.5rem;
-            border: 1px solid rgba(26, 58, 46, 0.08);
+            border: 2px solid var(--green-accent);
+            box-shadow: 0 12px 40px rgba(26, 58, 46, 0.12);
             transition: var(--transition);
             position: relative;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
         .pricing-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 20px 50px rgba(26, 58, 46, 0.1);
-        }
-
-        .pricing-card.featured {
-            border: 2px solid var(--green-accent);
-            box-shadow: 0 12px 40px rgba(26, 58, 46, 0.12);
+            box-shadow: 0 20px 50px rgba(26, 58, 46, 0.18);
         }
 
         .pricing-badge {
@@ -796,13 +839,10 @@
             letter-spacing: -2px;
         }
 
-        .pricing-original {
-            font-size: 1.4rem;
+        .pricing-per {
+            font-size: 0.95rem;
             color: var(--text-mid);
-            text-decoration: line-through;
-            margin-left: 8px;
-            font-weight: 400;
-            opacity: 0.5;
+            margin-left: 4px;
         }
 
         .pricing-features {
@@ -841,29 +881,16 @@
             transition: var(--transition);
             cursor: pointer;
             border: none;
-        }
-
-        .pricing-btn-primary {
+            font-family: inherit;
             background: var(--green-dark);
             color: var(--white);
             box-shadow: 0 4px 16px rgba(26, 58, 46, 0.25);
         }
 
-        .pricing-btn-primary:hover {
+        .pricing-btn:hover {
             background: var(--green-mid);
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(26, 58, 46, 0.3);
-        }
-
-        .pricing-btn-secondary {
-            background: var(--white);
-            color: var(--green-dark);
-            border: 2px solid var(--green-dark);
-        }
-
-        .pricing-btn-secondary:hover {
-            background: var(--green-light);
-            transform: translateY(-2px);
         }
 
         /* ── Guarantee ── */
@@ -954,16 +981,95 @@
             margin-bottom: 1rem;
         }
 
-        .cta-inner p {
+        .cta-inner > p {
             font-size: 1.1rem;
             color: var(--text-mid);
             margin-bottom: 2.5rem;
             line-height: 1.75;
         }
 
-        .cta-inner .btn-primary {
-            font-size: 1.15rem;
-            padding: 1.1rem 2.8rem;
+        .cta-waitlist-form {
+            display: flex;
+            gap: 0.65rem;
+            align-items: stretch;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .cta-waitlist-email {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 1rem;
+            font-family: inherit;
+            padding: 0.85rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(26, 58, 46, 0.22);
+            background: var(--white);
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        .cta-waitlist-email::placeholder { color: #888; }
+
+        .cta-waitlist-email:focus {
+            outline: none;
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.2);
+        }
+
+        .cta-waitlist-submit {
+            flex-shrink: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--white);
+            background-color: var(--green-dark);
+            padding: 0.85rem 1.8rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
+        }
+
+        .cta-waitlist-submit:hover:not(:disabled) {
+            background-color: var(--green-mid);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(26, 58, 46, 0.4);
+        }
+
+        .cta-waitlist-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cta-waitlist-status {
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            min-height: 1.4em;
+        }
+
+        .cta-waitlist-status.error { color: #b42318; }
+        .cta-waitlist-status.success { color: var(--green-mid); }
+
+        .cta-waitlist-success-panel {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.45s ease;
+        }
+
+        .cta-waitlist-success-panel:not([hidden]) {
+            display: flex;
+        }
+
+        .cta-waitlist-success-panel.is-visible {
+            opacity: 1;
         }
 
         /* ── Footer ── */
@@ -1002,7 +1108,23 @@
 
             .hero-proof { justify-content: center; }
 
-            .hero-actions { justify-content: center; }
+            .hero-actions {
+                justify-content: center;
+                padding: 0 0.5rem;
+            }
+
+            .hero-waitlist-form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-waitlist-submit {
+                width: 100%;
+            }
+
+            .hero-waitlist-success-panel {
+                justify-content: center;
+            }
 
             .hero-title { font-size: 2.4rem; }
 
@@ -1035,15 +1157,17 @@
                 margin: 0 auto;
             }
 
-            .pricing-cards {
-                grid-template-columns: 1fr;
-                max-width: 100%;
-                margin: 0 auto 2rem;
-            }
-
             .section-title { font-size: 2rem; }
 
             .cta-inner .section-title { font-size: 2.2rem; }
+
+            .cta-waitlist-form {
+                flex-direction: column;
+            }
+
+            .cta-waitlist-submit {
+                width: 100%;
+            }
 
             .guarantee-inner { padding: 2.5rem 1.8rem; }
         }
@@ -1055,7 +1179,7 @@
             <div class="brand-container">
                 <a href="index.html" class="logo">Pose<span>Tek</span></a>
             </div>
-            <a href="bookPerformanceTest.html" class="nav-cta">Book Your Sessions →</a>
+            <a href="#waitlist" class="nav-cta">Join Waitlist</a>
         </nav>
     </header>
 
@@ -1064,26 +1188,41 @@
         <section class="hero">
             <div class="hero-inner">
                 <div class="hero-text">
-                    <span class="hero-eyebrow">Soccer Performance Testing</span>
-                    <h1 class="hero-title">Stop Training Like<br>Every Other Athlete.<br><em>Train for Soccer.</em></h1>
-                    <p class="hero-subtitle">Two sessions. One plan. Guaranteed results. Get a biomechanical diagnostic, a pro-standard comparison, a personalized plan to close the gap — and a follow-up retest to prove it worked.</p>
+                    <span class="hero-eyebrow">Soccer Athleticism Tracking</span>
+                    <h1 class="hero-title">You're Spending Thousands<br>on Training.<br><em>Is It Actually Working?</em></h1>
+                    <p class="hero-subtitle">Speed trainers. Gym coaches. Agility programs. You're investing in everything — but how do you know it's translating to the field? PoseTek gives you monthly biomechanical diagnostics so you can finally see what's working, what's not, and what to fix.</p>
                     <div class="hero-proof">
                         <div class="hero-proof-item">
-                            <div class="hero-proof-icon">⚡</div>
-                            2 sessions included
+                            <div class="hero-proof-icon">📊</div>
+                            Monthly diagnostics
                         </div>
                         <div class="hero-proof-item">
-                            <div class="hero-proof-icon">📋</div>
-                            Pro-standard comparison + plan
+                            <div class="hero-proof-icon">📈</div>
+                            Track progress over time
                         </div>
                         <div class="hero-proof-item">
-                            <div class="hero-proof-icon">🛡</div>
-                            Improve or money back
+                            <div class="hero-proof-icon">⚽</div>
+                            Soccer-specific metrics
                         </div>
                     </div>
                     <div class="hero-actions">
-                        <a href="bookPerformanceTest.html" class="btn-primary">Book Your Two Sessions <span class="btn-arrow">→</span></a>
-                        <a href="#how-it-works" class="btn-secondary">See How It Works ↓</a>
+                        <div class="hero-waitlist-slot">
+                            <div class="hero-waitlist-active" id="heroWaitlistActive">
+                                <form class="hero-waitlist-form" id="heroWaitlistForm" novalidate>
+                                    <input type="email" class="hero-waitlist-email" id="heroWaitlistEmail" name="email" placeholder="Enter your email" autocomplete="email" required aria-label="Email address">
+                                    <button type="submit" class="hero-waitlist-submit" id="heroWaitlistSubmit">Join Waitlist</button>
+                                </form>
+                            </div>
+                            <div class="hero-waitlist-success-panel" id="heroWaitlistSuccessPanel" hidden role="status" aria-live="polite">
+                                <svg class="hero-waitlist-check-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <circle cx="12" cy="12" r="11" fill="#e8f3ee" stroke="#1a3a2e" stroke-width="1.5"/>
+                                    <path fill="none" stroke="#1a3a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3 3 7-7"/>
+                                </svg>
+                                <span class="hero-waitlist-success-label">You're on the list. We'll be in touch.</span>
+                            </div>
+                        </div>
+                        <p class="hero-waitlist-status" id="heroWaitlistStatus" role="status" aria-live="polite"></p>
+                        <a href="#how-it-works" class="btn-secondary">See How It Works <span>&#8595;</span></a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -1104,8 +1243,8 @@
                     <div class="hero-badge">
                         <div class="hero-badge-icon">⚽</div>
                         <div class="hero-badge-text">
-                            $120 — Two Sessions + Plan
-                            <span>Money-back if you don't improve</span>
+                            $60/month — Track Everything
+                            <span>Monthly diagnostics + progress tracking</span>
                         </div>
                     </div>
                 </div>
@@ -1116,23 +1255,23 @@
         <section class="problem-section section-fade">
             <div class="problem-inner">
                 <span class="section-label">The Problem</span>
-                <h2 class="section-title">Generic Training Doesn't Make<br>Better <em>Soccer Players</em></h2>
-                <p class="problem-subtitle">Speed trainers, weight rooms, agility ladders — they're great for general fitness. But they're not designed to make you dominant on the pitch.</p>
+                <h2 class="section-title">You're Investing a Fortune in Athleticism.<br><em>But You're Flying Blind.</em></h2>
+                <p class="problem-subtitle">Speed trainers, gym coaches, agility programs, private sessions — your family is spending hundreds every month to help you get to the next level. But nobody can tell you if it's actually translating to the pitch.</p>
                 <div class="problem-grid">
                     <div class="problem-card">
-                        <div class="problem-icon">🏋️</div>
-                        <h3>Expensive & Scattered</h3>
-                        <p>A speed trainer here, a lifting coach there, a "performance program" on top. Hundreds of dollars a month with no clear connection to your game.</p>
+                        <div class="problem-icon">💸</div>
+                        <h3>Spending Without Proof</h3>
+                        <p>Speed trainer: $200/month. Gym coach: $150/month. Agility program: $100/month. That's $450+ every month — and you have zero data showing what's actually moving the needle on the field.</p>
                     </div>
                     <div class="problem-card">
                         <div class="problem-icon">🎯</div>
-                        <h3>Not Soccer-Specific</h3>
-                        <p>Most training improves <span class="strikethrough">general athleticism</span>. What you actually need is <span class="replacement">athleticism optimized for soccer</span> — movement patterns that matter on the field.</p>
+                        <h3>Improving, But at What?</h3>
+                        <p>Maybe your 40 time dropped. Maybe you're squatting more. But is your <span class="strikethrough">general athleticism</span> translating to <span class="replacement">soccer-specific performance</span>? Without measurement, you'll never know.</p>
                     </div>
                     <div class="problem-card">
-                        <div class="problem-icon">🔍</div>
-                        <h3>No Measurement</h3>
-                        <p>How do you know it's working? Without quantified data on your technique, you're just guessing which drills and exercises actually move the needle.</p>
+                        <div class="problem-icon">🔄</div>
+                        <h3>No Feedback Loop</h3>
+                        <p>You train for months, show up to the season, and hope you're better. There's no system to measure, adjust, and track whether the work is actually closing the gap to D1.</p>
                     </div>
                 </div>
             </div>
@@ -1143,8 +1282,8 @@
             <div class="how-inner">
                 <div class="how-header section-fade">
                     <span class="section-label">How It Works</span>
-                    <h2 class="section-title">Three Steps to <em>Guaranteed Improvement</em></h2>
-                    <p>Two sessions, one personalized plan, and a money-back guarantee — all for $120.</p>
+                    <h2 class="section-title">A Monthly System to <em>Prove Your Progress</em></h2>
+                    <p>Get tested. See where you stand. Train with purpose. Come back and measure the improvement. Every single month — so you always know what's working.</p>
                 </div>
 
                 <div class="how-steps">
@@ -1156,12 +1295,12 @@
                         </div>
                         <div class="how-step-content">
                             <div class="step-number">1</div>
-                            <h3>Book a Slot & <em>Show Up</em></h3>
-                            <p>Sign up for a time slot online. When you arrive, the entire diagnostic takes just 10 minutes. We capture your movement across three soccer-critical areas:</p>
+                            <h3>Take the <em>10-Minute Diagnostic</em></h3>
+                            <p>Book your monthly slot and show up. In 10 minutes, we capture your movement across the three pillars that define soccer athleticism:</p>
                             <ul class="how-step-details">
-                                <li>Vertical jump mechanics</li>
-                                <li>Sprint biomechanics</li>
-                                <li>Ball-striking technique</li>
+                                <li>Vertical jump mechanics & explosive power</li>
+                                <li>Sprint biomechanics & acceleration patterns</li>
+                                <li>Ball-striking technique & power transfer</li>
                             </ul>
                         </div>
                     </div>
@@ -1174,13 +1313,13 @@
                         </div>
                         <div class="how-step-content">
                             <div class="step-number">2</div>
-                            <h3>See How You Stack Up & <em>Get Your Plan</em></h3>
-                            <p>We benchmark your results against professional standards so you know exactly where you stand. Then you get a curated, periodized plan targeting the specific metrics holding you back.</p>
+                            <h3>See Your Weak Spots & <em>Get a Targeted Plan</em></h3>
+                            <p>We benchmark every metric against D1-level standards so you know exactly where you stand — and where the gap is. Then you get a specific plan to close it before your next test.</p>
                             <ul class="how-step-details">
-                                <li>Pro-standard comparison across every metric</li>
-                                <li>Weak-link identification in your technique</li>
-                                <li>Periodized program with corrective drills</li>
-                                <li>Specific coaching cues — not vague advice</li>
+                                <li>D1 & pro-standard comparison across every metric</li>
+                                <li>Biomechanical weak-link identification</li>
+                                <li>Targeted corrective program for the month ahead</li>
+                                <li>Specific cues to share with your trainers</li>
                             </ul>
                         </div>
                     </div>
@@ -1193,13 +1332,13 @@
                         </div>
                         <div class="how-step-content">
                             <div class="step-number">3</div>
-                            <h3>Come Back & <em>Prove the Improvement</em></h3>
-                            <p>Your follow-up retest is included. Return after working the plan and we measure you on the same metrics. If you don't improve in any category — you get your money back.</p>
+                            <h3>Come Back Monthly & <em>Track the Improvement</em></h3>
+                            <p>Every month, you retest on the same metrics. You see exactly what improved, what didn't, and whether your training investments are actually paying off. Your plan updates based on real data — not guesswork.</p>
                             <ul class="how-step-details">
-                                <li>Side-by-side before/after comparison</li>
-                                <li>Quantified improvement across every metric</li>
-                                <li>Money-back guarantee if no improvement</li>
-                                <li>Adjusted program for continued gains</li>
+                                <li>Month-over-month progress on every metric</li>
+                                <li>See which training is translating to game performance</li>
+                                <li>Updated plan that adapts to your progress</li>
+                                <li>Long-term trend tracking toward D1 benchmarks</li>
                             </ul>
                         </div>
                     </div>
@@ -1211,9 +1350,9 @@
         <section class="pillars-section section-fade">
             <div class="pillars-inner">
                 <div class="pillars-header">
-                    <span class="section-label">What We Analyze</span>
-                    <h2 class="section-title">Athleticism Distilled for <em>Soccer</em></h2>
-                    <p>We don't measure generic fitness. Every metric is tied to on-field performance — how you move, how efficiently you generate power, and where technique is costing you.</p>
+                    <span class="section-label">What We Track</span>
+                    <h2 class="section-title">The Three Pillars of <em>Soccer Athleticism</em></h2>
+                    <p>We don't measure generic fitness. Every metric is tied directly to on-field performance — the specific athletic qualities that separate D1 players from everyone else.</p>
                 </div>
                 <div class="pillars-grid">
                     <div class="pillar-card">
@@ -1222,8 +1361,8 @@
                         </div>
                         <div class="pillar-body">
                             <span class="pillar-tag">Jump</span>
-                            <h3>Explosive Power, Optimized</h3>
-                            <p>Not just "jump higher." We analyze loading mechanics, takeoff angles, and landing patterns to build power that translates to winning headers, shielding the ball, and changing direction.</p>
+                            <h3>Explosive Power, Tracked</h3>
+                            <p>Loading mechanics, takeoff angles, and landing patterns — tracked month-over-month. See whether your gym work is translating to the explosive power that wins headers and creates separation.</p>
                         </div>
                     </div>
                     <div class="pillar-card">
@@ -1232,8 +1371,8 @@
                         </div>
                         <div class="pillar-body">
                             <span class="pillar-tag">Sprint</span>
-                            <h3>Speed Built for the Pitch</h3>
-                            <p>Not just "run faster." We break down stride mechanics, ground contact time, and hip drive to make you faster in the ways that win 50/50 balls and create separation from defenders.</p>
+                            <h3>Speed That Translates</h3>
+                            <p>Stride mechanics, ground contact time, and hip drive — the specific sprint qualities that matter on the pitch. Track whether your speed training is making you faster in the ways that win 50/50 balls.</p>
                         </div>
                     </div>
                     <div class="pillar-card">
@@ -1242,8 +1381,8 @@
                         </div>
                         <div class="pillar-body">
                             <span class="pillar-tag">Kick</span>
-                            <h3>Strike with Precision & Power</h3>
-                            <p>We quantify plant-foot positioning, hip rotation, and follow-through mechanics. The result: harder, more accurate shots and passes — with less injury risk from poor form.</p>
+                            <h3>Strike Power & Precision</h3>
+                            <p>Plant-foot positioning, hip rotation, and follow-through mechanics — quantified and tracked. See how your technique evolves and where power is still being left on the table.</p>
                         </div>
                     </div>
                 </div>
@@ -1254,35 +1393,34 @@
         <section id="pricing" class="pricing-section section-fade">
             <div class="pricing-inner">
                 <div class="pricing-header">
-                    <span class="section-label">Simple Pricing</span>
-                    <h2 class="section-title">One Price. Two Sessions. <em>Guaranteed Results.</em></h2>
-                    <p>No subscriptions. No upsells. Everything you need to measurably improve — including the retest to prove it.</p>
+                    <span class="section-label">Membership</span>
+                    <h2 class="section-title">Less Than One Session With<br>Your Speed Trainer. <em>Way More Insight.</em></h2>
+                    <p>For less than what you're spending on a single week of auxiliary training, get the data that tells you whether all of it is working.</p>
                 </div>
-                <div style="max-width: 480px; margin: 0 auto;">
-                    <div class="pricing-card featured" style="margin-bottom: 1.5rem;">
-                        <div class="pricing-badge">Everything Included</div>
-                        <div class="pricing-card-name">Complete Performance Package</div>
-                        <p class="pricing-card-desc">Diagnostic test + pro-standard comparison + personalized plan + follow-up retest — with a money-back guarantee</p>
-                        <div class="pricing-amount">
-                            <span class="pricing-dollar">$</span>
-                            <span class="pricing-value">120</span>
-                        </div>
-                        <ul class="pricing-features">
-                            <li>10-minute biomechanical diagnostic</li>
-                            <li>Jump, sprint & kick analysis</li>
-                            <li>Pro-standard comparison for every metric</li>
-                            <li>Weak-link identification in technique</li>
-                            <li>Curated, periodized training plan</li>
-                            <li>Specific coaching cues — not vague advice</li>
-                            <li>Follow-up retest session included</li>
-                            <li>Before/after comparison & improvement scores</li>
-                            <li>Money-back guarantee if no improvement</li>
-                        </ul>
-                        <a href="bookPerformanceTest.html" class="pricing-btn pricing-btn-primary">Book Your Two Sessions</a>
+                <div class="pricing-card">
+                    <div class="pricing-badge">Monthly Membership</div>
+                    <div class="pricing-card-name">Athleticism Tracking</div>
+                    <p class="pricing-card-desc">Monthly biomechanical diagnostic, D1 benchmarking, personalized plan, and long-term progress tracking</p>
+                    <div class="pricing-amount">
+                        <span class="pricing-dollar">$</span>
+                        <span class="pricing-value">60</span>
+                        <span class="pricing-per">/month</span>
                     </div>
+                    <ul class="pricing-features">
+                        <li>Monthly 10-minute biomechanical diagnostic</li>
+                        <li>Jump, sprint & kick analysis every session</li>
+                        <li>D1 & pro-standard comparison for every metric</li>
+                        <li>Biomechanical weak-link identification</li>
+                        <li>Targeted monthly training plan</li>
+                        <li>Specific coaching cues to share with your trainers</li>
+                        <li>Month-over-month progress tracking</li>
+                        <li>Long-term trend analysis toward D1 benchmarks</li>
+                        <li>Cancel anytime — no commitment</li>
+                    </ul>
+                    <a href="#waitlist" class="pricing-btn">Join Waitlist</a>
                 </div>
-                <p style="text-align: center; font-size: 0.88rem; color: var(--text-mid);">
-                    $120 covers both sessions and your personalized plan. If you don't improve — you don't pay.
+                <p style="text-align: center; font-size: 0.88rem; color: var(--text-mid); margin-top: 1.5rem;">
+                    $60/month — less than a single session with most speed trainers. Cancel anytime.
                 </p>
             </div>
         </section>
@@ -1291,37 +1429,68 @@
         <section class="guarantee-section section-fade">
             <div class="guarantee-inner">
                 <div class="guarantee-icon">🛡</div>
-                <h2>Improve in Atleast One Category — Or Your Money Back</h2>
-                <p>We measure your jump, sprint, and kick metrics in Session 1, give you a plan, and retest in Session 2. If you follow the plan and don't show measurable improvement across these categories, we refund you in full. No questions asked.</p>
+                <h2>See Measurable Progress — Or Cancel Anytime</h2>
+                <p>We track your jump, sprint, and kick metrics month over month and benchmark you against D1 standards. If after three months of following the plan you don't see measurable improvement, we'll refund your last month. No questions asked.</p>
             </div>
         </section>
 
-        <!-- ═══ FINAL CTA ═══ -->
-        <section class="cta-section section-fade">
+        <!-- ═══ FINAL CTA / WAITLIST ═══ -->
+        <section id="waitlist" class="cta-section section-fade">
             <div class="cta-inner">
-                <span class="section-label">Ready to Level Up?</span>
-                <h2 class="section-title">Two Sessions. One Plan.<br><em>Guaranteed Improvement.</em></h2>
-                <p>Stop spending hundreds on generic training that doesn't translate to the pitch. For $120 you get tested, benchmarked against the pros, given a plan — and retested to prove it worked. If it doesn't, you get your money back.</p>
-                <a href="bookPerformanceTest.html" class="btn-primary">Book Your Two Sessions <span class="btn-arrow">→</span></a>
+                <span class="section-label">Ready to Train With Proof?</span>
+                <h2 class="section-title">Stop Guessing. Start Tracking.<br><em>Know What's Working.</em></h2>
+                <p>You're already investing hundreds in speed trainers, gym coaches, and agility programs. For $60/month, finally get the data that shows you whether it's all translating to the field — and what to fix if it's not.</p>
+                <div id="ctaWaitlistActive">
+                    <form class="cta-waitlist-form" id="ctaWaitlistForm" novalidate>
+                        <input type="email" class="cta-waitlist-email" id="ctaWaitlistEmail" name="email" placeholder="Enter your email" autocomplete="email" required aria-label="Email address">
+                        <button type="submit" class="cta-waitlist-submit" id="ctaWaitlistSubmit">Join Waitlist</button>
+                    </form>
+                    <p class="cta-waitlist-status" id="ctaWaitlistStatus" role="status" aria-live="polite"></p>
+                </div>
+                <div class="cta-waitlist-success-panel" id="ctaWaitlistSuccessPanel" hidden role="status" aria-live="polite">
+                    <svg class="hero-waitlist-check-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="11" fill="#e8f3ee" stroke="#1a3a2e" stroke-width="1.5"/>
+                        <path fill="none" stroke="#1a3a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3 3 7-7"/>
+                    </svg>
+                    <span class="hero-waitlist-success-label">You're on the list. We'll be in touch.</span>
+                </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>© 2026 PoseTek · <a href="index.html">Home</a> · <a href="privacy.html">Privacy Policy</a></p>
+        <p>&copy; 2026 PoseTek &middot; <a href="index.html">Home</a> &middot; <a href="privacy.html">Privacy Policy</a></p>
     </footer>
 
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
+            authDomain: "kickai-69dd0.firebaseapp.com",
+            projectId: "kickai-69dd0",
+            storageBucket: "kickai-69dd0.firebasestorage.app",
+            messagingSenderId: "839600313930",
+            appId: "1:839600313930:web:13b1e94c2c540561e3f8b3",
+            measurementId: "G-RX99K62ZEH"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <script>
+        /* ── Nav scroll ── */
         const nav = document.getElementById('mainNav');
         window.addEventListener('scroll', () => {
             nav.classList.toggle('nav-scrolled', window.scrollY > 20);
         }, { passive: true });
 
+        /* ── Fade-in observer ── */
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('visible');
             });
         }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
 
@@ -1331,6 +1500,7 @@
             document.querySelectorAll('.section-fade').forEach(el => el.classList.add('visible'));
         }
 
+        /* ── Hero carousel ── */
         const heroSlides = document.querySelectorAll('.hero-slide');
         const heroDots = document.querySelectorAll('.hero-dot');
         let heroIndex = 0;
@@ -1352,6 +1522,102 @@
         });
 
         let heroInterval = setInterval(() => goToHeroSlide((heroIndex + 1) % heroSlides.length), 3500);
+
+        /* ── Waitlist: shared helpers ── */
+        function setStatus(el, msg, kind) {
+            el.textContent = msg || '';
+            el.className = el.className.replace(/ ?(error|success)/g, '') + (kind ? ' ' + kind : '');
+        }
+
+        function revealSuccess(activeEl, successEl) {
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            let swapped = false;
+            let fallbackTimer = null;
+
+            const swap = () => {
+                if (swapped) return;
+                swapped = true;
+                if (fallbackTimer != null) clearTimeout(fallbackTimer);
+                activeEl.setAttribute('hidden', '');
+                successEl.removeAttribute('hidden');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => successEl.classList.add('is-visible'));
+                });
+            };
+
+            if (reduced) { swap(); return; }
+
+            activeEl.classList.add('hero-waitlist-active--exit');
+            fallbackTimer = setTimeout(swap, 500);
+            activeEl.addEventListener('transitionend', (ev) => {
+                if (ev.propertyName !== 'opacity') return;
+                swap();
+            }, { once: true });
+        }
+
+        async function handleWaitlistSubmit(emailInput, submitBtn, statusEl, activeEl, successEl, source) {
+            setStatus(statusEl, '');
+            const email = emailInput.value.trim();
+
+            if (!email || !emailInput.checkValidity()) {
+                setStatus(statusEl, 'Please enter a valid email address.', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            let succeeded = false;
+
+            try {
+                await db.collection('athleticismSubscriptionWaitlist').add({
+                    email: email,
+                    source: source,
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                succeeded = true;
+                emailInput.value = '';
+                setStatus(statusEl, '', '');
+                revealSuccess(activeEl, successEl);
+            } catch (err) {
+                console.error('Firestore waitlist error:', err);
+                setStatus(statusEl, 'Something went wrong. Please try again.', 'error');
+            } finally {
+                if (!succeeded) submitBtn.disabled = false;
+            }
+        }
+
+        /* ── Hero waitlist ── */
+        const heroWaitlistForm = document.getElementById('heroWaitlistForm');
+        const heroWaitlistEmail = document.getElementById('heroWaitlistEmail');
+        const heroWaitlistSubmit = document.getElementById('heroWaitlistSubmit');
+        const heroWaitlistStatus = document.getElementById('heroWaitlistStatus');
+        const heroWaitlistActive = document.getElementById('heroWaitlistActive');
+        const heroWaitlistSuccessPanel = document.getElementById('heroWaitlistSuccessPanel');
+
+        heroWaitlistForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleWaitlistSubmit(
+                heroWaitlistEmail, heroWaitlistSubmit, heroWaitlistStatus,
+                heroWaitlistActive, heroWaitlistSuccessPanel,
+                'hypothesis_athleticismSubscription_hero'
+            );
+        });
+
+        /* ── CTA waitlist ── */
+        const ctaWaitlistForm = document.getElementById('ctaWaitlistForm');
+        const ctaWaitlistEmail = document.getElementById('ctaWaitlistEmail');
+        const ctaWaitlistSubmit = document.getElementById('ctaWaitlistSubmit');
+        const ctaWaitlistStatus = document.getElementById('ctaWaitlistStatus');
+        const ctaWaitlistActive = document.getElementById('ctaWaitlistActive');
+        const ctaWaitlistSuccessPanel = document.getElementById('ctaWaitlistSuccessPanel');
+
+        ctaWaitlistForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleWaitlistSubmit(
+                ctaWaitlistEmail, ctaWaitlistSubmit, ctaWaitlistStatus,
+                ctaWaitlistActive, ctaWaitlistSuccessPanel,
+                'hypothesis_athleticismSubscription_cta'
+            );
+        });
     </script>
 </body>
 </html>
