@@ -1523,6 +1523,10 @@
 
     let kickIds = [];
     let currentKickId = null;
+    /** Default capture rate for jump analysis timing when rep doc has no `fps`. */
+    const DEFAULT_ANALYSIS_CAPTURE_FPS = 120;
+    /** Per-rep value: set from Firestore `reps` doc `fps` in loadRepCaptureFpsFromFirestore. */
+    let analysisCaptureFps = DEFAULT_ANALYSIS_CAPTURE_FPS;
 
     const selectedJoints = new Set();
     const rawSelectedJoints = new Set(); // Joint selection for raw video canvas
@@ -1679,6 +1683,52 @@
         session: params.get("session"),
         kick: normalizeKickId(kickParam)
       };
+    }
+
+    /** First integer in a string (e.g. session / kick folder name) for Firestore rep queries. */
+    function extractNumber(str) {
+      if (!str) return null;
+      const match = String(str).match(/(\d+)/);
+      return match ? parseInt(match[1], 10) : null;
+    }
+
+    /** Match a jump rep doc in players/{id}/reps (same shape as mobile / sprint queries). */
+    async function fetchJumpRepFromFirestore(repsRef, sessionNum, repNum) {
+      const queries = [
+        () => repsRef.where('repType', '==', 'jump').where('sessionNumber', '==', sessionNum).where('repNumber', '==', repNum).limit(1).get(),
+        () => repsRef.where('repType', '==', 'jump').where('sessionNumber', '==', sessionNum).where('absoluteRepNumber', '==', repNum).limit(1).get(),
+        () => repsRef.where('repType', '==', 'jump').where('absoluteRepNumber', '==', repNum).limit(1).get(),
+        () => repsRef.where('repType', '==', 'jump').where('repNumber', '==', repNum).limit(1).get(),
+      ];
+      for (const q of queries) {
+        try {
+          const snapshot = await q();
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            return { data: doc.data(), id: doc.id };
+          }
+        } catch (_) { /* try next */ }
+      }
+      return null;
+    }
+
+    async function loadRepCaptureFpsFromFirestore() {
+      const { player, session } = getUrlBits();
+      if (!player || !session || !currentKickId) return;
+      const sessionNum = extractNumber(session);
+      const repNum = extractNumber(currentKickId);
+      if (!sessionNum || !repNum) return;
+      try {
+        const repsRef = db.collection('players').doc(player).collection('reps');
+        const result = await fetchJumpRepFromFirestore(repsRef, sessionNum, repNum);
+        const raw = result?.data?.fps;
+        const n = typeof raw === 'number' ? raw : Number(raw);
+        if (Number.isFinite(n) && n > 0 && n < 1e4) {
+          analysisCaptureFps = n;
+        }
+      } catch (err) {
+        console.warn('[jump] Rep fps from Firestore:', err?.message || err);
+      }
     }
 
     function recalcTiming() {
@@ -2519,9 +2569,7 @@
     };
     const FULL_DEPTH_CLOSE_BUFFER_DEG = 10;
     const METERS_TO_INCHES = 39.3701;
-    const FULL_DEPTH_FEEDBACK = `<p><strong>Squat Depth:</strong> At full depth (coil), aim for 90-110° of knee flexion. A deeper countermovement stores more elastic energy for explosive takeoff.</p><p><strong>Torso Angle:</strong> Lean forward slightly (10-15°) to maintain balance while loading the legs. Avoid excessive forward lean which can reduce jump height.</p><p><strong>Arm Position:</strong> Swing arms back during the descent to prepare for upward drive. Hands should be behind the hips at full depth.</p>`;
-    /** Assumed capture rate for jump analysis timing (frames → seconds). */
-    const ANALYSIS_CAPTURE_FPS = 120;
+    const FULL_DEPTH_FEEDBACK = `<p><strong>Squat Depth:</strong> At the bottom of your squat, aim for about 90–110° of knee bend. Squatting a bit deeper helps your muscles load up more power for a bigger jump.</p><p><strong>Torso Angle:</strong> Lean forward just a little (10–15°) to stay balanced while your legs load up. Leaning too far forward can cost you jump height.</p><p><strong>Arm Position:</strong> Swing your arms back as you go down so they're ready to drive you up. At the bottom, your hands should be behind your hips.</p>`;
     /** Elite ranges (seconds); yellow zone extends ±TIME_METRIC_BUFFER_S outside elite via getRangeStatus. */
     const TAKEOFF_ELITE_PROPULSIVE_S = { min: 0.20, max: 0.28 };
     const TAKEOFF_ELITE_TTO_S = { min: 0.60, max: 0.75 };
@@ -2570,7 +2618,7 @@
     }
 
     function computeTakeoffTimingMetrics() {
-      const fps = ANALYSIS_CAPTURE_FPS;
+      const fps = analysisCaptureFps;
       const coil = Array.isArray(keyFramesData) && keyFramesData[0] != null ? Math.round(Number(keyFramesData[0])) : null;
       const toeOff = Array.isArray(keyFramesData) && keyFramesData[2] != null ? Math.round(Number(keyFramesData[2])) : null;
       let propulsiveFrames = null;
@@ -2607,7 +2655,7 @@
       const ep = TAKEOFF_ELITE_PROPULSIVE_S;
       const et = TAKEOFF_ELITE_TTO_S;
       let html = '<div class="analysis-angle-spacer"></div>';
-      html += '<div style="font-size:0.68rem;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">Timing (' + ANALYSIS_CAPTURE_FPS + ' fps)</div>';
+      html += '<div style="font-size:0.68rem;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem;">Timing (' + analysisCaptureFps + ' fps)</div>';
 
       const propStatus = getRangeStatus(propulsiveSeconds, ep.min, ep.max, buf);
       const propClass = getStatusClass(propStatus);
@@ -2702,53 +2750,159 @@
 
         if (metric.id === 'shoulder') {
           if (metric.value < metric.optimalMin) {
-            notes.push('<p><strong>Arm Load:</strong> Get your arms further behind your body before you explode up. This will help you generate more power.</p>');
+            notes.push('<p><strong>Arm Swing:</strong> Swing your arms further back before you jump. A bigger arm swing gives you more upward power.</p>');
           } else {
-            notes.push('<p><strong>Arm Control:</strong> Your shoulders are over-extended at coil. Keep the arms loaded back, but controlled, so the swing stays efficient into takeoff.</p>');
+            notes.push('<p><strong>Arm Control:</strong> Your arms are pulled too far back at the bottom of your squat. Pull them back, but keep it controlled — an overly big swing can throw off your timing on the way up.</p>');
           }
           return;
         }
 
         if (metric.id === 'ankle') {
           if (metric.value < metric.optimalMin) {
-            notes.push('<p><strong>Ankle Position:</strong> You are too dorsiflexed at the bottom. Sit into the coil with a slightly more open ankle to stay balanced and ready to drive upward.</p>');
+            notes.push('<p><strong>Ankle Position:</strong> Your ankles are bent too far forward at the bottom. Try to keep your shins a little more upright so you stay balanced and ready to push off.</p>');
           } else {
-            notes.push('<p><strong>Ankle Position:</strong> You are too plantarflexed at the bottom. Keep the heel connection stronger so you can transfer force cleanly through takeoff.</p>');
+            notes.push('<p><strong>Ankle Position:</strong> Your heels are coming up too early at the bottom. Keep your heels firmly on the ground so you can push off with full power.</p>');
           }
           return;
         }
 
         if (metric.id === 'knee') {
           if (metric.value < metric.optimalMin) {
-            notes.push('<p><strong>Knee Flexion:</strong> You are too deep in the knee at coil. Use a controlled dip so you can reverse direction faster and avoid losing stiffness.</p>');
+            notes.push('<p><strong>Knee Bend:</strong> You\'re bending your knees too much at the bottom. Try a quicker, more controlled dip so you can change direction faster and jump with more snap.</p>');
           } else {
-            notes.push('<p><strong>Knee Flexion:</strong> You need more knee bend at coil. Add a deeper countermovement to store more elastic energy before takeoff.</p>');
+            notes.push('<p><strong>Knee Bend:</strong> You\'re not bending your knees enough before you jump. Squat a bit deeper to load up more power in your legs.</p>');
           }
           return;
         }
 
         if (metric.id === 'hip') {
           if (metric.value < metric.optimalMin) {
-            notes.push('<p><strong>Hip Position:</strong> Your hips are too closed at full depth. Keep your torso and hips stacked so you can drive vertically instead of leaking force forward.</p>');
+            notes.push('<p><strong>Hip Position:</strong> You\'re hinging too far forward at the hips. Try to keep your torso more upright so your energy goes straight up instead of forward.</p>');
           } else {
-            notes.push('<p><strong>Hip Position:</strong> You are not loading enough at the hips. Sit slightly more into the hips during the dip to improve your upward impulse.</p>');
+            notes.push('<p><strong>Hip Position:</strong> You\'re not sitting into your hips enough during the dip. Bend at the hips a little more to get a stronger push upward.</p>');
           }
           return;
         }
 
         if (metric.id === 'depth') {
           if (metric.value < metric.optimalMin) {
-            notes.push('<p><strong>Countermovement Depth:</strong> Your dip is too shallow. Load deeper before takeoff to build more force through the stretch-shortening cycle.</p>');
+            notes.push('<p><strong>Dip Depth:</strong> Your dip is too shallow. Squat a bit deeper before jumping — this lets your muscles build up more power for takeoff.</p>');
           } else {
-            notes.push('<p><strong>Countermovement Depth:</strong> Your dip is too deep. Keep the countermovement tighter to reduce time loss and improve reactivity.</p>');
+            notes.push('<p><strong>Dip Depth:</strong> Your dip is too deep. A quicker, shallower dip helps you change direction faster and jump more explosively.</p>');
           }
         }
       });
 
       if (!notes.length) {
-        return '<p><strong>Full-Depth Position:</strong> Your ankle, knee, hip, shoulder, and dip depth are all in an efficient loading window. Keep this same coil timing into takeoff.</p>';
+        return '<p><strong>Bottom Position:</strong> Your ankles, knees, hips, arm position, and squat depth all look great. You\'re in a strong position at the bottom — keep it up on takeoff!</p>';
       }
       return notes.join('');
+    }
+
+    function buildTakeoffFeedbackFromMetrics(timingMetrics) {
+      const m = timingMetrics || {};
+      const { propulsiveSeconds, ttoSeconds } = m;
+      const ep = TAKEOFF_ELITE_PROPULSIVE_S;
+      const et = TAKEOFF_ELITE_TTO_S;
+      const buf = TIME_METRIC_BUFFER_S;
+      const notes = [];
+
+      notes.push('<p><strong>What do these numbers mean?</strong> These two times show how explosive your jump is. <em>Propulsive Phase</em> is how fast you push off the ground from the bottom of your squat. <em>Time to Take-Off</em> is the whole thing — from when you start dipping down to when your feet leave the ground. Faster on both = more explosive and more athletic.</p>');
+
+      if (Number.isFinite(propulsiveSeconds)) {
+        const propStatus = getRangeStatus(propulsiveSeconds, ep.min, ep.max, buf);
+        if (propStatus === 'close') {
+          notes.push('<p><strong>Push-Off Speed:</strong> Your push off the ground is right in the sweet spot — that\'s real explosiveness. Keep it up!</p>');
+        } else if (propulsiveSeconds > ep.max + buf) {
+          notes.push('<p><strong>Push-Off Speed:</strong> You\'re taking a bit long to push off the ground. Focus on exploding up as fast as you can from the bottom — think "fast and high."</p>');
+        } else if (propulsiveSeconds > ep.max) {
+          notes.push('<p><strong>Push-Off Speed:</strong> Your push-off is close but could be a touch quicker. Try to explode upward a little faster from the bottom of your squat.</p>');
+        } else if (propulsiveSeconds < ep.min - buf) {
+          notes.push('<p><strong>Push-Off Speed:</strong> Your push phase is extremely quick. Make sure you\'re getting deep enough in your squat to build full power before you take off.</p>');
+        } else if (propulsiveSeconds < ep.min) {
+          notes.push('<p><strong>Push-Off Speed:</strong> You\'re pushing off very fast — great explosiveness! Just double-check you\'re not cutting your dip too short.</p>');
+        }
+      }
+
+      if (Number.isFinite(ttoSeconds)) {
+        const ttoStatus = getRangeStatus(ttoSeconds, et.min, et.max, buf);
+        if (ttoStatus === 'close') {
+          notes.push('<p><strong>Overall Takeoff Speed:</strong> The total time from your dip to leaving the ground looks great. You\'re absorbing and redirecting your energy efficiently.</p>');
+        } else if (ttoSeconds > et.max + buf) {
+          notes.push('<p><strong>Overall Takeoff Speed:</strong> Your total time on the ground is a bit long. A quicker dip-and-go helps you use more of your energy going up instead of losing it on the way down.</p>');
+        } else if (ttoSeconds > et.max) {
+          notes.push('<p><strong>Overall Takeoff Speed:</strong> Your total takeoff time is close to the ideal range. Shaving a little time off your downward dip could help you jump higher.</p>');
+        } else if (ttoSeconds < et.min - buf) {
+          notes.push('<p><strong>Overall Takeoff Speed:</strong> You\'re getting off the ground very quickly — great athleticism! Just make sure you\'re loading up enough in the dip to get maximum height.</p>');
+        } else if (ttoSeconds < et.min) {
+          notes.push('<p><strong>Overall Takeoff Speed:</strong> Your dip-to-takeoff is quite fast. You might get even more height by sitting into the squat just a fraction longer before exploding up.</p>');
+        }
+      }
+
+      return notes.join('');
+    }
+
+    function buildAutoKeyTakeaways() {
+      const fullDepthAngles = getJointAnglesForPhaseIndex(0);
+      const fdMetrics = (fullDepthAngles && fullDepthAngles.length >= 5) ? buildFullDepthMetrics(fullDepthAngles) : [];
+      const timingMetrics = computeTakeoffTimingMetrics();
+
+      const lines = [];
+      lines.push('FAST and HIGH — that\'s the goal on every jump.\n');
+
+      const fdBad = fdMetrics.filter(m => m.status === 'moderate' || m.status === 'large');
+
+      const ep = TAKEOFF_ELITE_PROPULSIVE_S;
+      const et = TAKEOFF_ELITE_TTO_S;
+      const buf = TIME_METRIC_BUFFER_S;
+      const propStatus = Number.isFinite(timingMetrics.propulsiveSeconds) ? getRangeStatus(timingMetrics.propulsiveSeconds, ep.min, ep.max, buf) : 'neutral';
+      const ttoStatus = Number.isFinite(timingMetrics.ttoSeconds) ? getRangeStatus(timingMetrics.ttoSeconds, et.min, et.max, buf) : 'neutral';
+      const hasTimingIssue = (propStatus !== 'close' && propStatus !== 'neutral') || (ttoStatus !== 'close' && ttoStatus !== 'neutral');
+
+      if (fdBad.length === 0 && !hasTimingIssue) {
+        lines.push('Great work! Your body position and timing both look strong. Keep focusing on being as fast and explosive as possible every rep.');
+        return lines.join('\n');
+      }
+
+      if (fdBad.length > 0) {
+        lines.push('Key positions to focus on:');
+        const topIssues = fdBad.slice(0, 3);
+        topIssues.forEach(metric => {
+          if (metric.id === 'knee') {
+            if (metric.value < metric.optimalMin) lines.push('  \u2022 Knee bend — don\'t go so deep. A quicker dip helps you change direction faster.');
+            else lines.push('  \u2022 Knee bend — get a little deeper in your squat to build more power.');
+          } else if (metric.id === 'hip') {
+            if (metric.value < metric.optimalMin) lines.push('  \u2022 Hips — stay more upright so your power goes straight up, not forward.');
+            else lines.push('  \u2022 Hips — sit into your hips a bit more for a stronger push.');
+          } else if (metric.id === 'shoulder') {
+            if (metric.value < metric.optimalMin) lines.push('  \u2022 Arm swing — get your arms further back before you jump for more upward power.');
+            else lines.push('  \u2022 Arm swing — don\'t over-swing. Keep it controlled so your timing stays clean.');
+          } else if (metric.id === 'ankle') {
+            if (metric.value < metric.optimalMin) lines.push('  \u2022 Ankles — keep your shins more upright at the bottom to stay balanced.');
+            else lines.push('  \u2022 Ankles — keep your heels down longer so you can push off with full power.');
+          } else if (metric.id === 'depth') {
+            if (metric.value < metric.optimalMin) lines.push('  \u2022 Dip depth — squat a little deeper to build more power before takeoff.');
+            else lines.push('  \u2022 Dip depth — don\'t go so deep. A tighter dip helps you jump faster.');
+          }
+        });
+        lines.push('');
+      }
+
+      if (hasTimingIssue) {
+        lines.push('Timing:');
+        if (propStatus !== 'close' && propStatus !== 'neutral') {
+          if (timingMetrics.propulsiveSeconds > ep.max) lines.push('  \u2022 Push off faster from the bottom — the quicker you explode up, the higher you\'ll go.');
+          else lines.push('  \u2022 Your push-off is very fast. Make sure you\'re getting low enough to build full power.');
+        }
+        if (ttoStatus !== 'close' && ttoStatus !== 'neutral') {
+          if (timingMetrics.ttoSeconds > et.max) lines.push('  \u2022 Work on getting through the whole dip-and-jump faster. Less time on the ground = more height.');
+          else lines.push('  \u2022 You\'re quick off the ground! Consider sitting into the dip just a bit longer for more power.');
+        }
+        lines.push('');
+      }
+
+      lines.push('Remember: fast down, fast up, jump as high as you can!');
+      return lines.join('\n');
     }
 
     async function loadPlayerHeightMeters() {
@@ -2900,9 +3054,16 @@
           analysisFeedbackText.innerHTML = '<p>' + customText.replace(/\n/g, '</p><p>') + '</p>';
           if (feedbackDivider) feedbackDivider.style.display = '';
         } else {
-          analysisFeedbackText.innerHTML = '';
-          analysisFeedbackText.style.display = 'none';
-          if (feedbackDivider) feedbackDivider.style.display = 'none';
+          const autoTakeoffText = buildTakeoffFeedbackFromMetrics(computeTakeoffTimingMetrics());
+          if (autoTakeoffText) {
+            analysisFeedbackText.style.display = '';
+            analysisFeedbackText.innerHTML = autoTakeoffText;
+            if (feedbackDivider) feedbackDivider.style.display = '';
+          } else {
+            analysisFeedbackText.innerHTML = '';
+            analysisFeedbackText.style.display = 'none';
+            if (feedbackDivider) feedbackDivider.style.display = 'none';
+          }
         }
       }
       if (analysisContinueBtn) analysisContinueBtn.textContent = isFullDepth ? 'Continue Analysis' : 'Finish Analysis';
@@ -3341,6 +3502,8 @@
         analyzeJumpBtnPre.disabled = true;
         analyzeJumpBtnPre.setAttribute('aria-disabled', 'true');
       }
+      analysisCaptureFps = DEFAULT_ANALYSIS_CAPTURE_FPS;
+      await loadRepCaptureFpsFromFirestore();
       keyFramesData = null;
       clearAllCanvases();
       // Reset frame to 0 when switching reps
@@ -5380,8 +5543,11 @@
             const tf = takeoffFrame();
             const endFrame = Math.min(dataLen() - 1, Math.round(tf || 0) + 100);
             if (currentFrame >= endFrame) {
-              if (jumpAnalysisData?.key_takeaways && jumpAnalysisData.key_takeaways.trim()) {
-                document.getElementById('keyTakeawaysText').textContent = jumpAnalysisData.key_takeaways;
+              const manualKT = jumpAnalysisData?.key_takeaways?.trim();
+              const ktText = manualKT || buildAutoKeyTakeaways();
+              if (ktText) {
+                const ktEl = document.getElementById('keyTakeawaysText');
+                ktEl.innerHTML = ktText.replace(/\n/g, '<br>');
                 document.getElementById('keyTakeawaysOverlay').style.display = 'flex';
               } else {
                 exitAnalysisMode();
@@ -5395,8 +5561,11 @@
               analysisStepFrame();
               if (currentFrame >= endFrame) {
                 clearInterval(analysisInterval); analysisInterval = null;
-                if (jumpAnalysisData?.key_takeaways && jumpAnalysisData.key_takeaways.trim()) {
-                  document.getElementById('keyTakeawaysText').textContent = jumpAnalysisData.key_takeaways;
+                const manualKT2 = jumpAnalysisData?.key_takeaways?.trim();
+                const ktText2 = manualKT2 || buildAutoKeyTakeaways();
+                if (ktText2) {
+                  const ktEl2 = document.getElementById('keyTakeawaysText');
+                  ktEl2.innerHTML = ktText2.replace(/\n/g, '<br>');
                   document.getElementById('keyTakeawaysOverlay').style.display = 'flex';
                 } else {
                   exitAnalysisMode();
