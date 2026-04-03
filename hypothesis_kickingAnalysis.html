@@ -87,6 +87,30 @@
             transform: translateY(-1px);
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-waitlist {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--green-dark);
+            text-decoration: none;
+            padding: 0.5rem 1.1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(26, 58, 46, 0.2);
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-waitlist:hover {
+            background: var(--green-light);
+            border-color: var(--green-accent);
+        }
+
         /* ── Hero ── */
         .hero {
             min-height: 100vh;
@@ -902,505 +926,6 @@
             box-shadow: 0 8px 24px rgba(26, 58, 46, 0.3);
         }
 
-        /* ── Upload Section ── */
-        .upload-section {
-            padding: 5rem 7%;
-            background-color: var(--white);
-        }
-
-        .upload-inner {
-            max-width: 680px;
-            margin: 0 auto;
-        }
-
-        .upload-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .upload-header p {
-            font-size: 1rem;
-            color: var(--text-mid);
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-
-        .upload-steps {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-        .upload-step-indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            max-width: 160px;
-            position: relative;
-        }
-
-        .upload-step-indicator:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: calc(50% + 24px);
-            width: calc(100% - 48px);
-            height: 2px;
-            background: rgba(26, 58, 46, 0.12);
-            z-index: 0;
-        }
-
-        .upload-step-indicator.completed:not(:last-child)::after {
-            background: var(--green-accent);
-        }
-
-        .upload-step-num {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--off-white);
-            border: 2px solid rgba(26, 58, 46, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-mid);
-            margin-bottom: 0.6rem;
-            position: relative;
-            z-index: 1;
-            transition: var(--transition);
-        }
-
-        .upload-step-indicator.active .upload-step-num {
-            background: var(--green-dark);
-            border-color: var(--green-dark);
-            color: var(--white);
-        }
-
-        .upload-step-indicator.completed .upload-step-num {
-            background: var(--green-accent);
-            border-color: var(--green-accent);
-            color: var(--white);
-        }
-
-        .upload-step-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-mid);
-            text-align: center;
-        }
-
-        .upload-step-indicator.active .upload-step-label {
-            color: var(--green-dark);
-        }
-
-        .upload-panel {
-            background: var(--off-white);
-            border-radius: 22px;
-            padding: 2.5rem;
-            border: 1px solid rgba(26, 58, 46, 0.08);
-            min-height: 320px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .upload-panel[hidden] { display: none; }
-
-        /* Step 1: Create Account */
-        .auth-form {
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .auth-form h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.4rem;
-            text-align: center;
-        }
-
-        .auth-form > p {
-            font-size: 0.92rem;
-            color: var(--text-mid);
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.35rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            border: 1px solid rgba(26, 58, 46, 0.18);
-            font-size: 0.95rem;
-            font-family: inherit;
-            color: var(--text-dark);
-            background: var(--white);
-            transition: var(--transition);
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--green-accent);
-            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.15);
-        }
-
-        .auth-submit {
-            width: 100%;
-            padding: 0.85rem;
-            border-radius: 50px;
-            border: none;
-            background: var(--green-dark);
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 0.5rem;
-        }
-
-        .auth-submit:hover:not(:disabled) {
-            background: var(--green-mid);
-            transform: translateY(-1px);
-        }
-
-        .auth-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .auth-status {
-            font-size: 0.85rem;
-            text-align: center;
-            margin-top: 0.8rem;
-            min-height: 1.3em;
-        }
-
-        .auth-status.error { color: #b42318; }
-        .auth-status.success { color: var(--green-mid); }
-
-        /* Step 2: Payment */
-        .payment-panel {
-            text-align: center;
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .payment-panel h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.4rem;
-        }
-
-        .payment-panel > p {
-            font-size: 0.92rem;
-            color: var(--text-mid);
-            margin-bottom: 1.5rem;
-        }
-
-        .payment-summary {
-            background: var(--white);
-            border-radius: 14px;
-            padding: 1.2rem 1.5rem;
-            border: 1px solid rgba(26, 58, 46, 0.1);
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .payment-summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.4rem 0;
-        }
-
-        .payment-summary-row span:first-child {
-            font-size: 0.92rem;
-            color: var(--text-mid);
-        }
-
-        .payment-summary-row span:last-child {
-            font-size: 0.92rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .payment-summary-total {
-            border-top: 1px solid rgba(26, 58, 46, 0.1);
-            margin-top: 0.4rem;
-            padding-top: 0.6rem;
-        }
-
-        .payment-summary-total span:last-child {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--green-dark);
-        }
-
-        .payment-btn {
-            width: 100%;
-            padding: 0.9rem;
-            border-radius: 50px;
-            border: none;
-            background: var(--green-dark);
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 16px rgba(26, 58, 46, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .payment-btn:hover:not(:disabled) {
-            background: var(--green-mid);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(26, 58, 46, 0.3);
-        }
-
-        .payment-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .payment-secure {
-            font-size: 0.78rem;
-            color: var(--text-mid);
-            margin-top: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        /* Step 3: Upload */
-        .dropzone-panel {
-            width: 100%;
-            text-align: center;
-        }
-
-        .dropzone-panel h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.4rem;
-        }
-
-        .dropzone-panel > p {
-            font-size: 0.92rem;
-            color: var(--text-mid);
-            margin-bottom: 1.5rem;
-        }
-
-        .dropzone {
-            border: 2px dashed rgba(76, 140, 106, 0.4);
-            border-radius: 18px;
-            padding: 3rem 2rem;
-            background: var(--white);
-            transition: var(--transition);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .dropzone:hover,
-        .dropzone.dragover {
-            border-color: var(--green-accent);
-            background: var(--green-light);
-        }
-
-        .dropzone-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .dropzone-text {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.3rem;
-        }
-
-        .dropzone-hint {
-            font-size: 0.85rem;
-            color: var(--text-mid);
-        }
-
-        .dropzone-hint strong {
-            color: var(--green-dark);
-        }
-
-        .dropzone input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .upload-file-info {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            margin-top: 1rem;
-            padding: 0.8rem 1.2rem;
-            background: var(--white);
-            border-radius: 12px;
-            border: 1px solid rgba(26, 58, 46, 0.1);
-        }
-
-        .upload-file-info.visible {
-            display: flex;
-        }
-
-        .upload-file-icon {
-            font-size: 1.4rem;
-        }
-
-        .upload-file-details {
-            flex: 1;
-            text-align: left;
-        }
-
-        .upload-file-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .upload-file-size {
-            font-size: 0.78rem;
-            color: var(--text-mid);
-        }
-
-        .upload-file-remove {
-            background: none;
-            border: none;
-            color: var(--text-mid);
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 4px;
-            transition: var(--transition);
-        }
-
-        .upload-file-remove:hover {
-            color: #b42318;
-        }
-
-        .upload-submit {
-            width: 100%;
-            padding: 0.9rem;
-            border-radius: 50px;
-            border: none;
-            background: var(--green-dark);
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 16px rgba(26, 58, 46, 0.25);
-            margin-top: 1.2rem;
-            display: none;
-        }
-
-        .upload-submit.visible {
-            display: block;
-        }
-
-        .upload-submit:hover:not(:disabled) {
-            background: var(--green-mid);
-            transform: translateY(-2px);
-        }
-
-        .upload-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .upload-progress {
-            display: none;
-            margin-top: 1rem;
-        }
-
-        .upload-progress.visible {
-            display: block;
-        }
-
-        .upload-progress-bar {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(26, 58, 46, 0.1);
-            overflow: hidden;
-        }
-
-        .upload-progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            background: var(--green-accent);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        .upload-progress-text {
-            font-size: 0.82rem;
-            color: var(--text-mid);
-            margin-top: 0.4rem;
-            text-align: center;
-        }
-
-        .upload-success {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .upload-success.visible {
-            display: block;
-        }
-
-        .upload-success-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .upload-success h3 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-success p {
-            font-size: 1rem;
-            color: var(--text-mid);
-            line-height: 1.7;
-        }
-
         /* ── Final CTA ── */
         .cta-section {
             padding: 7rem 7%;
@@ -1428,6 +953,129 @@
         .cta-inner .btn-primary {
             font-size: 1.15rem;
             padding: 1.1rem 2.8rem;
+        }
+
+        /* ── App waitlist (same Firestore collection as subscription page) ── */
+        .app-waitlist-section {
+            padding: 7rem 7%;
+            background: var(--off-white);
+            border-top: 1px solid rgba(26, 58, 46, 0.06);
+        }
+
+        .hero-waitlist-active {
+            width: 100%;
+            transition: opacity 0.45s ease, transform 0.45s ease;
+        }
+
+        .hero-waitlist-active.hero-waitlist-active--exit {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-waitlist-active.hero-waitlist-active--exit {
+                transform: none;
+            }
+        }
+
+        .cta-waitlist-form {
+            display: flex;
+            gap: 0.65rem;
+            align-items: stretch;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .cta-waitlist-email {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 1rem;
+            font-family: inherit;
+            padding: 0.85rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(26, 58, 46, 0.22);
+            background: var(--white);
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        .cta-waitlist-email::placeholder {
+            color: #888;
+        }
+
+        .cta-waitlist-email:focus {
+            outline: none;
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.2);
+        }
+
+        .cta-waitlist-submit {
+            flex-shrink: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--white);
+            background-color: var(--green-dark);
+            padding: 0.85rem 1.8rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
+        }
+
+        .cta-waitlist-submit:hover:not(:disabled) {
+            background-color: var(--green-mid);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(26, 58, 46, 0.4);
+        }
+
+        .cta-waitlist-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cta-waitlist-status {
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            min-height: 1.4em;
+        }
+
+        .cta-waitlist-status.error { color: #b42318; }
+        .cta-waitlist-status.success { color: var(--green-mid); }
+
+        .cta-waitlist-success-panel {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.45s ease;
+        }
+
+        .cta-waitlist-success-panel:not([hidden]) {
+            display: flex;
+        }
+
+        .cta-waitlist-success-panel.is-visible {
+            opacity: 1;
+        }
+
+        .hero-waitlist-check-icon {
+            flex-shrink: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: block;
+        }
+
+        .hero-waitlist-success-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--green-dark);
+            line-height: 1.4;
         }
 
         /* ── Footer ── */
@@ -1508,13 +1156,12 @@
 
             .cta-inner .section-title { font-size: 2.2rem; }
 
-            .upload-panel { padding: 2rem 1.5rem; }
+            .cta-waitlist-form {
+                flex-direction: column;
+            }
 
-            .upload-steps { gap: 0.5rem; }
-
-            .upload-step-indicator:not(:last-child)::after {
-                width: calc(100% - 32px);
-                left: calc(50% + 16px);
+            .cta-waitlist-submit {
+                width: 100%;
             }
         }
     </style>
@@ -1525,7 +1172,10 @@
             <div class="brand-container">
                 <a href="index.html" class="logo">Pose<span>Tek</span></a>
             </div>
-            <a href="#upload" class="nav-cta">Upload Video →</a>
+            <div class="nav-actions">
+                <a href="#app-waitlist" class="nav-waitlist">App waitlist</a>
+                <a href="kickingAnalysis_upload.html" class="nav-cta">Upload Video →</a>
+            </div>
         </nav>
     </header>
 
@@ -1536,11 +1186,11 @@
                 <div class="hero-text">
                     <span class="hero-eyebrow">Kicking Biomechanics Analysis</span>
                     <h1 class="hero-title">Kick Like<br>the Pros.<br><em>Powered by Science.</em></h1>
-                    <p class="hero-subtitle">Upload a side-view video of your power kick, grass-cutter, or driven long ball. Our biomechanics engine overlays your technique against elite players — and tells you exactly how to unlock the next level of performance.</p>
+                    <p class="hero-subtitle">Upload <em>any</em> side-view video of your kick — phone, camera, or a clip you already have. Our biomechanics engine translates complex motion into plain-English adjustments showing you exactly what to change to kick like the world's best soccer players.</p>
                     <div class="hero-proof">
                         <div class="hero-proof-item">
                             <div class="hero-proof-icon">🎥</div>
-                            One video, full analysis
+                            Any video, full analysis
                         </div>
                         <div class="hero-proof-item">
                             <div class="hero-proof-icon">⚡</div>
@@ -1552,7 +1202,7 @@
                         </div>
                     </div>
                     <div class="hero-actions">
-                        <a href="#upload" class="btn-primary">Upload Video Now <span class="btn-arrow">→</span></a>
+                        <a href="kickingAnalysis_upload.html" class="btn-primary">Upload Video Now <span class="btn-arrow">→</span></a>
                         <a href="#how-it-works" class="btn-secondary">See How It Works ↓</a>
                     </div>
                 </div>
@@ -1612,7 +1262,7 @@
                 <div class="how-header section-fade">
                     <span class="section-label">How It Works</span>
                     <h2 class="section-title">Three Steps to a <em>Pro-Level Kick</em></h2>
-                    <p>Upload one video. Get a complete biomechanical breakdown with pro overlays and specific cues to optimize your power output.</p>
+                    <p>Upload any one video — get a complete biomechanical breakdown with pro overlays and plain-English cues to optimize your technique.</p>
                 </div>
 
                 <div class="how-steps">
@@ -1624,12 +1274,12 @@
                         </div>
                         <div class="how-step-content">
                             <div class="step-number">1</div>
-                            <h3>Film Your Kick from the <em>Side</em></h3>
-                            <p>Set up any camera or phone at a perpendicular side view. Capture one clean power kick, grass-cutter, or driven long ball. That's all we need.</p>
+                            <h3>Film or <em>Upload Any</em> Side-View Video</h3>
+                            <p>Use footage from any phone or camera, or upload a video you already have — as long as it's a clear perpendicular side view with your full body in frame, we can analyze it.</p>
                             <ul class="how-step-details">
                                 <li>Side view, full body in frame</li>
-                                <li>Any phone camera works</li>
-                                <li>Power kick, grass-cutter, or driven ball</li>
+                                <li>Any source: new recording or existing file</li>
+                                <li>Power kick, grass-cutter, driven ball, and more</li>
                             </ul>
                         </div>
                     </div>
@@ -1643,11 +1293,11 @@
                         <div class="how-step-content">
                             <div class="step-number">2</div>
                             <h3>We Run the <em>Biomechanics Engine</em></h3>
-                            <p>Our technology extracts your joint angles, timing, and body positions frame-by-frame — then overlays your mechanics against professional kickers to show exactly where power is being lost.</p>
+                            <p>Our technology extracts your joint angles, timing, and body positions frame-by-frame — then overlays your mechanics against professional soccer players and turns the data into specific, jargon-free cues you can use right away.</p>
                             <ul class="how-step-details">
                                 <li>Frame-by-frame pose estimation</li>
-                                <li>Pro technique overlay comparison</li>
-                                <li>Power chain efficiency scoring</li>
+                                <li>Pro soccer player overlay comparison</li>
+                                <li>Joint angles & foot path analysis</li>
                                 <li>Phase-by-phase breakdown</li>
                             </ul>
                         </div>
@@ -1721,29 +1371,29 @@
         <!-- ═══ PRO COMPARISON ═══ -->
         <section class="comparison-section section-fade">
             <div class="comparison-inner">
-                <span class="section-label">Pro Overlay Technology</span>
-                <h2 class="section-title">See Exactly How Your Kick<br>Compares to the <em>Elite</em></h2>
-                <p>Our engine doesn't just analyze your kick in isolation. We overlay your mechanics against professional kickers so you can see — frame by frame — where the gap is and how to close it.</p>
+                <span class="section-label">What We Analyze</span>
+                <h2 class="section-title">Complex Biomechanics,<br><em>Simplified for You</em></h2>
+                <p>The hard part isn't collecting data — it's making it useful. Our engine translates deep biomechanical analysis into plain-English adjustments you can act on immediately, and overlays your movement against professional soccer players so you can see exactly what elite technique looks like in practice.</p>
                 <div class="comparison-metrics">
-                    <div class="comparison-metric">
-                        <div class="comparison-metric-icon">⚡</div>
-                        <h4>Peak Foot Speed</h4>
-                        <p>Compare your foot velocity at the moment of impact against elite benchmarks. Most players lose 15-25% of potential speed before contact.</p>
-                    </div>
-                    <div class="comparison-metric">
-                        <div class="comparison-metric-icon">🔄</div>
-                        <h4>Hip Rotation Timing</h4>
-                        <p>Pros initiate hip rotation 80-120ms before contact. See where your rotation timing falls and how to optimize the sequence.</p>
-                    </div>
                     <div class="comparison-metric">
                         <div class="comparison-metric-icon">📐</div>
                         <h4>Joint Angle Precision</h4>
-                        <p>Knee flexion, ankle plantarflexion, trunk lean — every angle is measured and compared against the optimal ranges used by professional strikers.</p>
+                        <p>Knee flexion, ankle plantarflexion, trunk lean — every joint angle measured frame-by-frame and compared against the optimal ranges used by professional soccer players.</p>
                     </div>
                     <div class="comparison-metric">
-                        <div class="comparison-metric-icon">🎯</div>
-                        <h4>Power Chain Efficiency</h4>
-                        <p>Energy flows from ground through hips, to knee, to foot. We quantify how much power transfers through each link vs. how much leaks away.</p>
+                        <div class="comparison-metric-icon">🗣</div>
+                        <h4>Plain-English Coaching</h4>
+                        <p>Every biomechanical finding is translated into a specific, jargon-free cue you can apply right away — not raw data, but a clear instruction like "drop your plant foot 4 inches closer to the ball."</p>
+                    </div>
+                    <div class="comparison-metric">
+                        <div class="comparison-metric-icon">👥</div>
+                        <h4>Pro Soccer Player Overlays</h4>
+                        <p>We overlay your mechanics against professional soccer players frame by frame — so you can see the exact positions, angles, and timing that separate elite technique from yours.</p>
+                    </div>
+                    <div class="comparison-metric">
+                        <div class="comparison-metric-icon">🦶</div>
+                        <h4>Foot Path Analysis</h4>
+                        <p>We track the full trajectory of your kicking foot through the strike and show how small adjustments to your foot path translate into measurable improvements in power and accuracy.</p>
                     </div>
                 </div>
             </div>
@@ -1755,7 +1405,7 @@
                 <div class="pricing-header">
                     <span class="section-label">Simple Pricing</span>
                     <h2 class="section-title">One Video. One <em>Complete Analysis.</em></h2>
-                    <p>No subscriptions. No hidden fees. Upload your kick and get a full pro-grade biomechanical report.</p>
+                    <p>No subscriptions. No hidden fees. Upload any side-view kick video and get a full pro-grade biomechanical report.</p>
                 </div>
                 <div class="pricing-card">
                     <div class="pricing-badge">Full Biomechanics Report</div>
@@ -1774,114 +1424,30 @@
                         <li>Priority fixes ranked by power impact</li>
                         <li>Corrective drills & training plan</li>
                     </ul>
-                    <a href="#upload" class="pricing-btn">Upload Video Now →</a>
+                    <a href="kickingAnalysis_upload.html" class="pricing-btn">Upload Video Now →</a>
                 </div>
             </div>
         </section>
 
-        <!-- ═══ UPLOAD SECTION ═══ -->
-        <section id="upload" class="upload-section">
-            <div class="upload-inner">
-                <div class="upload-header">
-                    <span class="section-label">Get Started</span>
-                    <h2 class="section-title">Upload Your <em>Kick</em></h2>
-                    <p>Create an account, complete payment, then drop in your side-view video. You'll receive your full analysis within 48 hours.</p>
+        <!-- ═══ APP WAITLIST (Firestore: kickingAnalysisWaitlist) ═══ -->
+        <section id="app-waitlist" class="app-waitlist-section section-fade">
+            <div class="cta-inner">
+                <span class="section-label">PoseTek App</span>
+                <h2 class="section-title">Want in-app recording &amp; <em>auto analysis?</em></h2>
+                <p>Join the waitlist for the mobile app — same biomechanics engine, with recording and auto-clipping built in.</p>
+                <div class="hero-waitlist-active" id="appWaitlistActive">
+                    <form class="cta-waitlist-form" id="appWaitlistForm" novalidate>
+                        <input type="email" class="cta-waitlist-email" id="appWaitlistEmail" name="email" placeholder="Enter your email" autocomplete="email" required aria-label="Email address for app waitlist">
+                        <button type="submit" class="cta-waitlist-submit" id="appWaitlistSubmit">Join Waitlist</button>
+                    </form>
+                    <p class="cta-waitlist-status" id="appWaitlistStatus" role="status" aria-live="polite"></p>
                 </div>
-
-                <div class="upload-steps" id="uploadSteps">
-                    <div class="upload-step-indicator active" data-step="1">
-                        <div class="upload-step-num">1</div>
-                        <div class="upload-step-label">Create Account</div>
-                    </div>
-                    <div class="upload-step-indicator" data-step="2">
-                        <div class="upload-step-num">2</div>
-                        <div class="upload-step-label">Payment</div>
-                    </div>
-                    <div class="upload-step-indicator" data-step="3">
-                        <div class="upload-step-num">3</div>
-                        <div class="upload-step-label">Upload Video</div>
-                    </div>
-                </div>
-
-                <!-- Step 1: Create Account -->
-                <div class="upload-panel" id="panelAuth">
-                    <div class="auth-form">
-                        <h3>Create Your Account</h3>
-                        <p>Sign up to unlock your kicking analysis.</p>
-                        <form id="authForm" novalidate>
-                            <div class="form-group">
-                                <label for="authEmail">Email</label>
-                                <input type="email" id="authEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="authPassword">Password</label>
-                                <input type="password" id="authPassword" name="password" placeholder="Min. 6 characters" autocomplete="new-password" required minlength="6">
-                            </div>
-                            <button type="submit" class="auth-submit" id="authSubmit">Create Account</button>
-                        </form>
-                        <p class="auth-status" id="authStatus"></p>
-                    </div>
-                </div>
-
-                <!-- Step 2: Payment -->
-                <div class="upload-panel" id="panelPayment" hidden>
-                    <div class="payment-panel">
-                        <h3>Complete Payment</h3>
-                        <p>One-time payment to unlock your kicking analysis.</p>
-                        <div class="payment-summary">
-                            <div class="payment-summary-row">
-                                <span>Kicking Biomechanics Analysis</span>
-                                <span>$29.00</span>
-                            </div>
-                            <div class="payment-summary-row">
-                                <span>Pro overlay comparison</span>
-                                <span>Included</span>
-                            </div>
-                            <div class="payment-summary-row payment-summary-total">
-                                <span>Total</span>
-                                <span>$29.00</span>
-                            </div>
-                        </div>
-                        <button class="payment-btn" id="paymentBtn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                            Pay $29 with Stripe
-                        </button>
-                        <div class="payment-secure">🔒 Secured by Stripe. Your card info never touches our servers.</div>
-                    </div>
-                </div>
-
-                <!-- Step 3: Upload Video -->
-                <div class="upload-panel" id="panelUpload" hidden>
-                    <div class="dropzone-panel" id="dropzonePanel">
-                        <h3>Drop Your Video</h3>
-                        <p>Upload a side-view video of your kick. One video per analysis.</p>
-                        <div class="dropzone" id="dropzone">
-                            <input type="file" id="videoInput" accept="video/*">
-                            <div class="dropzone-icon">🎥</div>
-                            <div class="dropzone-text">Drag & drop your video here</div>
-                            <div class="dropzone-hint">or click to browse · <strong>MP4, MOV</strong> · max 500MB</div>
-                        </div>
-                        <div class="upload-file-info" id="fileInfo">
-                            <div class="upload-file-icon">🎬</div>
-                            <div class="upload-file-details">
-                                <div class="upload-file-name" id="fileName"></div>
-                                <div class="upload-file-size" id="fileSize"></div>
-                            </div>
-                            <button class="upload-file-remove" id="fileRemove" title="Remove file">✕</button>
-                        </div>
-                        <button class="upload-submit" id="uploadSubmit">Submit for Analysis →</button>
-                        <div class="upload-progress" id="uploadProgress">
-                            <div class="upload-progress-bar">
-                                <div class="upload-progress-fill" id="progressFill"></div>
-                            </div>
-                            <div class="upload-progress-text" id="progressText">Uploading...</div>
-                        </div>
-                    </div>
-                    <div class="upload-success" id="uploadSuccess">
-                        <div class="upload-success-icon">✅</div>
-                        <h3>Video Submitted Successfully</h3>
-                        <p>Your kicking biomechanics analysis is being processed. You'll receive your full report with pro overlays and curated feedback at your email within 48 hours.</p>
-                    </div>
+                <div class="cta-waitlist-success-panel" id="appWaitlistSuccessPanel" hidden role="status" aria-live="polite">
+                    <svg class="hero-waitlist-check-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="11" fill="#e8f3ee" stroke="#1a3a2e" stroke-width="1.5"/>
+                        <path fill="none" stroke="#1a3a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3 3 7-7"/>
+                    </svg>
+                    <span class="hero-waitlist-success-label">You're on the list. We'll be in touch.</span>
                 </div>
             </div>
         </section>
@@ -1891,8 +1457,8 @@
             <div class="cta-inner">
                 <span class="section-label">Ready to Unlock More Power?</span>
                 <h2 class="section-title">Stop Guessing. Start Kicking<br>Like the <em>Pros.</em></h2>
-                <p>One video is all it takes. See exactly where you're losing power and get the specific adjustments to optimize your technique for maximum output.</p>
-                <a href="#upload" class="btn-primary">Upload Video Now <span class="btn-arrow">→</span></a>
+                <p>One video — from any source — is all it takes. See exactly where you're leaving power on the table and get plain-English adjustments to optimize your technique.</p>
+                <a href="kickingAnalysis_upload.html" class="btn-primary">Upload Video Now <span class="btn-arrow">→</span></a>
             </div>
         </section>
     </main>
@@ -1901,12 +1467,9 @@
         <p>&copy; 2026 PoseTek · <a href="index.html">Home</a> · <a href="privacy.html">Privacy Policy</a></p>
     </footer>
 
-    <!-- Firebase + Stripe -->
+    <!-- Firebase (Firestore for app waitlist) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
@@ -1965,253 +1528,82 @@
 
         let heroInterval = setInterval(() => goToHeroSlide((heroIndex + 1) % heroSlides.length), 3500);
 
-        /* ── Upload flow state ── */
-        let currentStep = 1;
-        let userEmail = '';
-        let selectedFile = null;
-
-        const stepIndicators = document.querySelectorAll('.upload-step-indicator');
-        const panelAuth = document.getElementById('panelAuth');
-        const panelPayment = document.getElementById('panelPayment');
-        const panelUpload = document.getElementById('panelUpload');
-
-        function setStep(step) {
-            currentStep = step;
-            stepIndicators.forEach(ind => {
-                const s = parseInt(ind.dataset.step);
-                ind.classList.remove('active', 'completed');
-                if (s < step) ind.classList.add('completed');
-                if (s === step) ind.classList.add('active');
-            });
-            panelAuth.hidden = step !== 1;
-            panelPayment.hidden = step !== 2;
-            panelUpload.hidden = step !== 3;
+        /* ── App waitlist → kickingAnalysisWaitlist (same as hypothesis_kickingAnalysisSubscription.html) ── */
+        function appWaitlistSetStatus(el, msg, kind) {
+            el.textContent = msg || '';
+            el.className = el.className.replace(/ ?(error|success)/g, '') + (kind ? ' ' + kind : '');
         }
 
-        /* ── Step 1: Account creation (Firebase Auth) ── */
-        const authForm = document.getElementById('authForm');
-        const authEmail = document.getElementById('authEmail');
-        const authPassword = document.getElementById('authPassword');
-        const authSubmit = document.getElementById('authSubmit');
-        const authStatus = document.getElementById('authStatus');
+        function appWaitlistRevealSuccess(activeEl, successEl) {
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            let swapped = false;
+            let fallbackTimer = null;
 
-        function setAuthStatus(msg, kind) {
-            authStatus.textContent = msg || '';
-            authStatus.className = 'auth-status' + (kind ? ' ' + kind : '');
+            const swap = () => {
+                if (swapped) return;
+                swapped = true;
+                if (fallbackTimer != null) clearTimeout(fallbackTimer);
+                activeEl.setAttribute('hidden', '');
+                successEl.removeAttribute('hidden');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => successEl.classList.add('is-visible'));
+                });
+            };
+
+            if (reduced) { swap(); return; }
+
+            activeEl.classList.add('hero-waitlist-active--exit');
+            fallbackTimer = setTimeout(swap, 500);
+            activeEl.addEventListener('transitionend', (ev) => {
+                if (ev.propertyName !== 'opacity') return;
+                swap();
+            }, { once: true });
         }
 
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            setAuthStatus('');
+        async function appWaitlistSubmit(emailInput, submitBtn, statusEl, activeEl, successEl, source) {
+            appWaitlistSetStatus(statusEl, '');
+            const email = emailInput.value.trim();
 
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-
-            if (!email || !authEmail.checkValidity()) {
-                setAuthStatus('Please enter a valid email.', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                setAuthStatus('Password must be at least 6 characters.', 'error');
+            if (!email || !emailInput.checkValidity()) {
+                appWaitlistSetStatus(statusEl, 'Please enter a valid email address.', 'error');
                 return;
             }
 
-            authSubmit.disabled = true;
-            authSubmit.textContent = 'Creating account...';
+            submitBtn.disabled = true;
+            let succeeded = false;
 
             try {
-                const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                userEmail = email;
-
-                await db.collection('kickingAnalysisUsers').doc(cred.user.uid).set({
+                await db.collection('kickingAnalysisWaitlist').add({
                     email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    analysisStatus: 'pending_payment'
+                    source: source,
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                setAuthStatus('Account created!', 'success');
-                setTimeout(() => setStep(2), 600);
+                succeeded = true;
+                emailInput.value = '';
+                appWaitlistSetStatus(statusEl, '', '');
+                appWaitlistRevealSuccess(activeEl, successEl);
             } catch (err) {
-                if (err.code === 'auth/email-already-in-use') {
-                    try {
-                        await firebase.auth().signInWithEmailAndPassword(email, password);
-                        userEmail = email;
-                        setAuthStatus('Signed in!', 'success');
-                        setTimeout(() => setStep(2), 600);
-                    } catch (signInErr) {
-                        setAuthStatus('Email already in use. Check your password.', 'error');
-                        authSubmit.disabled = false;
-                        authSubmit.textContent = 'Create Account';
-                    }
-                } else {
-                    setAuthStatus('Something went wrong. Please try again.', 'error');
-                    authSubmit.disabled = false;
-                    authSubmit.textContent = 'Create Account';
-                }
+                console.error('Firestore waitlist error:', err);
+                appWaitlistSetStatus(statusEl, 'Something went wrong. Please try again.', 'error');
+            } finally {
+                if (!succeeded) submitBtn.disabled = false;
             }
-        });
-
-        /* ── Step 2: Stripe payment ── */
-        const paymentBtn = document.getElementById('paymentBtn');
-        const STRIPE_BTN_HTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Pay $29 with Stripe';
-
-        paymentBtn.addEventListener('click', async () => {
-            paymentBtn.disabled = true;
-            paymentBtn.textContent = 'Redirecting to Stripe...';
-
-            try {
-                const stripe = Stripe('pk_live_YOUR_STRIPE_KEY');
-                const { error } = await stripe.redirectToCheckout({
-                    lineItems: [{ price: 'price_YOUR_PRICE_ID', quantity: 1 }],
-                    mode: 'payment',
-                    successUrl: window.location.origin + window.location.pathname + '?payment=success#upload',
-                    cancelUrl: window.location.origin + window.location.pathname + '?payment=cancelled#upload',
-                    customerEmail: userEmail
-                });
-
-                if (error) {
-                    console.error('Stripe error:', error);
-                    paymentBtn.disabled = false;
-                    paymentBtn.innerHTML = STRIPE_BTN_HTML;
-                }
-            } catch (err) {
-                console.error('Payment error:', err);
-                paymentBtn.disabled = false;
-                paymentBtn.innerHTML = STRIPE_BTN_HTML;
-            }
-        });
-
-        /* ── Handle Stripe return ── */
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('payment') === 'success') {
-            firebase.auth().onAuthStateChanged(async (user) => {
-                if (user) {
-                    userEmail = user.email;
-                    await db.collection('kickingAnalysisUsers').doc(user.uid).update({
-                        analysisStatus: 'paid',
-                        paidAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    setStep(3);
-                } else {
-                    setStep(1);
-                }
-            });
-            window.history.replaceState({}, '', window.location.pathname + '#upload');
         }
 
-        /* ── Step 3: Video upload ── */
-        const dropzone = document.getElementById('dropzone');
-        const videoInput = document.getElementById('videoInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileNameEl = document.getElementById('fileName');
-        const fileSizeEl = document.getElementById('fileSize');
-        const fileRemove = document.getElementById('fileRemove');
-        const uploadSubmit = document.getElementById('uploadSubmit');
-        const uploadProgress = document.getElementById('uploadProgress');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        const dropzonePanel = document.getElementById('dropzonePanel');
-        const uploadSuccess = document.getElementById('uploadSuccess');
+        const appWaitlistForm = document.getElementById('appWaitlistForm');
+        const appWaitlistEmail = document.getElementById('appWaitlistEmail');
+        const appWaitlistSubmitBtn = document.getElementById('appWaitlistSubmit');
+        const appWaitlistStatus = document.getElementById('appWaitlistStatus');
+        const appWaitlistActive = document.getElementById('appWaitlistActive');
+        const appWaitlistSuccessPanel = document.getElementById('appWaitlistSuccessPanel');
 
-        function formatBytes(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / 1048576).toFixed(1) + ' MB';
-        }
-
-        function handleFile(file) {
-            if (!file || !file.type.startsWith('video/')) return;
-            if (file.size > 500 * 1024 * 1024) {
-                alert('File too large. Maximum size is 500MB.');
-                return;
-            }
-            selectedFile = file;
-            fileNameEl.textContent = file.name;
-            fileSizeEl.textContent = formatBytes(file.size);
-            fileInfo.classList.add('visible');
-            uploadSubmit.classList.add('visible');
-        }
-
-        dropzone.addEventListener('dragover', (e) => {
+        appWaitlistForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            dropzone.classList.add('dragover');
-        });
-
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('dragover');
-        });
-
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-        });
-
-        videoInput.addEventListener('change', () => {
-            if (videoInput.files.length) handleFile(videoInput.files[0]);
-        });
-
-        fileRemove.addEventListener('click', () => {
-            selectedFile = null;
-            videoInput.value = '';
-            fileInfo.classList.remove('visible');
-            uploadSubmit.classList.remove('visible');
-        });
-
-        uploadSubmit.addEventListener('click', async () => {
-            if (!selectedFile) return;
-
-            uploadSubmit.disabled = true;
-            uploadSubmit.textContent = 'Uploading...';
-            uploadProgress.classList.add('visible');
-
-            const user = firebase.auth().currentUser;
-            if (!user) {
-                alert('Session expired. Please sign in again.');
-                setStep(1);
-                return;
-            }
-
-            try {
-                const storageRef = firebase.storage().ref();
-                const ext = selectedFile.name.split('.').pop();
-                const uploadRef = storageRef.child(`kicking-analysis/${user.uid}/kick.${ext}`);
-                const uploadTask = uploadRef.put(selectedFile);
-
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                        progressFill.style.width = pct + '%';
-                        progressText.textContent = `Uploading... ${pct}%`;
-                    },
-                    (error) => {
-                        console.error('Upload error:', error);
-                        progressText.textContent = 'Upload failed. Please try again.';
-                        uploadSubmit.disabled = false;
-                        uploadSubmit.textContent = 'Submit for Analysis →';
-                    },
-                    async () => {
-                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-
-                        await db.collection('kickingAnalysisUsers').doc(user.uid).update({
-                            analysisStatus: 'uploaded',
-                            videoUrl: downloadURL,
-                            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-
-                        progressText.textContent = 'Upload complete!';
-                        setTimeout(() => {
-                            dropzonePanel.style.display = 'none';
-                            uploadSuccess.classList.add('visible');
-                        }, 800);
-                    }
-                );
-            } catch (err) {
-                console.error('Upload error:', err);
-                progressText.textContent = 'Upload failed. Please try again.';
-                uploadSubmit.disabled = false;
-                uploadSubmit.textContent = 'Submit for Analysis →';
-            }
+            appWaitlistSubmit(
+                appWaitlistEmail, appWaitlistSubmitBtn, appWaitlistStatus,
+                appWaitlistActive, appWaitlistSuccessPanel,
+                'hypothesis_kickingAnalysis_app_waitlist'
+            );
         });
     </script>
 </body>

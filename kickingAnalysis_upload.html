@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoseTek – Submit Your Kick</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Stripe Buy Button (loads async – no secret key needed) -->
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+    <style>
+        :root {
+            --white: #ffffff;
+            --off-white: #f7f8f6;
+            --green-dark: #1a3a2e;
+            --green-mid: #2d5e4a;
+            --green-accent: #4c8c6a;
+            --green-light: #e8f3ee;
+            --text-dark: #111111;
+            --text-mid: #444444;
+            --text-light: #888888;
+            --border: rgba(26, 58, 46, 0.14);
+            --transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --step-transition: 420ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--off-white);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 5%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            text-decoration: none;
+            letter-spacing: -0.4px;
+        }
+
+        .logo span { color: var(--green-accent); }
+
+        .back-link {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover { color: var(--green-dark); }
+
+        /* ── Progress strip ── */
+        .progress-wrap {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 5%;
+        }
+
+        .progress-inner {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .step-track {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            gap: 0.4rem;
+        }
+
+        /* connector line between steps */
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 17px;
+            left: calc(50% + 22px);
+            right: calc(-50% + 22px);
+            height: 2px;
+            background: var(--border);
+            transition: background var(--step-transition);
+        }
+
+        .step-item.completed:not(:last-child)::after {
+            background: var(--green-accent);
+        }
+
+        .step-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-light);
+            transition: var(--step-transition);
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-circle {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+            color: var(--white);
+        }
+
+        .step-item.completed .step-circle {
+            border-color: var(--green-accent);
+            background: var(--green-accent);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center;
+            letter-spacing: 0.2px;
+            transition: color var(--step-transition);
+        }
+
+        .step-item.active .step-label  { color: var(--green-dark); }
+        .step-item.completed .step-label { color: var(--green-accent); }
+
+        /* ── Wizard shell ── */
+        .wizard-outer {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2.2rem 5% 4rem;
+        }
+
+        .wizard-viewport {
+            width: 100%;
+            max-width: 580px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Step panels + slide transitions ── */
+        .step-panel {
+            width: 100%;
+            display: none;
+            opacity: 0;
+        }
+
+        .step-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .step-panel.entering {
+            display: block;
+            opacity: 0;
+            transform: translateX(56px);
+            transition: opacity var(--step-transition), transform var(--step-transition);
+        }
+
+        .step-panel.entering-back {
+            display: block;
+            opacity: 0;
+            transform: translateX(-56px);
+            transition: opacity var(--step-transition), transform var(--step-transition);
+        }
+
+        .step-panel.exiting {
+            display: block;
+            opacity: 0;
+            transform: translateX(-56px);
+            transition: opacity var(--step-transition), transform var(--step-transition);
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+        }
+
+        .step-panel.exiting-back {
+            display: block;
+            opacity: 0;
+            transform: translateX(56px);
+            transition: opacity var(--step-transition), transform var(--step-transition);
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--white);
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 24px rgba(26, 58, 46, 0.07);
+            padding: 2.2rem 2.4rem;
+        }
+
+        .card-eyebrow {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--green-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.45rem;
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            line-height: 1.18;
+            margin-bottom: 0.4rem;
+        }
+
+        .card-title em { font-style: normal; color: var(--green-dark); }
+
+        .card-sub {
+            font-size: 0.9rem;
+            color: var(--text-mid);
+            line-height: 1.65;
+            margin-bottom: 1.8rem;
+        }
+
+        /* ── Step 1: Create vs Sign in ── */
+        .auth-mode-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.35rem;
+            border-radius: 12px;
+            padding: 4px;
+            background: var(--green-light);
+            border: 1px solid var(--border);
+        }
+
+        .auth-mode-tab {
+            flex: 1;
+            font-family: inherit;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 0.58rem 0.65rem;
+            border: none;
+            border-radius: 9px;
+            background: transparent;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-mode-tab:hover { color: var(--green-dark); }
+
+        .auth-mode-tab.active {
+            background: var(--white);
+            color: var(--green-dark);
+            box-shadow: 0 1px 4px rgba(26, 58, 46, 0.1);
+        }
+
+        #accountForm.auth-mode-login .form-row-2 {
+            grid-template-columns: 1fr;
+        }
+
+        #accountForm.auth-mode-login #authConfirmWrap {
+            display: none;
+        }
+
+        #accountForm.auth-mode-login #authNameRow {
+            display: none;
+        }
+
+        /* ── Section labels inside card ── */
+        .field-section {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 1.5rem 0 0.7rem;
+        }
+
+        /* ── Form fields ── */
+        .form-row {
+            display: grid;
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .form-row-2 { grid-template-columns: 1fr 1fr; }
+        .form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="number"],
+        select {
+            font-family: inherit;
+            font-size: 0.93rem;
+            padding: 0.72rem 0.95rem;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            background: var(--white);
+            color: var(--text-dark);
+            transition: var(--transition);
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+        }
+
+        input::placeholder { color: var(--text-light); }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.14);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.85rem center;
+            padding-right: 2.2rem;
+            cursor: pointer;
+        }
+
+        /* ── Shot type cards ── */
+        .shot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .shot-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0; height: 0;
+        }
+
+        .shot-option { position: relative; }
+
+        .shot-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.95rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .shot-label:hover {
+            border-color: var(--green-accent);
+            background: var(--green-light);
+        }
+
+        .shot-option input:checked + .shot-label {
+            border-color: var(--green-dark);
+            background: var(--green-light);
+            box-shadow: 0 0 0 1px var(--green-dark);
+        }
+
+        .shot-icon { font-size: 1.25rem; line-height: 1; }
+        .shot-name { font-size: 0.86rem; font-weight: 700; color: var(--text-dark); }
+        .shot-desc { font-size: 0.73rem; color: var(--text-mid); line-height: 1.35; }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.8rem 0;
+        }
+
+        /* ── Status / error text ── */
+        .status-msg {
+            font-size: 0.82rem;
+            min-height: 1.2em;
+            margin-top: 0.45rem;
+        }
+
+        .status-msg.error   { color: #b42318; }
+        .status-msg.success { color: var(--green-mid); }
+
+        /* ── Buttons ── */
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--white);
+            background: var(--green-dark);
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 1.4rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.26);
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--green-mid);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(26, 58, 46, 0.36);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-mid);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0;
+            margin-bottom: 1.2rem;
+        }
+
+        .btn-back:hover { color: var(--green-dark); }
+
+        /* ── Stripe Buy Button wrapper ── */
+        .stripe-wrap {
+            margin: 1.4rem 0 0.5rem;
+        }
+
+        /* Override stripe-buy-button width to fill card */
+        stripe-buy-button {
+            display: block;
+            width: 100%;
+        }
+
+        .stripe-test-banner {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #7c5e00;
+            background: #fff8e6;
+            border: 1px solid #f5d76e;
+            border-radius: 10px;
+            padding: 0.65rem 0.85rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .stripe-test-banner code {
+            font-size: 0.78rem;
+            background: rgba(0,0,0,0.06);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+        }
+
+        .stripe-test-missing {
+            font-size: 0.88rem;
+            color: var(--text-mid);
+            line-height: 1.55;
+            padding: 0.75rem;
+            background: var(--green-light);
+            border-radius: 10px;
+            border: 1px dashed var(--border);
+        }
+
+        .payment-note {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            justify-content: center;
+            margin-top: 0.9rem;
+        }
+
+        .payment-methods-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .pm-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-mid);
+            background: var(--off-white);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 9px;
+        }
+
+        /* ── Dropzone ── */
+        .dropzone {
+            border: 2px dashed rgba(76, 140, 106, 0.35);
+            border-radius: 15px;
+            background: var(--off-white);
+            padding: 2.4rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--green-accent);
+            background: var(--green-light);
+        }
+
+        .dropzone-icon  { font-size: 2rem; margin-bottom: 0.65rem; }
+        .dropzone-text  { font-size: 0.95rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; }
+        .dropzone-hint  { font-size: 0.76rem; color: var(--text-light); }
+
+        /* ── File selected ── */
+        .file-info {
+            display: none;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.9rem 1rem;
+            background: var(--green-light);
+            border: 1.5px solid rgba(76, 140, 106, 0.25);
+            border-radius: 12px;
+            margin-top: 0.65rem;
+        }
+
+        .file-info.visible { display: flex; }
+
+        .file-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+        .file-details { flex: 1; min-width: 0; }
+
+        .file-name {
+            font-size: 0.87rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size { font-size: 0.75rem; color: var(--text-mid); }
+
+        .file-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            padding: 4px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .file-remove:hover { color: #b42318; }
+
+        /* ── Upload progress ── */
+        .upload-progress { display: none; margin-top: 0.8rem; }
+        .upload-progress.visible { display: block; }
+
+        .upload-progress-bar {
+            height: 5px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background: var(--green-accent);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.25s ease;
+        }
+
+        .upload-progress-text {
+            font-size: 0.8rem;
+            color: var(--text-mid);
+            text-align: center;
+        }
+
+        /* ── Success state ── */
+        .upload-success { display: none; text-align: center; padding: 1.8rem 0.5rem; }
+        .upload-success.visible { display: block; }
+
+        .success-check {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 1rem;
+        }
+
+        .upload-success h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-success p {
+            font-size: 0.9rem;
+            color: var(--text-mid);
+            line-height: 1.7;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        .next-steps {
+            margin-top: 1.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            text-align: left;
+        }
+
+        .next-step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        .next-step-num {
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--green-light);
+            border: 1.5px solid rgba(76, 140, 106, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-top: 1px;
+        }
+
+        .next-step-text {
+            font-size: 0.86rem;
+            color: var(--text-mid);
+            line-height: 1.55;
+        }
+
+        .next-step-text strong { color: var(--text-dark); font-weight: 600; }
+
+        /* ── Responsive ── */
+        @media (max-width: 580px) {
+            .wizard-outer  { padding: 1.4rem 4% 3rem; }
+            .card          { padding: 1.6rem 1.3rem; }
+            .form-row-2    { grid-template-columns: 1fr; }
+            .form-row-3    { grid-template-columns: 1fr 1fr; }
+            .step-label    { display: none; }
+            .card-title    { font-size: 1.35rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top bar -->
+    <header class="topbar">
+        <a href="hypothesis_kickingAnalysis.html" class="logo">Pose<span>Tek</span></a>
+        <a href="hypothesis_kickingAnalysis.html" class="back-link">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+        </a>
+    </header>
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+        <div class="progress-inner">
+            <div class="step-track" id="stepTrack">
+                <div class="step-item active" data-step="1">
+                    <div class="step-circle" id="circle1">1</div>
+                    <span class="step-label">Account</span>
+                </div>
+                <div class="step-item" data-step="2">
+                    <div class="step-circle" id="circle2">2</div>
+                    <span class="step-label">Payment</span>
+                </div>
+                <div class="step-item" data-step="3">
+                    <div class="step-circle" id="circle3">3</div>
+                    <span class="step-label">Your Info &amp; Video</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard -->
+    <div class="wizard-outer">
+        <div class="wizard-viewport" id="wizardViewport">
+
+            <!-- ══════════ STEP 1 — Account ══════════ -->
+            <div class="step-panel active" id="panel1">
+                <div class="card">
+                    <p class="card-eyebrow">Step 1 of 3</p>
+
+                    <div class="auth-mode-tabs" role="tablist" aria-label="Account">
+                        <button type="button" class="auth-mode-tab active" id="authModeCreate" role="tab" aria-selected="true" aria-controls="accountForm" data-mode="create">Create account</button>
+                        <button type="button" class="auth-mode-tab" id="authModeLogin" role="tab" aria-selected="false" aria-controls="accountForm" data-mode="login">Sign in</button>
+                    </div>
+
+                    <h1 class="card-title" id="authCardTitle">Create your <em>account</em></h1>
+                    <p class="card-sub" id="authCardSub">We'll use your account to store your video and deliver your analysis.</p>
+
+                    <form id="accountForm" novalidate>
+                        <div class="form-row form-row-2" id="authNameRow">
+                            <div class="form-group">
+                                <label for="authFirstName">First name</label>
+                                <input type="text" id="authFirstName" placeholder="First name" autocomplete="given-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="authLastName">Last name</label>
+                                <input type="text" id="authLastName" placeholder="Last name" autocomplete="family-name" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="authEmail">Email</label>
+                                <input type="email" id="authEmail" placeholder="you@email.com" autocomplete="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="authPassword">Password</label>
+                                <input type="password" id="authPassword" placeholder="Min. 6 characters" autocomplete="new-password" required minlength="6">
+                            </div>
+                            <div class="form-group auth-only-create" id="authConfirmWrap">
+                                <label for="authPasswordConfirm">Confirm</label>
+                                <input type="password" id="authPasswordConfirm" placeholder="Repeat password" autocomplete="new-password" required>
+                            </div>
+                        </div>
+
+                        <p class="status-msg" id="accountStatus" role="status" aria-live="polite"></p>
+
+                        <button type="submit" class="btn-primary" id="accountSubmit">
+                            Continue to Payment
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ══════════ STEP 2 — Payment ══════════ -->
+            <div class="step-panel" id="panel2">
+                <div class="card">
+                    <button class="btn-back" id="backToStep1">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        Back
+                    </button>
+                    <p class="card-eyebrow">Step 2 of 3</p>
+                    <h2 class="card-title">One-time <em>payment</em></h2>
+                    <p class="card-sub">$29 — no subscription, no recurring charges. Includes pro overlay, plain-English coaching, foot path &amp; joint angle analysis.</p>
+
+                    <!--
+                      Stripe Buy Button — Payment Link success URL must include ?payment=success
+                      Test mode: open this page with ?stripeTest=1 and set STRIPE_TEST_* below (Stripe Dashboard → toggle Test mode → Payment Links → Buy button).
+                      Test card: 4242 4242 4242 4242, any future expiry, any CVC.
+                    -->
+                    <div class="stripe-test-banner" id="stripeTestBanner" hidden>
+                        Stripe <strong>test mode</strong> — use test card <code>4242424242424242</code>, any future expiry, any CVC. No real money is charged.
+                    </div>
+                    <div id="stripeTestConfigHelp" class="stripe-test-missing" hidden></div>
+                    <div class="stripe-wrap" id="stripeBuyButtonMount"></div>
+                    <script>
+(function () {
+    var LIVE_BTN = 'buy_btn_1THw7zC8oc8iXOHrnnEqlAhb';
+    var LIVE_PK = 'pk_live_51THoHhC8oc8iXOHrlU1xYR3uwThPvTrOGIWUJerz9hE7N0L1FE8wPBCR1QtSvV6s8OQTEXxGx1248D7dmBw6fBLF00uLkT9ECn';
+    /* Test mode — Payment Link buy button (Stripe Dashboard, Test mode ON). */
+    var STRIPE_TEST_BUY_BUTTON_ID = 'buy_btn_1THxNWC8oc8iXOHrti68VMKY';
+    var STRIPE_TEST_PUBLISHABLE_KEY = 'pk_test_51THoHhC8oc8iXOHrSbn6kFkQqbfdCtdKZETO9Uf3LYWAIUwXL4gLEGqoFAFV36I7TVokIbDEslSRQQpzXBKL0AVA00AyPpAeJt';
+    var params = new URLSearchParams(window.location.search);
+    var wantTest = params.has('stripeTest');
+    var mount = document.getElementById('stripeBuyButtonMount');
+    var banner = document.getElementById('stripeTestBanner');
+    var help = document.getElementById('stripeTestConfigHelp');
+    if (!mount) return;
+    var testReady = wantTest && STRIPE_TEST_PUBLISHABLE_KEY.indexOf('pk_test_') === 0 && STRIPE_TEST_BUY_BUTTON_ID.indexOf('buy_btn_') === 0;
+    if (wantTest && !testReady) {
+        help.hidden = false;
+        help.textContent = 'Stripe test mode is requested (?stripeTest=1) but test keys are not set. In kickingAnalysis_upload.html, set STRIPE_TEST_PUBLISHABLE_KEY (pk_test_…) and STRIPE_TEST_BUY_BUTTON_ID (buy_btn_…) from the Stripe Dashboard with Test mode enabled.';
+        return;
+    }
+    if (wantTest && testReady) {
+        banner.hidden = false;
+    }
+    var btn = document.createElement('stripe-buy-button');
+    btn.setAttribute('buy-button-id', testReady ? STRIPE_TEST_BUY_BUTTON_ID : LIVE_BTN);
+    btn.setAttribute('publishable-key', testReady ? STRIPE_TEST_PUBLISHABLE_KEY : LIVE_PK);
+    mount.appendChild(btn);
+})();
+                    </script>
+
+                    <div class="payment-methods-row">
+                        <span class="pm-badge">💳 Card</span>
+                        <span class="pm-badge"> Apple Pay</span>
+                        <span class="pm-badge"> Google Pay</span>
+                        <span class="pm-badge">🏦 Bank</span>
+                        <span class="pm-badge">🔗 Link</span>
+                    </div>
+                    <p class="payment-note">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Secured by Stripe — your card info never touches our servers
+                    </p>
+                </div>
+            </div>
+
+            <!-- ══════════ STEP 3 — Profile + Upload ══════════ -->
+            <div class="step-panel" id="panel3">
+                <div class="card">
+                    <p class="card-eyebrow">Step 3 of 3</p>
+                    <h2 class="card-title">Tell us about yourself &amp;<br><em>upload your kick</em></h2>
+                    <p class="card-sub">We use your profile to calibrate the analysis for your body. Drop in any side-view video — new recording or an existing file.</p>
+
+                    <form id="profileUploadForm" novalidate>
+
+                        <p class="field-section">Your profile</p>
+
+                        <div class="form-row form-row-3">
+                            <div class="form-group">
+                                <label for="fieldAge">Age</label>
+                                <input type="number" id="fieldAge" placeholder="e.g. 24" min="8" max="80" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldHeightFt">Height (ft)</label>
+                                <select id="fieldHeightFt" required>
+                                    <option value="" disabled selected>ft</option>
+                                    <option>4</option><option>5</option><option>6</option><option>7</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldHeightIn">Height (in)</label>
+                                <select id="fieldHeightIn" required>
+                                    <option value="" disabled selected>in</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option>
+                                    <option>4</option><option>5</option><option>6</option><option>7</option>
+                                    <option>8</option><option>9</option><option>10</option><option>11</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fieldWeight">Weight (kg)</label>
+                                <input type="number" id="fieldWeight" placeholder="e.g. 70" min="15" max="250" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="fieldGender">Gender</label>
+                                <select id="fieldGender" required>
+                                    <option value="" disabled selected>Select…</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other / prefer not to say</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldDominantFoot">Dominant foot</label>
+                                <select id="fieldDominantFoot" required>
+                                    <option value="" disabled selected>Select…</option>
+                                    <option value="right">Right</option>
+                                    <option value="left">Left</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <p class="field-section">Shot type in your video</p>
+
+                        <div class="shot-grid">
+                            <div class="shot-option">
+                                <input type="radio" name="shotType" id="shotPower" value="power_shot" required>
+                                <label class="shot-label" for="shotPower">
+                                    <span class="shot-icon">⚡</span>
+                                    <span class="shot-name">Power Shot</span>
+                                    <span class="shot-desc">Maximum force through the ball</span>
+                                </label>
+                            </div>
+                            <div class="shot-option">
+                                <input type="radio" name="shotType" id="shotCurling" value="curling_shot">
+                                <label class="shot-label" for="shotCurling">
+                                    <span class="shot-icon">🌀</span>
+                                    <span class="shot-name">Curling Shot</span>
+                                    <span class="shot-desc">Side-spin, bending the ball</span>
+                                </label>
+                            </div>
+                            <div class="shot-option">
+                                <input type="radio" name="shotType" id="shotGrass" value="grasscutter">
+                                <label class="shot-label" for="shotGrass">
+                                    <span class="shot-icon">↗</span>
+                                    <span class="shot-name">Grasscutter</span>
+                                    <span class="shot-desc">Low, driven strike on the ground</span>
+                                </label>
+                            </div>
+                            <div class="shot-option">
+                                <input type="radio" name="shotType" id="shotDriven" value="driven_long_ball">
+                                <label class="shot-label" for="shotDriven">
+                                    <span class="shot-icon">🎯</span>
+                                    <span class="shot-name">Driven Long Ball</span>
+                                    <span class="shot-desc">Distance and accuracy</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <p class="field-section" style="margin-top:0;">Your kick video</p>
+
+                        <div id="dropzoneWrap">
+                            <div class="dropzone" id="dropzone">
+                                <input type="file" id="videoInput" accept="video/*" aria-label="Choose video file">
+                                <div class="dropzone-icon">🎥</div>
+                                <div class="dropzone-text">Drag &amp; drop any video here</div>
+                                <div class="dropzone-hint">or click to browse &middot; <strong>MP4, MOV</strong> &middot; max 500MB</div>
+                            </div>
+
+                            <div class="file-info" id="fileInfo">
+                                <div class="file-icon">🎬</div>
+                                <div class="file-details">
+                                    <div class="file-name" id="fileName"></div>
+                                    <div class="file-size" id="fileSize"></div>
+                                </div>
+                                <button type="button" class="file-remove" id="fileRemove" title="Remove">✕</button>
+                            </div>
+                        </div>
+
+                        <p class="status-msg" id="profileStatus" role="status" aria-live="polite"></p>
+
+                        <button type="submit" class="btn-primary" id="profileSubmit">
+                            Submit for Analysis
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="upload-progress-bar">
+                                <div class="upload-progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="upload-progress-text" id="progressText">Uploading…</div>
+                        </div>
+                    </form>
+
+                    <!-- Success -->
+                    <div class="upload-success" id="uploadSuccess">
+                        <svg class="success-check" viewBox="0 0 64 64" fill="none">
+                            <circle cx="32" cy="32" r="31" fill="#e8f3ee" stroke="#1a3a2e" stroke-width="2"/>
+                            <path d="M18 33l10 10 18-18" stroke="#1a3a2e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h3>Video Submitted!</h3>
+                        <p>Your analysis is queued. You'll receive your full report — pro overlays, plain-English coaching, foot path breakdown — within <strong>48 hours</strong>.</p>
+                        <div class="next-steps">
+                            <div class="next-step-item">
+                                <div class="next-step-num">1</div>
+                                <p class="next-step-text"><strong>Check your email</strong> — confirmation sent to your inbox.</p>
+                            </div>
+                            <div class="next-step-item">
+                                <div class="next-step-num">2</div>
+                                <p class="next-step-text"><strong>Analysis within 48 hrs</strong> — our engine processes and reviews your kick.</p>
+                            </div>
+                            <div class="next-step-item">
+                                <div class="next-step-num">3</div>
+                                <p class="next-step-text"><strong>Apply the changes</strong> — specific, plain-English adjustments matched to your mechanics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /wizard-viewport -->
+    </div><!-- /wizard-outer -->
+
+    <footer style="text-align:center; padding:1.4rem 5%; font-size:0.8rem; color:var(--text-light); border-top:1px solid var(--border);">
+        &copy; 2026 PoseTek &middot;
+        <a href="index.html" style="color:var(--green-accent);text-decoration:none;">Home</a> &middot;
+        <a href="privacy.html" style="color:var(--green-accent);text-decoration:none;">Privacy Policy</a>
+    </footer>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
+            authDomain: "kickai-69dd0.firebaseapp.com",
+            projectId: "kickai-69dd0",
+            storageBucket: "kickai-69dd0.firebasestorage.app",
+            messagingSenderId: "839600313930",
+            appId: "1:839600313930:web:13b1e94c2c540561e3f8b3",
+            measurementId: "G-RX99K62ZEH"
+        });
+        const db      = firebase.firestore();
+        const auth    = firebase.auth();
+        const storage = firebase.storage();
+    </script>
+
+    <script>
+        /* ════════════════════════════════════
+           Step machine
+        ════════════════════════════════════ */
+        const panels    = { 1: document.getElementById('panel1'), 2: document.getElementById('panel2'), 3: document.getElementById('panel3') };
+        const stepItems = document.querySelectorAll('.step-item');
+        const circles   = { 1: document.getElementById('circle1'), 2: document.getElementById('circle2'), 3: document.getElementById('circle3') };
+
+        let currentStep = 1;
+
+        const CHECK = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+        function goToStep(next, dir = 'forward') {
+            const prev = currentStep;
+            if (next === prev) return;
+
+            const exitCls  = dir === 'forward' ? 'exiting'      : 'exiting-back';
+            const enterCls = dir === 'forward' ? 'entering'     : 'entering-back';
+
+            const vp = document.getElementById('wizardViewport');
+            vp.style.minHeight = panels[prev].offsetHeight + 'px';
+
+            panels[prev].classList.remove('active');
+            panels[prev].classList.add(exitCls);
+
+            panels[next].style.display = 'block';
+            panels[next].classList.add(enterCls);
+            void panels[next].offsetHeight; // reflow
+            panels[next].classList.remove(enterCls);
+            panels[next].classList.add('active');
+
+            panels[prev].addEventListener('transitionend', function done() {
+                panels[prev].classList.remove(exitCls);
+                panels[prev].style.display = 'none';
+                panels[prev].removeEventListener('transitionend', done);
+                vp.style.minHeight = '';
+            }, { once: true });
+
+            currentStep = next;
+            stepItems.forEach(item => {
+                const s = parseInt(item.dataset.step);
+                item.classList.remove('active', 'completed');
+                if (s < next) { item.classList.add('completed'); circles[s].innerHTML = CHECK; }
+                else if (s === next) { item.classList.add('active'); if (s < 3) circles[s].textContent = s; }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ════════════════════════════════════
+           Step 1 — Create account or Sign in
+        ════════════════════════════════════ */
+        const accountForm    = document.getElementById('accountForm');
+        const accountStatus  = document.getElementById('accountStatus');
+        const accountSubmit  = document.getElementById('accountSubmit');
+        const authModeCreate = document.getElementById('authModeCreate');
+        const authModeLogin  = document.getElementById('authModeLogin');
+        const authCardTitle    = document.getElementById('authCardTitle');
+        const authCardSub      = document.getElementById('authCardSub');
+        const authPassword     = document.getElementById('authPassword');
+        const authPasswordConfirm = document.getElementById('authPasswordConfirm');
+        const authFirstName    = document.getElementById('authFirstName');
+        const authLastName     = document.getElementById('authLastName');
+
+        const ACCOUNT_ARROW_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+        let authMode = 'create';
+
+        function setAccountStatus(msg, kind) {
+            accountStatus.textContent = msg || '';
+            accountStatus.className = 'status-msg' + (kind ? ' ' + kind : '');
+        }
+
+        function resetAccountSubmitButton() {
+            accountSubmit.disabled = false;
+            if (authMode === 'login') {
+                accountSubmit.innerHTML = 'Sign in and continue ' + ACCOUNT_ARROW_SVG;
+            } else {
+                accountSubmit.innerHTML = 'Continue to Payment ' + ACCOUNT_ARROW_SVG;
+            }
+        }
+
+        async function syncKickingAnalysisUserDoc(uid, email, options = {}) {
+            const { initUploadsIfNew = false } = options;
+            const data = {
+                email,
+                analysisStatus: 'pending_payment',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            if (initUploadsIfNew) {
+                data.availableAnalysisUploads = 0;
+            }
+            await db.collection('kickingAnalysisUsers').doc(uid).set(data, { merge: true });
+        }
+
+        function generateSignupCode(len = 6) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+            let s = '';
+            for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+            return s;
+        }
+
+        /** Firestore `players.height` is stored in centimeters (same as app). */
+        function heightFeetInchesToCm(ft, inch) {
+            return Math.round((parseInt(ft, 10) * 30.48 + parseInt(inch, 10) * 2.54) * 100) / 100;
+        }
+
+        /** Next rep folder index under `kicking-analysis/{uid}/rep{n}/` (1-based). */
+        async function getNextKickRepIndex(uid) {
+            const baseRef = storage.ref(`kicking-analysis/${uid}`);
+            const res = await baseRef.listAll();
+            let maxRep = 0;
+            for (const p of res.prefixes) {
+                const m = /^rep(\d+)$/.exec(p.name);
+                if (m) maxRep = Math.max(maxRep, parseInt(m[1], 10));
+            }
+            return maxRep + 1;
+        }
+
+        async function createOrMergePlayerOnSignup(uid, email, firstName, lastName) {
+            const ref = db.collection('players').doc(uid);
+            const snap = await ref.get();
+            const common = {
+                authenticationUID: uid,
+                userUID: uid,
+                email,
+                signupEmail: email,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                coachUID: '',
+                sport: '',
+                registered: true,
+                premium_content_locked: false,
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            if (!snap.exists) {
+                await ref.set({
+                    ...common,
+                    signupCode: generateSignupCode(),
+                    best_reps: { jump_height: 0, strike_velocity: 0 },
+                    stats: { jump_height: 0, strike_velocity: 0 }
+                }, { merge: true });
+            } else {
+                await ref.set(common, { merge: true });
+            }
+        }
+
+        async function syncPlayerOnLogin(uid, email) {
+            await db.collection('players').doc(uid).set({
+                authenticationUID: uid,
+                userUID: uid,
+                email,
+                signupEmail: email,
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            const isLogin = mode === 'login';
+            authModeCreate.classList.toggle('active', !isLogin);
+            authModeLogin.classList.toggle('active', isLogin);
+            authModeCreate.setAttribute('aria-selected', !isLogin);
+            authModeLogin.setAttribute('aria-selected', isLogin);
+            accountForm.classList.toggle('auth-mode-login', isLogin);
+
+            if (isLogin) {
+                authCardTitle.innerHTML = 'Sign in to <em>continue</em>';
+                authCardSub.textContent = 'Use your PoseTek email and password. We’ll store your video and deliver your analysis to this account.';
+                authPassword.placeholder = 'Your password';
+                authPassword.setAttribute('autocomplete', 'current-password');
+                authPassword.removeAttribute('minlength');
+                authPasswordConfirm.removeAttribute('required');
+                authPasswordConfirm.disabled = true;
+                authFirstName.removeAttribute('required');
+                authLastName.removeAttribute('required');
+            } else {
+                authCardTitle.innerHTML = 'Create your <em>account</em>';
+                authCardSub.textContent = 'We\'ll use your account to store your video and deliver your analysis.';
+                authPassword.placeholder = 'Min. 6 characters';
+                authPassword.setAttribute('autocomplete', 'new-password');
+                authPassword.setAttribute('minlength', '6');
+                authPasswordConfirm.setAttribute('required', 'required');
+                authPasswordConfirm.disabled = false;
+                authFirstName.setAttribute('required', 'required');
+                authLastName.setAttribute('required', 'required');
+            }
+            setAccountStatus('');
+            resetAccountSubmitButton();
+        }
+
+        authModeCreate.addEventListener('click', () => setAuthMode('create'));
+        authModeLogin.addEventListener('click', () => setAuthMode('login'));
+
+        accountForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setAccountStatus('');
+
+            const email = document.getElementById('authEmail').value.trim();
+            const pw    = authPassword.value;
+            const pwc   = authPasswordConfirm.value;
+            const firstName = authFirstName.value.trim();
+            const lastName  = authLastName.value.trim();
+
+            if (!email || !document.getElementById('authEmail').checkValidity()) return setAccountStatus('Please enter a valid email address.', 'error');
+            if (!pw) return setAccountStatus('Please enter your password.', 'error');
+
+            if (authMode === 'create') {
+                if (!firstName || !lastName) return setAccountStatus('Please enter your first and last name.', 'error');
+                if (pw.length < 6) return setAccountStatus('Password must be at least 6 characters.', 'error');
+                if (pw !== pwc) return setAccountStatus('Passwords do not match.', 'error');
+            }
+
+            accountSubmit.disabled = true;
+            accountSubmit.textContent = authMode === 'login' ? 'Signing in…' : 'Creating account…';
+
+            try {
+                let uid;
+                let initUploadsIfNew = false;
+
+                if (authMode === 'login') {
+                    const cred = await auth.signInWithEmailAndPassword(email, pw);
+                    uid = cred.user.uid;
+                } else {
+                    try {
+                        const cred = await auth.createUserWithEmailAndPassword(email, pw);
+                        uid = cred.user.uid;
+                        initUploadsIfNew = true;
+                    } catch (err) {
+                        if (err.code === 'auth/email-already-in-use') {
+                            const cred = await auth.signInWithEmailAndPassword(email, pw);
+                            uid = cred.user.uid;
+                        } else throw err;
+                    }
+                }
+
+                await syncKickingAnalysisUserDoc(uid, email, { initUploadsIfNew });
+                if (authMode === 'create') {
+                    await createOrMergePlayerOnSignup(uid, email, firstName, lastName);
+                } else {
+                    await syncPlayerOnLogin(uid, email);
+                }
+                goToStep(2, 'forward');
+
+            } catch (err) {
+                console.error('Account error:', err);
+                let msg = 'Something went wrong. Please try again.';
+                if (err.code === 'auth/wrong-password') msg = 'Wrong password for that email.';
+                else if (err.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
+                else if (err.code === 'auth/user-not-found' && authMode === 'login') msg = 'No account with this email. Use “Create account” or check your email.';
+                else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try again in a few minutes.';
+                else if (err.code === 'auth/user-disabled') msg = 'This account has been disabled.';
+                setAccountStatus(msg, 'error');
+                resetAccountSubmitButton();
+            }
+        });
+
+        /* ════════════════════════════════════
+           Step 2 — Payment (Stripe Buy Button)
+           The stripe-buy-button web component handles the payment UI.
+           After success, Stripe redirects back to this page with ?payment=success.
+        ════════════════════════════════════ */
+        document.getElementById('backToStep1').addEventListener('click', () => {
+            resetAccountSubmitButton();
+            goToStep(1, 'backward');
+        });
+
+        /* Handle Stripe return (?payment=success) */
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            window.history.replaceState({}, '', window.location.pathname);
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    await db.collection('kickingAnalysisUsers').doc(user.uid).update({
+                        analysisStatus: 'paid',
+                        paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        availableAnalysisUploads: firebase.firestore.FieldValue.increment(1)
+                    });
+                    await db.collection('players').doc(user.uid).set({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                /* Skip directly to step 3 */
+                panels[1].classList.remove('active'); panels[1].style.display = 'none';
+                panels[2].style.display = 'none';
+                panels[3].classList.add('active');
+                currentStep = 3;
+                stepItems.forEach(item => {
+                    const s = parseInt(item.dataset.step);
+                    item.classList.remove('active', 'completed');
+                    if (s < 3) { item.classList.add('completed'); circles[s].innerHTML = CHECK; }
+                    else item.classList.add('active');
+                });
+            });
+        }
+
+        /* ════════════════════════════════════
+           Step 3 — Profile + Upload
+        ════════════════════════════════════ */
+        const dropzone       = document.getElementById('dropzone');
+        const videoInput     = document.getElementById('videoInput');
+        const fileInfo       = document.getElementById('fileInfo');
+        const fileNameEl     = document.getElementById('fileName');
+        const fileSizeEl     = document.getElementById('fileSize');
+        const fileRemove     = document.getElementById('fileRemove');
+        const profileForm    = document.getElementById('profileUploadForm');
+        const profileStatus  = document.getElementById('profileStatus');
+        const profileSubmit  = document.getElementById('profileSubmit');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill   = document.getElementById('progressFill');
+        const progressText   = document.getElementById('progressText');
+        const dropzoneWrap   = document.getElementById('dropzoneWrap');
+        const uploadSuccess  = document.getElementById('uploadSuccess');
+
+        let selectedFile = null;
+
+        function setProfileStatus(msg, kind) {
+            profileStatus.textContent = msg || '';
+            profileStatus.className = 'status-msg' + (kind ? ' ' + kind : '');
+        }
+
+        function formatBytes(b) {
+            if (b < 1024)     return b + ' B';
+            if (b < 1048576)  return (b / 1024).toFixed(1) + ' KB';
+            return (b / 1048576).toFixed(1) + ' MB';
+        }
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('video/')) {
+                setProfileStatus('Please choose a video file (MP4, MOV, etc.)', 'error');
+                return;
+            }
+            if (file.size > 500 * 1024 * 1024) {
+                setProfileStatus('File too large — max 500MB.', 'error');
+                return;
+            }
+            selectedFile = file;
+            fileNameEl.textContent = file.name;
+            fileSizeEl.textContent = formatBytes(file.size);
+            fileInfo.classList.add('visible');
+            setProfileStatus('');
+        }
+
+        dropzone.addEventListener('dragover',  (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', ()  => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        videoInput.addEventListener('change', () => {
+            if (videoInput.files.length) handleFile(videoInput.files[0]);
+        });
+
+        fileRemove.addEventListener('click', () => {
+            selectedFile = null;
+            videoInput.value = '';
+            fileInfo.classList.remove('visible');
+        });
+
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setProfileStatus('');
+
+            const age    = document.getElementById('fieldAge').value;
+            const hFt    = document.getElementById('fieldHeightFt').value;
+            const hIn    = document.getElementById('fieldHeightIn').value;
+            const wRaw   = document.getElementById('fieldWeight').value;
+            const gender = document.getElementById('fieldGender').value;
+            const foot   = document.getElementById('fieldDominantFoot').value;
+            const shotEl = profileForm.querySelector('input[name="shotType"]:checked');
+            const weightKg = parseFloat(wRaw);
+
+            if (!age || !hFt || !hIn || !gender || !foot) return setProfileStatus('Please complete all profile fields.', 'error');
+            if (wRaw === '' || Number.isNaN(weightKg) || weightKg <= 0) return setProfileStatus('Please enter a valid weight (kg).', 'error');
+            if (!shotEl)      return setProfileStatus('Please select your shot type.', 'error');
+            if (!selectedFile) return setProfileStatus('Please add your kick video before submitting.', 'error');
+
+            const user = auth.currentUser;
+            if (!user) {
+                setProfileStatus('Session expired — please refresh and sign in again.', 'error');
+                return;
+            }
+
+            profileSubmit.disabled = true;
+            profileSubmit.textContent = 'Uploading…';
+            uploadProgress.classList.add('visible');
+
+            try {
+                let ext = (selectedFile.name.split('.').pop() || 'mp4').toLowerCase();
+                if (!/^[a-z0-9]+$/.test(ext)) ext = 'mp4';
+                const repIndex    = await getNextKickRepIndex(user.uid);
+                const repPrefix   = `kicking-analysis/${user.uid}/rep${repIndex}`;
+                const videoPath   = `${repPrefix}/side_kick_240.${ext}`;
+                const jsonPath    = `${repPrefix}/side_kick_240.json`;
+                const uploadRef   = storage.ref().child(videoPath);
+                const task        = uploadRef.put(selectedFile);
+
+                task.on('state_changed',
+                    (snap) => {
+                        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                        progressFill.style.width = pct + '%';
+                        progressText.textContent = `Uploading… ${pct}%`;
+                    },
+                    (err) => {
+                        console.error('Upload error:', err);
+                        setProfileStatus('Upload failed. Please try again.', 'error');
+                        profileSubmit.disabled = false;
+                        profileSubmit.textContent = 'Submit for Analysis';
+                    },
+                    async () => {
+                        try {
+                        const videoUrl = await task.snapshot.ref.getDownloadURL();
+                        const heightCm = heightFeetInchesToCm(hFt, hIn);
+                        const heightDisplay = `${hFt}'${hIn}"`;
+
+                        const submissionMeta = {
+                            schemaVersion: 1,
+                            repIndex,
+                            authenticationUID: user.uid,
+                            email: user.email || null,
+                            age: parseInt(age, 10),
+                            height: {
+                                feet: parseInt(hFt, 10),
+                                inches: parseInt(hIn, 10),
+                                display: heightDisplay,
+                                centimeters: heightCm
+                            },
+                            weight: weightKg,
+                            weightUnit: 'kg',
+                            gender,
+                            dominantFoot: foot,
+                            shotType: shotEl.value,
+                            video: {
+                                originalFileName: selectedFile.name,
+                                sizeBytes: selectedFile.size,
+                                mimeType: selectedFile.type || null,
+                                extension: ext,
+                                storagePath: videoPath
+                            },
+                            jsonStoragePath: jsonPath,
+                            clientSubmittedAt: new Date().toISOString()
+                        };
+
+                        const jsonBlob = new Blob([JSON.stringify(submissionMeta)], { type: 'application/json' });
+                        const jsonRef = storage.ref().child(jsonPath);
+                        await new Promise((resolve, reject) => {
+                            const jt = jsonRef.put(jsonBlob, { contentType: 'application/json' });
+                            jt.on('state_changed', null, reject, resolve);
+                        });
+
+                        const kaRef = db.collection('kickingAnalysisUsers').doc(user.uid);
+                        await db.runTransaction(async (t) => {
+                            const snap = await t.get(kaRef);
+                            const cur = snap.exists ? (snap.data().availableAnalysisUploads ?? 0) : 0;
+                            const nextUploads = Math.max(0, cur - 1);
+                            t.set(kaRef, {
+                                age: parseInt(age, 10),
+                                height: heightDisplay,
+                                weight: weightKg,
+                                gender,
+                                dominantFoot: foot,
+                                shotType: shotEl.value,
+                                analysisStatus: 'uploaded',
+                                videoUrl,
+                                uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                availableAnalysisUploads: nextUploads
+                            }, { merge: true });
+                        });
+
+                        await db.collection('players').doc(user.uid).set({
+                            authenticationUID: user.uid,
+                            userUID: user.uid,
+                            email: user.email || '',
+                            signupEmail: user.email || '',
+                            height: heightCm,
+                            weight: weightKg,
+                            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            kickingAnalysisVideoSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+
+                        progressText.textContent = 'Upload complete!';
+                        setTimeout(() => {
+                            profileForm.style.display = 'none';
+                            uploadSuccess.classList.add('visible');
+                            stepItems.forEach(item => {
+                                item.classList.remove('active');
+                                item.classList.add('completed');
+                            });
+                            circles[3].innerHTML = CHECK;
+                        }, 700);
+                        } catch (err) {
+                            console.error('Post-upload error:', err);
+                            setProfileStatus('Video uploaded but saving metadata failed. Please try again or contact support.', 'error');
+                            profileSubmit.disabled = false;
+                            profileSubmit.textContent = 'Submit for Analysis';
+                            uploadProgress.classList.remove('visible');
+                        }
+                    }
+                );
+            } catch (err) {
+                console.error('Upload error:', err);
+                setProfileStatus('Upload failed. Please try again.', 'error');
+                profileSubmit.disabled = false;
+                profileSubmit.textContent = 'Submit for Analysis';
+            }
+        });
+    </script>
+</body>
+</html>
