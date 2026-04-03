@@ -124,21 +124,105 @@
         }
 
         .hero-container {
-            display: flex;
             min-height: 100vh;
-            position: relative;
-            padding-top: 70px;
+            display: flex;
             align-items: center;
+            padding: 100px 7% 60px;
+            position: relative;
             overflow: hidden;
-            background-color: var(--white);
+            background: linear-gradient(165deg, var(--white) 55%, var(--green-light) 100%);
         }
 
         .hero-inner {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
-            padding: 4rem 7%;
+            max-width: 1300px;
+            margin: 0 auto;
             gap: 4rem;
+            padding-top: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        #bgPoseCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-stage {
+            flex: 1;
+            position: relative;
+            min-height: 580px;
+        }
+
+        .hero-carousel-inset {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 88%;
+            max-width: 520px;
+            z-index: 3;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 28px 70px rgba(0,0,0,0.42), 0 6px 22px rgba(0,0,0,0.28);
+            border: 2px solid rgba(255,255,255,0.22);
+        }
+
+        .hero-carousel {
+            border-radius: 0;
+            overflow: hidden;
+            background: var(--green-dark);
+            aspect-ratio: 4 / 3;
+            position: relative;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .hero-slide.active { opacity: 1; }
+
+        .hero-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d1f17;
+        }
+
+        .hero-carousel-dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .hero-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .hero-dot.active {
+            background: var(--white);
+            transform: scale(1.3);
         }
 
         .hero-text {
@@ -590,183 +674,13 @@
             animation: arrow-bounce 1.2s ease-in-out infinite;
         }
 
-        .sport-card {
-            flex: 1;
-            max-width: 580px;
-            position: relative;
-            overflow: visible;
-            transition: var(--transition);
-            will-change: transform;
-            display: flex;
-            flex-direction: column;
-            gap: 0.85rem;
-        }
-
-        .image-container {
-            width: 100%;
-            height: 480px;
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 30px 70px rgba(26, 58, 46, 0.35), 0 8px 24px rgba(0, 0, 0, 0.2);
-            transition: var(--transition);
-            border: 1px solid rgba(76, 140, 106, 0.2);
-            position: relative;
-            background-color: #1a3a2e;
-        }
-
-        .image-container::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 26px;
-            box-shadow: inset 0 0 0 1px rgba(76, 140, 106, 0.12);
-            pointer-events: none;
-        }
-
-        .image-container:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 44px 88px rgba(26, 58, 46, 0.45), 0 12px 32px rgba(0, 0, 0, 0.25);
-        }
-
-        .sport-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .slide {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background: radial-gradient(ellipse at 60% 40%, rgba(45, 94, 74, 0.45), rgba(26, 58, 46, 0.0));
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-        .slide-card {
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(76, 140, 106, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .slide-card img {
-            display: block;
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 18px;
-        }
-
-        .hero-badge {
-            position: absolute;
-            bottom: -18px;
-            left: 30px;
-            background: var(--white);
-            border: 1px solid var(--green-light);
-            border-radius: 14px;
-            padding: 0.9rem 1.4rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .hero-badge-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--green-light);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .hero-badge-text {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            line-height: 1.3;
-        }
-
-        .hero-badge-text span {
-            display: block;
-            font-weight: 400;
-            color: var(--text-mid);
-            font-size: 0.72rem;
-        }
-
-        /* ── Features Strip ── */
-        .features-strip {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 0.25rem 0;
-        }
-
-        .feature-pill {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            color: var(--text-mid);
-            font-size: 0.82rem;
-            font-weight: 500;
-            padding: 5px 13px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            border: 1px solid var(--green-light);
-            background: var(--white);
-            user-select: none;
-            white-space: nowrap;
-            min-width: max-content;
-        }
-
-        .feature-pill.active {
-            color: var(--green-dark);
-            font-weight: 700;
-            background: var(--green-light);
-            border-color: var(--green-accent);
-        }
-
-        .feature-pill::after {
-            content: attr(data-label);
-            display: block;
-            font-weight: 700;
-            height: 0;
-            overflow: hidden;
-            visibility: hidden;
-        }
-
-        .feature-pill.active .feature-pill-dot {
-            background: var(--green-dark);
-            transform: scale(1.3);
-        }
-
-        .feature-pill-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green-accent);
-            flex-shrink: 0;
-            transition: all 0.35s ease;
-        }
+        .sport-card,
+        .image-container,
+        .slide,
+        .slide-card,
+        .features-strip,
+        .feature-pill,
+        .feature-pill-dot { display: none !important; }
 
         /* ── Feature Sections ── */
         .tripod-section,
@@ -1174,9 +1088,9 @@
 
         .pillars-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -1644,6 +1558,13 @@
         #scrollUp.visible,
         #scrollDown.visible     { animation: soft-pulse 1.6s ease-in-out infinite; position: relative; overflow: hidden; }
 
+        @media (max-width: 1050px) {
+            .pillars-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 700px;
+            }
+        }
+
         @media (max-width: 900px) {
             .scroll-nav { display: none; }
 
@@ -1654,35 +1575,14 @@
                 text-align: center;
             }
 
-            .hero-text {
-                max-width: 100%;
+            .hero-stage {
+                min-height: 360px;
+                width: 100%;
             }
 
-            .hero-subtitle {
-                max-width: 100%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .hero-proof {
-                justify-content: center;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .hero-hero-links {
-                justify-content: center;
-            }
-
-            .hero-pricing {
-                margin-left: auto;
-                margin-right: auto;
-                text-align: left;
-            }
-
-            .hero-actions {
-                justify-content: center;
-                padding: 0 0.5rem;
+            .hero-carousel-inset {
+                width: 90%;
+                max-width: 420px;
             }
 
             .section-title {
@@ -1822,12 +1722,14 @@
 
     <main>
         <!-- Hero -->
-        <div class="hero-container">
+        <section class="hero-container">
+            <!-- Canvas covers full hero as background pose animation -->
+            <canvas id="bgPoseCanvas"></canvas>
             <div class="hero-inner">
                 <div class="hero-text">
                     <span class="hero-eyebrow">Club practice testing</span>
                     <h1 class="hero-title">Get tested at practice, receive a curated plan to improve. <em>Guaranteed.</em></h1>
-                    <p class="hero-subtitle">Your coach runs a quick 5-minute data capture after practice using our technology. Within 2 days, your personalized results — jump and kick biomechanics, efficiency scores, and a concrete improvement plan — are ready on your dashboard, built by a Stanford-trained mechanical engineer, former D1 soccer player, and our proprietary AI.</p>
+                    <p class="hero-subtitle">Your coach runs a quick 5-minute data capture after practice using our technology. Within 2 days, your personalized results — jump, sprint, and kick biomechanics, efficiency scores, and a concrete improvement plan — are ready on your dashboard, built by a Stanford-trained mechanical engineer, former D1 soccer player, and our proprietary AI.</p>
                     <div class="hero-proof">
                         <div class="hero-proof-item"><span class="hero-proof-icon">⚡</span> ~5 min capture</div>
                         <div class="hero-proof-item"><span class="hero-proof-icon">📊</span> Dashboard in 2 days</div>
@@ -1836,7 +1738,7 @@
                     </div>
                     <div class="hero-pricing">
                         <span class="hero-pricing-label">Pricing</span>
-                        <p class="hero-pricing-text"><strong>$45</strong> diagnostic at practice · <strong>$55</strong> bundle with 3-week follow-up testing · Same analysis pipeline as our <a href="performanceTesting.html" class="inline-link">in-facility testing</a> (jump &amp; kick; no sprint). <strong>Money-back guarantee.</strong></p>
+                        <p class="hero-pricing-text"><strong>$45</strong> diagnostic at practice · <strong>$55</strong> bundle with 3-week follow-up testing · Full jump, sprint &amp; kick analysis — same pipeline as our <a href="performanceTesting.html" class="inline-link">in-facility testing</a>. <strong>Money-back guarantee.</strong></p>
                     </div>
                     <div class="hero-hero-links">
                         <a href="#how-it-works">How it works ↓</a>
@@ -1882,34 +1784,26 @@
                         <p class="hero-waitlist-status" id="heroWaitlistStatus" role="status" aria-live="polite"></p>
                     </div>
                 </div>
-                <div class="sport-card">
-                    <div class="image-container" aria-roledescription="carousel" aria-label="Analysis examples">
-                        <div class="slide active" data-index="0">
-                            <div class="slide-card"><img src="images/jumpPoseRawVid.png" alt="Vertical jump with pose tracking on raw video"></div>
+                <div class="hero-stage">
+                    <div class="hero-carousel-inset">
+                        <div class="hero-carousel" id="heroCarousel">
+                            <div class="hero-slide active"><img src="images/jumpPoseRawVid.png" alt="Vertical jump with pose tracking on raw video"></div>
+                            <div class="hero-slide"><img src="images/jumpAnalysisMetrics.png" alt="Jump height and joint metrics"></div>
+                            <div class="hero-slide"><img src="images/pose_strike.png" alt="Kick with pose tracking overlay"></div>
+                            <div class="hero-slide"><img src="images/backswing.png" alt="Kick backswing analysis"></div>
+                            <div class="hero-slide"><img src="images/stats.png" alt="Performance metrics radar chart"></div>
+                            <div class="hero-carousel-dots">
+                                <button class="hero-dot active" data-index="0"></button>
+                                <button class="hero-dot" data-index="1"></button>
+                                <button class="hero-dot" data-index="2"></button>
+                                <button class="hero-dot" data-index="3"></button>
+                                <button class="hero-dot" data-index="4"></button>
+                            </div>
                         </div>
-                        <div class="slide" data-index="1">
-                            <div class="slide-card"><img src="images/jumpAnalysisMetrics.png" alt="Jump height and joint metrics"></div>
-                        </div>
-                        <div class="slide" data-index="2">
-                            <div class="slide-card"><img src="images/pose_strike.png" alt="Kick with pose tracking overlay"></div>
-                        </div>
-                        <div class="slide" data-index="3">
-                            <div class="slide-card"><img src="images/backswing.png" alt="Kick backswing analysis"></div>
-                        </div>
-                        <div class="slide" data-index="4">
-                            <div class="slide-card"><img src="images/stats.png" alt="Performance metrics radar chart"></div>
-                        </div>
-                    </div>
-                    <div class="features-strip" role="tablist" aria-label="Analysis views">
-                        <div class="feature-pill active" data-index="0" data-label="jump capture" role="tab" aria-selected="true" tabindex="0"><div class="feature-pill-dot"></div>jump capture</div>
-                        <div class="feature-pill" data-index="1" data-label="jump metrics" role="tab" aria-selected="false" tabindex="-1"><div class="feature-pill-dot"></div>jump metrics</div>
-                        <div class="feature-pill" data-index="2" data-label="kick tracking" role="tab" aria-selected="false" tabindex="-1"><div class="feature-pill-dot"></div>kick tracking</div>
-                        <div class="feature-pill" data-index="3" data-label="technique" role="tab" aria-selected="false" tabindex="-1"><div class="feature-pill-dot"></div>technique</div>
-                        <div class="feature-pill" data-index="4" data-label="overall stats" role="tab" aria-selected="false" tabindex="-1"><div class="feature-pill-dot"></div>overall stats</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Problem (aligned with performanceTesting) -->
         <section class="problem-section section-fade">
@@ -1996,7 +1890,7 @@
                 <div class="pillars-header">
                     <span class="section-label">What We Analyze</span>
                     <h2 class="section-title">Athleticism Distilled for <em>Soccer</em></h2>
-                    <p>Every metric is tied to on-field performance — how you move, how efficiently you generate power, and where technique is costing you. (In-facility testing adds sprint; practice capture is jump and kick only.)</p>
+                    <p>Every metric is tied to on-field performance — how you move, how efficiently you generate power, and where technique is costing you.</p>
                 </div>
                 <div class="pillars-grid">
                     <div class="pillar-card">
@@ -2007,6 +1901,16 @@
                             <span class="pillar-tag">Jump</span>
                             <h3>Explosive Power, Optimized</h3>
                             <p>Not just "jump higher." We analyze loading mechanics, takeoff angles, and landing patterns to build power that translates to headers, duels, and changing direction — same methodology as our performance diagnostic.</p>
+                        </div>
+                    </div>
+                    <div class="pillar-card">
+                        <div class="pillar-image">
+                            <img src="images/sprinting.PNG" alt="Sprint mechanics analysis">
+                        </div>
+                        <div class="pillar-body">
+                            <span class="pillar-tag">Sprint</span>
+                            <h3>Speed That Translates</h3>
+                            <p>Stride angle, ground contact time, hip extension, and acceleration posture — the biomechanical numbers behind your speed. See exactly what your sprint mechanics look like and where to find more yards.</p>
                         </div>
                     </div>
                     <div class="pillar-card">
@@ -2150,32 +2054,29 @@
             }, 100);
         });
 
-        // Feature Carousel
-        const slides = document.querySelectorAll('.slide');
-        const pills = document.querySelectorAll('.feature-pill');
-        let currentIndex = 0;
+        // Hero Carousel
+        (function () {
+            const heroSlides = document.querySelectorAll('.hero-slide');
+            const heroDots   = document.querySelectorAll('.hero-dot');
+            if (!heroSlides.length) return;
+            let current = 0;
 
-        function goToSlide(index) {
-            slides[currentIndex].classList.remove('active');
-            pills[currentIndex].classList.remove('active');
-            pills[currentIndex].setAttribute('aria-selected', 'false');
-            pills[currentIndex].setAttribute('tabindex', '-1');
-            currentIndex = index;
-            slides[currentIndex].classList.add('active');
-            pills[currentIndex].classList.add('active');
-            pills[currentIndex].setAttribute('aria-selected', 'true');
-            pills[currentIndex].setAttribute('tabindex', '0');
-        }
+            function goTo(idx) {
+                heroSlides[current].classList.remove('active');
+                heroDots[current].classList.remove('active');
+                current = (idx + heroSlides.length) % heroSlides.length;
+                heroSlides[current].classList.add('active');
+                heroDots[current].classList.add('active');
+            }
 
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                clearInterval(carouselInterval);
-                goToSlide(parseInt(pill.dataset.index));
-                carouselInterval = setInterval(() => goToSlide((currentIndex + 1) % slides.length), 3000);
-            });
-        });
+            heroDots.forEach(dot => dot.addEventListener('click', () => {
+                clearInterval(heroInterval);
+                goTo(parseInt(dot.dataset.index));
+                heroInterval = setInterval(() => goTo(current + 1), 3000);
+            }));
 
-        let carouselInterval = setInterval(() => goToSlide((currentIndex + 1) % slides.length), 3000);
+            let heroInterval = setInterval(() => goTo(current + 1), 3000);
+        })();
 
         // Section Transition Observer
         const sectionObserver = new IntersectionObserver((entries) => {
@@ -2258,6 +2159,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
@@ -2401,6 +2304,309 @@
                 if (!succeeded) heroWaitlistSubmit.disabled = false;
             }
         });
+    </script>
+
+    <!-- Background Pose Animation -->
+    <script>
+    (function () {
+        'use strict';
+
+        const POSE_CONNECTIONS = [
+            /* torso */
+            [11,12],[12,24],[24,23],[23,11],
+            /* L arm */
+            [11,13],[13,15],[15,17],[15,19],[15,21],[17,19],
+            /* R arm */
+            [12,14],[14,16],[16,18],[16,20],[16,22],[18,20],
+            /* L leg */
+            [23,25],[25,27],[27,29],[27,31],[29,31],
+            /* R leg */
+            [24,26],[26,28],[28,30],[28,32],[30,32]
+        ];
+
+        const CONN_COLORS = [
+            '#4ade80','#4ade80','#4ade80','#4ade80',
+            '#4d90d4','#4d90d4','#4d90d4','#4d90d4','#4d90d4','#4d90d4',
+            '#e8834d','#e8834d','#e8834d','#e8834d','#e8834d','#e8834d',
+            '#9b72c4','#9b72c4','#9b72c4','#9b72c4','#9b72c4',
+            '#d4aa40','#d4aa40','#d4aa40','#d4aa40','#d4aa40'
+        ];
+
+        const FBConfig = {
+            apiKey: 'AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs',
+            authDomain: 'kickai-69dd0.firebaseapp.com',
+            projectId: 'kickai-69dd0',
+            storageBucket: 'kickai-69dd0.firebasestorage.app',
+            messagingSenderId: '839600313930',
+            appId: '1:839600313930:web:13b1e94c2c540561e3f8b3'
+        };
+
+        let fbApp;
+        try { fbApp = firebase.app('bgAnim'); }
+        catch (_) { fbApp = firebase.initializeApp(FBConfig, 'bgAnim'); }
+        const fbStorage = fbApp.storage();
+        const fbAuth    = fbApp.auth();
+
+        const canvas = document.getElementById('bgPoseCanvas');
+        const ctx    = canvas.getContext('2d');
+
+        /* sequences: jump enters from below/exits up; sprint enters from right/exits left; kick enters from left/exits right */
+        const sequences = [
+            { type: 'jump',   frames: [] },
+            { type: 'sprint', frames: [] },
+            { type: 'kick',   frames: [] }
+        ];
+        /* Start at last index so first P_PAUSE advances to 0 (jump) */
+        let seqIdx = sequences.length - 1;
+
+        const P_PAUSE = 0, P_ENTER = 1, P_PLAY = 2, P_EXIT = 3;
+        let phase    = P_PAUSE;
+        let frameIdx = 0;
+        let frameLimit = 0;
+        let posX     = 0;
+        let posY     = 0;
+        let phaseT0  = performance.now();
+        let lastAdv  = 0;
+
+        const ENTER_MS = 600;
+        const EXIT_MS  = 450;
+        const PAUSE_MS = 800;
+        const FRAME_MS = 40;
+        const ALPHA    = 0.55;
+        const SCALE_F  = 1.9;
+
+        function resizeCanvas() {
+            canvas.width  = canvas.offsetWidth  || window.innerWidth;
+            canvas.height = canvas.offsetHeight || window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+
+        function getLayout() {
+            const cH = canvas.height, cW = canvas.width;
+            const scale = cH * SCALE_F;
+            const inX     = cW * 0.5 - 0.5 * scale;
+            const inY     = cH * 0.5  - 0.52 * scale;
+            const inYLow  = cH * 0.72 - 0.52 * scale;
+            const belowY  = cH + 40;
+            const aboveY  = -scale - 40;
+            const rightX  = cW + 40;
+            const leftX   = -scale - 40;
+            return { scale, inX, inY, inYLow, belowY, aboveY, rightX, leftX };
+        }
+
+        function drawFigure(pts, xOff, yOff) {
+            if (!pts || !pts.length) return;
+            const { scale } = getLayout();
+            ctx.save();
+            ctx.globalAlpha = ALPHA;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            const lw = Math.max(2.5, scale * 0.007);
+            for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
+                const [a, b] = POSE_CONNECTIONS[ci];
+                const A = pts[a], B = pts[b];
+                if (!A || !B) continue;
+                ctx.strokeStyle = CONN_COLORS[ci];
+                ctx.lineWidth   = lw;
+                ctx.beginPath();
+                ctx.moveTo(A[0] * scale + xOff, A[1] * scale + yOff);
+                ctx.lineTo(B[0] * scale + xOff, B[1] * scale + yOff);
+                ctx.stroke();
+            }
+            ctx.fillStyle = '#00ff66';
+            const r = Math.max(3, scale * 0.008);
+            for (let i = 0; i < 33 && i < pts.length; i++) {
+                const p = pts[i];
+                if (!p) continue;
+                ctx.beginPath();
+                ctx.arc(p[0] * scale + xOff, p[1] * scale + yOff, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        const easeOut = t => 1 - Math.pow(1 - t, 3);
+        const easeIn  = t => t * t * t;
+
+        function loop(ts) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const { inX, inY, inYLow, belowY, aboveY, rightX, leftX } = getLayout();
+            const seqType = sequences[seqIdx] ? sequences[seqIdx].type : 'jump';
+            const activeY = (seqType === 'sprint') ? inY : inYLow;
+
+            switch (phase) {
+
+                case P_PAUSE:
+                    if (ts - phaseT0 >= PAUSE_MS) {
+                        let found = false;
+                        for (let i = 1; i <= sequences.length; i++) {
+                            const candidate = (seqIdx + i) % sequences.length;
+                            if (sequences[candidate].frames.length) {
+                                seqIdx = candidate; found = true; break;
+                            }
+                        }
+                        if (found) {
+                            phase = P_ENTER; phaseT0 = ts; frameIdx = 0;
+                            const nType = sequences[seqIdx].type;
+                            const nY = (nType === 'sprint') ? inY : inYLow;
+                            if (nType === 'jump') {
+                                posX = inX; posY = belowY;
+                            } else if (nType === 'kick') {
+                                posX = leftX; posY = nY;
+                            } else {
+                                posX = rightX; posY = nY;
+                            }
+                        } else {
+                            phaseT0 = ts;
+                        }
+                    }
+                    break;
+
+                case P_ENTER: {
+                    const t = Math.min(1, (ts - phaseT0) / ENTER_MS);
+                    if (sequences[seqIdx].type === 'jump') {
+                        posX = inX;
+                        posY = belowY + (inYLow - belowY) * easeOut(t);
+                    } else if (sequences[seqIdx].type === 'kick') {
+                        posX = leftX + (inX - leftX) * easeOut(t);
+                        posY = inYLow;
+                    } else {
+                        posX = rightX + (inX - rightX) * easeOut(t);
+                        posY = inY;
+                    }
+                    drawFigure(sequences[seqIdx].frames[0], posX, posY);
+                    if (t >= 1) {
+                        phase = P_PLAY; phaseT0 = ts; lastAdv = ts;
+                        frameIdx = 0; posX = inX; posY = activeY;
+                    }
+                    break;
+                }
+
+                case P_PLAY: {
+                    const f = sequences[seqIdx].frames;
+                    if (frameIdx === 0) {
+                        if (sequences[seqIdx].type === 'sprint') {
+                            frameLimit = Math.max(1, Math.floor(f.length * 0.55));
+                        } else if (sequences[seqIdx].type === 'kick') {
+                            frameLimit = Math.min(f.length, 150);
+                        } else {
+                            frameLimit = Math.min(f.length, 200);
+                        }
+                    }
+                    drawFigure(f[Math.min(frameIdx, frameLimit - 1)], inX, activeY);
+                    if (ts - lastAdv >= FRAME_MS) {
+                        frameIdx++; lastAdv = ts;
+                        if (frameIdx >= frameLimit) {
+                            phase = P_EXIT; phaseT0 = ts;
+                            posX = inX; posY = activeY;
+                        }
+                    }
+                    break;
+                }
+
+                case P_EXIT: {
+                    const t = Math.min(1, (ts - phaseT0) / EXIT_MS);
+                    const f = sequences[seqIdx].frames;
+                    if (sequences[seqIdx].type === 'jump') {
+                        posX = inX;
+                        posY = inYLow + (aboveY - inYLow) * easeIn(t);
+                    } else if (sequences[seqIdx].type === 'kick') {
+                        posX = inX + (rightX - inX) * easeIn(t);
+                        posY = inYLow;
+                    } else {
+                        posX = inX + (leftX - inX) * easeIn(t);
+                        posY = inY;
+                    }
+                    drawFigure(f[frameLimit - 1], posX, posY);
+                    if (t >= 1) { phase = P_PAUSE; phaseT0 = ts; }
+                    break;
+                }
+            }
+            requestAnimationFrame(loop);
+        }
+
+        function parseFrames(raw) {
+            if (!Array.isArray(raw)) return [];
+            return raw.map(frame => {
+                if (!Array.isArray(frame)) return null;
+                return frame.map(p => {
+                    if (!p) return null;
+                    if (Array.isArray(p)) {
+                        const [x, y] = p;
+                        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+                        if (x < -0.3 || x > 1.3 || y < -0.3 || y > 1.8) return null;
+                        return [x, y];
+                    }
+                    if (typeof p === 'object') {
+                        const { x, y } = p;
+                        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+                        if (x < -0.3 || x > 1.3 || y < -0.3 || y > 1.8) return null;
+                        return [x, y];
+                    }
+                    return null;
+                });
+            }).filter(f => f && f.some(Boolean));
+        }
+
+        async function fetchJSON(path) {
+            const url = await fbStorage.ref(path).getDownloadURL();
+            return (await fetch(url)).json();
+        }
+
+        async function loadAllPoses() {
+            const uid = '1lhMLY7Efl59arkzO5Wh';
+            try { await fbAuth.signInAnonymously(); }
+            catch (err) { console.warn('[bgAnim] auth failed:', err); return; }
+
+            const jumpPaths = [
+                uid + '/jump/session1/kick1/pose.json',
+                uid + '/jump/session1/pose.json'
+            ];
+            for (const p of jumpPaths) {
+                try {
+                    const parsed = parseFrames(await fetchJSON(p));
+                    if (parsed.length) {
+                        sequences[0].frames = parsed;
+                        phaseT0 = performance.now();
+                        break;
+                    }
+                } catch (_) {}
+            }
+            if (!sequences[0].frames.length) console.warn('[bgAnim] jump pose not found');
+
+            const sprintPaths = [
+                uid + '/sprintWork/session1/kick1/pose.json',
+                uid + '/sprintWork/session1/pose.json',
+                uid + '/sprint/session1/kick1/pose.json',
+                uid + '/sprint/session1/pose.json'
+            ];
+            for (const p of sprintPaths) {
+                try {
+                    const parsed = parseFrames(await fetchJSON(p));
+                    if (parsed.length) { sequences[1].frames = parsed; break; }
+                } catch (_) {}
+            }
+            if (!sequences[1].frames.length) console.warn('[bgAnim] sprint pose not found');
+
+            const kickPaths = [
+                uid + '/deadballShot/session1/kick1/pose.json',
+                uid + '/instep/session1/kick1/pose.json',
+                uid + '/kick/session1/kick1/pose.json',
+                uid + '/kick/session1/pose.json'
+            ];
+            for (const p of kickPaths) {
+                try {
+                    const parsed = parseFrames(await fetchJSON(p));
+                    if (parsed.length) { sequences[2].frames = parsed; break; }
+                } catch (_) {}
+            }
+            if (!sequences[2].frames.length) console.warn('[bgAnim] kick pose not found');
+        }
+
+        requestAnimationFrame(loop);
+        loadAllPoses();
+    })();
     </script>
 </body>
 </html>
