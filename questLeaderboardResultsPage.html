@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "w8lex8gzl7");
+    </script>
+    <title>PoseTek — Quest · Leaderboard Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #1a3a2e;
+            --secondary: #2d5e4a;
+            --accent: #4c8c6a;
+            --accent-light: #5ea87e;
+            --text-light: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-dark: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --sheet-bg: linear-gradient(145deg, rgba(26, 58, 46, 0.96), rgba(45, 94, 74, 0.9));
+            --sheet-border: rgba(76, 140, 106, 0.35);
+            --sheet-header-bg: linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.08));
+            --sheet-muted: rgba(255, 255, 255, 0.58);
+            --sheet-text: rgba(255, 255, 255, 0.94);
+            --sheet-input-bg: rgba(0, 0, 0, 0.22);
+            --sheet-input-border: rgba(255, 255, 255, 0.14);
+            --gold: #f6c56b;
+            --silver: #cfd7dd;
+            --bronze: #d2925a;
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: rgba(76, 140, 106, 0.3); }
+        html { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary);
+            color: var(--text-light);
+            -webkit-font-smoothing: antialiased;
+            height: 100%;
+            max-height: 100dvh;
+            line-height: 1.45;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(76, 140, 106, 0.08), transparent),
+                        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(76, 140, 106, 0.05), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body.auth-loading #appRoot { opacity: 0; pointer-events: none; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            padding: 0.45rem 1rem;
+            background: rgba(15, 31, 27, 0.85);
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+        }
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-light), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .header-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.85rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .header-btn:hover { background: rgba(255, 255, 255, 0.12); color: var(--text-light); }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .live-badge.visible { opacity: 1; }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.8);
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+        @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
+
+        .page-shell {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sheet-card {
+            background: var(--sheet-bg);
+            border-radius: 14px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28),
+                        0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+            border: 1px solid var(--sheet-border);
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .sheet-card-header {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--sheet-header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .sheet-card-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sheet-text);
+            line-height: 1.2;
+            letter-spacing: 0.01em;
+        }
+        .sheet-card-header .sub {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+        .sheet-card-body {
+            padding: 0.6rem 0.85rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.4rem 0.55rem;
+            border-radius: 8px;
+            border: 1px solid var(--sheet-input-border);
+            background: var(--sheet-input-bg);
+            color: var(--text-light);
+            font-family: inherit;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) inset;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.18), 0 4px 14px rgba(0, 0, 0, 0.1) inset;
+        }
+        .input-field::placeholder { color: rgba(255, 255, 255, 0.42); }
+        .form-group { margin-bottom: 0.35rem; }
+        .login-form .form-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .login-form .input-field { background: rgba(0, 0, 0, 0.2); }
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.25rem;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffffff, #e8f5e9);
+            color: var(--primary);
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+            touch-action: manipulation;
+        }
+        .submit-btn:hover:not(:disabled) {
+            filter: brightness(1.03);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+        }
+        .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .submit-btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(26, 58, 46, 0.25);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .login-error {
+            color: #ffb4b4;
+            font-size: 0.88rem;
+            margin-top: 0.75rem;
+            display: none;
+        }
+
+        /* Login modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 58, 46, 0.97), rgba(45, 94, 74, 0.95));
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .auth-modal {
+            background: linear-gradient(145deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.9));
+            padding: 0;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transform: scale(0.95) translateY(20px);
+            transition: var(--transition);
+            border: 1px solid rgba(76, 140, 106, 0.2);
+        }
+        .modal-overlay.active .auth-modal { transform: scale(1) translateY(0); }
+        .modal-content-wrapper {
+            padding: 2.5rem 2rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #4c8c6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #mainContent {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            overflow: hidden;
+        }
+        .left-column {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 0;
+            min-height: 0;
+        }
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 320px;
+            min-height: 0;
+        }
+
+        #coachGate {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        #coachGate.active { display: flex; }
+        #coachGate p { color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.82rem; }
+        #coachGate .sheet-card-body { padding: 0.75rem 1rem; }
+        #appRoot { transition: opacity 0.25s ease; }
+
+        /* Leaderboard */
+        .leaderboard-card { flex: 1.2; min-height: 0; }
+        .latest-card { flex: 1; min-height: 0; }
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .lb-row {
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+        .lb-row.flash {
+            animation: flashRow 1.2s ease;
+        }
+        @keyframes flashRow {
+            0% { background: rgba(94, 168, 126, 0.35); border-color: rgba(94, 168, 126, 0.6); transform: scale(1.01); }
+            100% { background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)); border-color: rgba(255, 255, 255, 0.06); transform: scale(1); }
+        }
+        .lb-rank {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        .lb-row[data-rank="1"] .lb-rank { color: var(--gold); }
+        .lb-row[data-rank="2"] .lb-rank { color: var(--silver); }
+        .lb-row[data-rank="3"] .lb-rank { color: var(--bronze); }
+        .lb-row[data-rank="1"] { border-color: rgba(246, 197, 107, 0.25); background: linear-gradient(180deg, rgba(246, 197, 107, 0.1), rgba(246, 197, 107, 0.02)); }
+        .lb-row[data-rank="2"] { border-color: rgba(207, 215, 221, 0.22); background: linear-gradient(180deg, rgba(207, 215, 221, 0.09), rgba(207, 215, 221, 0.02)); }
+        .lb-row[data-rank="3"] { border-color: rgba(210, 146, 90, 0.22); background: linear-gradient(180deg, rgba(210, 146, 90, 0.09), rgba(210, 146, 90, 0.02)); }
+        .lb-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lb-value {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: var(--accent-light);
+            white-space: nowrap;
+        }
+        .lb-value .unit {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 0.2rem;
+        }
+
+        /* Latest jumps */
+        .latest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .latest-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transform-origin: top center;
+        }
+        .latest-row.entry-anim {
+            animation: slideIn 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-18px) scale(0.97);
+                background: rgba(94, 168, 126, 0.45);
+                border-color: rgba(94, 168, 126, 0.75);
+                box-shadow: 0 0 0 3px rgba(94, 168, 126, 0.25);
+            }
+            55% {
+                opacity: 1;
+                transform: translateY(2px) scale(1.01);
+                background: rgba(94, 168, 126, 0.25);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                background: rgba(0, 0, 0, 0.2);
+                border-color: rgba(255, 255, 255, 0.05);
+                box-shadow: 0 0 0 0 rgba(94, 168, 126, 0);
+            }
+        }
+        .latest-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .latest-name .meta {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 0.45rem;
+        }
+        .latest-value {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #a7e4b9;
+            white-space: nowrap;
+        }
+        .latest-value .unit {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 0.2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 1.25rem 0.75rem;
+            color: var(--sheet-muted);
+            font-size: 0.88rem;
+        }
+
+        /* Pose animation panel */
+        .pose-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .pose-canvas-wrap {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            background: radial-gradient(ellipse at center, rgba(76, 140, 106, 0.12), rgba(0, 0, 0, 0.35) 65%);
+            overflow: hidden;
+        }
+        .pose-canvas-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .pose-current-name {
+            position: absolute;
+            left: 1rem;
+            bottom: 0.9rem;
+            padding: 0.4rem 0.75rem;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-light);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .pose-current-name.visible { opacity: 1; }
+        .pose-hint {
+            position: absolute;
+            right: 1rem;
+            top: 0.9rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        @media (max-width: 900px) {
+            #mainContent { flex-direction: column; }
+            .right-column { min-width: 0; flex: 0 0 42%; }
+        }
+        @media (max-width: 520px) {
+            header { padding: 0.4rem 0.85rem; }
+            .input-field { font-size: max(0.85rem, 16px); }
+            .page-shell { padding: 0.75rem 0.85rem 1rem; gap: 0.75rem; }
+        }
+    </style>
+</head>
+<body class="auth-loading">
+    <header>
+        <a href="index.html" class="logo">PoseTek</a>
+        <div class="header-actions">
+            <span id="liveBadge" class="live-badge" aria-live="polite"><span class="live-dot"></span> Live</span>
+            <button type="button" class="header-btn" id="headerAuthBtn">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>
+                <span id="headerAuthLabel">Login</span>
+            </button>
+        </div>
+    </header>
+
+    <div id="loginOverlay" class="modal-overlay">
+        <div class="auth-modal">
+            <div class="modal-content-wrapper">
+                <h2 class="modal-title">Coach login</h2>
+                <form class="login-form" id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="input-field" required autocomplete="email" placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="input-field" required autocomplete="current-password" placeholder="Password">
+                    </div>
+                    <div class="login-error" id="loginError" role="alert"></div>
+                    <button type="submit" class="submit-btn" id="loginSubmit">
+                        <span>Sign in</span>
+                        <span class="spinner" id="loginSpinner"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <main class="page-shell" id="appRoot">
+        <div id="coachGate">
+            <div class="sheet-card" style="max-width: 420px;">
+                <div class="sheet-card-body" style="padding: 1.25rem 1.25rem 1.5rem; text-align: center;">
+                    <p style="color: var(--sheet-text); font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;">Coach account required</p>
+                    <p style="margin-bottom: 1rem;">This page is only for coaches. Sign out and sign in with a coach account to continue.</p>
+                    <div style="display:flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                        <button type="button" class="submit-btn" id="gateSignOutBtn" style="width:auto; padding: 0.55rem 1.1rem;">Sign out &amp; sign in as coach</button>
+                        <a href="kickai.html" class="submit-btn" style="display:inline-flex; width:auto; padding: 0.55rem 1.1rem; text-decoration:none; background: rgba(255,255,255,0.08); color: var(--text-light); box-shadow:none;">Go to Kick AI</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <div class="left-column">
+                <div class="sheet-card leaderboard-card">
+                    <div class="sheet-card-header">
+                        <h2>Jump Leaderboard</h2>
+                        <span class="sub">Top 10 · Best Jump Height</span>
+                    </div>
+                    <div class="sheet-card-body">
+                        <div id="leaderboardList" class="leaderboard-list">
+                            <div class="empty-state">Loading leaderboard…</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sheet-card latest-card">
+                    <div class="sheet-card-header">
+                        <h2>Latest Jumps</h2>
+                        <span class="sub">Live Feed</span>
+                    </div>
+                    <div class="sheet-card-body">
+                        <div id="latestList" class="latest-list">
+                            <div class="empty-state">Waiting for jumps…</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="sheet-card pose-card">
+                    <div class="sheet-card-header">
+                        <h2>Live Pose Replay</h2>
+                        <span class="sub">Random Athlete</span>
+                    </div>
+                    <div class="pose-canvas-wrap">
+                        <canvas id="poseCanvas"></canvas>
+                        <div class="pose-hint">Session 1 · Kick 1</div>
+                        <div id="poseCurrentName" class="pose-current-name"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script>
+        const ROSTER_CACHE_KEY    = 'posetek.questLB.rosterCache.v1';
+        const LB_CACHE_KEY        = 'posetek.questLB.leaderboardCache.v1';
+        const LATEST_CACHE_KEY    = 'posetek.questLB.latestJumpsCache.v1';
+        const POLL_INTERVAL_MS    = 5000;
+        const M_TO_IN             = 39.3700787;
+        const TOP_N               = 10;
+        const LATEST_N            = 10;
+
+        function readJSON(k) { try { return JSON.parse(sessionStorage.getItem(k)) || null; } catch (e) { return null; } }
+        function writeJSON(k, v) {
+            try { v.updatedAt = Date.now(); sessionStorage.setItem(k, JSON.stringify(v)); }
+            catch (e) { console.warn('cache write failed', k, e); }
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
+            authDomain: "kickai-69dd0.firebaseapp.com",
+            projectId: "kickai-69dd0",
+            storageBucket: "kickai-69dd0.firebasestorage.app",
+            messagingSenderId: "839600313930",
+            appId: "1:839600313930:web:13b1e94c2c540561e3f8b3",
+            measurementId: "G-RX99K62ZEH"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth       = firebase.auth();
+        const db         = firebase.firestore();
+        const storage    = firebase.storage();
+        const FieldPath  = firebase.firestore.FieldPath;
+
+        const loginOverlay   = document.getElementById('loginOverlay');
+        const loginForm      = document.getElementById('loginForm');
+        const loginError     = document.getElementById('loginError');
+        const loginSubmit    = document.getElementById('loginSubmit');
+        const loginSpinner   = document.getElementById('loginSpinner');
+        const headerAuthBtn  = document.getElementById('headerAuthBtn');
+        const headerAuthLabel= document.getElementById('headerAuthLabel');
+        const coachGate      = document.getElementById('coachGate');
+        const mainContent    = document.getElementById('mainContent');
+        const liveBadge      = document.getElementById('liveBadge');
+        const leaderboardList= document.getElementById('leaderboardList');
+        const latestList     = document.getElementById('latestList');
+
+        let pollTimer   = null;
+        let currentUid  = null;
+        let currentCoachId = null;
+        let knownJumpByPlayer = Object.create(null);
+        let pollInFlight = false;
+        let firstRender  = true;
+        let lastPollMemberIds = [];
+
+        function showLoading(btn, spinner) {
+            btn.disabled = true;
+            const label = btn.querySelector('span:first-child');
+            if (label) label.style.opacity = '0.5';
+            spinner.style.display = 'block';
+        }
+        function hideLoading(btn, spinner) {
+            btn.disabled = false;
+            const label = btn.querySelector('span:first-child');
+            if (label) label.style.opacity = '1';
+            spinner.style.display = 'none';
+        }
+        function showModal(overlay) { document.body.style.overflow = 'hidden'; overlay.classList.add('active'); }
+        function hideModal(overlay) { overlay.classList.remove('active'); document.body.style.overflow = 'hidden'; }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function playerName(p) {
+            const n = ((p && (p.firstName || '')) + ' ' + (p && (p.lastName || ''))).trim();
+            return n || 'Unnamed player';
+        }
+
+        async function fetchCoachForUser(uid) {
+            const q = await db.collection('coaches').where('userUID', '==', uid).limit(1).get();
+            if (q.empty) return null;
+            const doc = q.docs[0];
+            return { id: doc.id, data: doc.data(), ref: doc.ref };
+        }
+
+        async function batchFetchPlayers(ids, playersMap) {
+            const batchSize = 10;
+            for (let i = 0; i < ids.length; i += batchSize) {
+                const batch = ids.slice(i, i + batchSize);
+                const snap = await db.collection('players').where(FieldPath.documentId(), 'in', batch).get();
+                snap.forEach(function (doc) {
+                    const pd = doc.data() || {};
+                    playersMap[doc.id] = {
+                        id: doc.id,
+                        firstName: pd.firstName || '',
+                        lastName: pd.lastName || '',
+                        code: pd.code || '',
+                        age: (typeof pd.age === 'number') ? pd.age : (pd.age != null ? Number(pd.age) : null)
+                    };
+                });
+            }
+        }
+
+        async function refreshRoster(uid) {
+            const coach = await fetchCoachForUser(uid);
+            if (!coach) return null;
+            currentCoachId = coach.id;
+            const d = coach.data || {};
+            const nextMembers = Array.isArray(d.members) ? d.members.slice() : [];
+            const nm = typeof d.numberMembers === 'number' ? d.numberMembers : nextMembers.length;
+
+            let cache = readJSON(ROSTER_CACHE_KEY);
+            if (!cache || cache.coachUid !== uid) {
+                cache = { coachId: coach.id, coachUid: uid, members: [], players: {}, numberMembers: 0 };
+            }
+            cache.coachId = coach.id;
+
+            const newIds = nextMembers.filter(function (id) { return !cache.players[id]; });
+            const removedIds = (cache.members || []).filter(function (id) { return nextMembers.indexOf(id) === -1; });
+            removedIds.forEach(function (id) { delete cache.players[id]; });
+
+            cache.members = nextMembers;
+            cache.numberMembers = nm;
+
+            if (newIds.length) {
+                await batchFetchPlayers(newIds, cache.players);
+            }
+            writeJSON(ROSTER_CACHE_KEY, cache);
+            return cache;
+        }
+
+        /** Top-level field name is literally `best_reps.jump_height` (not nested under a `best_reps` map). */
+        function readBestJumpMeters(d) {
+            if (!d) return 0;
+            const raw = d['best_reps.jump_height'];
+            const v = Number(raw);
+            if (Number.isFinite(v) && v > 0) return v;
+            return 0;
+        }
+
+        /** Reads `players/{playerDocId}` by ID (coach roster members = player doc IDs / UIDs). */
+        async function fetchJumpHeights(memberIds) {
+            const results = Object.create(null);
+            memberIds.forEach(function (id) { results[id] = 0; });
+            const batchSize = 10;
+            for (let i = 0; i < memberIds.length; i += batchSize) {
+                const batch = memberIds.slice(i, i + batchSize);
+                const snap = await db.collection('players').where(FieldPath.documentId(), 'in', batch).get();
+                snap.forEach(function (doc) {
+                    const d = doc.data() || {};
+                    const meters = readBestJumpMeters(d);
+                    results[doc.id] = meters > 0 ? meters : 0;
+                });
+            }
+            return results;
+        }
+
+        function renderLeaderboard(items, flashPlayerIds) {
+            if (!leaderboardList) return;
+            if (!items.length) {
+                leaderboardList.innerHTML = '<div class="empty-state">No jumps recorded yet.</div>';
+                return;
+            }
+            leaderboardList.innerHTML = '';
+            items.forEach(function (row, idx) {
+                const rank = idx + 1;
+                const el = document.createElement('div');
+                el.className = 'lb-row' + ((flashPlayerIds && flashPlayerIds.has(row.playerId)) ? ' flash' : '');
+                el.setAttribute('data-rank', String(rank));
+                el.innerHTML =
+                    '<div class="lb-rank">' + rank + '</div>' +
+                    '<div class="lb-name">' + escapeHtml(row.name) + '</div>' +
+                    '<div class="lb-value">' + row.inches.toFixed(1) + '<span class="unit">in</span></div>';
+                leaderboardList.appendChild(el);
+            });
+        }
+
+        function renderLatest(items) {
+            if (!latestList) return;
+            if (!items.length) {
+                latestList.innerHTML = '<div class="empty-state">Waiting for jumps…</div>';
+                return;
+            }
+            latestList.innerHTML = '';
+            items.forEach(function (row, idx) {
+                const el = document.createElement('div');
+                el.className = 'latest-row' + (row._animate ? ' entry-anim' : '');
+                if (row._animate) {
+                    setTimeout(function () { el.classList.remove('entry-anim'); row._animate = false; }, 900);
+                }
+                el.innerHTML =
+                    '<div class="latest-name">' + escapeHtml(row.name) +
+                        (row.timestamp ? '<span class="meta">' + formatAgo(row.timestamp) + '</span>' : '') +
+                    '</div>' +
+                    '<div class="latest-value">' + row.inches.toFixed(1) + '<span class="unit">in</span></div>';
+                latestList.appendChild(el);
+            });
+        }
+
+        function formatAgo(ts) {
+            const diff = Math.max(0, Date.now() - ts);
+            const sec = Math.floor(diff / 1000);
+            if (sec < 60) return 'just now';
+            const min = Math.floor(sec / 60);
+            if (min < 60) return min + 'm ago';
+            const hr = Math.floor(min / 60);
+            if (hr < 24) return hr + 'h ago';
+            const d = Math.floor(hr / 24);
+            return d + 'd ago';
+        }
+
+        function computeTopLeaderboard(roster, heightsByPlayer) {
+            const rows = [];
+            Object.keys(heightsByPlayer).forEach(function (pid) {
+                const meters = heightsByPlayer[pid];
+                if (!(meters > 0)) return;
+                const p = roster.players[pid];
+                if (!p) return;
+                rows.push({ playerId: pid, name: playerName(p), meters: meters, inches: meters * M_TO_IN });
+            });
+            rows.sort(function (a, b) { return b.meters - a.meters; });
+            return rows.slice(0, TOP_N);
+        }
+
+        async function pollOnce() {
+            if (pollInFlight) return;
+            if (!currentUid) return;
+            pollInFlight = true;
+            try {
+                const roster = await refreshRoster(currentUid);
+                if (!roster || !roster.members || !roster.members.length) {
+                    renderLeaderboard([]);
+                    console.log('[questLB poll] no roster or empty members', { roster: !!roster });
+                    return;
+                }
+
+                const cachedMemberIds = roster.members.slice();
+                const newMemberIds = cachedMemberIds.filter(function (id) {
+                    return lastPollMemberIds.indexOf(id) === -1;
+                });
+                lastPollMemberIds = cachedMemberIds.slice();
+
+                const heights = await fetchJumpHeights(roster.members);
+
+                const heightsDebug = {};
+                cachedMemberIds.forEach(function (pid) {
+                    const m = heights[pid];
+                    const p = roster.players[pid];
+                    const label = p ? playerName(p) : '(unknown in cache)';
+                    heightsDebug[pid] = {
+                        name: label,
+                        jump_height_m: typeof m === 'number' && m > 0 ? m : null,
+                        jump_height_in: typeof m === 'number' && m > 0 ? (m * M_TO_IN) : null
+                    };
+                });
+
+                console.log('[questLB poll] cached members (order = coach roster)', cachedMemberIds);
+                console.log('[questLB poll] new members since previous poll', newMemberIds.length ? newMemberIds : '(none)');
+                console.log('[questLB poll] players/{id} top-level field best_reps.jump_height (meters → inches)', heightsDebug);
+
+                const newJumps = [];
+                Object.keys(heights).forEach(function (pid) {
+                    const m = heights[pid];
+                    if (!(m > 0)) return;
+                    const prev = knownJumpByPlayer[pid];
+                    if (prev === undefined) {
+                        knownJumpByPlayer[pid] = m;
+                        if (!firstRender) {
+                            newJumps.push({ pid: pid, meters: m });
+                        }
+                    } else if (Math.abs(m - prev) > 1e-6) {
+                        knownJumpByPlayer[pid] = m;
+                        newJumps.push({ pid: pid, meters: m });
+                    }
+                });
+
+                const topRows = computeTopLeaderboard(roster, heights);
+                const prevLBCache = readJSON(LB_CACHE_KEY) || { rows: [] };
+                const prevTopIds = new Set((prevLBCache.rows || []).map(function (r) { return r.playerId; }));
+                const flashIds = new Set();
+                topRows.forEach(function (r) {
+                    if (!prevTopIds.has(r.playerId)) flashIds.add(r.playerId);
+                });
+                writeJSON(LB_CACHE_KEY, { rows: topRows });
+                renderLeaderboard(topRows, firstRender ? null : flashIds);
+
+                let latestCache = readJSON(LATEST_CACHE_KEY) || { rows: [] };
+                if (!Array.isArray(latestCache.rows)) latestCache.rows = [];
+
+                if (newJumps.length) {
+                    newJumps.sort(function (a, b) { return b.meters - a.meters; });
+                    newJumps.forEach(function (j) {
+                        const p = roster.players[j.pid];
+                        if (!p) return;
+                        const entry = {
+                            playerId: j.pid,
+                            name: playerName(p),
+                            meters: j.meters,
+                            inches: j.meters * M_TO_IN,
+                            timestamp: Date.now(),
+                            _animate: true
+                        };
+                        latestCache.rows.unshift(entry);
+                    });
+                    latestCache.rows = latestCache.rows.slice(0, LATEST_N);
+                    writeJSON(LATEST_CACHE_KEY, { rows: latestCache.rows.map(function (r) {
+                        return { playerId: r.playerId, name: r.name, meters: r.meters, inches: r.inches, timestamp: r.timestamp };
+                    }) });
+                    renderLatest(latestCache.rows);
+                } else {
+                    renderLatest(latestCache.rows);
+                }
+
+                if (liveBadge) liveBadge.classList.add('visible');
+                firstRender = false;
+            } catch (err) {
+                console.error('poll failed', err);
+            } finally {
+                pollInFlight = false;
+            }
+        }
+
+        function startPolling() {
+            stopPolling();
+            lastPollMemberIds = [];
+            const cached = readJSON(LB_CACHE_KEY);
+            if (cached && Array.isArray(cached.rows)) renderLeaderboard(cached.rows);
+            const cachedLatest = readJSON(LATEST_CACHE_KEY);
+            if (cachedLatest && Array.isArray(cachedLatest.rows)) renderLatest(cachedLatest.rows);
+
+            const cachedRoster = readJSON(ROSTER_CACHE_KEY);
+            if (cachedRoster && cachedRoster.coachUid === currentUid && cachedRoster.players) {
+                Object.keys(cachedRoster.players).forEach(function () {});
+            }
+
+            pollOnce();
+            pollTimer = setInterval(pollOnce, POLL_INTERVAL_MS);
+        }
+
+        function stopPolling() {
+            if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+            if (liveBadge) liveBadge.classList.remove('visible');
+        }
+
+        function applyCoachUI(coachExists) {
+            coachGate.classList.remove('active');
+            mainContent.style.display = 'none';
+            if (coachExists) {
+                mainContent.style.display = 'flex';
+            } else {
+                coachGate.classList.add('active');
+            }
+        }
+
+        function updateHeaderAuth(user) {
+            headerAuthBtn.hidden = false;
+            if (user) {
+                headerAuthLabel.textContent = 'Logout';
+                headerAuthBtn.querySelector('.material-symbols-outlined').textContent = 'logout';
+                headerAuthBtn.onclick = function () {
+                    stopPolling();
+                    auth.signOut().then(function () { window.location.reload(); });
+                };
+            } else {
+                headerAuthLabel.textContent = 'Login';
+                headerAuthBtn.querySelector('.material-symbols-outlined').textContent = 'login';
+                headerAuthBtn.onclick = function () { showModal(loginOverlay); };
+            }
+        }
+
+        async function syncUIForUser(user) {
+            if (!user) {
+                stopPolling();
+                stopPoseAnimation();
+                currentUid = null;
+                applyCoachUI(false);
+                coachGate.classList.remove('active');
+                mainContent.style.display = 'none';
+                updateHeaderAuth(null);
+                showModal(loginOverlay);
+                return;
+            }
+
+            updateHeaderAuth(user);
+            let coach = null;
+            try {
+                coach = await fetchCoachForUser(user.uid);
+            } catch (err) {
+                console.error('coach lookup failed', err);
+            }
+
+            if (coach) {
+                hideModal(loginOverlay);
+                applyCoachUI(true);
+                currentUid = user.uid;
+                currentCoachId = coach.id;
+                firstRender = true;
+                knownJumpByPlayer = Object.create(null);
+                startPolling();
+                startPoseAnimation();
+            } else {
+                stopPolling();
+                stopPoseAnimation();
+                applyCoachUI(false);
+                hideModal(loginOverlay);
+            }
+        }
+
+        const gateSignOutBtn = document.getElementById('gateSignOutBtn');
+        if (gateSignOutBtn) {
+            gateSignOutBtn.addEventListener('click', function () {
+                stopPolling();
+                stopPoseAnimation();
+                auth.signOut().then(function () {
+                    showModal(loginOverlay);
+                }).catch(function (err) {
+                    console.error('sign out failed', err);
+                    showModal(loginOverlay);
+                });
+            });
+        }
+
+        headerAuthBtn.onclick = function () { showModal(loginOverlay); };
+
+        let authReady = false;
+        const authTimeout = setTimeout(function () {
+            if (!authReady) {
+                authReady = true;
+                document.body.classList.remove('auth-loading');
+                console.warn('auth state timeout — forcing login modal');
+                syncUIForUser(null).catch(function (e) { console.error(e); });
+            }
+        }, 4000);
+
+        auth.onAuthStateChanged(async function (user) {
+            if (!authReady) {
+                authReady = true;
+                clearTimeout(authTimeout);
+                document.body.classList.remove('auth-loading');
+            }
+            try {
+                await syncUIForUser(user);
+            } catch (err) {
+                console.error('syncUIForUser failed', err);
+                updateHeaderAuth(user || null);
+                if (!user) showModal(loginOverlay);
+            }
+        });
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            loginError.style.display = 'none';
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            showLoading(loginSubmit, loginSpinner);
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                const user = auth.currentUser;
+                const coachQuery = await db.collection('coaches').where('userUID', '==', user.uid).limit(1).get();
+                const playerQuery = await db.collection('players').where('authenticationUID', '==', user.uid).limit(1).get();
+
+                if (coachQuery.empty && playerQuery.empty) {
+                    await auth.signOut();
+                    throw new Error('Account not found in system');
+                }
+                if (coachQuery.empty) {
+                    await auth.signOut();
+                    throw new Error('This page is for coaches only. Please sign in with a coach account.');
+                }
+
+                await db.collection('coaches').doc(coachQuery.docs[0].id).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                hideModal(loginOverlay);
+                applyCoachUI(true);
+                mainContent.style.display = 'flex';
+                coachGate.classList.remove('active');
+                updateHeaderAuth(user);
+                currentUid = user.uid;
+                firstRender = true;
+                knownJumpByPlayer = Object.create(null);
+                startPolling();
+                startPoseAnimation();
+            } catch (err) {
+                loginError.textContent = err.message || 'Sign in failed';
+                loginError.style.display = 'block';
+            } finally {
+                hideLoading(loginSubmit, loginSpinner);
+            }
+        });
+
+        window.addEventListener('beforeunload', function () {
+            stopPolling();
+            stopPoseAnimation();
+        });
+    </script>
+
+    <!-- Pose animation -->
+    <script>
+    (function () {
+        'use strict';
+
+        const POSE_CONNECTIONS = [
+            /* torso */
+            [11,12],[12,24],[24,23],[23,11],
+            /* L arm */
+            [11,13],[13,15],[15,17],[15,19],[15,21],[17,19],
+            /* R arm */
+            [12,14],[14,16],[16,18],[16,20],[16,22],[18,20],
+            /* L leg */
+            [23,25],[25,27],[27,29],[27,31],[29,31],
+            /* R leg */
+            [24,26],[26,28],[28,30],[28,32],[30,32]
+        ];
+
+        const LIMB_COLOR    = '#ffffff';
+        const KEYPOINT_COLOR= '#4ade80';
+        const KEYPOINT_GLOW = 'rgba(74, 222, 128, 0.85)';
+
+        const canvas = document.getElementById('poseCanvas');
+        const ctx    = canvas.getContext('2d');
+        const nameEl = document.getElementById('poseCurrentName');
+
+        const ENTER_MS = 520;
+        const EXIT_MS  = 420;
+        const PAUSE_MS = 550;
+        const FRAME_MS = 38;
+
+        let running   = false;
+        let rafId     = null;
+        let frames    = [];
+        let seqPlayer = null;
+        let nextPrefetch = null;
+        let prefetchInFlight = false;
+
+        let phase     = 0;
+        let phaseT0   = 0;
+        let frameIdx  = 0;
+        let lastAdv   = 0;
+        let posXFrac  = 0.5;
+        let posYFrac  = 0.5;
+        let currentAnchor = { x: 0.5, y: 0.55 };
+        const ANCHOR_FRAME = 0;
+        const TORSO_KEYPOINTS = [11, 12, 23, 24];
+
+        function resizeCanvas() {
+            const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+            const rect = canvas.getBoundingClientRect();
+            const w = Math.max(1, Math.floor(rect.width));
+            const h = Math.max(1, Math.floor(rect.height));
+            canvas.width  = Math.floor(w * dpr);
+            canvas.height = Math.floor(h * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        const ro = new ResizeObserver(resizeCanvas);
+        ro.observe(canvas);
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+
+        function getLayout() {
+            const rect = canvas.getBoundingClientRect();
+            const cW = rect.width || canvas.width;
+            const cH = rect.height || canvas.height;
+            const scale = cH * 1.55;
+            return { cW: cW, cH: cH, scale: scale };
+        }
+
+        function computeTorsoAnchor(frames) {
+            if (!frames || !frames.length) return { x: 0.5, y: 0.55 };
+            const idx = Math.min(ANCHOR_FRAME, frames.length - 1);
+            const frame = frames[idx];
+            if (!frame) return { x: 0.5, y: 0.55 };
+            let sx = 0, sy = 0, n = 0;
+            for (let i = 0; i < TORSO_KEYPOINTS.length; i++) {
+                const p = frame[TORSO_KEYPOINTS[i]];
+                if (!p) continue;
+                sx += p[0]; sy += p[1]; n++;
+            }
+            if (!n) return { x: 0.5, y: 0.55 };
+            return { x: sx / n, y: sy / n };
+        }
+
+        function drawFigure(pts, cxFrac, cyFrac, alpha) {
+            if (!pts || !pts.length) return;
+            const { cW, cH, scale } = getLayout();
+            const cx = cW * cxFrac - scale * currentAnchor.x;
+            const cy = cH * cyFrac - scale * currentAnchor.y;
+
+            ctx.save();
+            ctx.globalAlpha = alpha == null ? 1 : alpha;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            const lw = Math.max(2, scale * 0.008);
+
+            ctx.strokeStyle = LIMB_COLOR;
+            ctx.shadowColor = 'rgba(255,255,255,0.35)';
+            ctx.shadowBlur  = Math.max(2, scale * 0.01);
+            ctx.lineWidth   = lw;
+            for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
+                const [a, b] = POSE_CONNECTIONS[ci];
+                const A = pts[a], B = pts[b];
+                if (!A || !B) continue;
+                ctx.beginPath();
+                ctx.moveTo(A[0] * scale + cx, A[1] * scale + cy);
+                ctx.lineTo(B[0] * scale + cx, B[1] * scale + cy);
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle   = KEYPOINT_COLOR;
+            ctx.shadowColor = KEYPOINT_GLOW;
+            ctx.shadowBlur  = Math.max(4, scale * 0.014);
+            const r = Math.max(2.5, scale * 0.009);
+            for (let i = 0; i < pts.length; i++) {
+                const p = pts[i];
+                if (!p) continue;
+                ctx.beginPath();
+                ctx.arc(p[0] * scale + cx, p[1] * scale + cy, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function parseFrames(raw) {
+            if (!Array.isArray(raw)) return [];
+            return raw.map(function (frame) {
+                if (!Array.isArray(frame)) return null;
+                return frame.map(function (p) {
+                    if (!p) return null;
+                    if (Array.isArray(p)) {
+                        const x = p[0], y = p[1];
+                        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+                        if (x < -0.4 || x > 1.4 || y < -0.4 || y > 1.9) return null;
+                        return [x, y];
+                    }
+                    if (typeof p === 'object') {
+                        const x = p.x, y = p.y;
+                        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+                        if (x < -0.4 || x > 1.4 || y < -0.4 || y > 1.9) return null;
+                        return [x, y];
+                    }
+                    return null;
+                });
+            }).filter(function (f) { return f && f.some(Boolean); });
+        }
+
+        async function fetchJumpJSON(playerId) {
+            const paths = [
+                playerId + '/jump/session1/kick1/pose.json',
+                playerId + '/jump/session1/pose.json'
+            ];
+            for (let i = 0; i < paths.length; i++) {
+                try {
+                    const url = await firebase.storage().ref(paths[i]).getDownloadURL();
+                    const res = await fetch(url);
+                    if (!res.ok) continue;
+                    const json = await res.json();
+                    const parsed = parseFrames(json);
+                    if (parsed.length) return parsed;
+                } catch (_) {}
+            }
+            return null;
+        }
+
+        function getRosterPlayersWithJumps() {
+            const roster = readRosterCache();
+            if (!roster || !roster.players) return [];
+            const out = [];
+            Object.keys(roster.players).forEach(function (pid) {
+                out.push({ id: pid, player: roster.players[pid] });
+            });
+            return out;
+        }
+
+        function readRosterCache() {
+            try { return JSON.parse(sessionStorage.getItem('posetek.questLB.rosterCache.v1')) || null; }
+            catch (e) { return null; }
+        }
+
+        function pickRandom(arr) {
+            if (!arr.length) return null;
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        async function pickNextPlayer() {
+            const all = getRosterPlayersWithJumps();
+            if (!all.length) return null;
+
+            for (let attempt = 0; attempt < 8; attempt++) {
+                const candidate = pickRandom(all);
+                if (!candidate) return null;
+                if (seqPlayer && candidate.id === seqPlayer.id && all.length > 1) continue;
+                const f = await fetchJumpJSON(candidate.id);
+                if (f && f.length) {
+                    return {
+                        id: candidate.id,
+                        player: candidate.player,
+                        frames: f,
+                        anchor: computeTorsoAnchor(f)
+                    };
+                }
+            }
+            return null;
+        }
+
+        async function prefetchNext() {
+            if (prefetchInFlight || nextPrefetch) return;
+            prefetchInFlight = true;
+            try {
+                const next = await pickNextPlayer();
+                if (next) nextPrefetch = next;
+            } finally {
+                prefetchInFlight = false;
+            }
+        }
+
+        function showName(player) {
+            if (!nameEl) return;
+            const n = ((player.firstName || '') + ' ' + (player.lastName || '')).trim();
+            if (!n) { nameEl.classList.remove('visible'); nameEl.textContent=''; return; }
+            nameEl.textContent = n;
+            nameEl.classList.add('visible');
+        }
+        function hideName() { if (nameEl) nameEl.classList.remove('visible'); }
+
+        const easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+        const easeIn  = function (t) { return t * t * t; };
+
+        const P_IDLE = 0, P_ENTER = 1, P_PLAY = 2, P_EXIT = 3, P_WAIT = 4;
+
+        async function loadInitial() {
+            const next = await pickNextPlayer();
+            if (next) {
+                seqPlayer = next;
+                frames = next.frames;
+                currentAnchor = next.anchor || computeTorsoAnchor(next.frames);
+                phase = P_ENTER;
+                phaseT0 = performance.now();
+                frameIdx = 0;
+                showName(next.player);
+                prefetchNext();
+            } else {
+                phase = P_WAIT;
+                phaseT0 = performance.now();
+            }
+        }
+
+        function tick(ts) {
+            if (!running) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const enterXFrom = -0.35;
+            const enterXTo   = 0.5;
+            const exitXTo    = 1.35;
+
+            switch (phase) {
+                case P_WAIT: {
+                    if (ts - phaseT0 >= 1500) {
+                        phaseT0 = ts;
+                        loadInitial();
+                    }
+                    break;
+                }
+                case P_ENTER: {
+                    const t = Math.min(1, (ts - phaseT0) / ENTER_MS);
+                    posXFrac = enterXFrom + (enterXTo - enterXFrom) * easeOut(t);
+                    posYFrac = 0.5;
+                    drawFigure(frames[0], posXFrac, posYFrac, Math.max(0.35, t));
+                    if (t >= 1) {
+                        phase = P_PLAY;
+                        phaseT0 = ts;
+                        lastAdv = ts;
+                        frameIdx = 0;
+                    }
+                    break;
+                }
+                case P_PLAY: {
+                    const f = frames;
+                    const limit = Math.min(f.length, 220);
+                    drawFigure(f[Math.min(frameIdx, limit - 1)], enterXTo, 0.5, 1);
+                    if (ts - lastAdv >= FRAME_MS) {
+                        frameIdx++;
+                        lastAdv = ts;
+                        if (frameIdx >= limit) {
+                            phase = P_EXIT;
+                            phaseT0 = ts;
+                        }
+                    }
+                    break;
+                }
+                case P_EXIT: {
+                    const t = Math.min(1, (ts - phaseT0) / EXIT_MS);
+                    posXFrac = enterXTo + (exitXTo - enterXTo) * easeIn(t);
+                    posYFrac = 0.5;
+                    const finalFrame = frames[Math.min(frames.length - 1, 219)];
+                    drawFigure(finalFrame, posXFrac, posYFrac, Math.max(0.0, 1 - t));
+                    if (t >= 1) {
+                        hideName();
+                        phase = P_IDLE;
+                        phaseT0 = ts;
+                    }
+                    break;
+                }
+                case P_IDLE: {
+                    if (ts - phaseT0 >= PAUSE_MS) {
+                        if (nextPrefetch) {
+                            seqPlayer = nextPrefetch;
+                            frames = nextPrefetch.frames;
+                            currentAnchor = nextPrefetch.anchor || computeTorsoAnchor(nextPrefetch.frames);
+                            nextPrefetch = null;
+                            showName(seqPlayer.player);
+                            phase = P_ENTER;
+                            phaseT0 = ts;
+                            frameIdx = 0;
+                            prefetchNext();
+                        } else {
+                            if (!prefetchInFlight) prefetchNext();
+                            phase = P_WAIT;
+                            phaseT0 = ts;
+                        }
+                    }
+                    break;
+                }
+            }
+            rafId = requestAnimationFrame(tick);
+        }
+
+        window.startPoseAnimation = function () {
+            if (running) return;
+            running = true;
+            resizeCanvas();
+            phase = P_WAIT;
+            phaseT0 = performance.now();
+            rafId = requestAnimationFrame(tick);
+            loadInitial();
+        };
+
+        window.stopPoseAnimation = function () {
+            running = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hideName();
+        };
+    })();
+    </script>
+</body>
+</html>

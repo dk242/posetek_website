@@ -13,7 +13,7 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   })(window, document, "clarity", "script", "w8lex8gzl7");
   </script>
-  <title>Static Jump | PoseTek</title>
+  <title>Quest · Biomechanics | PoseTek</title>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
@@ -101,7 +101,7 @@
 
     .container.focused-video .pose-container{display:none}
     .container.focused-video .video-container{max-width:900px;width:100%;margin:0 auto}
-    .video-container:fullscreen,.pose-container:fullscreen{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important;border:none!important}
+    .video-container:fullscreen,.pose-container:fullscreen{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;border-radius:0!important;margin:0!important;padding:0!important;box-shadow:none!important;border:none!important;aspect-ratio:auto!important;align-self:auto!important}
     .video-container:fullscreen{display:flex;align-items:center;justify-content:center;background:#000}
     .video-container:fullscreen video{max-width:100vw!important;max-height:100vh!important}
     .pose-container:fullscreen #poseCanvas{width:100%!important;height:100%!important;max-width:100%!important}
@@ -470,16 +470,6 @@
   .overlay-controls{display:flex;gap:0.5rem;align-items:center;padding:0.5rem;background:rgba(0,0,0,0.15);border-radius:8px;margin-top:0.5rem;}
   .overlay-controls label{display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;cursor:pointer;user-select:none;}
   .overlay-controls input[type="checkbox"]{cursor:pointer;width:18px;height:18px;}
-
-  /* Premium lock — pose viewer and keypoints column overlay */
-  .premium-section-locked { position: relative; pointer-events: none; user-select: none; }
-  .premium-section-locked > * { visibility: hidden; }
-  .premium-section-locked::before { content: ''; position: absolute; inset: 0; border-radius: 12px; background: rgba(0,0,0,0.55); z-index: 5; }
-  .premium-section-locked .lock-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 6; pointer-events: none; gap: 0.4rem; visibility: visible; }
-  .premium-section-locked .lock-overlay .material-symbols-outlined { font-size: 2rem; color: rgba(255,255,255,0.85); }
-  .premium-section-locked .lock-overlay span:last-child { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-weight: 500; }
-  .lock-overlay .unlock-btn { pointer-events: auto; cursor: pointer; margin-top: 0.5rem; padding: 0.5rem 1.2rem; background: var(--accent, #4c8c6a); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; text-decoration: none; display: inline-block; }
-  .lock-overlay .unlock-btn:hover { background: var(--accent-light, #5ea87e); }
 
   /* --- Jump Analysis Mode --- */
   .analyze-kick-btn {
@@ -931,112 +921,357 @@
     resize: vertical;
   }
   .bs-popup-save-btn { margin-top: 0.5rem; padding: 0.35rem 0.8rem; font-size: 0.8rem; font-weight: 600; background: rgba(245, 200, 66, 0.9); color: #1a1a1a; border: none; border-radius: 6px; cursor: pointer; }
+  /* Quest biomechanics: data loading overlay */
+  #dataLoadingOverlay { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 31, 27, 0.96); z-index: 2000; }
+  #dataLoadingOverlay.hidden { display: none !important; pointer-events: none; }
+  .spinner-lg { width: 48px; height: 48px; border: 3px solid rgba(76, 140, 106, 0.25); border-radius: 50%; border-top-color: var(--accent); animation: questSpin 0.8s linear infinite; }
+  @keyframes questSpin { to { transform: rotate(360deg); } }
+
+  /* =========================================================
+     Biomechanics Dashboard Layout — single viewport, no scroll
+     ========================================================= */
+  html, body { height: 100%; }
+  body.dashboard-body { overflow: hidden; }
+  .container.dashboard {
+    padding: 0.65rem 1rem 0.9rem;
+    height: calc(100dvh - 64px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .container.dashboard .reps-bar {
+    padding: 0.15rem 0 0.35rem;
+    flex: 0 0 auto;
+    gap: 0.4rem;
+  }
+  .container.dashboard .rep-pill { padding: 0.28rem 0.75rem; font-size: 0.85rem; }
+  .dashboard-grid {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 0.7rem;
+    min-height: 0;
+  }
+  .dash-left, .dash-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    flex: 0 0 auto;
+  }
+  .metric-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.45rem 0.7rem 0.45rem 0.9rem;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0.9;
+  }
+  .metric-card.status-close::before { background: #4caf50; }
+  .metric-card.status-moderate::before { background: #f5c842; }
+  .metric-card.status-large::before { background: #f44336; }
+  .metric-card.status-unknown::before { background: rgba(255,255,255,0.2); }
+  .metric-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.12rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .metric-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.18rem;
+    min-width: 0;
+  }
+  .metric-value {
+    font-family: 'Poppins','Inter',sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .metric-unit {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+  }
+  .metric-sub {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.48);
+    margin-top: 0.14rem;
+    letter-spacing: 0.15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .metric-card.status-close .metric-sub { color: #85d692; }
+  .metric-card.status-moderate .metric-sub { color: #f5c842; }
+  .metric-card.status-large .metric-sub { color: #ff8f82; }
+
+  .pose-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .pose-wrapper > .pose-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .pose-wrapper .pose-canvas-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .pose-wrapper .pose-container canvas#poseCanvas,
+  .pose-wrapper .pose-container canvas#pose3DCanvas {
+    width: auto !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+  .pose-wrapper #poseYtBar { flex: 0 0 auto; }
+
+  #analyzeJumpBtnWrapper { flex: 0 0 auto; }
+  #analyzeJumpBtnWrapper .analyze-kick-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .chart-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012));
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem 0.65rem;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+  .chart-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+  }
+  .chart-card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: rgba(255,255,255,0.78);
+  }
+  .chart-card-sub {
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+  .chart-card-sub .peak {
+    color: var(--accent-light);
+    font-weight: 700;
+  }
+  .chart-canvas-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+  }
+  .chart-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+  }
+  .chart-empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: center;
+    padding: 1rem;
+    pointer-events: none;
+  }
+
+  .tips-card {
+    background: linear-gradient(135deg, rgba(245,200,66,0.085), rgba(255,255,255,0.012));
+    border: 1px solid rgba(245,200,66,0.22);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+  .tips-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #f5c842;
+  }
+  .tips-head .material-symbols-outlined { font-size: 1rem; }
+  .tips-list { display: flex; flex-direction: column; gap: 0.28rem; }
+  .tip-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border-left: 3px solid var(--tip-color, #4c8c6a);
+  }
+  .tip-row.status-close { --tip-color: #4caf50; }
+  .tip-row.status-moderate { --tip-color: #f5c842; }
+  .tip-row.status-large { --tip-color: #f44336; }
+  .tip-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--tip-color, #4c8c6a);
+    margin-top: 0.42rem;
+    flex: 0 0 auto;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+  }
+  .tip-text {
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: rgba(255,255,255,0.88);
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .tip-text strong { color: #fff; font-weight: 700; }
+
+  /* Keep the legacy video-container in DOM but visually removed */
+  .hidden-video-stash {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    left: -9999px !important;
+    top: -9999px !important;
+  }
+
+  @media (max-width: 1100px) {
+    .metric-value { font-size: 1.2rem; }
+    .chart-card-title { font-size: 0.68rem; }
+  }
+  @media (max-width: 980px) {
+    body.dashboard-body { overflow: auto; }
+    .container.dashboard { height: auto; overflow: visible; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .metrics-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .chart-card { min-height: 200px; }
+  }
   </style>
 </head>
-<body>
+<body class="dashboard-body">
   <header>
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <button id="navToggle" class="nav-toggle" aria-label="Open navigation">&#9776;</button>
       <div class="logo">PoseTek</div>
     </div>
     <div style="display:flex;align-items:center;gap:0.5rem;">
-      <a id="leaderboardBtn" href="leaderboard.html" class="header-nav-btn" title="Leaderboards">
-        <span class="material-symbols-outlined">leaderboard</span>
-        <span>Leaderboard</span>
-      </a>
-      <a href="coachesview.html" class="home-btn home-btn-style" title="Home">
+      <a href="questSearchPlayer.html" class="home-btn home-btn-style" title="Home">
         <span class="material-symbols-outlined" style="color:var(--text-light);font-size:1.3rem;">home</span>
       </a>
     </div>
   </header>
 
-  <!-- Side navigation panel -->
-  <aside id="sideNav" class="side-nav" aria-hidden="true">
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <div style="font-weight:700;font-size:1.25rem;">Menu</div>
-      <button class="close-side" id="closeSide">✕</button>
-    </div>
-    <div class="side-divider"></div>
-    <div id="sideProfile" style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;">
-      <div id="profileAvatar" style="width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem">C</div>
-      <div style="display:flex;flex-direction:column;">
-        <div id="profileName" style="font-weight:700">Coach</div>
-        <div id="profileEmail" style="font-size:0.85rem;opacity:0.85">email@example.com</div>
-      </div>
-    </div>
-    <div class="side-divider"></div>
-    <div id="sideLinks" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem"></div>
-    <div class="side-divider"></div>
-    <div style="margin-top:auto">
-      <button class="action-btn" id="sideLogout">Logout</button>
-    </div>
-  </aside>
-  <div id="sideBackdrop" class="side-backdrop" tabindex="-1"></div>
+  <div id="dataLoadingOverlay" aria-live="polite" aria-busy="true">
+    <div class="spinner-lg" role="presentation"></div>
+    <div style="margin-top:1rem;font-weight:600;">Data loading…</div>
+    <div id="dataLoadingSub" style="margin-top:.35rem;color:var(--text-muted);font-size:.9rem;">Waiting for rep data (session1 · kick1)</div>
+  </div>
 
-  <div class="container">
+  <div class="container dashboard">
     <div id="repsBar" class="reps-bar" aria-label="Repetitions"></div>
-    <div class="frames-container">
-      <div class="video-container">
-        <video id="rawVideo" preload="auto" playsinline muted style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;" crossorigin="anonymous"></video>
-  <canvas id="rawFrameCanvas" width="480" height="270" style="width:100%;height:auto;border-radius:8px;background:#000"></canvas>
-        <div id="videoLoadingIndicator" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:600;display:none;z-index:5;background:rgba(0,0,0,0.8);padding:1rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.2);">Loading video...</div>
-        <button id="videoFullscreenBtn" class="fullscreen-btn" title="Fullscreen Video">⛶</button>
-        <div class="ctrl-panel" id="rawCtrlPanel">
-          <div class="ctrl-panel-header">
-            <span class="ctrl-panel-title">Settings</span>
-            <button class="ctrl-panel-close" id="rawCollapseBtn" title="Close settings">
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
-          <div class="slider-group">
-            <div class="slider-row">
-              <span class="slider-label">Speed</span>
-              <span id="rawSpeedValue" class="slider-value">0.25x</span>
+    <div class="dashboard-grid">
+      <div class="dash-left">
+        <div class="metrics-row" id="metricsRow">
+          <div class="metric-card status-unknown" id="metricJumpHeight">
+            <div class="metric-label">Jump Height</div>
+            <div class="metric-value-row">
+              <span class="metric-value" data-field="value">—</span>
+              <span class="metric-unit" data-field="unit">in</span>
             </div>
-            <input id="rawSpeedSlider" type="range" min="0" max="8" step="1" value="2" list="rawSpeedMarkers"/>
-            <datalist id="rawSpeedMarkers">
-              <option value="0" label="0.05x"></option>
-              <option value="1" label="0.1x"></option>
-              <option value="2" label="0.25x"></option>
-              <option value="3" label="0.5x"></option>
-              <option value="4" label="0.75x"></option>
-              <option value="5" label="1x"></option>
-              <option value="6" label="1.25x"></option>
-              <option value="7" label="1.5x"></option>
-              <option value="8" label="2x"></option>
-            </datalist>
+            <div class="metric-sub" data-field="sub">Peak during flight</div>
           </div>
-          <div class="btn-row" style="justify-content:flex-start;gap:0.3rem;margin-top:0.2rem;">
-            <button id="rawRestartBtn" class="icon-btn" title="Restart">⟲</button>
-            <button id="rawZoomOutBtn" class="icon-btn" title="Zoom Out">–</button>
-            <button id="rawZoomInBtn" class="icon-btn" title="Zoom In">+</button>
+          <div class="metric-card status-unknown" id="metricMaxForce">
+            <div class="metric-label">Max Force</div>
+            <div class="metric-value-row">
+              <span class="metric-value" data-field="value">—</span>
+              <span class="metric-unit" data-field="unit">N</span>
+            </div>
+            <div class="metric-sub" data-field="sub">Peak ground reaction</div>
           </div>
-        </div>
-        <div class="yt-bar" id="rawYtBar">
-          <div class="yt-progress-wrapper">
-            <input id="rawFrameSlider" type="range" min="0" max="0" step="1" value="0"/>
+          <div class="metric-card status-unknown" id="metricTimeToTakeoff">
+            <div class="metric-label">Time to Takeoff</div>
+            <div class="metric-value-row">
+              <span class="metric-value" data-field="value">—</span>
+              <span class="metric-unit" data-field="unit">s</span>
+            </div>
+            <div class="metric-sub" data-field="sub">Elite 0.60–0.75 s</div>
           </div>
-          <div class="yt-bar-controls">
-            <button class="yt-bar-btn" id="rawPlayPauseBtn" title="Play/Pause">▶</button>
-            <button class="yt-bar-btn" id="rawPrevBtn" title="Previous frame">
-              <span class="material-symbols-outlined">skip_previous</span>
-            </button>
-            <button class="yt-bar-btn" id="rawNextBtn" title="Next frame">
-              <span class="material-symbols-outlined">skip_next</span>
-            </button>
-            <span class="yt-bar-frame" id="rawFrameLabel">Frame: 0</span>
-            <span id="rawFrameSliderValue" style="display:none">0</span>
-            <div style="flex:1"></div>
-            <button id="rawShowPoseBtn" class="yt-bar-overlay-btn active" title="Toggle pose overlay">Display overlay</button>
-            <button class="yt-bar-btn" id="rawExpandBtn" title="Settings">
-              <span class="material-symbols-outlined">tune</span>
-            </button>
+          <div class="metric-card status-unknown" id="metricUpPhase">
+            <div class="metric-label">Up Phase</div>
+            <div class="metric-value-row">
+              <span class="metric-value" data-field="value">—</span>
+              <span class="metric-unit" data-field="unit">s</span>
+            </div>
+            <div class="metric-sub" data-field="sub">Elite 0.20–0.28 s</div>
           </div>
         </div>
-      </div>
-
-      <!-- Pose container in middle (sibling of video and angles) -->
-      <div style="display:flex;flex-direction:column;gap:0.5rem;flex:1 1 calc((100% - 1rem) / 2);min-width:280px;">
+        <div class="pose-wrapper">
         <div class="pose-container">
         <div class="pose-canvas-wrapper">
         <div id="frameNumberDisplay" class="frame-number">Frame: 0</div>
@@ -1184,34 +1419,99 @@
         </div>
         </div>
 
-      <div id="analyzeJumpBtnWrapper" style="position:relative;">
-        <button type="button" id="analyzeJumpBtn" class="analyze-kick-btn" disabled aria-disabled="true">&#x26A1; Analyze Jump</button>
-      </div>
-      <div id="annotateJumpBtnWrapper" style="position:relative; display:none;">
-        <button id="annotateJumpBtn" class="analyze-kick-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);">&#x270F; Annotate Jumping Analysis</button>
-      </div>
+        </div>
+        <div id="analyzeJumpBtnWrapper" style="position:relative;">
+          <button type="button" id="analyzeJumpBtn" class="analyze-kick-btn" disabled aria-disabled="true">&#x26A1; Analyze Jump</button>
+        </div>
+        <div id="annotateJumpBtnWrapper" style="position:relative; display:none;">
+          <button id="annotateJumpBtn" class="analyze-kick-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);">&#x270F; Annotate Jumping Analysis</button>
+        </div>
       </div>
 
-      <!-- Right column: Angles chart (top) and Height/Chest chart (bottom) -->
+      <div class="dash-right">
+        <div class="chart-card" id="heightChartCard">
+          <div class="chart-card-head">
+            <span class="chart-card-title">Height vs Time</span>
+            <span class="chart-card-sub" id="heightChartSub"></span>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="heightChart"></canvas>
+            <div class="chart-empty-state" id="heightEmptyState" style="display:none">Height data unavailable</div>
+          </div>
+        </div>
+
+        <div class="chart-card" id="forceChartCard">
+          <div class="chart-card-head">
+            <span class="chart-card-title">Force vs Time</span>
+            <span class="chart-card-sub" id="forceChartSub"></span>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="forceChart"></canvas>
+            <div class="chart-empty-state" id="forceEmptyState">Ground reaction force unavailable</div>
+          </div>
+        </div>
+
+        <div class="tips-card" id="proTipsCard">
+          <div class="tips-head">
+            <span class="material-symbols-outlined">tips_and_updates</span>
+            <span>Pro Tips</span>
+          </div>
+          <div class="tips-list" id="tipsList">
+            <div class="tip-row"><span class="tip-dot"></span><span class="tip-text">Analyzing your jump…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legacy DOM preserved off-screen so existing JS keeps working -->
+    <div class="hidden-video-stash" aria-hidden="true">
+      <div class="video-container">
+        <video id="rawVideo" preload="auto" playsinline muted style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;" crossorigin="anonymous"></video>
+        <canvas id="rawFrameCanvas" width="480" height="270"></canvas>
+        <div id="videoLoadingIndicator"></div>
+        <button id="videoFullscreenBtn" class="fullscreen-btn">⛶</button>
+        <div class="ctrl-panel" id="rawCtrlPanel">
+          <div class="ctrl-panel-header">
+            <span class="ctrl-panel-title">Settings</span>
+            <button class="ctrl-panel-close" id="rawCollapseBtn"><span class="material-symbols-outlined">close</span></button>
+          </div>
+          <div class="slider-group">
+            <div class="slider-row">
+              <span class="slider-label">Speed</span>
+              <span id="rawSpeedValue" class="slider-value">0.25x</span>
+            </div>
+            <input id="rawSpeedSlider" type="range" min="0" max="8" step="1" value="2"/>
+          </div>
+          <div class="btn-row">
+            <button id="rawRestartBtn" class="icon-btn">⟲</button>
+            <button id="rawZoomOutBtn" class="icon-btn">–</button>
+            <button id="rawZoomInBtn" class="icon-btn">+</button>
+          </div>
+        </div>
+        <div class="yt-bar" id="rawYtBar">
+          <div class="yt-progress-wrapper">
+            <input id="rawFrameSlider" type="range" min="0" max="0" step="1" value="0"/>
+          </div>
+          <div class="yt-bar-controls">
+            <button class="yt-bar-btn" id="rawPlayPauseBtn">▶</button>
+            <button class="yt-bar-btn" id="rawPrevBtn"></button>
+            <button class="yt-bar-btn" id="rawNextBtn"></button>
+            <span class="yt-bar-frame" id="rawFrameLabel">Frame: 0</span>
+            <span id="rawFrameSliderValue" style="display:none">0</span>
+            <button id="rawShowPoseBtn" class="yt-bar-overlay-btn active">Display overlay</button>
+            <button class="yt-bar-btn" id="rawExpandBtn"></button>
+          </div>
+        </div>
+      </div>
       <div class="angles-column" id="anglesColumn">
         <div class="card">
-          <div class="card-body" style="font-weight:600;opacity:.9;padding-bottom:0;">Key Joint Angles</div>
-          <!-- Key Frame Tabs -->
+          <div class="card-body">Key Joint Angles</div>
           <div class="keyframes-tabs">
-            <button class="keyframe-tab-btn active" data-keyframe="0">
-              <div>Coil</div>
-            </button>
-            <button class="keyframe-tab-btn" data-keyframe="1">
-              <div>Mid-Extension</div>
-            </button>
-            <button class="keyframe-tab-btn" data-keyframe="2">
-              <div>Takeoff</div>
-            </button>
-            <button class="keyframe-tab-btn" data-keyframe="3">
-              <div>Highest</div>
-            </button>
+            <button class="keyframe-tab-btn active" data-keyframe="0"><div>Coil</div></button>
+            <button class="keyframe-tab-btn" data-keyframe="1"><div>Mid-Extension</div></button>
+            <button class="keyframe-tab-btn" data-keyframe="2"><div>Takeoff</div></button>
+            <button class="keyframe-tab-btn" data-keyframe="3"><div>Highest</div></button>
           </div>
-          <!-- Angle Data Display -->
           <div class="angle-data-display">
             <div class="angle-data-item" data-angle-id="0" data-angle-type="shank-ground">
               <span class="angle-data-label">Shank → Ground</span>
@@ -1234,13 +1534,11 @@
               <span class="angle-data-value" id="angle4">--°</span>
             </div>
           </div>
-          <div style="padding:0 0.75rem 0.75rem 0.75rem;">
-            <div style="margin-bottom:.25rem;font-size:0.78rem;opacity:.8;font-weight:700;letter-spacing:.2px;">Pose Keypoints Preview</div>
-            <canvas id="miniPoseKeypointsCanvas" width="480" height="480" style="width:100%;aspect-ratio:1/1;background:#1a3a2e;border-radius:10px;border:1px solid rgba(255,255,255,0.08);cursor:pointer"></canvas>
+          <div>
+            <canvas id="miniPoseKeypointsCanvas" width="480" height="480"></canvas>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -1248,7 +1546,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
-  <script src="premiumCheckout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Three.js for 3D visualization -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1267,92 +1564,43 @@
   const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // --- Side nav wiring (standardized) ---
-    (function sideNavSetup(){
-      const waitForAuth = () => new Promise(resolve => {
-        if (window.firebase && window.firebase.auth) return resolve();
-        const t = setInterval(()=>{ if (window.firebase && window.firebase.auth) { clearInterval(t); resolve(); } }, 50);
-      });
-
-      waitForAuth().then(async ()=>{
-        const navToggle = document.getElementById('navToggle');
-        const sideNav = document.getElementById('sideNav');
-        const closeSide = document.getElementById('closeSide');
-        const sideLinks = document.getElementById('sideLinks');
-        const sideBackdrop = document.getElementById('sideBackdrop');
-
-        function openSide() { sideNav.classList.add('open'); sideNav.setAttribute('aria-hidden','false'); if(sideBackdrop) sideBackdrop.classList.add('open'); }
-        function closeSideNav() { sideNav.classList.remove('open'); sideNav.setAttribute('aria-hidden','true'); if(sideBackdrop) sideBackdrop.classList.remove('open'); }
-
-        if (navToggle) navToggle.addEventListener('click', (e)=>{ e.preventDefault(); openSide(); });
-        if (closeSide) closeSide.addEventListener('click', (e)=>{ e.preventDefault(); closeSideNav(); });
-        if (sideBackdrop) sideBackdrop.addEventListener('click', (e)=>{ e.preventDefault(); closeSideNav(); });
-        document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeSideNav(); });
-
-        // Get player parameter from URL
-        const urlParams = new URLSearchParams(window.location.search || '');
-        const playerParam = urlParams.get('player');
-        const userType = urlParams.get('userType');
-        const isPlayer = userType === 'player';
-
-        // Fetch coachUID from player doc when userType=player (for leaderboard URL)
-        let coachUID = null;
-        if (isPlayer && playerParam) {
-          try {
-            const pDoc = await db.collection('players').doc(playerParam).get();
-            if (pDoc.exists) coachUID = pDoc.data().coachUID || null;
-          } catch (e) { /* ignore */ }
-        }
-
-        const profileHref = isPlayer && playerParam
-          ? `profile.html?player=${encodeURIComponent(playerParam)}&userType=player`
-          : (playerParam ? `profile.html?player=${encodeURIComponent(playerParam)}` : 'profile.html');
-        const drillsHref = playerParam ? `drillList.html?player=${encodeURIComponent(playerParam)}` : 'drillList.html';
-        const kickingViewHref = (playerParam ? `kickingview.html?player=${encodeURIComponent(playerParam)}` : 'kickingview.html')
-          + (userType ? `${playerParam ? '&' : '?'}userType=${userType}` : '');
-
-        // Leaderboard href with player=, coach=, userType= (like kickingview)
-        let leaderboardHref = 'leaderboard.html';
-        if (isPlayer) {
-          const lbParams = new URLSearchParams();
-          if (coachUID) lbParams.set('coach', coachUID);
-          if (playerParam) lbParams.set('player', playerParam);
-          lbParams.set('userType', 'player');
-          leaderboardHref += '?' + lbParams.toString();
-        }
-
-        // Define navigation links (remove Player Roster when userType=player)
-        const navigationLinks = [
-          { href: profileHref, text: 'Player Profile', icon: 'person' },
-          ...(isPlayer ? [] : [{ href: 'coachesview.html', text: 'Player Roster', icon: 'people' }]),
-          { href: leaderboardHref, text: 'Leaderboards', icon: 'leaderboard' }
-        ];
-
-        const lbBtn = document.getElementById('leaderboardBtn');
-        if (lbBtn) lbBtn.href = leaderboardHref;
-
-        const homeBtn = document.querySelector('.home-btn');
-        if (homeBtn && isPlayer) {
-          homeBtn.href = playerParam ? `profile.html?player=${encodeURIComponent(playerParam)}&userType=player` : 'profile.html?userType=player';
-        }
-
-        navigationLinks.forEach((a, idx) => {
-          const link = document.createElement('a'); link.href = a.href || '#'; link.className = 'side-link';
-          const icon = document.createElement('span'); icon.className = 'material-symbols-outlined'; icon.style.fontSize = '20px';
-          icon.textContent = a.icon;
-          const spanText = document.createElement('span'); spanText.textContent = a.text;
-          link.appendChild(icon); link.appendChild(spanText);
-          link.style.transitionDelay = (idx * 40) + 'ms';
-          link.addEventListener('click', ()=> closeSideNav());
-          sideLinks.appendChild(link);
-        });
-
-        // side profile is populated by user-badge.js (Firestore preferred)
-
-        const sideLogoutBtn = document.getElementById('sideLogout');
-        if (sideLogoutBtn) sideLogoutBtn.addEventListener('click', (e)=>{ e.preventDefault(); firebase.auth().signOut().then(()=> window.location.href = 'kickai.html'); });
-      });
+    // Quest: redirect to roster after 15s inactivity
+    (function questIdleRedirect() {
+      let t;
+      const RESET = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'scroll'];
+      function reset() {
+        clearTimeout(t);
+        t = setTimeout(function () { window.location.href = 'questSearchPlayer.html'; }, 15000);
+      }
+      RESET.forEach(function (ev) { window.addEventListener(ev, reset, { passive: true }); });
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) reset(); });
+      var rawV = document.getElementById('rawVideo');
+      if (rawV) rawV.addEventListener('timeupdate', reset);
+      reset();
     })();
+
+    async function waitForQuestRepPoseJson() {
+      const params = new URLSearchParams(window.location.search || '');
+      const player = params.get('player');
+      if (!player) return false;
+      const path = player + '/jump/session1/kick1/pose.json';
+      while (true) {
+        try {
+          await storage.ref(path).getMetadata();
+          return true;
+        } catch (e) {
+          await new Promise(function (r) { setTimeout(r, 2000); });
+        }
+      }
+    }
+
+    function hideQuestDataLoadingOverlay() {
+      var el = document.getElementById('dataLoadingOverlay');
+      if (el) {
+        el.classList.add('hidden');
+        el.setAttribute('aria-busy', 'false');
+      }
+    }
 
     // --- State ---
     let poseType = 33;
@@ -1361,6 +1609,7 @@
     let ballData = [];
     let chestOffsetData = [];
     let torsoMidpointData = [];
+    let grfData = []; // Flat array of ground reaction force (Newtons), one value per frame
     let sessionMetadata = null; // { m_to_normalized_units, ground_loc_y, chest_starting_loc }
     let anglesData = null; // { knee_deg: number[], hip_deg?: number[], shoulder_deg?: number[], elbow_deg?: number[] }
     let currentFrame = 0;
@@ -1684,12 +1933,11 @@
     }
 
     function getUrlBits() {
-      const params = new URLSearchParams(window.location.search);
-      const kickParam = params.get("kick") || params.get("rep") || params.get("jump");
+      const params = new URLSearchParams(window.location.search || '');
       return {
-        player: params.get("player"),
-        session: params.get("session"),
-        kick: normalizeKickId(kickParam)
+        player: params.get('player'),
+        session: 'session1',
+        kick: 'kick1'
       };
     }
 
@@ -3374,70 +3622,16 @@
     }
 
     auth.onAuthStateChanged(async user => {
-      if (!user) { window.location.href = 'kickai.html'; return; }
+      if (!user) { window.location.href = 'questSearchPlayer.html'; return; }
+      const qp = new URLSearchParams(window.location.search || '');
+      if (!qp.get('player')) { window.location.href = 'questSearchPlayer.html'; return; }
+      await waitForQuestRepPoseJson();
+      hideQuestDataLoadingOverlay();
       await initRepsBar();
       await loadPlayerHeightMeters();
       await loadAllForCurrentRep();
       updateFrameNumberDisplay();
-      await applyPremiumLock();
     });
-
-    async function applyPremiumLock() {
-      const params = new URLSearchParams(window.location.search || '');
-      const playerDocId = params.get('player');
-      const userType = params.get('userType');
-      if (!playerDocId) return;
-      const isCoach = userType === 'coach';
-      try {
-        const pDoc = await db.collection('players').doc(playerDocId).get();
-        if (!pDoc.exists) return;
-        const d = pDoc.data();
-        const locked = d.premium_content_locked;
-        const feedbackNeeded = d.feedback_form_needed === true;
-        const shouldPremiumLock = isCoach ? (locked === true) : (locked !== false);
-        const shouldFeedbackLock = !isCoach && feedbackNeeded === true;
-        function addPremiumLock(el, label, sentFrom) {
-          if (!el || el.classList.contains('premium-section-locked')) return;
-          el.classList.add('premium-section-locked');
-          const ov = document.createElement('div');
-          ov.className = 'lock-overlay';
-          ov.innerHTML = '<span class="material-symbols-outlined">lock</span><span>' + (label || 'Premium') + '</span>';
-          if (userType === 'player') {
-            const btn = document.createElement('a');
-            btn.className = 'unlock-btn';
-            btn.textContent = 'Unlock Features';
-            btn.href = '#';
-            if (window.PoseTekPremiumCheckout) {
-              window.PoseTekPremiumCheckout.bindUnlockButton(btn, playerDocId);
-            }
-            ov.appendChild(btn);
-          }
-          el.appendChild(ov);
-        }
-        function addFeedbackLock(el, label) {
-          if (!el || el.classList.contains('premium-section-locked')) return;
-          el.classList.add('premium-section-locked');
-          const ov = document.createElement('div');
-          ov.className = 'lock-overlay';
-          ov.innerHTML = '<span class="material-symbols-outlined">lock</span><span>' + (label || 'Complete feedback form') + '</span>';
-          if (userType === 'player') {
-            const btn = document.createElement('a');
-            btn.className = 'unlock-btn';
-            btn.textContent = 'Complete feedback form';
-            btn.href = 'feedbackForm.html?player=' + encodeURIComponent(playerDocId) + '&userType=player&previousPage=' + encodeURIComponent((window.location.pathname.split('/').pop() || '') + (window.location.search || ''));
-            ov.appendChild(btn);
-          }
-          el.appendChild(ov);
-        }
-        if (shouldPremiumLock) {
-          addPremiumLock(document.querySelector('.pose-container'), 'Pose viewer only available for premium members', 'jumpPoseViewer');
-          addPremiumLock(document.getElementById('anglesColumn'), 'Keypoints viewer only available for premium members', 'jumpKeypointsViewer');
-        } else if (shouldFeedbackLock) {
-          addFeedbackLock(document.querySelector('.pose-container'), 'Complete feedback form');
-          addFeedbackLock(document.getElementById('anglesColumn'), 'Complete feedback form');
-        }
-      } catch (e) { console.error('[PremiumLock] Error:', e); }
-    }
 
     async function initRepsBar() {
       const { player, session, kick } = getUrlBits(); if (!player || !session) return;
@@ -3562,15 +3756,22 @@
       await loadFilteredAveragePositions();
       await loadJointAnglesKeyFrames();
       await loadJumpAnalysis();
-      try { drawMiniPoseKeypointsPreview(); } catch {}
-      await populateOverlayRepSelect();
-      try { sizeRawCanvas(); } catch {}
-      drawPose(currentFrame);
-      drawRawFrameToCanvas();
-      updateFrameNumberDisplay();
-      // Angles from filtered positions × video size (or JSON fallback)
-      updateAngleInfoPanel();
-      updateAnalyzeJumpButtonState();
+      await loadGrfData();
+      // Update the dashboard immediately after data loads (before any pose/canvas
+      // rendering that might throw) so metrics + tips always populate.
+      try { updateDashboard(); } catch (err) { console.error('[dashboard] update failed:', err); }
+      try { drawMiniPoseKeypointsPreview(); } catch (err) { console.warn('[mini-pose preview] failed:', err); }
+      try { await populateOverlayRepSelect(); } catch (err) { console.warn('[overlay rep select] failed:', err); }
+      try { sizeRawCanvas(); } catch (err) { console.warn('[sizeRawCanvas] failed:', err); }
+      try { drawPose(currentFrame); } catch (err) { console.warn('[drawPose] failed:', err); }
+      try { drawRawFrameToCanvas(); } catch (err) { console.warn('[drawRawFrameToCanvas] failed:', err); }
+      try { updateFrameNumberDisplay(); } catch (err) { console.warn('[updateFrameNumberDisplay] failed:', err); }
+      try { updateAngleInfoPanel(); } catch (err) { console.warn('[updateAngleInfoPanel] failed:', err); }
+      try { updateAnalyzeJumpButtonState(); } catch (err) { console.warn('[updateAnalyzeJumpButtonState] failed:', err); }
+      // Also re-run dashboard at the end once charts have had layout time so sizing settles.
+      requestAnimationFrame(() => {
+        try { updateDashboard(); } catch (err) { console.error('[dashboard] re-update failed:', err); }
+      });
     }
 
     async function populateOverlayRepSelect() {
@@ -3689,6 +3890,498 @@
         torsoMidpointData = await fetchJSONFromCandidates(candidates);
       } catch (err) { console.warn('No torso_midpoint.json found'); torsoMidpointData = []; }
     }
+
+    /**
+     * Loads ground reaction force data for the current rep.
+     * Expected schema: flat JSON array of force values in Newtons, one entry per frame.
+     * Example: [12.4, 14.8, 15.2, ...]
+     */
+    async function loadGrfData() {
+      const { player, session } = getUrlBits();
+      if (!player || !session) { grfData = []; return; }
+      try {
+        const candidates = currentKickId
+          ? [ `${player}/jump/${session}/${currentKickId}/grf.json`, `${player}/jump/${session}/grf.json` ]
+          : [ `${player}/jump/${session}/grf.json` ];
+        const data = await fetchJSONFromCandidates(candidates);
+        if (Array.isArray(data)) {
+          grfData = data.map(v => Number(v)).filter(v => Number.isFinite(v));
+        } else {
+          grfData = [];
+        }
+        console.log('[jump] GRF loaded:', grfData.length, 'samples');
+      } catch (err) {
+        console.warn('No grf.json found for current rep');
+        grfData = [];
+      }
+    }
+
+    // =====================================================================
+    // Biomechanics Dashboard — metrics, charts, pro tips
+    // =====================================================================
+    let heightChart = null;
+    let forceChart = null;
+
+    function setMetric(id, value, unit, sub, status) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const valueEl = el.querySelector('[data-field="value"]');
+      const unitEl = el.querySelector('[data-field="unit"]');
+      const subEl = el.querySelector('[data-field="sub"]');
+      if (valueEl) valueEl.textContent = value;
+      if (unitEl && unit != null) unitEl.textContent = unit;
+      if (subEl && sub != null) subEl.innerHTML = sub;
+      el.classList.remove('status-close', 'status-moderate', 'status-large', 'status-unknown');
+      el.classList.add('status-' + (status || 'unknown'));
+    }
+
+    function formatMetersAsFtIn(meters) {
+      if (!Number.isFinite(meters) || meters <= 0) return null;
+      const totalInches = meters * METERS_TO_INCHES;
+      const ft = Math.floor(totalInches / 12);
+      const inches = Math.round(totalInches - ft * 12);
+      if (ft > 0) return `${ft}′ ${inches}″`;
+      return `${Math.round(totalInches)}″`;
+    }
+
+    function computePeakJumpHeightMeters() {
+      if (!Array.isArray(chestOffsetData) || !chestOffsetData.length) return null;
+      let peak = null;
+      for (let i = 0; i < chestOffsetData.length; i++) {
+        const v = chestOffsetData[i]?.[1];
+        if (Number.isFinite(v) && (peak === null || v > peak)) peak = v;
+      }
+      return Number.isFinite(peak) ? peak : null;
+    }
+
+    function computeMaxForceNewtons() {
+      if (!Array.isArray(grfData) || !grfData.length) return null;
+      let peak = null;
+      for (let i = 0; i < grfData.length; i++) {
+        const v = grfData[i];
+        if (Number.isFinite(v) && (peak === null || v > peak)) peak = v;
+      }
+      return Number.isFinite(peak) ? peak : null;
+    }
+
+    function updateMetricsCards() {
+      // Jump Height
+      const jhMeters = computePeakJumpHeightMeters();
+      if (Number.isFinite(jhMeters) && jhMeters > 0) {
+        const inches = jhMeters * METERS_TO_INCHES;
+        const ftIn = formatMetersAsFtIn(jhMeters);
+        const valTxt = inches >= 12 ? ftIn : `${inches.toFixed(1)}`;
+        const unitTxt = inches >= 12 ? '' : 'in';
+        setMetric('metricJumpHeight', valTxt, unitTxt, `${jhMeters.toFixed(2)} m peak`, 'close');
+      } else {
+        setMetric('metricJumpHeight', '—', '', 'Peak during flight', 'unknown');
+      }
+
+      // Max Force
+      const maxF = computeMaxForceNewtons();
+      if (Number.isFinite(maxF) && maxF > 0) {
+        let valTxt, unitTxt;
+        if (maxF >= 1000) {
+          valTxt = (maxF / 1000).toFixed(2);
+          unitTxt = 'kN';
+        } else {
+          valTxt = Math.round(maxF).toString();
+          unitTxt = 'N';
+        }
+        const lbs = maxF * 0.2248089431;
+        setMetric('metricMaxForce', valTxt, unitTxt, `${Math.round(lbs)} lbs peak`, 'close');
+      } else {
+        setMetric('metricMaxForce', '—', 'N', 'Add grf.json to this rep', 'unknown');
+      }
+
+      // Timing metrics
+      let timing = null;
+      try { timing = computeTakeoffTimingMetrics(); } catch (_) { timing = null; }
+      const buf = TIME_METRIC_BUFFER_S;
+      const et = TAKEOFF_ELITE_TTO_S;
+      const ep = TAKEOFF_ELITE_PROPULSIVE_S;
+
+      if (timing && Number.isFinite(timing.ttoSeconds)) {
+        const status = getRangeStatus(timing.ttoSeconds, et.min, et.max, buf);
+        setMetric('metricTimeToTakeoff', timing.ttoSeconds.toFixed(3), 's', `Elite ${et.min.toFixed(2)}–${et.max.toFixed(2)} s`, status);
+      } else {
+        setMetric('metricTimeToTakeoff', '—', 's', `Elite ${et.min.toFixed(2)}–${et.max.toFixed(2)} s`, 'unknown');
+      }
+
+      if (timing && Number.isFinite(timing.propulsiveSeconds)) {
+        const status = getRangeStatus(timing.propulsiveSeconds, ep.min, ep.max, buf);
+        setMetric('metricUpPhase', timing.propulsiveSeconds.toFixed(3), 's', `Elite ${ep.min.toFixed(2)}–${ep.max.toFixed(2)} s`, status);
+      } else {
+        setMetric('metricUpPhase', '—', 's', `Elite ${ep.min.toFixed(2)}–${ep.max.toFixed(2)} s`, 'unknown');
+      }
+    }
+
+    /**
+     * Build key-frame phase-band annotations for Chart.js (as filled vertical regions).
+     * We draw them by pre-aggregating data on a secondary dataset.
+     */
+    function buildPhaseAnnotations() {
+      const fps = Number.isFinite(analysisCaptureFps) && analysisCaptureFps > 0 ? analysisCaptureFps : 120;
+      const kf = Array.isArray(keyFramesData) ? keyFramesData : [];
+      const coil = Number.isFinite(kf[0]) ? kf[0] / fps : null;
+      const takeoff = Number.isFinite(kf[2]) ? kf[2] / fps : null;
+      const highest = Number.isFinite(kf[3]) ? kf[3] / fps : null;
+      return { coil, takeoff, highest };
+    }
+
+    /**
+     * Chart.js plugin: shade the push phase (coil→takeoff) and flight phase (takeoff→highest)
+     * and draw vertical markers at each key frame.
+     */
+    const phaseBandsPlugin = {
+      id: 'phaseBands',
+      beforeDatasetsDraw(chart, _args, opts) {
+        const { ctx, chartArea, scales } = chart;
+        const xScale = scales.x;
+        const { coil, takeoff, highest } = chart.$phases || {};
+        ctx.save();
+        if (Number.isFinite(coil) && Number.isFinite(takeoff) && takeoff > coil) {
+          ctx.fillStyle = 'rgba(76,140,106,0.14)';
+          const x1 = xScale.getPixelForValue(coil);
+          const x2 = xScale.getPixelForValue(takeoff);
+          ctx.fillRect(x1, chartArea.top, x2 - x1, chartArea.bottom - chartArea.top);
+        }
+        if (Number.isFinite(takeoff) && Number.isFinite(highest) && highest > takeoff) {
+          ctx.fillStyle = 'rgba(245,200,66,0.10)';
+          const x1 = xScale.getPixelForValue(takeoff);
+          const x2 = xScale.getPixelForValue(highest);
+          ctx.fillRect(x1, chartArea.top, x2 - x1, chartArea.bottom - chartArea.top);
+        }
+        const markers = [
+          { v: coil, color: 'rgba(255,255,255,0.35)', label: 'Coil' },
+          { v: takeoff, color: 'rgba(245,200,66,0.75)', label: 'Takeoff' },
+          { v: highest, color: 'rgba(255,255,255,0.3)', label: 'Peak' }
+        ];
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        markers.forEach(m => {
+          if (!Number.isFinite(m.v)) return;
+          const x = xScale.getPixelForValue(m.v);
+          if (x < chartArea.left || x > chartArea.right) return;
+          ctx.strokeStyle = m.color;
+          ctx.beginPath();
+          ctx.moveTo(x, chartArea.top);
+          ctx.lineTo(x, chartArea.bottom);
+          ctx.stroke();
+        });
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+    };
+
+    function buildTimeSeriesFromFrameArray(arr, sampleFn) {
+      const fps = Number.isFinite(analysisCaptureFps) && analysisCaptureFps > 0 ? analysisCaptureFps : 120;
+      const points = [];
+      if (!Array.isArray(arr)) return points;
+      for (let i = 0; i < arr.length; i++) {
+        const val = sampleFn(arr, i);
+        if (Number.isFinite(val)) {
+          points.push({ x: i / fps, y: val });
+        }
+      }
+      return points;
+    }
+
+    function makeChartOptions(yLabel, yUnit) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        animation: { duration: 200 },
+        elements: {
+          point: { radius: 0, hoverRadius: 4, hitRadius: 8 },
+          line: { tension: 0.2, borderWidth: 2 }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15,31,27,0.96)',
+            titleColor: 'rgba(255,255,255,0.9)',
+            bodyColor: 'rgba(255,255,255,0.9)',
+            borderColor: 'rgba(255,255,255,0.15)',
+            borderWidth: 1,
+            padding: 8,
+            displayColors: false,
+            callbacks: {
+              title: (items) => items.length ? `${items[0].parsed.x.toFixed(3)} s` : '',
+              label: (item) => `${yLabel}: ${item.parsed.y.toFixed(2)} ${yUnit}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            title: { display: true, text: 'Time (s)', color: 'rgba(255,255,255,0.55)', font: { size: 10, weight: '600' } },
+            ticks: { color: 'rgba(255,255,255,0.55)', font: { size: 10 }, maxTicksLimit: 6 },
+            grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false }
+          },
+          y: {
+            title: { display: true, text: `${yLabel} (${yUnit})`, color: 'rgba(255,255,255,0.55)', font: { size: 10, weight: '600' } },
+            ticks: { color: 'rgba(255,255,255,0.55)', font: { size: 10 }, maxTicksLimit: 5 },
+            grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false }
+          }
+        }
+      };
+    }
+
+    function ensureHeightChart() {
+      if (heightChart) return heightChart;
+      const canvas = document.getElementById('heightChart');
+      if (!canvas || typeof Chart === 'undefined') return null;
+      heightChart = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          datasets: [{
+            label: 'Height',
+            data: [],
+            borderColor: '#5ea87e',
+            backgroundColor: 'rgba(94,168,126,0.18)',
+            fill: true,
+            parsing: false
+          }]
+        },
+        options: makeChartOptions('Height', 'm'),
+        plugins: [phaseBandsPlugin]
+      });
+      return heightChart;
+    }
+
+    function ensureForceChart() {
+      if (forceChart) return forceChart;
+      const canvas = document.getElementById('forceChart');
+      if (!canvas || typeof Chart === 'undefined') return null;
+      forceChart = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          datasets: [{
+            label: 'Force',
+            data: [],
+            borderColor: '#f5c842',
+            backgroundColor: 'rgba(245,200,66,0.15)',
+            fill: true,
+            parsing: false
+          }]
+        },
+        options: makeChartOptions('Force', 'N'),
+        plugins: [phaseBandsPlugin]
+      });
+      return forceChart;
+    }
+
+    function updateHeightChart() {
+      const chart = ensureHeightChart();
+      const empty = document.getElementById('heightEmptyState');
+      const sub = document.getElementById('heightChartSub');
+      if (!chart) return;
+      const points = buildTimeSeriesFromFrameArray(chestOffsetData, (arr, i) => {
+        const v = arr?.[i]?.[1];
+        return Number.isFinite(v) ? Number(v) : NaN;
+      });
+      chart.$phases = buildPhaseAnnotations();
+      chart.data.datasets[0].data = points;
+      chart.update('none');
+      if (empty) empty.style.display = points.length ? 'none' : '';
+      if (sub) {
+        const peak = computePeakJumpHeightMeters();
+        if (Number.isFinite(peak) && peak > 0) {
+          sub.innerHTML = `Peak <span class="peak">${peak.toFixed(2)} m</span>`;
+        } else {
+          sub.textContent = '';
+        }
+      }
+    }
+
+    function updateForceChart() {
+      const chart = ensureForceChart();
+      const empty = document.getElementById('forceEmptyState');
+      const sub = document.getElementById('forceChartSub');
+      if (!chart) return;
+      const points = buildTimeSeriesFromFrameArray(grfData, (arr, i) => {
+        const v = arr?.[i];
+        return Number.isFinite(v) ? Number(v) : NaN;
+      });
+      chart.$phases = buildPhaseAnnotations();
+      chart.data.datasets[0].data = points;
+      chart.update('none');
+      if (empty) empty.style.display = points.length ? 'none' : '';
+      if (sub) {
+        const peak = computeMaxForceNewtons();
+        if (Number.isFinite(peak) && peak > 0) {
+          const valTxt = peak >= 1000 ? `${(peak / 1000).toFixed(2)} kN` : `${Math.round(peak)} N`;
+          sub.innerHTML = `Peak <span class="peak">${valTxt}</span>`;
+        } else {
+          sub.textContent = '';
+        }
+      }
+    }
+
+    /**
+     * Rank deviation severity from normalized distance outside the optimal band.
+     * Returns 0 when inside, >0 outside.
+     */
+    function deviationMagnitude(value, min, max) {
+      if (!Number.isFinite(value) || !Number.isFinite(min) || !Number.isFinite(max)) return 0;
+      if (value < min) return Math.abs(min - value);
+      if (value > max) return Math.abs(value - max);
+      return 0;
+    }
+
+    function tipForFullDepthMetric(metric) {
+      if (!metric) return null;
+      const below = Number.isFinite(metric.value) && Number.isFinite(metric.optimalMin) && metric.value < metric.optimalMin;
+      const tips = {
+        knee: {
+          below: 'Dip quicker — a snappy bottom position changes direction faster.',
+          above: 'Squat a touch deeper at the bottom to load up more power.'
+        },
+        hip: {
+          below: 'Stay more upright at the bottom so your power drives straight up.',
+          above: 'Sit into your hips a bit more for a stronger push.'
+        },
+        ankle: {
+          below: 'Keep your shins more upright at the bottom to stay balanced.',
+          above: 'Keep heels down longer — push off with full foot contact.'
+        },
+        shoulder: {
+          below: 'Swing your arms further back before takeoff for more lift.',
+          above: 'Tighten the arm swing — over-swinging costs you timing.'
+        },
+        depth: {
+          below: 'Dip a little deeper to build more power before takeoff.',
+          above: 'Cut the depth — a tighter dip means a faster, higher jump.'
+        }
+      };
+      const labels = {
+        knee: 'Knee bend',
+        hip: 'Hip angle',
+        ankle: 'Ankle position',
+        shoulder: 'Arm swing',
+        depth: 'Dip depth'
+      };
+      const copy = (tips[metric.id] || {})[below ? 'below' : 'above'];
+      if (!copy) return null;
+      return {
+        status: metric.status,
+        label: labels[metric.id] || metric.name,
+        text: copy
+      };
+    }
+
+    function tipForTakeoffTiming(timing) {
+      if (!timing) return null;
+      const ep = TAKEOFF_ELITE_PROPULSIVE_S;
+      const et = TAKEOFF_ELITE_TTO_S;
+      const buf = TIME_METRIC_BUFFER_S;
+      const candidates = [];
+
+      if (Number.isFinite(timing.propulsiveSeconds)) {
+        const status = getRangeStatus(timing.propulsiveSeconds, ep.min, ep.max, buf);
+        if (status !== 'close' && status !== 'neutral') {
+          const copy = timing.propulsiveSeconds > ep.max
+            ? 'Explode faster off the bottom — quicker push = higher jump.'
+            : 'Push is blazing fast — make sure you load up in the dip.';
+          candidates.push({
+            status,
+            label: 'Up phase',
+            text: copy,
+            severity: deviationMagnitude(timing.propulsiveSeconds, ep.min, ep.max)
+          });
+        }
+      }
+      if (Number.isFinite(timing.ttoSeconds)) {
+        const status = getRangeStatus(timing.ttoSeconds, et.min, et.max, buf);
+        if (status !== 'close' && status !== 'neutral') {
+          const copy = timing.ttoSeconds > et.max
+            ? 'Get through the dip-and-jump faster — less time on the ground.'
+            : 'Very quick off the ground — sit into the dip just a hair longer.';
+          candidates.push({
+            status,
+            label: 'Time to takeoff',
+            text: copy,
+            severity: deviationMagnitude(timing.ttoSeconds, et.min, et.max)
+          });
+        }
+      }
+      if (!candidates.length) return null;
+      candidates.sort((a, b) => b.severity - a.severity);
+      return candidates[0];
+    }
+
+    function updateProTips() {
+      const list = document.getElementById('tipsList');
+      if (!list) return;
+
+      const fullDepthAngles = (function () {
+        try { return getJointAnglesForPhaseIndex(0); } catch (_) { return null; }
+      })();
+      const fdMetrics = (fullDepthAngles && fullDepthAngles.length >= 5) ? buildFullDepthMetrics(fullDepthAngles) : [];
+
+      // Rank coil-phase metrics by severity (large first, then moderate by deviation)
+      const ranked = fdMetrics
+        .map(m => {
+          const sev = deviationMagnitude(m.value, m.optimalMin, m.optimalMax);
+          const weight = m.status === 'large' ? 1000 : (m.status === 'moderate' ? 100 : 0);
+          return { metric: m, score: weight + sev };
+        })
+        .filter(r => r.metric.status === 'moderate' || r.metric.status === 'large')
+        .sort((a, b) => b.score - a.score);
+
+      const tips = [];
+      if (ranked.length > 0) {
+        const t1 = tipForFullDepthMetric(ranked[0].metric);
+        if (t1) tips.push(t1);
+      }
+      // Takeoff timing issue
+      let timing = null;
+      try { timing = computeTakeoffTimingMetrics(); } catch (_) { timing = null; }
+      const timingTip = tipForTakeoffTiming(timing);
+      if (timingTip) tips.push(timingTip);
+
+      // Second coil-phase issue as filler (only if we still have space)
+      if (tips.length < 3 && ranked.length > 1) {
+        const t2 = tipForFullDepthMetric(ranked[1].metric);
+        if (t2) tips.push(t2);
+      }
+
+      if (!tips.length) {
+        // All good — positive tip
+        const hasAnyCoilData = fdMetrics.some(m => Number.isFinite(m.value));
+        const hasTiming = timing && (Number.isFinite(timing.ttoSeconds) || Number.isFinite(timing.propulsiveSeconds));
+        if (hasAnyCoilData || hasTiming) {
+          tips.push({ status: 'close', label: 'Dialed in', text: 'Body position and timing both look strong — stay fast and high.' });
+        } else {
+          tips.push({ status: 'close', label: 'Pending', text: 'Run Analyze Jump to generate personalized tips.' });
+        }
+      }
+
+      list.innerHTML = tips.slice(0, 3).map(t => `
+        <div class="tip-row status-${t.status || 'close'}">
+          <span class="tip-dot"></span>
+          <span class="tip-text"><strong>${t.label}:</strong> ${t.text}</span>
+        </div>
+      `).join('');
+    }
+
+    function updateDashboard() {
+      const chestLen = Array.isArray(chestOffsetData) ? chestOffsetData.length : 0;
+      const grfLen = Array.isArray(grfData) ? grfData.length : 0;
+      const kfLen = Array.isArray(keyFramesData) ? keyFramesData.length : 0;
+      console.log('[dashboard] updating — chestOffset:', chestLen, 'grf:', grfLen, 'keyFrames:', kfLen, 'fps:', analysisCaptureFps);
+      try { updateMetricsCards(); } catch (err) { console.error('[dashboard] updateMetricsCards failed:', err); }
+      try { updateHeightChart(); } catch (err) { console.error('[dashboard] updateHeightChart failed:', err); }
+      try { updateForceChart(); } catch (err) { console.error('[dashboard] updateForceChart failed:', err); }
+      try { updateProTips(); } catch (err) { console.error('[dashboard] updateProTips failed:', err); }
+    }
+
+    window.addEventListener('resize', () => {
+      try { if (heightChart) heightChart.resize(); } catch (_) {}
+      try { if (forceChart) forceChart.resize(); } catch (_) {}
+    });
 
     async function loadAnglesData() {
       const { player, session } = getUrlBits(); if (!player || !session) return;
