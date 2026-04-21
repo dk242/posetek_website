@@ -1684,6 +1684,88 @@
   .annotation-info-btns .annotation-info-btn.draggable:active {
     cursor: grabbing;
   }
+
+  /* Overlay transform panel (coach-only, adjusts pro overlay position/scale) */
+  .overlay-transform-panel {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1005;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.7rem 0.75rem;
+    background: rgba(20,40,35,0.92);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    min-width: 150px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  }
+  .overlay-transform-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(245, 200, 66, 0.95);
+    text-align: center;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .overlay-transform-pad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .overlay-nudge-row {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+  }
+  .overlay-nudge-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .overlay-nudge-btn:hover {
+    background: rgba(245, 158, 11, 0.25);
+    border-color: rgba(245, 158, 11, 0.55);
+  }
+  .overlay-nudge-btn:active {
+    background: rgba(245, 158, 11, 0.4);
+  }
+  .overlay-reset-btn {
+    font-size: 1rem;
+    color: rgba(245, 200, 66, 0.9);
+  }
+  .overlay-transform-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .overlay-transform-scale label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .overlay-transform-scale input[type="range"] {
+    width: 100%;
+    accent-color: #f59e0b;
+    cursor: pointer;
+  }
   </style>
 </head>
 <body>
@@ -1827,6 +1909,27 @@
             <button id="annotationToolPositionDiff" class="annotation-tool-btn active" title="Position Difference Displays - click limbs to show user vs pro shading">Position Difference Displays</button>
             <button id="annotationToolRedLimbs" class="annotation-tool-btn" title="Red Limbs - click limbs to highlight">Red Limbs</button>
             <button id="annotationToolInfoCircles" class="annotation-tool-btn" title="Info Circles - click to add comment">Info Circles</button>
+          </div>
+
+          <!-- Overlay transform panel (coach-only, adjusts pro overlay position & scale at keyframe) -->
+          <div id="overlayTransformPanel" class="overlay-transform-panel" style="display:none;">
+            <div class="overlay-transform-title">Overlay Adjust</div>
+            <div class="overlay-transform-pad">
+              <button id="overlayNudgeUp" class="overlay-nudge-btn" title="Move overlay up">&#9650;</button>
+              <div class="overlay-nudge-row">
+                <button id="overlayNudgeLeft" class="overlay-nudge-btn" title="Move overlay left">&#9664;</button>
+                <button id="overlayNudgeReset" class="overlay-nudge-btn overlay-reset-btn" title="Reset position & scale">&#8635;</button>
+                <button id="overlayNudgeRight" class="overlay-nudge-btn" title="Move overlay right">&#9654;</button>
+              </div>
+              <button id="overlayNudgeDown" class="overlay-nudge-btn" title="Move overlay down">&#9660;</button>
+            </div>
+            <div class="overlay-transform-scale">
+              <label for="overlayScaleSlider">
+                <span>Scale</span>
+                <span id="overlayScaleValue">1.00&times;</span>
+              </label>
+              <input id="overlayScaleSlider" type="range" min="0.5" max="1.5" step="0.01" value="1" />
+            </div>
           </div>
         </div>
 
@@ -2171,10 +2274,13 @@
     let annotationPhase = 'idle'; // 'idle' | 'backswing' | 'contact' | 'key_takeaways'
     let annotationTool = 'position_diff_limbs'; // 'position_diff_limbs' | 'red_limbs' | 'info_circles'
     let annotationData = {
-      backswing: { position_diff_limbs: [], red_limbs: [], info_circles: [], analysis_text: '' },
-      contact: { position_diff_limbs: [], red_limbs: [], info_circles: [], analysis_text: '' },
+      backswing: { position_diff_limbs: [], red_limbs: [], info_circles: [], analysis_text: '', overlay_offset: { dx: 0, dy: 0 }, overlay_scale: 1 },
+      contact: { position_diff_limbs: [], red_limbs: [], info_circles: [], analysis_text: '', overlay_offset: { dx: 0, dy: 0 }, overlay_scale: 1 },
       key_takeaways: ''
     };
+    const OVERLAY_NUDGE_STEP = 0.005; // normalized-coord translation step per click
+    const OVERLAY_SCALE_MIN = 0.5;
+    const OVERLAY_SCALE_MAX = 1.5;
     let kickAnalysisData = null;
     let annotationDirty = false; // true when annotationData has unsaved changes
     let showAnglesAtKeyframe = false; // at keyframes, angles hidden by default; Show Angles button toggles
@@ -2189,6 +2295,63 @@
         saveBtn.disabled = !annotationDirty;
         saveBtn.classList.toggle('disabled', !annotationDirty);
       }
+    }
+
+    // --- Overlay transform panel helpers (coach-only) ---
+    function getCurrentOverlayPhase() {
+      if (!annotationMode) return null;
+      return (annotationPhase === 'backswing' || annotationPhase === 'contact') ? annotationPhase : null;
+    }
+    function syncOverlayTransformPanelUI() {
+      const phase = getCurrentOverlayPhase();
+      const slider = document.getElementById('overlayScaleSlider');
+      const valEl = document.getElementById('overlayScaleValue');
+      if (!slider || !valEl) return;
+      const phaseData = phase ? annotationData[phase] : null;
+      const scale = phaseData && typeof phaseData.overlay_scale === 'number' ? phaseData.overlay_scale : 1;
+      slider.value = String(scale);
+      valEl.textContent = scale.toFixed(2) + '\u00D7';
+    }
+    function showOverlayTransformPanel() {
+      const panel = document.getElementById('overlayTransformPanel');
+      if (!panel) return;
+      panel.style.display = '';
+      syncOverlayTransformPanelUI();
+    }
+    function hideOverlayTransformPanel() {
+      const panel = document.getElementById('overlayTransformPanel');
+      if (panel) panel.style.display = 'none';
+    }
+    function nudgeOverlayOffset(dxStep, dyStep) {
+      const phase = getCurrentOverlayPhase();
+      if (!phase) return;
+      const d = annotationData[phase];
+      if (!d.overlay_offset || typeof d.overlay_offset.dx !== 'number') d.overlay_offset = { dx: 0, dy: 0 };
+      d.overlay_offset.dx += dxStep;
+      d.overlay_offset.dy += dyStep;
+      markAnnotationDirty();
+      drawPose(currentFrame);
+    }
+    function setOverlayScale(val) {
+      const phase = getCurrentOverlayPhase();
+      if (!phase) return;
+      let s = Number(val);
+      if (!Number.isFinite(s) || s <= 0) s = 1;
+      s = Math.max(OVERLAY_SCALE_MIN, Math.min(OVERLAY_SCALE_MAX, s));
+      annotationData[phase].overlay_scale = s;
+      const valEl = document.getElementById('overlayScaleValue');
+      if (valEl) valEl.textContent = s.toFixed(2) + '\u00D7';
+      markAnnotationDirty();
+      drawPose(currentFrame);
+    }
+    function resetOverlayTransform() {
+      const phase = getCurrentOverlayPhase();
+      if (!phase) return;
+      annotationData[phase].overlay_offset = { dx: 0, dy: 0 };
+      annotationData[phase].overlay_scale = 1;
+      syncOverlayTransformPanelUI();
+      markAnnotationDirty();
+      drawPose(currentFrame);
     }
 
     // ---- Ball data state ----
@@ -4462,7 +4625,7 @@
               dxPx = alignOffset.dx * W;
               dyPx = alignOffset.dy * H;
             }
-            const sf = proScaleFactor;
+            let sf = proScaleFactor;
             let proAnchorPx = 0, proAnchorPy = 0;
             const plantIdx = getPlantFootIndex(poseType, firestoreRepData?.strikeFoot);
             const anchorFrameIdx = atBackswing && Number.isFinite(proBsIdx) ? proBsIdx : proCfIdx;
@@ -4491,6 +4654,35 @@
               if (strikeIdx != null && frame && frame[strikeIdx] && frPro[strikeIdx]) {
                 sxBase = frame[strikeIdx][0] * W - frPro[strikeIdx][0] * W * sf;
                 syBase = frame[strikeIdx][1] * H - frPro[strikeIdx][1] * H * sf;
+              }
+            }
+            // --- Manual overlay transform (coach annotation or player analyze kick playback) ---
+            // Applies saved per-phase translation & scale on top of the auto-alignment. Only at keyframes.
+            if (isKeyframe && (atBackswing || atContact)) {
+              const phaseKey = atBackswing ? 'backswing' : 'contact';
+              const phaseData = annData?.[phaseKey];
+              const manualScale = (phaseData && typeof phaseData.overlay_scale === 'number' && phaseData.overlay_scale > 0)
+                ? phaseData.overlay_scale : 1;
+              const manualOffset = (phaseData && phaseData.overlay_offset) ? phaseData.overlay_offset : null;
+              const manualDx = manualOffset && typeof manualOffset.dx === 'number' ? manualOffset.dx : 0;
+              const manualDy = manualOffset && typeof manualOffset.dy === 'number' ? manualOffset.dy : 0;
+              if (manualScale !== 1 || manualDx !== 0 || manualDy !== 0) {
+                const sfNew = sf * manualScale;
+                // Preserve the keyframe anchor (plant foot at backswing, strike foot at contact) when scaling.
+                const anchorIdx = atBackswing
+                  ? plantIdx
+                  : getStrikeFootIndex(poseType, firestoreRepData?.strikeFoot);
+                if (anchorIdx != null && frame && frame[anchorIdx] && frPro[anchorIdx]) {
+                  sxBase = frame[anchorIdx][0] * W - frPro[anchorIdx][0] * W * sfNew;
+                  syBase = frame[anchorIdx][1] * H - frPro[anchorIdx][1] * H * sfNew;
+                } else {
+                  // fallback: scale around proAnchor
+                  sxBase = sxBase + proAnchorPx * (sf - sfNew);
+                  syBase = syBase + proAnchorPy * (sf - sfNew);
+                }
+                sxBase += manualDx * W;
+                syBase += manualDy * H;
+                sf = sfNew;
               }
             }
             const proAlpha = isKeyframe ? 0.4 : 0.25;
@@ -6525,9 +6717,24 @@
               annotationData[phase].red_limbs = Array.isArray(src.red_limbs) ? JSON.parse(JSON.stringify(src.red_limbs)) : [];
               annotationData[phase].info_circles = Array.isArray(src.info_circles) ? JSON.parse(JSON.stringify(src.info_circles)) : [];
               annotationData[phase].analysis_text = typeof src.analysis_text === 'string' ? src.analysis_text : '';
+              const offSrc = src.overlay_offset;
+              annotationData[phase].overlay_offset = (offSrc && typeof offSrc.dx === 'number' && typeof offSrc.dy === 'number')
+                ? { dx: offSrc.dx, dy: offSrc.dy }
+                : { dx: 0, dy: 0 };
+              annotationData[phase].overlay_scale = (typeof src.overlay_scale === 'number' && src.overlay_scale > 0)
+                ? src.overlay_scale
+                : 1;
+            } else {
+              annotationData[phase].overlay_offset = { dx: 0, dy: 0 };
+              annotationData[phase].overlay_scale = 1;
             }
           });
           annotationData.key_takeaways = typeof kickAnalysisData.key_takeaways === 'string' ? kickAnalysisData.key_takeaways : '';
+        } else {
+          ['backswing', 'contact'].forEach(phase => {
+            annotationData[phase].overlay_offset = { dx: 0, dy: 0 };
+            annotationData[phase].overlay_scale = 1;
+          });
         }
         annotationDirty = false;
 
@@ -6562,6 +6769,7 @@
         poseContainer.classList.remove('analysis-feedback-visible');
         document.getElementById('annotationToolbar').style.display = 'none';
         document.getElementById('keyTakeawaysOverlay').style.display = 'none';
+        hideOverlayTransformPanel();
 
         requestFullscreen(poseContainer);
       }
@@ -6592,6 +6800,7 @@
         analysisFeedbackPanel.style.display = 'none';
         document.getElementById('annotationToolbar').style.display = 'none';
         document.getElementById('keyTakeawaysOverlay').style.display = 'none';
+        hideOverlayTransformPanel();
         analysisHeaderEl.textContent = 'Analyzing Kicking Technique';
         showFootPath = analysisPrevFootPath;
         const footPathBtn = document.getElementById('footPathBtn');
@@ -6681,6 +6890,7 @@
         analysisFeedbackPanel.style.display = '';
         poseContainer.classList.add('analysis-feedback-visible');
         document.getElementById('annotationToolbar').style.display = '';
+        showOverlayTransformPanel();
         manualZoomBounds = null;
         panOffsetX = 0;
         panOffsetY = 0;
@@ -6712,6 +6922,7 @@
         analysisFeedbackPanel.style.display = '';
         poseContainer.classList.add('analysis-feedback-visible');
         document.getElementById('annotationToolbar').style.display = 'none';
+        hideOverlayTransformPanel();
       }
 
       function startAnnotationPlayback() {
@@ -6941,6 +7152,13 @@
         document.getElementById('annotationToolInfoCircles')?.classList.add('active');
       });
 
+      document.getElementById('overlayNudgeUp')?.addEventListener('click', () => nudgeOverlayOffset(0, -OVERLAY_NUDGE_STEP));
+      document.getElementById('overlayNudgeDown')?.addEventListener('click', () => nudgeOverlayOffset(0, OVERLAY_NUDGE_STEP));
+      document.getElementById('overlayNudgeLeft')?.addEventListener('click', () => nudgeOverlayOffset(-OVERLAY_NUDGE_STEP, 0));
+      document.getElementById('overlayNudgeRight')?.addEventListener('click', () => nudgeOverlayOffset(OVERLAY_NUDGE_STEP, 0));
+      document.getElementById('overlayNudgeReset')?.addEventListener('click', () => resetOverlayTransform());
+      document.getElementById('overlayScaleSlider')?.addEventListener('input', (e) => setOverlayScale(e.target.value));
+
       if (analysisStartBtn) {
         analysisStartBtn.onclick = (e) => {
           e.stopPropagation();
@@ -6958,6 +7176,7 @@
               analysisFeedbackPanel.style.display = 'none';
               poseContainer.classList.remove('analysis-feedback-visible');
               document.getElementById('annotationToolbar').style.display = 'none';
+              hideOverlayTransformPanel();
               closeBsPopup();
               window.__backswingRedLimbs = null;
               manualZoomBounds = null;
