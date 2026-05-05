@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoseTek — Join the Beta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #ffffff;
+            --off-white: #f7f8f6;
+            --green-dark: #1a3a2e;
+            --green-mid: #2d5e4a;
+            --green-accent: #4c8c6a;
+            --green-glow: #6dd7a0;
+            --green-light: #e8f3ee;
+            --text-dark: #0d1f18;
+            --text-mid: #445049;
+            --text-soft: #7a8681;
+            --gold: #c8a24e;
+            --radius-lg: 22px;
+            --radius-pill: 999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 18% 12%, rgba(109, 215, 160, 0.28), transparent 40rem),
+                radial-gradient(circle at 84% 5%,  rgba(200, 162, 78, 0.14), transparent 32rem),
+                radial-gradient(circle at 50% 95%, rgba(77, 140, 106, 0.16), transparent 40rem),
+                linear-gradient(145deg, #e4f2ea 0%, #f8fbf7 48%, #d9ecdf 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+
+        /* ── Print page setup — zero margin removes browser date/time headers ── */
+        @page {
+            size: letter portrait;
+            margin: 0;
+        }
+
+        /* ── Outer card / page frame ── */
+        .flyer {
+            width: min(680px, 100vw - 40px);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(26, 58, 46, 0.10);
+            border-radius: 32px;
+            box-shadow:
+                0 32px 80px rgba(26, 58, 46, 0.18),
+                0 0 0 1px rgba(255,255,255,0.6) inset;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* top accent bar */
+        .flyer::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--green-dark) 0%, var(--green-accent) 55%, var(--gold) 100%);
+        }
+
+        /* subtle corner glow */
+        .flyer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 32px;
+            background:
+                radial-gradient(circle at 5% 8%, rgba(109, 215, 160, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 95% 92%, rgba(200, 162, 78, 0.12) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* ── Inner layout ── */
+        .flyer-inner {
+            padding: 52px 56px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Logo row ── */
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .logo-img {
+            width: 44px;
+            height: 44px;
+        }
+
+        .logo-wordmark {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            color: var(--green-dark);
+            line-height: 1;
+        }
+        .logo-wordmark span { color: var(--green-accent); }
+
+        /* ── Beta badge ── */
+        .beta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            background: var(--green-light);
+            border: 1px solid rgba(26, 58, 46, 0.12);
+            padding: 5px 14px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+        .beta-badge::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green-glow);
+            box-shadow: 0 0 0 4px rgba(109, 215, 160, 0.28);
+            animation: pulse 1.8s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(109, 215, 160, 0.28); }
+            50%       { box-shadow: 0 0 0 8px rgba(109, 215, 160, 0.08); }
+        }
+
+        /* ── Headline ── */
+        .headline {
+            font-size: 2.15rem;
+            font-weight: 900;
+            letter-spacing: -1.4px;
+            line-height: 1.04;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 14px;
+            max-width: 520px;
+        }
+        .headline em {
+            font-style: normal;
+            background: linear-gradient(120deg, var(--green-dark) 0%, var(--green-accent) 55%, var(--green-glow) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ── Sub-headline ── */
+        .subhead {
+            font-size: 1rem;
+            color: var(--text-mid);
+            text-align: center;
+            line-height: 1.55;
+            max-width: 420px;
+            margin-bottom: 28px;
+        }
+
+        /* ── QR frame ── */
+        .qr-frame {
+            position: relative;
+            padding: 24px;
+            background: var(--white);
+            border-radius: 32px;
+            border: 2px solid rgba(26, 58, 46, 0.10);
+            box-shadow:
+                0 24px 64px rgba(26, 58, 46, 0.18),
+                0 0 0 10px rgba(109, 215, 160, 0.12),
+                0 0 0 18px rgba(109, 215, 160, 0.05);
+            margin-bottom: 24px;
+        }
+
+        /* corner accent marks */
+        .qr-frame::before,
+        .qr-frame::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--green-accent);
+            border-style: solid;
+            border-width: 0;
+        }
+        .qr-frame::before {
+            top: 10px; left: 10px;
+            border-top-width: 3.5px;
+            border-left-width: 3.5px;
+            border-radius: 5px 0 0 0;
+        }
+        .qr-frame::after {
+            bottom: 10px; right: 10px;
+            border-bottom-width: 3.5px;
+            border-right-width: 3.5px;
+            border-radius: 0 0 5px 0;
+        }
+
+        .qr-corner-tr,
+        .qr-corner-bl {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--green-accent);
+            border-style: solid;
+            border-width: 0;
+        }
+        .qr-corner-tr {
+            top: 10px; right: 10px;
+            border-top-width: 3.5px;
+            border-right-width: 3.5px;
+            border-radius: 0 5px 0 0;
+        }
+        .qr-corner-bl {
+            bottom: 10px; left: 10px;
+            border-bottom-width: 3.5px;
+            border-left-width: 3.5px;
+            border-radius: 0 0 0 5px;
+        }
+
+        .qr-img {
+            display: block;
+            width: 300px;
+            height: 300px;
+            image-rendering: pixelated;
+            border-radius: 10px;
+        }
+
+        /* ── Scan label ── */
+        .scan-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .scan-label::before,
+        .scan-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(26,58,46,0.14), transparent);
+            width: 48px;
+        }
+
+        /* ── Features strip ── */
+        .features-strip {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+            width: 100%;
+        }
+
+        .feat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--green-dark);
+            background: var(--green-light);
+            border: 1px solid rgba(26, 58, 46, 0.10);
+            padding: 7px 14px;
+            border-radius: var(--radius-pill);
+            letter-spacing: -0.1px;
+        }
+        .feat-chip svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--green-accent);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(26,58,46,0.10) 30%, rgba(26,58,46,0.10) 70%, transparent 100%);
+            margin-bottom: 24px;
+        }
+
+        /* ── URL strip ── */
+        .url-strip {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-soft);
+            letter-spacing: 0.4px;
+        }
+        .url-strip span {
+            color: var(--green-accent);
+            font-weight: 700;
+        }
+
+        /* ════════════════════════════════════════
+           PRINT STYLES
+           ════════════════════════════════════════ */
+        @media print {
+            html, body {
+                /* Fill the page edge-to-edge; @page margin:0 removes browser headers */
+                background:
+                    radial-gradient(circle at 18% 12%, rgba(109, 215, 160, 0.28), transparent 40rem),
+                    radial-gradient(circle at 84% 5%,  rgba(200, 162, 78, 0.14), transparent 32rem),
+                    linear-gradient(145deg, #e4f2ea 0%, #f8fbf7 48%, #d9ecdf 100%) !important;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 32px;
+            }
+
+            .flyer {
+                width: 100%;
+                max-width: 700px;
+                break-inside: avoid;
+            }
+
+            /* freeze animations */
+            .beta-badge::before { animation: none; }
+
+            /* ensure colors print */
+            * {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        /* ── Responsive (small screens) ── */
+        @media (max-width: 600px) {
+            .flyer-inner { padding: 36px 24px 32px; }
+            .headline { font-size: 1.65rem; }
+            .logo-wordmark { font-size: 1.6rem; }
+            .qr-img { width: 240px; height: 240px; }
+            .features-strip { gap: 8px; }
+            .feat-chip { font-size: 0.73rem; padding: 6px 11px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="flyer">
+    <div class="flyer-inner">
+
+        <!-- Logo -->
+        <div class="logo-row">
+            <img class="logo-img" src="images/logo.svg" alt="PoseTek logo" onerror="this.style.display='none'">
+            <div class="logo-wordmark">Pose<span>Tek</span></div>
+        </div>
+
+        <!-- Beta badge -->
+        <span class="beta-badge">Closed Beta — Limited Spots</span>
+
+        <!-- Headline -->
+        <h1 class="headline">
+            Quantify your game.<br>
+            <em>Right in your pocket.</em>
+        </h1>
+
+        <!-- Sub-headline -->
+        <p class="subhead">
+            AI-powered kick, sprint &amp; jump analysis for soccer players.
+            Scan to claim your beta spot — free to join, no card required.
+        </p>
+
+        <!-- QR Code -->
+        <div class="qr-frame">
+            <div class="qr-corner-tr"></div>
+            <div class="qr-corner-bl"></div>
+            <img class="qr-img" src="images/bing_generated_qrcode.png" alt="Scan to join PoseTek beta">
+        </div>
+
+        <!-- Scan label -->
+        <p class="scan-label">Scan to get started</p>
+
+        <!-- Feature chips -->
+        <div class="features-strip">
+            <span class="feat-chip">
+                <!-- kick icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                Kick Analysis
+            </span>
+            <span class="feat-chip">
+                <!-- sprint icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+                Sprint Speed
+            </span>
+            <span class="feat-chip">
+                <!-- jump icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+                Jump Power
+            </span>
+            <span class="feat-chip">
+                <!-- pose / AI icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4z"/><path d="M12 10v4m-3 4h6"/><path d="M9 14l-3 4m9-4l3 4"/></svg>
+                Pose AI
+            </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- URL hint -->
+        <p class="url-strip">posetek.net &nbsp;·&nbsp; <span>Free Month Access with our Beta</span></p>
+
+    </div>
+</div>
+
+</body>
+</html>
