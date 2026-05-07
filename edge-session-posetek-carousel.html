@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edge × PoseTek Carousel Concept</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #071510;
+      --panel: rgba(10, 24, 19, 0.88);
+      --stroke: rgba(26, 58, 46, 0.16);
+      --deep: #1a3a2e;
+      --mid: #2d5e4a;
+      --accent: #4c8c6a;
+      --accent-soft: #dbece2;
+      --paper: #f7f8f6;
+      --paper-2: #edf4ef;
+      --ink: #101915;
+      --muted: #5f6d66;
+      --white: #ffffff;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+      --radius: 24px;
+      --frame-width: 1080px;
+      --frame-height: 1350px;
+      --frame-scale: min(calc((100vw - 72px) / var(--frame-width)), calc((100vh - 220px) / var(--frame-height)), 0.62);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(76, 140, 106, 0.25), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(76, 140, 106, 0.14), transparent 30%),
+        var(--bg);
+      color: var(--white);
+    }
+
+    .shell {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 28px 36px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #b6d5c4;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      max-width: 720px;
+    }
+
+    .intro {
+      max-width: 700px;
+      color: rgba(255,255,255,0.72);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(150px, 1fr));
+      gap: 12px;
+      min-width: 360px;
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .meta-card span {
+      display: block;
+      color: rgba(255,255,255,0.52);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 7px;
+    }
+
+    .meta-card strong {
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .stage {
+      min-height: calc(var(--frame-height) * var(--frame-scale) + 72px);
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+      overflow: hidden;
+    }
+
+    .frame-wrap {
+      width: calc(var(--frame-width) * var(--frame-scale));
+      height: calc(var(--frame-height) * var(--frame-scale));
+      position: relative;
+    }
+
+    .frame {
+      width: var(--frame-width);
+      height: var(--frame-height);
+      border-radius: 28px;
+      overflow: hidden;
+      position: absolute;
+      inset: 0;
+      background: var(--paper);
+      transform-origin: top left;
+      transform: scale(var(--frame-scale));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+      box-shadow: 0 24px 60px rgba(11, 20, 16, 0.16);
+    }
+
+    .frame.active { opacity: 1; pointer-events: auto; }
+
+    .slide-grid {
+      height: 100%;
+      padding: 48px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: 24px;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .slide-grid::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(to right, rgba(26,58,46,0.05) 1px, transparent 1px);
+      background-size: calc((100% - 96px) / 12) 100%;
+      background-position: 48px 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.35;
+    }
+
+    .brand-mark {
+      position: absolute;
+      top: 48px;
+      right: 48px;
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--deep);
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark span { color: var(--accent); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(76, 140, 106, 0.12);
+      border: 1px solid rgba(76, 140, 106, 0.22);
+      color: var(--deep);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pill-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(76, 140, 106, 0.14);
+    }
+
+    .hero-copy {
+      grid-column: 1 / span 7;
+      align-self: start;
+      padding-top: 34px;
+    }
+
+    .hero-copy h2,
+    .content-title,
+    .feature-title,
+    .progress-title,
+    .cta-title {
+      margin: 24px 0 18px;
+      font-family: 'Poppins', sans-serif;
+      color: var(--ink);
+      letter-spacing: -0.05em;
+      line-height: 0.96;
+    }
+
+    .hero-copy h2 { font-size: 96px; max-width: 620px; }
+    .content-title { font-size: 78px; max-width: 640px; }
+    .feature-title, .progress-title, .cta-title { font-size: 72px; max-width: 560px; }
+
+    .lead,
+    .body-copy {
+      color: var(--muted);
+      font-size: 28px;
+      line-height: 1.5;
+      max-width: 520px;
+    }
+
+    .mini-pills {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .mini-pill {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(26,58,46,0.14);
+      background: rgba(255,255,255,0.82);
+      color: var(--deep);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .placeholder-zone {
+      grid-column: 8 / span 5;
+      align-self: end;
+      justify-self: stretch;
+      min-height: 760px;
+      margin-bottom: 56px;
+      border-radius: 32px;
+      border: 2px dashed rgba(76, 140, 106, 0.28);
+      background:
+        radial-gradient(circle at 30% 18%, rgba(76, 140, 106, 0.18), transparent 32%),
+        linear-gradient(180deg, rgba(255,255,255,0.65), rgba(219,236,226,0.82));
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 36px;
+    }
+
+    .placeholder-zone::after {
+      content: '';
+      position: absolute;
+      inset: 24px;
+      border-radius: 24px;
+      background:
+        linear-gradient(to right, rgba(76,140,106,0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(76,140,106,0.12) 1px, transparent 1px);
+      background-size: 42px 42px;
+      opacity: 0.35;
+    }
+
+    .placeholder-card {
+      position: relative;
+      z-index: 1;
+      max-width: 290px;
+      padding: 22px 24px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(26,58,46,0.12);
+      box-shadow: 0 16px 34px rgba(26,58,46,0.12);
+    }
+
+    .placeholder-card strong {
+      display: block;
+      color: var(--deep);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .accent-orb,
+    .accent-ring {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .accent-orb {
+      width: 320px;
+      height: 320px;
+      left: -70px;
+      bottom: -50px;
+      background: radial-gradient(circle, rgba(76, 140, 106, 0.20), transparent 68%);
+    }
+
+    .accent-ring {
+      width: 200px;
+      height: 200px;
+      right: 280px;
+      top: 160px;
+      border: 1px solid rgba(76, 140, 106, 0.24);
+    }
+
+    .content-copy { grid-column: 1 / span 6; align-self: center; }
+
+    .device-stack,
+    .mock-panel,
+    .progress-panel,
+    .audience-panel {
+      border-radius: 28px;
+      border: 1px solid rgba(26,58,46,0.12);
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 18px 40px rgba(26,58,46,0.09);
+    }
+
+    .device-stack {
+      grid-column: 7 / span 6;
+      align-self: center;
+      display: grid;
+      grid-template-columns: 1fr 0.72fr;
+      gap: 18px;
+      padding: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(237,244,239,0.95));
+    }
+
+    .screen {
+      border-radius: 22px;
+      background: #163126;
+      overflow: hidden;
+      min-height: 640px;
+      position: relative;
+    }
+
+    .screen img,
+    .feature-image img,
+    .progress-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .screen.small { min-height: 640px; }
+    .screen::after {
+      content: '';
+      position: absolute;
+      inset: auto 22px 18px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .quote-card,
+    .stat-box,
+    .small-card {
+      position: absolute;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(26,58,46,0.1);
+      box-shadow: 0 14px 28px rgba(26,58,46,0.12);
+    }
+
+    .quote-card {
+      left: 72px;
+      bottom: 84px;
+      width: 336px;
+      padding: 22px;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .quote-card span,
+    .stat-box span,
+    .small-card span,
+    .panel-heading {
+      display: block;
+      color: var(--accent);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .mock-copy { grid-column: 1 / span 5; align-self: start; padding-top: 54px; }
+
+    .mock-panel {
+      grid-column: 6 / span 7;
+      align-self: center;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap: 20px;
+      background: linear-gradient(180deg, rgba(17,28,23,0.95), rgba(27,46,38,0.96));
+      color: var(--white);
+      min-height: 860px;
+    }
+
+    .feature-image {
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+      position: relative;
+    }
+
+    .feature-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(74,222,128,0.22), transparent 18%),
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.14), transparent 16%);
+      pointer-events: none;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-card {
+      padding: 18px 18px 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .feature-card strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: rgba(255,255,255,0.72);
+      font-size: 19px;
+      line-height: 1.5;
+    }
+
+    .progress-copy { grid-column: 1 / span 5; align-self: start; padding-top: 60px; }
+
+    .progress-panel {
+      grid-column: 6 / span 7;
+      align-self: center;
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(237,244,239,0.96));
+      min-height: 880px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 20px;
+    }
+
+    .progress-image {
+      border-radius: 26px;
+      overflow: hidden;
+      min-height: 560px;
+      background: #173126;
+      position: relative;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-box,
+    .small-card {
+      position: static;
+      padding: 20px;
+      min-height: 150px;
+    }
+
+    .stat-box strong,
+    .small-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 34px;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+
+    .stat-box p,
+    .small-card p,
+    .side-notes li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .cta-copy { grid-column: 1 / span 5; align-self: start; padding-top: 60px; }
+
+    .audience-panel {
+      grid-column: 6 / span 7;
+      align-self: center;
+      padding: 24px;
+      min-height: 900px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(237,244,239,0.98));
+    }
+
+    .split-audience {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .audience-card {
+      padding: 26px;
+      border-radius: 24px;
+      border: 1px solid rgba(26,58,46,0.1);
+      background: rgba(255,255,255,0.78);
+    }
+
+    .audience-card h3 {
+      margin: 0 0 12px;
+      color: var(--deep);
+      font-size: 34px;
+      letter-spacing: -0.04em;
+    }
+
+    .audience-card ul,
+    .side-notes ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      display: grid;
+      gap: 10px;
+      font-size: 20px;
+      line-height: 1.45;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 82px;
+      padding: 0 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--deep), var(--mid));
+      color: var(--white);
+      font-size: 28px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 18px 36px rgba(26,58,46,0.2);
+    }
+
+    .control-panel {
+      padding: 18px;
+      border-radius: 28px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
+      position: sticky;
+      top: 24px;
+    }
+
+    .control-panel h2 {
+      margin: 6px 0 18px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .slide-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .slide-tab {
+      width: 100%;
+      text-align: left;
+      padding: 14px 14px 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.88);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .slide-tab strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .slide-tab span {
+      display: block;
+      color: rgba(255,255,255,0.58);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .slide-tab.active,
+    .slide-tab:hover {
+      background: rgba(76, 140, 106, 0.18);
+      border-color: rgba(76, 140, 106, 0.3);
+    }
+
+    .nav-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .nav-buttons button {
+      min-height: 46px;
+      border-radius: 14px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-buttons button:hover { background: rgba(255,255,255,0.14); }
+
+    .side-notes {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .side-notes + .side-notes { margin-top: 12px; }
+
+    .tone-strip {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 1180px) {
+      .workspace { grid-template-columns: 1fr; }
+      .control-panel { position: static; }
+      :root {
+        --frame-scale: min(calc((100vw - 56px) / var(--frame-width)), 0.72);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 20px 16px 28px; }
+      .meta { grid-template-columns: 1fr; min-width: 0; }
+      .stage { padding: 18px; }
+      :root {
+        --frame-scale: min(calc((100vw - 44px) / var(--frame-width)), 0.84);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="toolbar">
+      <div>
+        <div class="eyebrow">Edge × PoseTek social concept</div>
+        <h1>5-slide carousel mockup built from the current PoseTek brand system.</h1>
+        <p class="intro">This standalone concept translates the requested Figma direction into presentable 1080 × 1350 slides using PoseTek’s current greens, premium cards, rounded pills, product screenshots, and a reserved hero zone for a kid-dribbling PNG.</p>
+      </div>
+      <div class="meta">
+        <div class="meta-card"><span>Format</span><strong>Carousel · 5 slides</strong></div>
+        <div class="meta-card"><span>Frame</span><strong>1080 × 1350</strong></div>
+        <div class="meta-card"><span>Concept</span><strong>Elite soccer development, made visible.</strong></div>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="stage">
+        <div class="frame-wrap">
+          <section class="frame active" data-slide="0" aria-label="Slide 1">
+            <div class="slide-grid">
+              <div class="brand-mark">Pose<span>Tek</span></div>
+              <div class="hero-copy">
+                <div class="pill"><span class="pill-dot"></span>Included with Edge</div>
+                <h2>With every Edge session get PoseTek for free</h2>
+                <p class="lead">Train. Track. Improve. Premium soccer performance analysis that feels modern, athletic, and easy to understand.</p>
+                <div class="mini-pills">
+                  <div class="mini-pill">Clean</div>
+                  <div class="mini-pill">Creative</div>
+                  <div class="mini-pill">Player-led</div>
+                </div>
+              </div>
+              <div class="placeholder-zone">
+                <div class="placeholder-card">
+                  <strong>PNG placement zone</strong>
+                  <p>Reserve this clean area for the kid dribbling a soccer ball. Keep subject large, feet visible, and ball motion facing inward.</p>
+                </div>
+              </div>
+              <div class="accent-orb"></div>
+              <div class="accent-ring"></div>
+            </div>
+          </section>
+
+          <section class="frame" data-slide="1" aria-label="Slide 2">
+            <div class="slide-grid">
+              <div class="brand-mark">Pose<span>Tek</span></div>
+              <div class="content-copy">
+                <div class="pill"><span class="pill-dot"></span>What is PoseTek?</div>
+                <h2 class="content-title">A soccer performance platform that turns movement into insights.</h2>
+                <p class="body-copy">Use simple visuals, concise copy, and recognizable product screens to explain what PoseTek does in one quick scroll-stopping slide.</p>
+                <div class="mini-pills">
+                  <div class="mini-pill">Analyze</div>
+                  <div class="mini-pill">Track</div>
+                  <div class="mini-pill">Develop</div>
+                </div>
+              </div>
+              <div class="device-stack">
+                <div class="screen">
+                  <img src="images/postestimation.png" alt="PoseTek pose estimation interface">
+                </div>
+                <div class="screen small">
+                  <img src="images/profilepose.PNG" alt="PoseTek profile interface">
+                </div>
+              </div>
+              <div class="quote-card">
+                <span>Brand feel</span>
+                Elite soccer development made visible through clean, premium, coach-friendly UI.
+              </div>
+            </div>
+          </section>
+
+          <section class="frame" data-slide="2" aria-label="Slide 3">
+            <div class="slide-grid" style="background: linear-gradient(180deg, #0d1f18 0%, #173126 100%);">
+              <div class="brand-mark" style="color: #ffffff;">Pose<span>Tek</span></div>
+              <div class="mock-copy">
+                <div class="pill" style="color:#ffffff; background: rgba(76,140,106,0.18); border-color: rgba(255,255,255,0.12);"><span class="pill-dot"></span>Biomechanics</div>
+                <h2 class="feature-title" style="color:#ffffff;">See the details behind kick, sprint, and jump performance.</h2>
+                <p class="body-copy" style="color: rgba(255,255,255,0.72);">Use darker contrast here so pose overlays, metrics, and movement tracking feel more advanced and performance-driven.</p>
+              </div>
+              <div class="mock-panel">
+                <div class="feature-image">
+                  <img src="images/analysiskick.PNG" alt="Kick biomechanics screenshot">
+                </div>
+                <div class="feature-list">
+                  <div class="feature-card">
+                    <span class="panel-heading">Kick analysis</span>
+                    <strong>Break down striking mechanics</strong>
+                    <p>Show body position, timing, and sequencing in a way athletes can understand fast.</p>
+                  </div>
+                  <div class="feature-card">
+                    <span class="panel-heading">Sprint tracking</span>
+                    <strong>Measure explosive movement</strong>
+                    <p>Pair sprint visuals with high-contrast stat cues to reinforce performance.</p>
+                  </div>
+                  <div class="feature-card">
+                    <span class="panel-heading">Jump analysis</span>
+                    <strong>Highlight power and efficiency</strong>
+                    <p>Use pose points and motion accents to keep the slide technical but still clean.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="frame" data-slide="3" aria-label="Slide 4">
+            <div class="slide-grid">
+              <div class="brand-mark">Pose<span>Tek</span></div>
+              <div class="progress-copy">
+                <div class="pill"><span class="pill-dot"></span>Progress over time</div>
+                <h2 class="progress-title">Track measurable improvement across every session.</h2>
+                <p class="body-copy">Charts, benchmark cards, and calm spacing help this slide feel dependable and data-driven without becoming cluttered.</p>
+              </div>
+              <div class="progress-panel">
+                <div class="progress-image">
+                  <img src="images/graphpose.PNG" alt="PoseTek progress graph">
+                </div>
+                <div class="stats-row">
+                  <div class="stat-box">
+                    <span>Session trend</span>
+                    <strong>+12%</strong>
+                    <p>Show the athlete’s recent gain clearly in one glance.</p>
+                  </div>
+                  <div class="stat-box">
+                    <span>Key metric</span>
+                    <strong>Consistency</strong>
+                    <p>Use one supporting benchmark card rather than a crowded stat wall.</p>
+                  </div>
+                  <div class="stat-box">
+                    <span>Coach value</span>
+                    <strong>Actionable</strong>
+                    <p>Make it obvious how coaches can guide development over time.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="frame" data-slide="4" aria-label="Slide 5">
+            <div class="slide-grid">
+              <div class="brand-mark">Pose<span>Tek</span></div>
+              <div class="cta-copy">
+                <div class="pill"><span class="pill-dot"></span>For players and coaches</div>
+                <h2 class="cta-title">Built for development on both sides of the session.</h2>
+                <p class="body-copy">Close the carousel by showing who it helps, why it matters, and what action to take next.</p>
+              </div>
+              <div class="audience-panel">
+                <div class="split-audience">
+                  <div class="audience-card">
+                    <span class="panel-heading">Players</span>
+                    <h3>See your movement clearly</h3>
+                    <ul>
+                      <li>Understand technique faster</li>
+                      <li>Track growth across sessions</li>
+                      <li>Build confidence with visible progress</li>
+                    </ul>
+                  </div>
+                  <div class="audience-card">
+                    <span class="panel-heading">Coaches</span>
+                    <h3>Turn feedback into action</h3>
+                    <ul>
+                      <li>Spot patterns at a glance</li>
+                      <li>Guide players with clearer evidence</li>
+                      <li>Keep development measurable</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="stats-row">
+                  <div class="small-card">
+                    <span>Format</span>
+                    <strong>Premium + approachable</strong>
+                    <p>Modern sports-tech without losing warmth.</p>
+                  </div>
+                  <div class="small-card">
+                    <span>Visual rule</span>
+                    <strong>One main message</strong>
+                    <p>Each slide does one job and does it clearly.</p>
+                  </div>
+                  <div class="small-card">
+                    <span>Finish</span>
+                    <strong>Edge offer lead-in</strong>
+                    <p>End with the offer and a session CTA.</p>
+                  </div>
+                </div>
+                <a class="cta-button" href="bookPerformanceTest.html">Book an Edge session</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <aside class="control-panel">
+        <div class="eyebrow">Slides</div>
+        <h2>Carousel structure</h2>
+        <div class="slide-list">
+          <button class="slide-tab active" data-slide="0"><strong>01 · Hero advert</strong><span>Main offer + reserved PNG zone for dribbling player.</span></button>
+          <button class="slide-tab" data-slide="1"><strong>02 · What is PoseTek?</strong><span>Simple product definition with three feature pills.</span></button>
+          <button class="slide-tab" data-slide="2"><strong>03 · Biomechanics</strong><span>Kick, sprint, and jump analysis in a darker premium mode.</span></button>
+          <button class="slide-tab" data-slide="3"><strong>04 · Progress over time</strong><span>Charts and stat cards to show measurable improvement.</span></button>
+          <button class="slide-tab" data-slide="4"><strong>05 · Players and coaches</strong><span>Audience value props plus the final CTA.</span></button>
+        </div>
+        <div class="nav-buttons">
+          <button type="button" id="prevBtn">Previous</button>
+          <button type="button" id="nextBtn">Next</button>
+        </div>
+        <div class="side-notes">
+          <span class="panel-heading">Style tokens</span>
+          <ul>
+            <li>12-column grid with 48 px outer margins</li>
+            <li>Rounded cards from 20–24 px</li>
+            <li>Inter body + bold Poppins-style headlines</li>
+            <li>Deep green accents with clean off-white space</li>
+          </ul>
+          <div class="tone-strip">
+            <div class="swatch" style="background:#1a3a2e;"></div>
+            <div class="swatch" style="background:#2d5e4a;"></div>
+            <div class="swatch" style="background:#4c8c6a;"></div>
+            <div class="swatch" style="background:#f7f8f6;"></div>
+            <div class="swatch" style="background:#edf4ef;"></div>
+          </div>
+        </div>
+        <div class="side-notes">
+          <span class="panel-heading">Usage note</span>
+          <ul>
+            <li>Replace the hero placeholder with the final kid-dribbling PNG.</li>
+            <li>Keep text minimal and let the player image + product UI tell the story.</li>
+            <li>Use slide buttons or arrow keys to review the full concept.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const frames = [...document.querySelectorAll('.frame')];
+    const tabs = [...document.querySelectorAll('.slide-tab')];
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let activeSlide = 0;
+
+    function setSlide(index) {
+      activeSlide = (index + frames.length) % frames.length;
+      frames.forEach((frame, i) => frame.classList.toggle('active', i === activeSlide));
+      tabs.forEach((tab, i) => tab.classList.toggle('active', i === activeSlide));
+    }
+
+    tabs.forEach(tab => tab.addEventListener('click', () => setSlide(Number(tab.dataset.slide))));
+    prevBtn.addEventListener('click', () => setSlide(activeSlide - 1));
+    nextBtn.addEventListener('click', () => setSlide(activeSlide + 1));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') setSlide(activeSlide + 1);
+      if (event.key === 'ArrowLeft') setSlide(activeSlide - 1);
+    });
+  </script>
+</body>
+</html>
