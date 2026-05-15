@@ -1,0 +1,7 @@
+{
+  "name": "PoseTek × Edge Carousel",
+  "id": "posetek-edge-carousel",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"]
+}
