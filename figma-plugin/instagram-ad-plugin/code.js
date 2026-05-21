@@ -12,7 +12,7 @@ const P = {
   maroon:     { r: 0.455, g: 0.098, b: 0.271 }, // #741846 — purple-maroon
   maroonDeep: { r: 0.278, g: 0.043, b: 0.176 }, // #470B2D — deep purple-maroon
   maroonMid:  { r: 0.573, g: 0.122, b: 0.337 }, // #921F56 — mid purple-maroon
-  maroonSoft: { r: 0.949, g: 0.843, b: 0.918 }, // #F2D7EA maroon-tinted pink
+  maroonSoft: { r: 0.949, g: 0.843, b: 0.918 }, // #F2D7EAmaroon-tinted pink
   black:      { r: 0.031, g: 0.016, b: 0.024 }, // #080408 — near-black, no grey cast
   darkBg:     { r: 0.055, g: 0.024, b: 0.039 }, // #0E0609 — maroon-tinted dark bg
   darkBg2:    { r: 0.090, g: 0.039, b: 0.063 }, // #170A10 — maroon-tinted card bg
