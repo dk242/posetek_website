@@ -5,7 +5,7 @@
 			"name": "posetek_website"
 		},
 		{
-			"path": "../mobile-app",
+			"path": "../posetek-mobile-app",
 			"name": "mobile-app (reference only)"
 		}
 	],
