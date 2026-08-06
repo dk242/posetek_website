@@ -290,6 +290,7 @@
     const scriptApp = document.createElement('script'); scriptApp.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js'; document.head.appendChild(scriptApp);
     const scriptAuth = document.createElement('script'); scriptAuth.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js'; document.head.appendChild(scriptAuth);
     const scriptFs = document.createElement('script'); scriptFs.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js'; document.head.appendChild(scriptFs);
+    let isViewMode = false;
 
     // Wait for scripts to load then init
     scriptFs.onload = () => {
@@ -308,18 +309,22 @@
       const saveStatusEl = document.getElementById('saveStatus');
       const finishDrillBtn = document.getElementById('finishDrillBtn');
       let savingDrill = false;
+      const waitForAuthState = () => new Promise((resolve) => {
+        const unsub = auth.onAuthStateChanged((user) => {
+          unsub();
+          resolve(user || null);
+        });
+      });
 
       // If URL contains ?drill=ID, load it in view-only mode
       const urlParams = new URLSearchParams(location.search);
       const viewDrillId = urlParams.get('drill');
-      const viewPlayer = urlParams.get('player');
       if (viewDrillId) {
+        isViewMode = true;
         // Hide interactive controls for view-only
         document.getElementById('palette').style.display = 'none';
         document.querySelector('.controls').style.display = 'none';
         document.querySelector('.grid').style.cursor = 'default';
-        // prevent placing items
-        grid.removeEventListener('click', () => {});
         // Load drill doc and render
         (async ()=>{
           try {
@@ -378,7 +383,7 @@
         const urlParams = new URLSearchParams(location.search);
         const assignedTo = urlParams.get('player') || null;
 
-        const user = auth.currentUser;
+        const user = auth.currentUser || await waitForAuthState();
         if (!user) {
           saveStatusEl.textContent = 'Please sign in to save drills.';
           return;
@@ -397,16 +402,20 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
+        let redirected = false;
         try {
           const res = await db.collection('drills').add(doc);
+          redirected = true;
           location.href = `drillList.html?new=${res.id}${assignedTo ? `&player=${assignedTo}` : ''}`;
         } catch (err) {
           console.error('Failed to save drill:', err);
           saveStatusEl.textContent = 'Failed to save drill. Please try again.';
         } finally {
-          savingDrill = false;
-          finishDrillBtn.disabled = false;
-          finishDrillBtn.textContent = 'Finish Drill Creation';
+          if (!redirected) {
+            savingDrill = false;
+            finishDrillBtn.disabled = false;
+            finishDrillBtn.textContent = 'Finish Drill Creation';
+          }
         }
       });
     };
@@ -469,6 +478,7 @@
     // ---------- Placing items ----------
     grid.addEventListener('click', (e) => {
       if (pathState.active || arrowState.active) return; // drawing modes handle their own clicks
+      if (isViewMode) return;
       if (!selectedType) return;
       if (e.target !== grid && e.target !== drawCanvas) return; // only empty grid
       const { x, y } = gridPointFromEvent(e);

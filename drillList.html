@@ -298,6 +298,7 @@
 
       let coachMembers = [];
       let allRows = [];
+      let hasLoadedOnce = false;
 
       auth.onAuthStateChanged(async (user) => {
         // If user is coach, load their members for the assign UI
@@ -330,9 +331,10 @@
           if (assignBtn) assignBtn.disabled = true;
           if (statusEl) statusEl.textContent = 'Saving assignment...';
           await db.collection('drills').doc(drillId).update({ assignedTo: playerId });
+          if (statusEl) statusEl.textContent = 'Assignment updated';
           // Visually mark
           cardEl.classList.add('added'); setTimeout(()=>cardEl.classList.remove('added'),2500);
-          if (statusEl) statusEl.textContent = 'Assignment updated';
+          await new Promise((resolve) => setTimeout(resolve, 350));
           loadDrills();
         } catch (err) {
           console.error('Failed to assign drill', err);
@@ -354,14 +356,21 @@
         return name.includes(term) || summary.includes(term);
       }
 
+      function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (char) => (
+          { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
+        ));
+      }
+
       function sortRows(rows, mode) {
-        if (mode === 'name') return rows.sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''));
-        if (mode === 'oldest') return rows.sort((a, b) => getDrillTimestamp(a.data) - getDrillTimestamp(b.data));
-        return rows.sort((a, b) => getDrillTimestamp(b.data) - getDrillTimestamp(a.data));
+        const copy = [...rows];
+        if (mode === 'name') return copy.sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''));
+        if (mode === 'oldest') return copy.sort((a, b) => getDrillTimestamp(a.data) - getDrillTimestamp(b.data));
+        return copy.sort((a, b) => getDrillTimestamp(b.data) - getDrillTimestamp(a.data));
       }
 
       async function loadDrills(){
-        grid.innerHTML = '';
+        grid.innerHTML = '<div class="empty-state">Loading drills...</div>';
         try{
           let q;
           if (playerParam) {
@@ -370,19 +379,30 @@
             q = db.collection('drills').orderBy('createdAtClient','desc').limit(100);
           }
           const snap = await q.get();
-          if (snap.empty) { grid.innerHTML = '<div class="empty-state">No drills found.</div>'; return; }
+          if (snap.empty) {
+            allRows = [];
+            hasLoadedOnce = true;
+            renderRows();
+            return;
+          }
           const rows = [];
           snap.forEach(doc=> rows.push({ id: doc.id, data: doc.data() }));
           allRows = rows;
+          hasLoadedOnce = true;
           renderRows();
         }catch(err){
           console.error('Failed to load drills:',err);
+          hasLoadedOnce = true;
           grid.innerHTML = '<div class="empty-state">Failed to load drills.</div>';
         }
       }
 
       function renderRows() {
         grid.innerHTML = '';
+        if (!hasLoadedOnce) {
+          grid.innerHTML = '<div class="empty-state">Loading drills...</div>';
+          return;
+        }
         const term = (searchInput.value || '').trim().toLowerCase();
         const assignmentMode = assignedFilter.value || 'all';
         const sortMode = sortSelect.value || 'newest';
@@ -392,36 +412,49 @@
           if (assignmentMode === 'unassigned' && assignedTo) return false;
           return matchesSearch(row, term);
         });
-        sortRows(filtered, sortMode);
-        if (!filtered.length) {
-          grid.innerHTML = '<div class="empty-state">No drills match your current filters.</div>';
+        const sorted = sortRows(filtered, sortMode);
+        if (!sorted.length) {
+          grid.innerHTML = `<div class="empty-state">${allRows.length ? 'No drills match your current filters.' : 'No drills found.'}</div>`;
           return;
         }
-        for (const row of filtered) {
+        for (const row of sorted) {
           const docId = row.id; const d = row.data;
           const card = document.createElement('article');
           card.className = 'drill-card';
           card.setAttribute('role','listitem');
           const assignedTo = d.assignedTo || '';
+          const safeName = escapeHTML(d.name || 'Untitled');
+          const safeSummary = escapeHTML(d.summary || 'No summary provided yet.');
+          const safeReps = escapeHTML(d.reps ?? 1);
+          const safeRest = escapeHTML(d.rest ?? 0);
           card.innerHTML = `
-            <div class="drill-name">${d.name || 'Untitled'}</div>
+            <div class="drill-name">${safeName}</div>
             <div class="meta" aria-label="Prescription">
-              <span class="chip">Reps: ${d.reps || 1}</span>
-              <span class="chip">Rest: ${d.rest || 0}s</span>
+              <span class="chip">Reps: ${safeReps}</span>
+              <span class="chip">Rest: ${safeRest}s</span>
               <span class="chip">${assignedTo ? 'Assigned' : 'Unassigned'}</span>
             </div>
-            <p class="desc">${d.summary || 'No summary provided yet.'}</p>
+            <p class="desc">${safeSummary}</p>
           `;
           if (coachMembers && coachMembers.length) {
             const sel = document.createElement('select');
-            sel.innerHTML = `<option value="">Assign to...</option>` + coachMembers.map(m=>`<option value="${m.docId}">${m.firstName} ${m.lastName}</option>`).join('');
-            sel.value = assignedTo;
+            sel.innerHTML = `<option value="">Assign to...</option>` + coachMembers.map(m=>`<option value="${escapeHTML(m.docId)}">${escapeHTML((m.firstName || '').trim() + ' ' + (m.lastName || '').trim())}</option>`).join('');
             const btn = document.createElement('button');
             btn.textContent = 'Save';
             btn.className = 'action-btn';
             const status = document.createElement('div');
             status.className = 'assign-status';
-            status.textContent = assignedTo ? 'Assigned player selected' : 'Not assigned';
+            const assignmentKnown = !assignedTo || coachMembers.some((m) => m.docId === assignedTo);
+            if (!assignmentKnown && assignedTo) {
+              const externalOption = document.createElement('option');
+              externalOption.value = assignedTo;
+              externalOption.textContent = 'Assigned (outside roster)';
+              externalOption.selected = true;
+              sel.appendChild(externalOption);
+            } else {
+              sel.value = assignedTo;
+            }
+            status.textContent = assignedTo ? (assignmentKnown ? 'Assigned player selected' : 'Assigned to player outside roster') : 'Not assigned';
             const wrapper = document.createElement('div');
             wrapper.className = 'assign-wrap';
             wrapper.appendChild(sel);
