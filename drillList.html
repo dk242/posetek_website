@@ -17,17 +17,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
   <style>
     :root{
-      --primary:#1a3a2e;
-      --accent:#4c8c6a;
+      --primary:#125638;
+      --secondary:#246E4C;
+      --accent:#38AA6A;
+      --accent-light:#5EC48A;
       --text-light:#ffffff;
+      --text-muted:rgba(255,255,255,0.74);
       --card-bg:rgba(255,255,255,0.08);
-      --card-border:rgba(255,255,255,0.1);
+      --card-border:rgba(255,255,255,0.12);
       --transition:all .3s cubic-bezier(.165,.84,.44,1);
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{
       font-family:'Inter',sans-serif;
-      background:var(--primary);
+      background:linear-gradient(135deg,#091C18 0%,var(--primary) 50%,#061012 100%);
       color:var(--text-light);
       min-height:100vh;
       display:flex;
@@ -35,11 +38,26 @@
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56,170,106,0.08), transparent),radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56,170,106,0.05), transparent);
+      pointer-events:none;
+      z-index:0;
+    }
     header{
       display:flex;justify-content:space-between;align-items:center;
-      padding:1rem 2rem;background:rgba(0,0,0,.2);backdrop-filter:blur(10px)
+      padding:1rem 2rem;background:rgba(15,31,27,.85);
+      border-bottom:1px solid var(--card-border);
+      position:sticky;top:0;z-index:100;
+      backdrop-filter:blur(20px)
     }
-  .logo{font-family:'Poppins','Inter',sans-serif;font-size:1.9rem;font-weight:700;letter-spacing:-0.6px}
+  .logo{
+    font-family:'Poppins','Inter',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;
+    background:linear-gradient(135deg,var(--text-light),var(--accent-light));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
   /* Side nav and action button styling (standardized) */
   .nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;cursor:pointer;transition:var(--transition)}
   .nav-toggle:hover{transform:translateY(-2px)}
@@ -64,6 +82,8 @@
     .sheet{
       flex:1;
       padding:1.25rem 1.25rem 2rem;
+      position:relative;
+      z-index:1;
     }
     .panel{
       width:100%;
@@ -85,6 +105,19 @@
       border:none;border-radius:10px;padding:.55rem .8rem;cursor:pointer;
       background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
     }
+    .toolbar{
+      display:flex;gap:.65rem;flex-wrap:wrap;
+    }
+    .toolbar input,.toolbar select{
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      padding:.56rem .7rem;
+      background:rgba(255,255,255,0.08);
+      color:var(--text-light);
+      font-weight:600;
+    }
+    .toolbar input::placeholder{color:var(--text-muted)}
+    .toolbar option{color:#121212}
 
     .drill-grid{
       display:grid;
@@ -124,6 +157,34 @@
       font-weight:600;
     }
     .desc{opacity:.95;line-height:1.4}
+    .assign-wrap{
+      margin-top:.35rem;
+      display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;
+    }
+    .assign-wrap select{
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      padding:.46rem .55rem;
+      background:rgba(255,255,255,.09);
+      color:var(--text-light);
+      min-width:160px;
+    }
+    .assign-wrap select option{color:#121212}
+    .assign-status{
+      width:100%;
+      font-size:.84rem;
+      color:var(--text-muted);
+      min-height:1.1rem;
+    }
+    .empty-state{
+      border:1px dashed var(--card-border);
+      border-radius:14px;
+      padding:1rem;
+      color:var(--text-muted);
+      background:rgba(255,255,255,.03);
+      font-weight:600;
+      grid-column:1/-1;
+    }
 
     /* highlight effect for "just added" */
     .added{
@@ -184,6 +245,19 @@
           <a href="drillcreation.html">+ New Drill</a>
         </div>
       </div>
+      <div class="toolbar" aria-label="Drill filters">
+        <input id="searchInput" type="search" placeholder="Search drills..." />
+        <select id="assignedFilter" aria-label="Assignment filter">
+          <option value="all">All assignments</option>
+          <option value="assigned">Assigned only</option>
+          <option value="unassigned">Unassigned only</option>
+        </select>
+        <select id="sortSelect" aria-label="Sort drills">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name">Name A-Z</option>
+        </select>
+      </div>
 
       <div id="drillGrid" class="drill-grid" role="list"></div>
     </section>
@@ -215,11 +289,15 @@
       const auth = firebase.auth();
 
       const grid = document.getElementById('drillGrid');
+      const searchInput = document.getElementById('searchInput');
+      const assignedFilter = document.getElementById('assignedFilter');
+      const sortSelect = document.getElementById('sortSelect');
       const params = new URLSearchParams(location.search);
       const playerParam = params.get('player');
       const newId = params.get('new');
 
       let coachMembers = [];
+      let allRows = [];
 
       auth.onAuthStateChanged(async (user) => {
         // If user is coach, load their members for the assign UI
@@ -247,13 +325,39 @@
         loadDrills();
       });
 
-      async function assignDrillTo(drillId, playerId, cardEl) {
+      async function assignDrillTo(drillId, playerId, cardEl, statusEl, assignBtn) {
         try {
+          if (assignBtn) assignBtn.disabled = true;
+          if (statusEl) statusEl.textContent = 'Saving assignment...';
           await db.collection('drills').doc(drillId).update({ assignedTo: playerId });
           // Visually mark
           cardEl.classList.add('added'); setTimeout(()=>cardEl.classList.remove('added'),2500);
+          if (statusEl) statusEl.textContent = 'Assignment updated';
           loadDrills();
-        } catch (err) { console.error('Failed to assign drill', err); alert('Failed to assign drill'); }
+        } catch (err) {
+          console.error('Failed to assign drill', err);
+          if (statusEl) statusEl.textContent = 'Failed to assign drill';
+        } finally {
+          if (assignBtn) assignBtn.disabled = false;
+        }
+      }
+
+      function getDrillTimestamp(data) {
+        return data.createdAtClient ? data.createdAtClient.toMillis() : (data.createdAt ? data.createdAt.toMillis() : 0);
+      }
+
+      function matchesSearch(row, term) {
+        if (!term) return true;
+        const d = row.data || {};
+        const name = (d.name || '').toLowerCase();
+        const summary = (d.summary || '').toLowerCase();
+        return name.includes(term) || summary.includes(term);
+      }
+
+      function sortRows(rows, mode) {
+        if (mode === 'name') return rows.sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''));
+        if (mode === 'oldest') return rows.sort((a, b) => getDrillTimestamp(a.data) - getDrillTimestamp(b.data));
+        return rows.sort((a, b) => getDrillTimestamp(b.data) - getDrillTimestamp(a.data));
       }
 
       async function loadDrills(){
@@ -267,52 +371,81 @@
           }
           const snap = await q.get();
           if (snap.empty) { grid.innerHTML = '<div class="empty-state">No drills found.</div>'; return; }
-          // Collect then sort by createdAtClient || createdAt
           const rows = [];
           snap.forEach(doc=> rows.push({ id: doc.id, data: doc.data() }));
-          rows.sort((a,b)=>{
-            const atA = a.data.createdAtClient ? a.data.createdAtClient.toMillis() : (a.data.createdAt ? a.data.createdAt.toMillis() : 0);
-            const atB = b.data.createdAtClient ? b.data.createdAtClient.toMillis() : (b.data.createdAt ? b.data.createdAt.toMillis() : 0);
-            return atB - atA;
-          });
-          for (const row of rows) {
-            const docId = row.id; const d = row.data;
-            const card = document.createElement('article');
-            card.className = 'drill-card';
-            card.setAttribute('role','listitem');
-            const assignedTo = d.assignedTo || '';
-            card.innerHTML = `
-              <div class="drill-name">${d.name || 'Untitled'}</div>
-              <div class="badges" aria-label="Equipment">
-                <span class="badge" title="Equipment">⚙️</span>
-              </div>
-              <div class="meta" aria-label="Prescription">
-                <span class="chip">Reps: ${d.reps || ''}</span>
-                <span class="chip">Rest: ${d.rest || ''}</span>
-              </div>
-              <p class="desc">${d.summary || ''}</p>
-            `;
-            // If coachMembers available, add assign UI
-            if (coachMembers && coachMembers.length) {
-              const sel = document.createElement('select');
-              sel.innerHTML = `<option value="">Assign to...</option>` + coachMembers.map(m=>`<option value="${m.docId}">${m.firstName} ${m.lastName}</option>`).join('');
-              const btn = document.createElement('button'); btn.textContent = 'Assign'; btn.className = 'panel-actions'; btn.style.marginLeft = '.5rem';
-              const wrapper = document.createElement('div'); wrapper.style.marginTop = '.6rem'; wrapper.appendChild(sel); wrapper.appendChild(btn);
-              card.appendChild(wrapper);
-              btn.addEventListener('click', ()=>{
-                const pid = sel.value; if (!pid) return alert('Select a player');
-                assignDrillTo(docId, pid, card);
-              });
-            }
-
-            if (docId === newId) { card.classList.add('added'); setTimeout(()=>card.classList.remove('added'),2500); }
-            grid.appendChild(card);
-          }
+          allRows = rows;
+          renderRows();
         }catch(err){
           console.error('Failed to load drills:',err);
           grid.innerHTML = '<div class="empty-state">Failed to load drills.</div>';
         }
       }
+
+      function renderRows() {
+        grid.innerHTML = '';
+        const term = (searchInput.value || '').trim().toLowerCase();
+        const assignmentMode = assignedFilter.value || 'all';
+        const sortMode = sortSelect.value || 'newest';
+        const filtered = allRows.filter((row) => {
+          const assignedTo = row.data.assignedTo || '';
+          if (assignmentMode === 'assigned' && !assignedTo) return false;
+          if (assignmentMode === 'unassigned' && assignedTo) return false;
+          return matchesSearch(row, term);
+        });
+        sortRows(filtered, sortMode);
+        if (!filtered.length) {
+          grid.innerHTML = '<div class="empty-state">No drills match your current filters.</div>';
+          return;
+        }
+        for (const row of filtered) {
+          const docId = row.id; const d = row.data;
+          const card = document.createElement('article');
+          card.className = 'drill-card';
+          card.setAttribute('role','listitem');
+          const assignedTo = d.assignedTo || '';
+          card.innerHTML = `
+            <div class="drill-name">${d.name || 'Untitled'}</div>
+            <div class="meta" aria-label="Prescription">
+              <span class="chip">Reps: ${d.reps || 1}</span>
+              <span class="chip">Rest: ${d.rest || 0}s</span>
+              <span class="chip">${assignedTo ? 'Assigned' : 'Unassigned'}</span>
+            </div>
+            <p class="desc">${d.summary || 'No summary provided yet.'}</p>
+          `;
+          if (coachMembers && coachMembers.length) {
+            const sel = document.createElement('select');
+            sel.innerHTML = `<option value="">Assign to...</option>` + coachMembers.map(m=>`<option value="${m.docId}">${m.firstName} ${m.lastName}</option>`).join('');
+            sel.value = assignedTo;
+            const btn = document.createElement('button');
+            btn.textContent = 'Save';
+            btn.className = 'action-btn';
+            const status = document.createElement('div');
+            status.className = 'assign-status';
+            status.textContent = assignedTo ? 'Assigned player selected' : 'Not assigned';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'assign-wrap';
+            wrapper.appendChild(sel);
+            wrapper.appendChild(btn);
+            wrapper.appendChild(status);
+            card.appendChild(wrapper);
+            btn.addEventListener('click', ()=>{
+              const pid = sel.value;
+              if (!pid) {
+                status.textContent = 'Select a player before saving';
+                return;
+              }
+              assignDrillTo(docId, pid, card, status, btn);
+            });
+          }
+
+          if (docId === newId) { card.classList.add('added'); setTimeout(()=>card.classList.remove('added'),2500); }
+          grid.appendChild(card);
+        }
+      }
+
+      searchInput.addEventListener('input', renderRows);
+      assignedFilter.addEventListener('change', renderRows);
+      sortSelect.addEventListener('change', renderRows);
 
       // initial load if not using auth flow
       if (!window.firebase.auth) document.addEventListener('DOMContentLoaded', loadDrills);
