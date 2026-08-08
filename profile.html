@@ -2354,8 +2354,7 @@
                                 if (isPlayerView) {
                                     showDrillModal(doc.id, d);
                                 } else {
-                                    const qs = new URLSearchParams(); qs.set('drill', doc.id); if (targetPlayerDocId) qs.set('player', targetPlayerDocId);
-                                    location.href = `drillcreation.html?${qs.toString()}`;
+                                    location.href = buildDrillViewUrl(doc.id, targetPlayerDocId);
                                 }
                             });
                             assignedRow.appendChild(el);
@@ -2977,6 +2976,14 @@
         function buildAddDrillUrl() {
             const params = new URLSearchParams();
             if (selectedPlayerDocId) params.set('player', selectedPlayerDocId);
+            params.set('userType', isCoach ? 'coach' : 'player');
+            return `drillcreation.html?${params.toString()}`;
+        }
+
+        function buildDrillViewUrl(drillId, playerDocId = selectedPlayerDocId) {
+            const params = new URLSearchParams();
+            params.set('drill', drillId);
+            if (playerDocId) params.set('player', playerDocId);
             params.set('userType', isCoach ? 'coach' : 'player');
             return `drillcreation.html?${params.toString()}`;
         }
@@ -4012,8 +4019,9 @@
                         
                         if (drills.length > 0) {
                             drills.forEach(drill => {
+                                const drillUrl = buildDrillViewUrl(drill.id, playerDocId);
                                 html += `
-                                    <div class="idp-item" style="cursor: pointer;" onclick="window.location.href='drillcreation.html?drill=${drill.id}'">
+                                    <div class="idp-item" style="cursor: pointer;" onclick="window.location.href='${drillUrl}'">
                                         <div class="idp-item-title">${drill.name || 'Drill'}</div>
                                         <div class="idp-item-desc">Reps: ${drill.reps || 'N/A'} • Click to view</div>
                                     </div>
@@ -4237,6 +4245,36 @@
                             ctx.restore();
                         }
                     }
+                });
+            }
+
+            if (drillData.arrows && drillData.arrows.length > 0) {
+                drillData.arrows.forEach(arrow => {
+                    const startPoint = arrow.start ?? (arrow.x1 !== undefined && arrow.y1 !== undefined ? { x: arrow.x1, y: arrow.y1 } : null);
+                    const endPoint = arrow.end ?? (arrow.x2 !== undefined && arrow.y2 !== undefined ? { x: arrow.x2, y: arrow.y2 } : null);
+                    if (!startPoint || !endPoint) return;
+
+                    const start = transform(startPoint.x, startPoint.y);
+                    const end = transform(endPoint.x, endPoint.y);
+                    ctx.beginPath();
+                    ctx.strokeStyle = arrow.color || '#FFD166';
+                    ctx.lineWidth = 3;
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.stroke();
+
+                    const angle = Math.atan2(end.y - start.y, end.x - start.x);
+                    ctx.save();
+                    ctx.translate(end.x, end.y);
+                    ctx.rotate(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(-10, -5);
+                    ctx.lineTo(-10, 5);
+                    ctx.closePath();
+                    ctx.fillStyle = arrow.color || '#FFD166';
+                    ctx.fill();
+                    ctx.restore();
                 });
             }
             

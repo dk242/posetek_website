@@ -376,6 +376,7 @@
                 grid.appendChild(el);
               });
             }
+            requestAnimationFrame(() => loadSavedLayout(d));
           } catch (err) { console.error('Failed to load drill', err); alert('Failed to load drill'); }
         })();
       }
@@ -396,6 +397,70 @@
         return items;
       }
 
+      function normalizePoint(x, y) {
+        const gridRect = grid.getBoundingClientRect();
+        return {
+          x: gridRect.width ? Math.round((x / gridRect.width) * 10000) / 10000 : 0,
+          y: gridRect.height ? Math.round((y / gridRect.height) * 10000) / 10000 : 0
+        };
+      }
+
+      function denormalizePoint(point, rect = grid.getBoundingClientRect()) {
+        return {
+          x: (point?.x || 0) * rect.width,
+          y: (point?.y || 0) * rect.height
+        };
+      }
+
+      function collectPaths() {
+        const points = pathState.active
+          ? (pathState.points.length >= 3 ? chaikinSmooth(pathState.points, 3) : [...pathState.points])
+          : pathState.smoothed;
+        if (!Array.isArray(points) || points.length < 2) return [];
+        return [{
+          color: '#FFFFFF',
+          points: points.map((pt) => normalizePoint(pt.x, pt.y))
+        }];
+      }
+
+      function collectArrows() {
+        return arrows.map((arrow) => ({
+          color: arrow.color || '#FFD166',
+          start: normalizePoint(arrow.x1, arrow.y1),
+          end: normalizePoint(arrow.x2, arrow.y2)
+        }));
+      }
+
+      function loadSavedLayout(drillData) {
+        const rect = grid.getBoundingClientRect();
+        if (!rect.width || !rect.height) {
+          requestAnimationFrame(() => loadSavedLayout(drillData));
+          return;
+        }
+        pathState.points = [];
+        pathState.smoothed = [];
+        const savedPath = Array.isArray(drillData?.paths)
+          ? drillData.paths.find((path) => Array.isArray(path?.points) && path.points.length >= 2)
+          : null;
+        if (savedPath) {
+          pathState.smoothed = savedPath.points.map((point) => denormalizePoint(point, rect));
+        }
+
+        arrows.length = 0;
+        if (Array.isArray(drillData?.arrows)) {
+          drillData.arrows.forEach((arrow) => {
+            const startPoint = arrow?.start ?? (arrow?.x1 !== undefined && arrow?.y1 !== undefined ? { x: arrow.x1, y: arrow.y1 } : null);
+            const endPoint = arrow?.end ?? (arrow?.x2 !== undefined && arrow?.y2 !== undefined ? { x: arrow.x2, y: arrow.y2 } : null);
+            if (!startPoint || !endPoint) return;
+            const start = denormalizePoint(startPoint, rect);
+            const end = denormalizePoint(endPoint, rect);
+            arrows.push({ x1: start.x, y1: start.y, x2: end.x, y2: end.y, color: arrow?.color || '#FFD166' });
+          });
+        }
+
+        redrawAll();
+      }
+
       // Wait for auth to be ready and then handle save
       document.getElementById('finishDrillBtn').addEventListener('click', async ()=>{
         if (savingDrill) return;
@@ -404,6 +469,8 @@
         const rest = document.getElementById('rest').value || '0';
         const summary = document.getElementById('summary').value || '';
         const items = collectItems();
+        const paths = collectPaths();
+        const savedArrows = collectArrows();
 
         const user = auth.currentUser || await waitForAuthState();
         if (!user) {
@@ -416,7 +483,7 @@
         saveStatusEl.textContent = 'Saving drill...';
 
         const doc = {
-          name, reps, rest, summary, items,
+          name, reps, rest, summary, items, paths, arrows: savedArrows,
           createdBy: user.uid,
           assignedTo: assignedTo,
           // include a client timestamp so the drill shows up immediately in client queries
@@ -874,7 +941,7 @@
       }
 
       // Persistent arrows
-      arrows.forEach(a => drawArrow(a.x1, a.y1, a.x2, a.y2, '#FFD166'));
+      arrows.forEach(a => drawArrow(a.x1, a.y1, a.x2, a.y2, a.color || '#FFD166'));
 
       // Live arrow preview during draw
       if (arrowState.active && arrowState.start && arrowState.current){
