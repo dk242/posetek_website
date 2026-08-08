@@ -211,7 +211,7 @@
 <body>
   <header>
   <div class="logo">PoseTek</div>
-    <nav class="nav-links"><a href="sessions.html">Back to Sessions</a></nav>
+    <nav class="nav-links"><a href="sessions.html" id="backLink">Back to Sessions</a></nav>
   </header>
   <div class="builder-status">
     <div id="modeStatus">Mode: Place equipment</div>
@@ -308,6 +308,7 @@
       const db = firebase.firestore();
       const saveStatusEl = document.getElementById('saveStatus');
       const finishDrillBtn = document.getElementById('finishDrillBtn');
+      const backLink = document.getElementById('backLink');
       let savingDrill = false;
       const waitForAuthState = () => new Promise((resolve) => {
         const unsub = auth.onAuthStateChanged((user) => {
@@ -316,9 +317,33 @@
         });
       });
 
-      // If URL contains ?drill=ID, load it in view-only mode
       const urlParams = new URLSearchParams(location.search);
+      const assignedTo = urlParams.get('player') || null;
+      const userTypeParam = urlParams.get('userType');
       const viewDrillId = urlParams.get('drill');
+
+      function buildContextUrl(path, extraParams = {}) {
+        const nextParams = new URLSearchParams();
+        if (assignedTo) nextParams.set('player', assignedTo);
+        if (userTypeParam) nextParams.set('userType', userTypeParam);
+        Object.entries(extraParams).forEach(([key, value]) => {
+          if (value === null || value === undefined || value === '') nextParams.delete(key);
+          else nextParams.set(key, value);
+        });
+        const query = nextParams.toString();
+        return query ? `${path}?${query}` : path;
+      }
+
+      if (backLink) {
+        if (assignedTo) {
+          backLink.href = buildContextUrl('drillList.html');
+          backLink.textContent = 'Back to Drills';
+        } else {
+          backLink.href = buildContextUrl('sessions.html');
+        }
+      }
+
+      // If URL contains ?drill=ID, load it in view-only mode
       if (viewDrillId) {
         isViewMode = true;
         // Hide interactive controls for view-only
@@ -380,9 +405,6 @@
         const summary = document.getElementById('summary').value || '';
         const items = collectItems();
 
-        const urlParams = new URLSearchParams(location.search);
-        const assignedTo = urlParams.get('player') || null;
-
         const user = auth.currentUser || await waitForAuthState();
         if (!user) {
           saveStatusEl.textContent = 'Please sign in to save drills.';
@@ -406,7 +428,7 @@
         try {
           const res = await db.collection('drills').add(doc);
           redirected = true;
-          location.href = `drillList.html?new=${res.id}${assignedTo ? `&player=${assignedTo}` : ''}`;
+          location.href = buildContextUrl('drillList.html', { new: res.id });
         } catch (err) {
           console.error('Failed to save drill:', err);
           saveStatusEl.textContent = 'Failed to save drill. Please try again.';

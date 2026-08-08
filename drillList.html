@@ -210,7 +210,7 @@
     <nav class="nav-links">
       <a href="drillList.html" id="assignedDrillsLink">Assigned Drills</a>
       <a href="profile.html" id="playerProfileLink">Player Profile</a>
-      <a href="drillcreation.html">Create Drill</a>
+      <a href="drillcreation.html" id="createDrillNavLink">Create Drill</a>
     </nav>
   </header>
 
@@ -242,7 +242,7 @@
       <div class="panel-header">
         <div class="panel-title">Drills</div>
         <div class="panel-actions">
-          <a href="drillcreation.html">+ New Drill</a>
+          <a href="drillcreation.html" id="newDrillLink">+ New Drill</a>
         </div>
       </div>
       <div class="toolbar" aria-label="Drill filters">
@@ -288,17 +288,43 @@
       const db = firebase.firestore();
       const auth = firebase.auth();
 
+      const params = new URLSearchParams(location.search);
+      const playerParam = params.get('player');
+      const newId = params.get('new');
+      const userTypeParam = params.get('userType');
       const grid = document.getElementById('drillGrid');
       const searchInput = document.getElementById('searchInput');
       const assignedFilter = document.getElementById('assignedFilter');
       const sortSelect = document.getElementById('sortSelect');
-      const params = new URLSearchParams(location.search);
-      const playerParam = params.get('player');
-      const newId = params.get('new');
+      const assignedDrillsLink = document.getElementById('assignedDrillsLink');
+      const playerProfileLink = document.getElementById('playerProfileLink');
+      const createDrillNavLink = document.getElementById('createDrillNavLink');
+      const newDrillLink = document.getElementById('newDrillLink');
 
       let coachMembers = [];
       let allRows = [];
       let hasLoadedOnce = false;
+
+      function buildContextUrl(path, extraParams = {}) {
+        const nextParams = new URLSearchParams();
+        if (playerParam) nextParams.set('player', playerParam);
+        if (userTypeParam) nextParams.set('userType', userTypeParam);
+        Object.entries(extraParams).forEach(([key, value]) => {
+          if (value === null || value === undefined || value === '') nextParams.delete(key);
+          else nextParams.set(key, value);
+        });
+        const query = nextParams.toString();
+        return query ? `${path}?${query}` : path;
+      }
+
+      function syncContextLinks() {
+        if (assignedDrillsLink) assignedDrillsLink.href = buildContextUrl('drillList.html', { new: null });
+        if (playerProfileLink) playerProfileLink.href = buildContextUrl('profile.html', { new: null });
+        if (createDrillNavLink) createDrillNavLink.href = buildContextUrl('drillcreation.html', { new: null });
+        if (newDrillLink) newDrillLink.href = buildContextUrl('drillcreation.html', { new: null });
+      }
+
+      syncContextLinks();
 
       auth.onAuthStateChanged(async (user) => {
         // If user is coach, load their members for the assign UI
@@ -374,7 +400,7 @@
         try{
           let q;
           if (playerParam) {
-            q = db.collection('drills').where('assignedTo','==', playerParam).orderBy('createdAtClient','desc');
+            q = db.collection('drills').where('assignedTo','==', playerParam);
           } else {
             q = db.collection('drills').orderBy('createdAtClient','desc').limit(100);
           }
