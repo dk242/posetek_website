@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PoseTek — Failure Cases</title>
+<link rel="icon" href="/images/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a2e;
+    --secondary: #2d5e4a;
+    --accent: #4c8c6a;
+    --accent-light: #5ea87e;
+    --text-light: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --error: #ff6b6b;
+    --warning: #ffd166;
+    --transition: all .2s ease;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--primary);
+    color: var(--text-light);
+    min-height: 100vh;
+  }
+  header {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 24px;
+    background: rgba(26, 58, 46, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  header .logo { font-weight: 700; font-size: 1.15rem; }
+  header .sub { color: var(--text-muted); font-size: .85rem; }
+  header .count { margin-left: auto; color: var(--text-muted); font-size: .85rem; }
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .filters label { display: flex; flex-direction: column; gap: 4px; font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .filters select, .filters input {
+    background: var(--secondary); color: var(--text-light);
+    border: 1px solid var(--card-border); border-radius: 8px;
+    padding: 7px 10px; font-size: .85rem; font-family: inherit;
+    min-width: 130px;
+  }
+  .filters input[type=date] { color-scheme: dark; }
+  .filters button {
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: .85rem; font-weight: 600; cursor: pointer;
+    transition: var(--transition);
+  }
+  .filters button:hover { background: var(--accent-light); }
+
+  /* Breakdown bars */
+  .breakdown h3 { font-size: .85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
+  .bar-row { display: grid; grid-template-columns: 190px 1fr 44px; gap: 10px; align-items: center; padding: 3px 0; cursor: pointer; }
+  .bar-row:hover .bar-label { color: var(--text-light); }
+  .bar-label { font-size: .82rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: var(--transition); }
+  .bar-track { height: 12px; }
+  .bar-fill { height: 12px; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .bar-count { font-size: .8rem; color: var(--text-light); font-variant-numeric: tabular-nums; }
+
+  /* Case list */
+  .case-row {
+    display: grid;
+    grid-template-columns: 150px 130px 120px 1fr 170px 70px;
+    gap: 12px; align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--card-border);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: .84rem;
+  }
+  .case-row:last-child { border-bottom: none; }
+  .case-row:hover { background: rgba(255,255,255,0.05); }
+  .case-row.head { cursor: default; color: var(--text-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; }
+  .case-row.head:hover { background: none; }
+  .case-time { color: var(--text-muted); }
+  .case-msg { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .case-loc { color: var(--text-muted); font-size: .76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .group-head { padding: 12px 14px 6px; font-size: .8rem; font-weight: 600; color: var(--accent-light); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 999px;
+    font-size: .72rem; font-weight: 600; white-space: nowrap;
+  }
+  .badge.hard { background: rgba(255,107,107,.15); color: var(--error); }
+  .badge.partial { background: rgba(255,209,102,.15); color: var(--warning); }
+  .badge.pose { background: rgba(255,255,255,.12); color: var(--text-muted); }
+  .stage-chip {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.1); font-size: .74rem; color: var(--text-light);
+    margin: 2px 4px 2px 0;
+  }
+  .empty { padding: 30px; text-align: center; color: var(--text-muted); font-size: .9rem; }
+  .list-card { overflow-x: auto; }
+  @media (max-width: 760px) {
+    .case-row { grid-template-columns: 1fr 1fr; grid-auto-rows: auto; }
+    .case-row.head { display: none; }
+    .case-msg { grid-column: 1 / -1; white-space: normal; }
+    .bar-row { grid-template-columns: 110px 1fr 40px; }
+  }
+
+  /* Detail overlay */
+  #detail {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(10, 24, 18, 0.96);
+    overflow-y: auto;
+    display: none;
+  }
+  #detail.open { display: block; }
+  .detail-inner { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
+  .detail-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .detail-top h2 { font-size: 1.2rem; }
+  .detail-top .close {
+    margin-left: auto; background: var(--card-bg); color: var(--text-light);
+    border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 16px;
+    cursor: pointer; font-size: .85rem; font-family: inherit;
+  }
+  .detail-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .video-wrap { position: relative; background: #000; border-radius: 12px; overflow: hidden; }
+  .video-wrap video { display: block; width: 100%; max-height: 68vh; }
+  .video-wrap canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
+  .overlay-toggles { display: flex; gap: 14px; margin-top: 8px; font-size: .8rem; color: var(--text-muted); }
+  .overlay-toggles label { display: flex; gap: 5px; align-items: center; cursor: pointer; }
+  .video-missing { padding: 40px; text-align: center; color: var(--text-muted); background: var(--card-bg); border-radius: 12px; }
+
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; font-size: .84rem; }
+  .facts .k { color: var(--text-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; }
+  .facts .v { word-break: break-word; }
+  .fact { min-width: 0; }
+  .err-box { background: rgba(255,107,107,.1); border: 1px solid rgba(255,107,107,.25); border-radius: 10px; padding: 10px 12px; font-size: .84rem; margin-top: 12px; }
+  .note-box { background: rgba(255,209,102,.1); border: 1px solid rgba(255,209,102,.25); border-radius: 10px; padding: 10px 12px; font-size: .84rem; margin-top: 12px; }
+
+  details { margin-top: 12px; }
+  details summary { cursor: pointer; font-size: .84rem; color: var(--accent-light); font-weight: 600; padding: 4px 0; }
+  details pre {
+    background: rgba(0,0,0,.35); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 12px; margin-top: 8px;
+    font-size: .72rem; line-height: 1.5; overflow: auto; max-height: 360px;
+    color: var(--text-muted); white-space: pre-wrap; word-break: break-all;
+  }
+  .art-links { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; font-size: .8rem; }
+  .art-links a { color: var(--accent-light); text-decoration: none; word-break: break-all; }
+  .art-links a:hover { text-decoration: underline; }
+  .calib-img { width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid var(--card-border); }
+  .section-label { font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin: 14px 0 6px; }
+  .loading { text-align: center; padding: 40px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">PoseTek</span>
+  <span class="sub">Failure cases — processing debug</span>
+  <span class="count" id="headerCount"></span>
+</header>
+
+<main>
+  <div class="card filters">
+    <label>Drill
+      <select id="fDrill"><option value="">All</option></select>
+    </label>
+    <label>Type
+      <select id="fKind">
+        <option value="">All</option>
+        <option value="hard_failure">Hard failure</option>
+        <option value="partial_results">Partial results</option>
+        <option value="pose_validation_failed">Pose validation</option>
+      </select>
+    </label>
+    <label>Failed stage
+      <select id="fStage"><option value="">All</option></select>
+    </label>
+    <label>From
+      <input type="date" id="fFrom">
+    </label>
+    <label>To
+      <input type="date" id="fTo">
+    </label>
+    <label>Group by
+      <select id="fGroup">
+        <option value="drill">Drill</option>
+        <option value="stage">Failure mode</option>
+        <option value="kind">Type</option>
+        <option value="day">Date</option>
+      </select>
+    </label>
+    <button id="btnRefresh">Refresh</button>
+  </div>
+
+  <div class="card breakdown">
+    <h3>Breakdown</h3>
+    <div id="breakdown"></div>
+  </div>
+
+  <div class="card list-card" style="padding: 4px 0;">
+    <div id="caseList"><div class="loading">Loading failure cases…</div></div>
+  </div>
+</main>
+
+<div id="detail"><div class="detail-inner" id="detailInner"></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
+  authDomain: "kickai-69dd0.firebaseapp.com",
+  projectId: "kickai-69dd0",
+  storageBucket: "kickai-69dd0.firebasestorage.app",
+  messagingSenderId: "839600313930",
+  appId: "1:839600313930:web:13b1e94c2c540561e3f8b3"
+});
+const db = firebase.firestore();
+
+/* ------------------------------------------------------------------ data */
+
+let allCases = [];
+let filtered = [];
+
+const KIND_META = {
+  hard_failure:          { label: "✕ hard failure",    cls: "hard" },
+  partial_results:       { label: "◐ partial",         cls: "partial" },
+  pose_validation_failed:{ label: "◇ pose validation", cls: "pose" }
+};
+
+function normalize(doc) {
+  const d = doc.data() || {};
+  const storage = d.storage || {};
+  return {
+    id: doc.id,
+    createdAt: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null,
+    deviceCreatedAt: d.deviceCreatedAt || null,
+    kind: d.kind || "hard_failure",
+    drill: d.drillType || "unknown",
+    stage: d.failureStage || d.failedStepID || "unknown",
+    failedSteps: Array.isArray(d.failedSteps) ? d.failedSteps : [],
+    failedStepTitle: d.failedStepTitle || null,
+    stateTitle: d.stateTitle || "",
+    message: d.errorMessage || "",
+    diagnostics: d.diagnostics || null,
+    player: d.playerDocumentID || "?",
+    session: d.sessionNumber ?? null,
+    rep: d.repNumber ?? null,
+    repId: d.repId || null,
+    appVersion: d.appVersion || "?",
+    build: d.build || "?",
+    iosVersion: d.iosVersion || "?",
+    deviceModel: d.deviceModel || "?",
+    capture: d.capture || null,
+    uploadState: d.artifactUploadState || "?",
+    userNote: d.userNote || null,
+    storage: {
+      videoURL: safeURL(storage.videoURL),
+      calibrationImageURL: safeURL(storage.calibrationImageURL),
+      reportURL: safeURL(storage.reportURL),
+      logURL: safeURL(storage.logURL),
+      repArtifactFolder: storage.repArtifactFolder || null,
+      repArtifacts: (Array.isArray(storage.repArtifacts) ? storage.repArtifacts : [])
+        .map(a => a && a.path ? { path: String(a.path), url: safeURL(a.url) } : null)
+        .filter(Boolean),
+      sessionRootArtifacts: Array.isArray(storage.sessionRootArtifacts) ? storage.sessionRootArtifacts : []
+    }
+  };
+}
+
+async function fetchCases() {
+  document.getElementById("caseList").innerHTML = '<div class="loading">Loading failure cases…</div>';
+  try {
+    const snap = await db.collection("failureCases").orderBy("createdAt", "desc").limit(500).get();
+    allCases = snap.docs.map(normalize);
+    populateFilterOptions();
+    applyFilters();
+  } catch (err) {
+    document.getElementById("caseList").innerHTML =
+      '<div class="empty">Could not load failure cases: ' + escapeHtml(err.message) + "</div>";
+  }
+}
+
+/* ------------------------------------------------------------------ filters */
+
+function populateFilterOptions() {
+  fillOptions("fDrill", [...new Set(allCases.map(c => c.drill))].sort());
+  fillOptions("fStage", [...new Set(allCases.map(c => c.stage))].sort());
+}
+
+function fillOptions(id, values) {
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All</option>' +
+    values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  if (values.includes(current)) sel.value = current;
+}
+
+function applyFilters() {
+  const drill = document.getElementById("fDrill").value;
+  const kind = document.getElementById("fKind").value;
+  const stage = document.getElementById("fStage").value;
+  const from = document.getElementById("fFrom").value ? new Date(document.getElementById("fFrom").value + "T00:00:00") : null;
+  // Exclusive next-midnight bound so the last second of the "To" day is kept.
+  let to = null;
+  if (document.getElementById("fTo").value) {
+    to = new Date(document.getElementById("fTo").value + "T00:00:00");
+    to.setDate(to.getDate() + 1);
+  }
+
+  filtered = allCases.filter(c =>
+    (!drill || c.drill === drill) &&
+    (!kind || c.kind === kind) &&
+    (!stage || c.stage === stage) &&
+    (!from || (c.createdAt && c.createdAt >= from)) &&
+    (!to || (c.createdAt && c.createdAt < to))
+  );
+
+  document.getElementById("headerCount").textContent =
+    filtered.length + " of " + allCases.length + " cases (latest 500)";
+  renderBreakdown();
+  renderList();
+}
+
+/* ------------------------------------------------------------------ breakdown */
+
+function localISODate(d) {
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// value = raw filterable key, label = display text.
+function groupInfo(c, mode) {
+  if (mode === "drill") return { value: c.drill, label: c.drill };
+  if (mode === "kind") {
+    const label = (KIND_META[c.kind] || { label: c.kind }).label.replace(/^[^\s]+\s/, "");
+    return { value: c.kind, label };
+  }
+  if (mode === "day") {
+    return c.createdAt
+      ? { value: localISODate(c.createdAt), label: c.createdAt.toLocaleDateString() }
+      : { value: "", label: "no date" };
+  }
+  return { value: c.stage, label: c.stage };
+}
+
+function renderBreakdown() {
+  const mode = document.getElementById("fGroup").value;
+  const counts = new Map(); // label -> { value, n }
+  filtered.forEach(c => {
+    const g = groupInfo(c, mode);
+    const cur = counts.get(g.label) || { value: g.value, n: 0 };
+    cur.n += 1;
+    counts.set(g.label, cur);
+  });
+  const entries = [...counts.entries()].sort((a, b) => b[1].n - a[1].n);
+  const max = entries.length ? entries[0][1].n : 1;
+  const el = document.getElementById("breakdown");
+  if (!entries.length) { el.innerHTML = '<div class="empty">Nothing to summarize.</div>'; return; }
+  el.innerHTML = entries.map(([label, g]) => `
+    <div class="bar-row" data-value="${escapeAttr(g.value)}" title="Click to filter">
+      <div class="bar-label">${escapeHtml(label)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (g.n / max) * 100)}%"></div></div>
+      <div class="bar-count">${g.n}</div>
+    </div>`).join("");
+  el.querySelectorAll(".bar-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const mode = document.getElementById("fGroup").value;
+      const value = row.dataset.value;
+      if (!value) return;
+      if (mode === "drill") document.getElementById("fDrill").value = value;
+      else if (mode === "stage") document.getElementById("fStage").value = value;
+      else if (mode === "kind") document.getElementById("fKind").value = value;
+      else if (mode === "day") {
+        document.getElementById("fFrom").value = value;
+        document.getElementById("fTo").value = value;
+      } else return;
+      applyFilters();
+    });
+  });
+}
+
+/* ------------------------------------------------------------------ list */
+
+function renderList() {
+  const el = document.getElementById("caseList");
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No failure cases match the current filters.</div>'; return; }
+
+  const mode = document.getElementById("fGroup").value;
+  const groups = new Map();
+  filtered.forEach(c => {
+    const k = groupInfo(c, mode).label;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(c);
+  });
+
+  let html = `<div class="case-row head">
+    <div>Time</div><div>Drill</div><div>Type</div><div>Failed stage / message</div><div>Player · session · rep</div><div>Upload</div>
+  </div>`;
+  for (const [k, cases] of groups) {
+    html += `<div class="group-head">${escapeHtml(k)} · ${cases.length}</div>`;
+    html += cases.map(c => {
+      const meta = KIND_META[c.kind] || { label: c.kind, cls: "pose" };
+      return `<div class="case-row" data-id="${escapeAttr(c.id)}">
+        <div class="case-time">${c.createdAt ? formatTime(c.createdAt) : "—"}</div>
+        <div>${escapeHtml(c.drill)}</div>
+        <div><span class="badge ${meta.cls}">${escapeHtml(meta.label)}</span></div>
+        <div class="case-msg"><strong style="color:var(--text-light)">${escapeHtml(c.stage)}</strong> — ${escapeHtml(c.message)}</div>
+        <div class="case-loc">${escapeHtml(c.player)} · s${escapeHtml(String(c.session ?? "?"))} · rep ${escapeHtml(String(c.rep ?? "?"))}</div>
+        <div class="case-loc">${escapeHtml(c.uploadState)}</div>
+      </div>`;
+    }).join("");
+  }
+  el.innerHTML = html;
+  el.querySelectorAll(".case-row[data-id]").forEach(row =>
+    row.addEventListener("click", () => openDetail(row.dataset.id))
+  );
+}
+
+function formatTime(d) {
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " +
+    d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
+
+/* ------------------------------------------------------------------ detail */
+
+const MEDIAPIPE_EDGES = [
+  [11,12],[12,24],[24,23],[23,11],
+  [11,13],[13,15],[15,17],[15,19],[15,21],[17,19],
+  [12,14],[14,16],[16,18],[16,20],[16,22],[18,20],
+  [23,25],[25,27],[27,29],[27,31],[29,31],
+  [24,26],[26,28],[28,30],[28,32],[30,32]
+];
+
+let overlayState = null; // { video, canvas, poseFrames, comPoints, fps, showPose, showCom }
+let overlayGen = 0; // bumped per detail open/close so stale async setup bails out
+
+function openDetail(id) {
+  const c = allCases.find(x => x.id === id);
+  if (!c) return;
+  overlayGen++;
+  overlayState = null;
+  const meta = KIND_META[c.kind] || { label: c.kind, cls: "pose" };
+  const inner = document.getElementById("detailInner");
+
+  const videoBlock = c.storage.videoURL
+    ? `<div class="video-wrap"><video id="dVideo" src="${escapeAttr(c.storage.videoURL)}" controls muted playsinline crossorigin="anonymous"></video><canvas id="dCanvas"></canvas></div>
+       <div class="overlay-toggles" id="overlayToggles" style="display:none">
+         <label><input type="checkbox" id="tPose" checked> Pose skeleton</label>
+         <label><input type="checkbox" id="tCom" checked> COM track</label>
+         <span id="overlayInfo"></span>
+       </div>`
+    : `<div class="video-missing">No video was uploaded for this case.</div>`;
+
+  const calibBlock = c.storage.calibrationImageURL
+    ? `<div class="section-label">Calibration picture</div><img class="calib-img" src="${escapeAttr(c.storage.calibrationImageURL)}" alt="Calibration frame">`
+    : "";
+
+  const artifactLinks = c.storage.repArtifacts
+    .filter(a => a && a.url)
+    .map(a => `<a href="${escapeAttr(a.url)}" target="_blank" rel="noopener">${escapeHtml(fileName(a.path))}</a>`)
+    .join("");
+
+  inner.innerHTML = `
+    <div class="detail-top">
+      <h2>${escapeHtml(c.drill)}</h2>
+      <span class="badge ${meta.cls}">${escapeHtml(meta.label)}</span>
+      <span class="stage-chip">${escapeHtml(c.stage)}</span>
+      <span class="sub" style="color:var(--text-muted); font-size:.85rem">${c.createdAt ? formatTime(c.createdAt) : escapeHtml(c.deviceCreatedAt || "")}</span>
+      <button class="close" id="btnClose">Close ✕</button>
+    </div>
+    <div class="detail-grid">
+      <div>
+        ${videoBlock}
+        ${calibBlock}
+      </div>
+      <div class="card" style="margin:0">
+        <div class="facts">
+          <div class="fact"><div class="k">Player</div><div class="v">${escapeHtml(c.player)}</div></div>
+          <div class="fact"><div class="k">Session · rep</div><div class="v">session ${escapeHtml(String(c.session ?? "?"))} · rep ${escapeHtml(String(c.rep ?? "?"))}</div></div>
+          <div class="fact"><div class="k">Rep doc</div><div class="v">${escapeHtml(c.repId || "not created")}</div></div>
+          <div class="fact"><div class="k">Upload state</div><div class="v">${escapeHtml(c.uploadState)}</div></div>
+          <div class="fact"><div class="k">App</div><div class="v">${escapeHtml(c.appVersion)} (${escapeHtml(c.build)})</div></div>
+          <div class="fact"><div class="k">Device</div><div class="v">${escapeHtml(c.deviceModel)} · iOS ${escapeHtml(c.iosVersion)}</div></div>
+          ${c.capture ? `
+          <div class="fact"><div class="k">Capture</div><div class="v">${escapeHtml(String(c.capture.requestedFPS ?? "?"))} fps · ${escapeHtml(String(c.capture.requestedDurationSeconds ?? "?"))}s</div></div>
+          <div class="fact"><div class="k">Camera</div><div class="v">${escapeHtml(c.capture.cameraPreference || "?")}</div></div>` : ""}
+        </div>
+
+        <div class="section-label">Failed steps</div>
+        <div>${c.failedSteps.length ? c.failedSteps.map(s => `<span class="stage-chip">${escapeHtml(s)}</span>`).join("") : '<span class="stage-chip">' + escapeHtml(c.stage) + "</span>"}</div>
+
+        <div class="err-box"><strong>${escapeHtml(c.stateTitle)}</strong><br>${escapeHtml(c.message)}${c.diagnostics ? "<br><span style='color:var(--text-muted)'>" + escapeHtml(c.diagnostics) + "</span>" : ""}</div>
+        ${c.userNote ? `<div class="note-box"><strong>User note</strong><br>${escapeHtml(c.userNote)}</div>` : ""}
+
+        ${artifactLinks ? `<div class="section-label">Rep artifacts</div><div class="art-links">${artifactLinks}</div>` : ""}
+        ${c.storage.reportURL ? `<details id="dReport"><summary>report.json</summary><pre>Loading…</pre></details>` : ""}
+        <details id="dMetadata" style="display:none"><summary>metadata.json</summary><pre>Loading…</pre></details>
+        ${c.storage.logURL ? `<details id="dLog"><summary>Breadcrumb log (tail)</summary><pre>Loading…</pre></details>` : ""}
+      </div>
+    </div>`;
+
+  document.getElementById("detail").classList.add("open");
+  document.getElementById("btnClose").addEventListener("click", closeDetail);
+
+  if (c.storage.videoURL) setupVideoOverlay(c);
+  lazyLoadJSON(c.storage.reportURL, "dReport");
+  const metadataURL = artifactURL(c, "metadata.json");
+  if (metadataURL) {
+    const dm = document.getElementById("dMetadata");
+    dm.style.display = "";
+    lazyLoadJSON(metadataURL, "dMetadata");
+  }
+  if (c.storage.logURL) lazyLoadLog(c.storage.logURL, "dLog");
+}
+
+function closeDetail() {
+  document.getElementById("detail").classList.remove("open");
+  const v = document.getElementById("dVideo");
+  if (v) v.pause();
+  overlayGen++;
+  overlayState = null;
+}
+
+function fileName(path) { return (path || "").split("/").pop(); }
+function artifactURL(c, name) {
+  const hit = c.storage.repArtifacts.find(a => a && a.path && a.path.endsWith("/" + name));
+  return hit && hit.url ? hit.url : null;
+}
+
+async function lazyLoadJSON(url, detailsId) {
+  if (!url) return;
+  const el = document.getElementById(detailsId);
+  if (!el) return;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    const obj = await res.json();
+    el.querySelector("pre").textContent = JSON.stringify(obj, null, 2);
+  } catch (e) {
+    el.querySelector("pre").textContent = "Could not load: " + e.message;
+  }
+}
+
+async function lazyLoadLog(url, detailsId) {
+  const el = document.getElementById(detailsId);
+  if (!el) return;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
+    const lines = text.trim().split("\n");
+    el.querySelector("pre").textContent = lines.slice(-300).join("\n");
+  } catch (e) {
+    el.querySelector("pre").textContent = "Could not load: " + e.message;
+  }
+}
+
+/* --------------------------------------------------- video pose/COM overlay */
+
+async function setupVideoOverlay(c) {
+  const gen = overlayGen;
+  const video = document.getElementById("dVideo");
+  const canvas = document.getElementById("dCanvas");
+  if (!video || !canvas) return;
+
+  video.addEventListener("error", () => {
+    const info = document.getElementById("overlayInfo");
+    if (info) info.textContent = "video failed to load";
+  });
+
+  const [poseFrames, comPoints] = await Promise.all([
+    fetchSeries(artifactURL(c, "pose.json")),
+    fetchSeries(artifactURL(c, "COM.json"))
+  ]);
+  // A newer detail view (or close) took over while we were fetching.
+  if (gen !== overlayGen) return;
+  if (!poseFrames && !comPoints) return;
+
+  const toggles = document.getElementById("overlayToggles");
+  if (toggles) toggles.style.display = "flex";
+  const info = document.getElementById("overlayInfo");
+  if (info) info.textContent = (poseFrames ? poseFrames.length + " pose frames" : "no pose data");
+
+  overlayState = { video, canvas, poseFrames, comPoints, fps: 0 };
+
+  const resize = () => {
+    if (gen !== overlayGen) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = video.clientWidth * dpr;
+    canvas.height = video.clientHeight * dpr;
+    canvas.style.width = video.clientWidth + "px";
+    canvas.style.height = video.clientHeight + "px";
+    drawOverlay();
+  };
+  const recalcFps = () => {
+    if (gen !== overlayGen || !overlayState) return;
+    const len = (overlayState.poseFrames || overlayState.comPoints || []).length;
+    if (video.duration > 0 && len > 0) overlayState.fps = len / video.duration;
+    resize();
+  };
+  video.addEventListener("loadedmetadata", recalcFps);
+  if (video.readyState >= 1) recalcFps();
+  const observer = new ResizeObserver(resize);
+  observer.observe(video);
+  video.addEventListener("seeked", drawOverlay);
+  video.addEventListener("timeupdate", drawOverlay);
+  if (video.requestVideoFrameCallback) {
+    const loop = () => {
+      if (gen !== overlayGen) { observer.disconnect(); return; }
+      drawOverlay();
+      video.requestVideoFrameCallback(loop);
+    };
+    video.requestVideoFrameCallback(loop);
+  }
+  ["tPose", "tCom"].forEach(id => {
+    const t = document.getElementById(id);
+    if (t) t.addEventListener("change", drawOverlay);
+  });
+}
+
+async function fetchSeries(url) {
+  if (!url) return null;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    // The app's Python-compatible JSON writer can emit bare NaN/Infinity,
+    // which strict JSON.parse rejects — neutralize them to null.
+    const text = await res.text();
+    const arr = JSON.parse(text.replace(/\bNaN\b|\bInfinity\b|-Infinity/g, "null"));
+    return Array.isArray(arr) && arr.length ? arr : null;
+  } catch (e) { return null; }
+}
+
+function landmarkPoint(pt) {
+  if (Array.isArray(pt) && pt.length >= 2 && pt[0] != null && pt[1] != null) {
+    return { x: pt[0], y: pt[1], v: pt.length > 3 && pt[3] != null ? pt[3] : 1 };
+  }
+  if (pt && typeof pt === "object" && pt.x != null && pt.y != null) {
+    return { x: pt.x, y: pt.y, v: pt.visibility != null ? pt.visibility : 1 };
+  }
+  return null;
+}
+
+function drawOverlay() {
+  if (!overlayState) return;
+  const { video, canvas, poseFrames, comPoints, fps } = overlayState;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!fps) return;
+
+  const len = (poseFrames || comPoints || []).length;
+  const idx = Math.min(len - 1, Math.max(0, Math.floor(video.currentTime * fps)));
+
+  // The video letterboxes inside its element (object-fit: contain) whenever
+  // max-height clamps a portrait clip — map normalized coords into the actual
+  // content rect, not the element box.
+  const cw = canvas.width, ch = canvas.height;
+  const vw = video.videoWidth || 1, vh = video.videoHeight || 1;
+  const scale = Math.min(cw / vw, ch / vh);
+  const W = vw * scale, H = vh * scale;
+  const ox = (cw - W) / 2, oy = (ch - H) / 2;
+  const mapX = x => ox + x * W;
+  const mapY = y => oy + y * H;
+
+  const showPose = !document.getElementById("tPose") || document.getElementById("tPose").checked;
+  const showCom = !document.getElementById("tCom") || document.getElementById("tCom").checked;
+
+  if (showPose && poseFrames && poseFrames[idx]) {
+    const pts = Array.isArray(poseFrames[idx]) ? poseFrames[idx].map(landmarkPoint) : null;
+    if (pts) {
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.lineWidth = Math.max(2, W / 500);
+      MEDIAPIPE_EDGES.forEach(([a, b]) => {
+        const pa = pts[a], pb = pts[b];
+        if (!pa || !pb || pa.v < 0.2 || pb.v < 0.2) return;
+        ctx.beginPath();
+        ctx.moveTo(mapX(pa.x), mapY(pa.y));
+        ctx.lineTo(mapX(pb.x), mapY(pb.y));
+        ctx.stroke();
+      });
+      ctx.fillStyle = "rgba(34,197,94,0.95)";
+      const r = Math.max(2, W / 300);
+      pts.forEach(p => {
+        if (!p || p.v < 0.2) return;
+        ctx.beginPath();
+        ctx.arc(mapX(p.x), mapY(p.y), r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  }
+
+  if (showCom && comPoints) {
+    // Trailing COM track plus the current point.
+    ctx.fillStyle = "rgba(255,209,102,0.5)";
+    for (let i = Math.max(0, idx - 30); i < idx; i++) {
+      const p = landmarkPoint(comPoints[i]);
+      if (!p) continue;
+      ctx.beginPath();
+      ctx.arc(mapX(p.x), mapY(p.y), Math.max(1.5, W / 600), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    const cur = landmarkPoint(comPoints[idx]);
+    if (cur) {
+      ctx.fillStyle = "#ffd166";
+      ctx.strokeStyle = "rgba(0,0,0,0.5)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(mapX(cur.x), mapY(cur.y), Math.max(4, W / 200), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ misc */
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, ch =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+// Docs are attacker-writable while Firestore rules are open — only ever hand
+// href/src/fetch a Firebase Storage download URL, never a doc-supplied scheme.
+function safeURL(u) {
+  try {
+    const p = new URL(String(u));
+    if (p.protocol === "https:" && p.hostname === "firebasestorage.googleapis.com") return p.href;
+  } catch (_) {}
+  return null;
+}
+
+["fDrill", "fKind", "fStage", "fFrom", "fTo", "fGroup"].forEach(id =>
+  document.getElementById(id).addEventListener("change", applyFilters));
+document.getElementById("btnRefresh").addEventListener("click", fetchCases);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+
+fetchCases();
+</script>
+</body>
+</html>
