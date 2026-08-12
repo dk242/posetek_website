@@ -9,11 +9,11 @@
   };
 
   const AXES = [
-    { key: "power", label: "Power", icon: "bolt" },
-    { key: "speed", label: "Speed", icon: "sprint" },
-    { key: "agility", label: "Agility", icon: "switch_access_shortcut" },
-    { key: "ballControl", label: "Ball Control", icon: "sports_soccer" },
-    { key: "striking", label: "Striking", icon: "target" }
+    { key: "power", label: "Power", icon: "bolt", drills: "Broad Jump and Jump" },
+    { key: "speed", label: "Speed", icon: "sprint", drills: "Sprint" },
+    { key: "agility", label: "Agility", icon: "switch_access_shortcut", drills: "Change of Direction" },
+    { key: "ballControl", label: "Ball Control", icon: "sports_soccer", drills: "Dribbling" },
+    { key: "striking", label: "Striking", icon: "target", drills: "Shooting" }
   ];
 
   function escapeHtml(value) {
@@ -64,6 +64,16 @@
     return new Set(reps.map(rep => `${rep._statsDrill || rep.repType || rep.drillType}:${rep.sessionNumber || 1}`)).size;
   }
 
+  function bestRep(reps, field, lowerIsBetter = true) {
+    return reps.reduce((best, rep) => {
+      const value = number(rep[field]);
+      if (value === null) return best;
+      if (!best) return rep;
+      const bestValue = number(best[field]);
+      return lowerIsBetter ? value < bestValue ? rep : best : value > bestValue ? rep : best;
+    }, null);
+  }
+
   function buildProfile(reps) {
     const broadReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "broadJump");
     const codReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "changeOfDirection");
@@ -96,9 +106,11 @@
 
     const power = mean(broadMetrics.map(metric => metric.score));
     const agility = mean(codMetrics.map(metric => metric.score));
+    const bestCodRep = bestRep(codReps, "totalTime", true);
     const axes = AXES.map(axis => ({
       ...axis,
-      score: axis.key === "power" ? power : axis.key === "agility" ? agility : null
+      score: axis.key === "power" ? power : axis.key === "agility" ? agility : null,
+      repCount: axis.key === "power" ? broadReps.length : axis.key === "agility" ? codReps.length : 0
     }));
     const scoredAxes = axes.filter(axis => axis.score !== null);
     return {
@@ -107,7 +119,7 @@
       totalReps: broadReps.length + codReps.length,
       totalSessions: sessionCount([...broadReps, ...codReps]),
       broad: { key: "broadJump", title: "Broad Jump", icon: "arrow_right_alt", reps: broadReps, metrics: broadMetrics, score: power },
-      cod: { key: "changeOfDirection", title: "Change of Direction", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility }
+      cod: { key: "changeOfDirection", title: "Change of Direction", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep }
     };
   }
 
@@ -144,12 +156,12 @@
       return `<line class="stats-radar-spoke${axis.score === null ? " missing" : ""}" x1="180" y1="148" x2="${edge.x}" y2="${edge.y}" />`;
     }).join("");
     const markers = athletePoints.map((current, index) => current
-      ? `<circle class="stats-radar-marker" cx="${current.x}" cy="${current.y}" r="5" data-axis="${axes[index].key}" />`
+      ? `<circle class="stats-radar-marker" cx="${current.x}" cy="${current.y}" r="5" data-stats-axis="${axes[index].key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axes[index].label)} summary" />`
       : "").join("");
     const labels = axes.map((axis, index) => {
       const labelPoint = point(index, 1.34);
       const scoreText = axis.score === null ? "—" : Math.round(axis.score);
-      return `<g class="stats-radar-label${axis.score === null ? " missing" : ""}" transform="translate(${labelPoint.x} ${labelPoint.y})"><text class="axis-name" text-anchor="middle" y="-2">${escapeHtml(axis.label)}</text><text class="axis-score" text-anchor="middle" y="13">${scoreText}</text></g>`;
+      return `<g class="stats-radar-label${axis.score === null ? " missing" : ""}" transform="translate(${labelPoint.x} ${labelPoint.y})" data-stats-axis="${axis.key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axis.label)} summary"><text class="axis-name" text-anchor="middle" y="-2">${escapeHtml(axis.label)}</text><text class="axis-score" text-anchor="middle" y="13">${scoreText}</text></g>`;
     }).join("");
     return `<svg class="stats-radar" viewBox="0 0 360 300" role="img" aria-label="Athlete skill map compared with the D1 standard">
       ${[0.25, 0.5, 0.75, 1].map(ratio => `<polygon class="stats-radar-grid" points="${polygon(ratio)}" />`).join("")}
@@ -185,6 +197,68 @@
     </section>`;
   }
 
+  function formatHeight(value) {
+    const centimeters = number(value);
+    if (centimeters === null) return "—";
+    const totalInches = Math.round(centimeters / 2.54);
+    return `${Math.floor(totalInches / 12)}' ${totalInches % 12}\"`;
+  }
+
+  function formatWeight(value) {
+    const kilograms = number(value);
+    return kilograms === null ? "—" : `${Math.round(kilograms * 2.20462)} lbs`;
+  }
+
+  function athleteInitials(name) {
+    return String(name || "Athlete").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+  }
+
+  function phaseMetric(label, value, className) {
+    const seconds = number(value);
+    return `<div class="stats-phase-metric ${className}"><small>${escapeHtml(label)}</small><strong>${seconds === null ? "—" : `${seconds.toFixed(2)} s`}</strong></div>`;
+  }
+
+  function axisDetail(axis, profile) {
+    const hasData = axis.score !== null;
+    let message = hasData
+      ? `${Math.round(axis.score)} vs D1, from ${axis.key === "power" ? "Broad Jump" : "Change of Direction"} across ${axis.repCount} ${axis.repCount === 1 ? "rep" : "reps"}.`
+      : `No data yet — record ${axis.drills}.`;
+    if (hasData && axis.repCount < 3) message += " Limited data.";
+    const phases = axis.key === "agility" && profile.cod.bestRep ? `<div class="stats-phase-grid" aria-label="Best agility rep phases">
+      ${phaseMetric("Start", profile.cod.bestRep.phase1Time, "start")}
+      ${phaseMetric("Turn", profile.cod.bestRep.phase2Time, "turn")}
+      ${phaseMetric("End", profile.cod.bestRep.phase3Time, "end")}
+      ${phaseMetric("Total time", profile.cod.bestRep.totalTime, "total")}
+    </div><p class="stats-phase-note">Phase times are from the athlete's fastest recorded change-of-direction rep.</p>` : "";
+    return `<section class="stats-axis-detail" data-axis-panel="${axis.key}" hidden>
+      <span class="stats-axis-detail-icon material-symbols-outlined">${axis.icon}</span>
+      <div class="stats-axis-detail-copy"><h3>${escapeHtml(axis.label)}</h3><p>${escapeHtml(message)}</p>${phases}</div>
+    </section>`;
+  }
+
+  function bind(root) {
+    if (!root || root.dataset.statsBound === "true") return;
+    root.dataset.statsBound = "true";
+    const selectAxis = key => {
+      root.querySelector(".stats-axis-prompt")?.toggleAttribute("hidden", true);
+      root.querySelectorAll("[data-axis-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.axisPanel !== key));
+      root.querySelectorAll("[data-stats-axis]").forEach(control => {
+        const selected = control.dataset.statsAxis === key;
+        control.classList.toggle("selected", selected);
+        control.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+    };
+    root.querySelectorAll("[data-stats-axis]").forEach(control => {
+      control.addEventListener("click", () => selectAxis(control.dataset.statsAxis));
+      control.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectAxis(control.dataset.statsAxis);
+        }
+      });
+    });
+  }
+
   function render(options) {
     const profile = buildProfile(Array.isArray(options.reps) ? options.reps : []);
     const ranked = profile.axes.filter(axis => axis.score !== null).sort((left, right) => right.score - left.score);
@@ -192,10 +266,18 @@
     const focus = ranked.length > 1 ? ranked[ranked.length - 1] : null;
     const missing = profile.axes.filter(axis => axis.score === null).map(axis => axis.label).join(", ");
     const breakdowns = [profile.broad, profile.cod].sort((left, right) => Number(right.metrics.length > 0) - Number(left.metrics.length > 0));
+    const athlete = options.athlete || {};
+    const athleteDisplayName = options.athleteName || "Athlete";
     return `<section class="athlete-stats" aria-label="Athlete Stats">
       <section class="stats-hero-card">
+        <div class="stats-athlete-identity">
+          <span class="stats-athlete-avatar">${escapeHtml(athleteInitials(athleteDisplayName))}</span>
+          <span class="stats-athlete-name"><small>Athlete profile</small><strong>${escapeHtml(athleteDisplayName)}</strong><em>${profile.totalReps} reps · ${profile.totalSessions} sessions</em></span>
+          <span class="stats-athlete-measure"><small>Height</small><strong>${escapeHtml(formatHeight(athlete.height))}</strong></span>
+          <span class="stats-athlete-measure"><small>Weight</small><strong>${escapeHtml(formatWeight(athlete.weight))}</strong></span>
+        </div>
         <div class="stats-score-block"><p>Overall vs D1</p><div><strong>${profile.overall === null ? "—" : Math.round(profile.overall)}</strong><span>/ 100</span></div>${profile.overall === null ? `<small>Record a drill to generate your profile</small>` : `<span class="benchmark-band ${band(profile.overall).key}"><span class="material-symbols-outlined">${band(profile.overall).icon}</span>${band(profile.overall).label}</span>`}</div>
-        <div class="stats-athlete-block"><strong>${escapeHtml(options.athleteName || "Athlete")}</strong><span>${profile.totalReps} reps · ${profile.totalSessions} sessions</span><small><span class="material-symbols-outlined">flag</span>General D1 standard</small></div>
+        <div class="stats-athlete-block"><small><span class="material-symbols-outlined">flag</span>General D1 standard</small></div>
         <div class="stats-focus-grid">
           ${strength ? summaryRow("star", "Strength", `${strength.label} · ${Math.round(strength.score)} vs D1`, "lime") : ""}
           ${focus ? summaryRow("center_focus_strong", "Focus area", `${focus.label} · ${Math.round(focus.score)} vs D1`, "orange") : ""}
@@ -206,6 +288,10 @@
         <header><div><h2>Skill Map</h2><p>Your profile against the D1 standard</p></div><span class="stats-recorded-count">${ranked.length}/${profile.axes.length} recorded</span></header>
         ${radarSvg(profile.axes)}
         <div class="stats-radar-legend"><span class="you"><i></i>You</span><span class="d1"><i></i>D1 standard</span><span class="untested"><i></i>Not tested</span></div>
+        <div class="stats-axis-details" aria-live="polite">
+          <p class="stats-axis-prompt"><span class="material-symbols-outlined">touch_app</span>Select any skill on the chart to view its summary.</p>
+          ${profile.axes.map(axis => axisDetail(axis, profile)).join("")}
+        </div>
         <p class="stats-radar-note">Power currently reflects Broad Jump. Agility reflects Change of Direction. The remaining axes will activate as the placeholder drills are connected.</p>
       </section>
       <div class="stats-section-heading"><h2>D1 Comparison</h2><p>Every available component metric against the D1 standard</p></div>
@@ -214,5 +300,5 @@
     </section>`;
   }
 
-  window.PoseTekAthleteStats = { render, buildProfile };
+  window.PoseTekAthleteStats = { render, buildProfile, bind };
 })();

@@ -74,7 +74,7 @@
     player: null,
     reps: [],
     statsReps: [],
-    activeView: params.get("view") === "stats" ? "stats" : "results",
+    activeView: params.get("view") === "results" ? "results" : "stats",
     currentRep: null,
     artifacts: {},
     frames: [],
@@ -356,43 +356,39 @@
     if (!window.PoseTekAthleteStats) {
       return `<section class="empty-panel"><h2>Stats unavailable</h2><p>The athlete stats module could not be loaded.</p></section>`;
     }
-    return window.PoseTekAthleteStats.render({ reps: state.statsReps, athleteName: athleteName() });
+    return window.PoseTekAthleteStats.render({
+      reps: state.statsReps,
+      athleteName: athleteName(),
+      athlete: state.player?.data || {}
+    });
   }
 
   function renderShell() {
     app.innerHTML = `
-      <section class="page-intro">
-        <div class="intro-copy">
-          <p class="eyebrow">${escapeHtml(config.eyebrow)}</p>
-          <div class="title-row">
-            <span class="drill-icon material-symbols-outlined">${config.drillIcon}</span>
-            <div><h1>${escapeHtml(config.title)}</h1><p class="athlete-line"><strong>${escapeHtml(athleteName())}</strong> · ${state.reps.length ? `Latest test ${escapeHtml(formatDate(state.reps[0].createdAtMillis))}` : "Awaiting first test"}</p></div>
-          </div>
-        </div>
-        <nav class="drill-switcher drill-catalog" aria-label="Athlete tests">${renderDrillCatalog()}</nav>
-      </section>
-      <nav class="page-view-switcher" aria-label="Results view">
-        <button class="page-view-button" type="button" data-page-view="results">Drill Results</button>
-        <button class="page-view-button" type="button" data-page-view="stats">Athlete Stats</button>
-      </nav>
       <div id="resultsSurface">
+        <section class="page-intro">
+          <div class="intro-copy">
+            <p class="eyebrow">${escapeHtml(config.eyebrow)}</p>
+            <div class="title-row">
+              <span class="drill-icon material-symbols-outlined">${config.drillIcon}</span>
+              <div><h1>${escapeHtml(config.title)}</h1><p class="athlete-line"><strong>${escapeHtml(athleteName())}</strong> · ${state.reps.length ? `Latest test ${escapeHtml(formatDate(state.reps[0].createdAtMillis))}` : "Awaiting first test"}</p></div>
+            </div>
+          </div>
+          <nav class="drill-switcher drill-catalog" aria-label="Athlete tests">${renderDrillCatalog()}</nav>
+        </section>
         <div id="validationBanner" class="validation-banner hidden"><span class="material-symbols-outlined">warning</span><span id="validationMessage"></span></div>
         ${state.reps.length ? renderResultsContent() : `<section class="empty-panel"><h2>No results yet</h2><p>${escapeHtml(config.emptyText)}</p></section>`}
       </div>
       <div id="statsSurface">${renderStatsContent()}</div>
     `;
 
-    const dashboardLink = document.getElementById("dashboardLink");
     const copyButton = document.getElementById("copyLinkButton");
     const brandLink = document.querySelector(".brand");
     if (brandLink && state.viewer?.role === "shared") brandLink.href = pageUrl(config.page);
-    if (dashboardLink) {
-      dashboardLink.classList.toggle("hidden", state.viewer?.role === "shared");
-      if (state.viewer?.role !== "shared") dashboardLink.href = pageUrl("kickingview.html");
-    }
     if (copyButton) copyButton.classList.toggle("hidden", state.viewer?.role !== "coach");
     bindStaticEvents();
     setActiveView(state.activeView, false);
+    window.PoseTekAthleteStats?.bind?.(document.getElementById("statsSurface"));
   }
 
   function renderResultsContent() {
@@ -432,13 +428,6 @@
     document.querySelectorAll("[data-page-view]").forEach(button => {
       button.addEventListener("click", () => setActiveView(button.dataset.pageView));
     });
-    const backButton = document.getElementById("backButton");
-    if (backButton) {
-      backButton.onclick = () => {
-        if (history.length > 1) history.back();
-        else location.href = state.viewer?.role === "coach" ? "kickingview.html" : pageUrl(config.page);
-      };
-    }
   }
 
   function setActiveView(view, updateUrl = true) {
@@ -452,7 +441,7 @@
     });
     if (updateUrl) {
       const nextUrl = new URL(location.href);
-      if (state.activeView === "stats") nextUrl.searchParams.set("view", "stats");
+      if (state.activeView === "results") nextUrl.searchParams.set("view", "results");
       else nextUrl.searchParams.delete("view");
       history.replaceState({}, "", nextUrl);
     }
@@ -1142,7 +1131,7 @@
   function startPreview() {
     state.preview = true;
     state.viewer = { role: "coach", uid: "preview", docId: "preview-coach", data: { members: ["preview-player"] } };
-    state.player = { id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete" } };
+    state.player = { id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete", height: 178, weight: 72.5 } };
     const previewValues = {
       broadJump: [1.82, 1.68, 1.74, 1.59],
       changeOfDirection: [4.42, 4.58, 4.51, 4.77]

@@ -1,28 +1,5 @@
 .page-intro { grid-template-columns: 1fr; align-items: start; gap: 14px; }
 
-.page-view-switcher {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  margin: 0 0 16px;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: rgba(255,255,255,.035);
-}
-
-.page-view-button {
-  min-height: 38px;
-  border: 0;
-  border-radius: 999px;
-  color: var(--muted);
-  background: transparent;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
-.page-view-button.active { color: #06170f; background: var(--accent); }
-
 .drill-catalog { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .drill-catalog::-webkit-scrollbar { display: none; }
 .drill-catalog a, .drill-catalog button { flex: 0 0 auto; }
@@ -51,6 +28,14 @@
   box-shadow: var(--shadow);
 }
 .stats-hero-card { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(190px,.6fr); gap: 16px 28px; padding: 18px; }
+.stats-athlete-identity { grid-column: 1/-1; display: grid; grid-template-columns: 48px minmax(150px,1fr) auto auto; align-items: center; gap: 12px; padding: 0 0 16px; border-bottom: 1px solid rgba(255,255,255,.09); }
+.stats-athlete-avatar { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 50%; color: #06170f; background: var(--accent); font-size: 15px; font-weight: 900; }
+.stats-athlete-name { display: flex; min-width: 0; flex-direction: column; }
+.stats-athlete-name small, .stats-athlete-measure small { color: var(--secondary); font-size: 8px; font-style: normal; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.stats-athlete-name strong { margin-top: 2px; overflow: hidden; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
+.stats-athlete-name em { margin-top: 3px; color: var(--muted); font-size: 10px; font-style: normal; }
+.stats-athlete-measure { min-width: 78px; padding: 8px 11px; border-radius: 13px; background: rgba(255,255,255,.045); text-align: left; }
+.stats-athlete-measure strong { display: block; margin-top: 3px; font-size: 13px; }
 .stats-score-block > p { margin: 0; color: var(--muted); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
 .stats-score-block > div { display: flex; align-items: baseline; gap: 6px; }
 .stats-score-block > div strong { font-size: 52px; font-weight: 900; letter-spacing: -.06em; }
@@ -83,16 +68,38 @@
 .stats-radar-reference { fill: rgba(255,255,255,.045); stroke: rgba(255,255,255,.55); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .stats-radar-athlete { fill: rgba(124,255,24,.2); stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
 .stats-radar-marker { fill: var(--accent); stroke: rgba(255,255,255,.9); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(124,255,24,.65)); }
-.stats-radar-label text { font-family: Inter,sans-serif; }
+.stats-radar-marker, .stats-radar-label { cursor: pointer; outline: none; }
+.stats-radar-marker.selected { r: 8; stroke: var(--accent); stroke-width: 3; fill: #fff; }
+.stats-radar-label text { font-family: Inter,sans-serif; pointer-events: none; }
 .stats-radar-label .axis-name { fill: #fff; font-size: 9px; font-weight: 750; }
 .stats-radar-label .axis-score { fill: var(--accent); font-size: 11px; font-weight: 900; }
 .stats-radar-label.missing .axis-name, .stats-radar-label.missing .axis-score { fill: rgba(255,255,255,.3); }
+.stats-radar-label.selected .axis-name { fill: var(--accent); font-weight: 900; }
+.stats-radar-label:focus .axis-name, .stats-radar-marker:focus { filter: drop-shadow(0 0 5px rgba(124,255,24,.9)); }
 .stats-radar-legend { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; color: var(--muted); font-size: 9px; font-weight: 650; }
 .stats-radar-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .stats-radar-legend i { width: 17px; height: 3px; border-radius: 999px; }
 .stats-radar-legend .you i { background: var(--accent); }
 .stats-radar-legend .d1 i { border-top: 2px dashed rgba(255,255,255,.55); }
 .stats-radar-legend .untested i { background: rgba(255,255,255,.2); }
+.stats-axis-details { margin-top: 14px; }
+.stats-axis-prompt { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 64px; margin: 0; padding: 13px; border: 1px dashed rgba(124,255,24,.24); border-radius: 16px; color: var(--muted); background: rgba(124,255,24,.035); font-size: 10px; text-align: center; }
+.stats-axis-prompt .material-symbols-outlined { color: var(--accent); font-size: 17px; }
+.stats-axis-detail { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 11px; padding: 14px; border: 1px solid rgba(124,255,24,.2); border-radius: 16px; background: rgba(124,255,24,.045); }
+.stats-axis-detail[hidden], .stats-axis-prompt[hidden] { display: none; }
+.stats-axis-detail-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; color: var(--accent); background: var(--accent-soft); font-size: 18px; }
+.stats-axis-detail-copy h3 { margin: 0; font-size: 14px; }
+.stats-axis-detail-copy > p { margin: 3px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.stats-phase-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; margin-top: 12px; }
+.stats-phase-metric { position: relative; overflow: hidden; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.05); }
+.stats-phase-metric::before { position: absolute; top: 0; right: 0; left: 0; height: 2px; background: rgba(255,255,255,.3); content: ""; }
+.stats-phase-metric.start::before { background: var(--outbound); }
+.stats-phase-metric.turn::before { background: var(--turn); }
+.stats-phase-metric.end::before { background: var(--inbound); }
+.stats-phase-metric.total::before { background: #fff; }
+.stats-phase-metric small { display: block; color: var(--secondary); font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.stats-phase-metric strong { display: block; margin-top: 4px; font-size: 12px; }
+.stats-axis-detail-copy .stats-phase-note { margin-top: 7px; color: var(--secondary); font-size: 8px; }
 .stats-radar-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; color: var(--muted); background: rgba(255,255,255,.035); font-size: 10px; line-height: 1.45; }
 
 .stats-section-heading { padding: 3px 2px 0; }
@@ -140,15 +147,23 @@
 
 @media (max-width: 600px) {
   .stats-hero-card { grid-template-columns: 1fr auto; gap: 12px; padding: 15px; }
+  .stats-athlete-identity { grid-template-columns: 42px minmax(115px,1fr) auto auto; gap: 8px; overflow-x: auto; }
+  .stats-athlete-avatar { width: 42px; height: 42px; }
+  .stats-athlete-measure { min-width: 70px; padding: 7px 9px; }
   .stats-score-block > div strong { font-size: 46px; }
   .stats-focus-grid { display: flex; overflow-x: auto; scrollbar-width: none; }
   .stats-focus-grid::-webkit-scrollbar { display: none; }
   .stats-summary-row { flex: 0 0 185px; }
   .stats-radar-card { padding: 15px 12px; }
   .stats-radar { width: 100%; margin-block: -4px; }
+  .stats-phase-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .stats-breakdown-card { padding: 14px; }
 }
 
 @media (max-width: 390px) {
   .stats-athlete-block > strong { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stats-athlete-identity { grid-template-columns: 42px minmax(110px,1fr); }
+  .stats-athlete-measure { grid-row: 2; }
+  .stats-athlete-measure:nth-last-child(2) { grid-column: 1; }
+  .stats-athlete-measure:last-child { grid-column: 2; }
 }

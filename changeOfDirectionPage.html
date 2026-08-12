@@ -11,15 +11,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-  <link rel="stylesheet" href="athlete-drill-view.css?v=20260812-stats">
-  <link rel="stylesheet" href="athlete-stats-view.css?v=20260812-stats">
+  <link rel="stylesheet" href="athlete-drill-view.css?v=20260812-athlete-home-2">
+  <link rel="stylesheet" href="athlete-stats-view.css?v=20260812-athlete-home-2">
 </head>
 <body data-drill="changeOfDirection">
   <header class="site-header">
-    <button id="backButton" class="nav-circle" type="button" aria-label="Back"><span class="material-symbols-outlined">chevron_left</span></button>
     <a class="brand" href="profile.html"><span class="brand-mark">P</span><span class="brand-word">POSETEK</span></a>
+    <nav class="header-view-tabs" aria-label="Athlete pages">
+      <button type="button" data-page-view="stats">Athlete Home</button>
+      <button type="button" data-page-view="results">Drill Results</button>
+    </nav>
     <div class="header-actions">
-      <a id="dashboardLink" class="header-link hidden" href="kickingview.html"><span class="material-symbols-outlined">home</span><span class="label">Home</span></a>
       <button id="copyLinkButton" class="action-button primary hidden" type="button"><span class="material-symbols-outlined">link</span><span class="label">Copy secure results link</span></button>
     </div>
   </header>
@@ -31,7 +33,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
-  <script src="athlete-stats-view.js?v=20260812-stats"></script>
-  <script src="athlete-drill-view.js?v=20260812-stats"></script>
+  <script src="athlete-stats-view.js?v=20260812-athlete-home-2"></script>
+  <script src="athlete-drill-view.js?v=20260812-athlete-home-2"></script>
 </body>
 </html>

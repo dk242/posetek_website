@@ -46,7 +46,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   top: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   min-height: 60px;
@@ -94,6 +94,26 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .brand-word { font-size: 15px; font-weight: 850; letter-spacing: 0.24em; }
+.header-view-tabs {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+.header-view-tabs button {
+  min-height: 36px;
+  padding: 7px 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.header-view-tabs button:hover { color: var(--text); background: var(--surface); }
+.header-view-tabs button.active { border-color: rgba(124,255,24,.38); color: #06170f; background: var(--accent); }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 
 .header-link, .action-button, .marker-button, .rep-button, .drill-switcher a, .speed-button {
@@ -407,8 +427,13 @@ h1 { margin: 0; font-size: clamp(24px, 5vw, 30px); font-weight: 850; line-height
 }
 
 @media (max-width: 600px) {
-  .site-header { grid-template-columns: 36px minmax(0, 1fr) auto; padding-inline: 12px; }
+  .site-header { grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; padding-inline: 10px; }
   .brand-word { font-size: 13px; letter-spacing: 0.18em; }
+  .brand { gap: 6px; }
+  .brand-mark { width: 29px; height: 29px; font-size: 16px; }
+  .header-view-tabs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .header-view-tabs::-webkit-scrollbar { display: none; }
+  .header-view-tabs button { min-height: 34px; padding: 7px 9px; font-size: 10px; }
   .header-link .label, #copyLinkButton .label { display: none; }
   .header-link, .action-button { width: 36px; height: 36px; padding: 0; }
   .page-shell { padding: 14px 16px 24px; }
@@ -429,10 +454,14 @@ h1 { margin: 0; font-size: clamp(24px, 5vw, 30px); font-weight: 850; line-height
 }
 
 @media (max-width: 390px) {
-  .brand-word { display: none; }
+  .header-view-tabs button { padding-inline: 8px; }
   .history-row { grid-template-columns: 34px minmax(95px, 1fr) auto; }
   .history-go { display: none; }
   .range-chip { padding-inline: 7px; }
+}
+
+@media (max-width: 340px) {
+  .brand-word { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

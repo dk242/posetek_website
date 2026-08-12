@@ -272,6 +272,8 @@ exports.getAthleteResultsShare = functions.https.onCall(async (data) => {
       firstName: String(player.firstName || "").slice(0, 100),
       lastName: String(player.lastName || "").slice(0, 100),
       name: String(player.name || "").slice(0, 200),
+      height: finiteNumber(player.height),
+      weight: finiteNumber(player.weight),
     },
     reps,
     expiresAtMillis: share.expiresAt?.toMillis?.() || null,
