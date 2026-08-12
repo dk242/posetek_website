@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  ignore = "exit 0"
+  ignore = "exit 1"
 
 [[headers]]
   for = "/*.html"
