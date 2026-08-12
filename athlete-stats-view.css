@@ -67,15 +67,18 @@
 .stats-radar-spoke.missing { stroke: rgba(255,255,255,.07); stroke-dasharray: 3 3; }
 .stats-radar-reference { fill: rgba(255,255,255,.045); stroke: rgba(255,255,255,.55); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .stats-radar-athlete { fill: rgba(124,255,24,.2); stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
-.stats-radar-marker { fill: var(--accent); stroke: rgba(255,255,255,.9); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(124,255,24,.65)); }
-.stats-radar-marker, .stats-radar-label { cursor: pointer; outline: none; }
-.stats-radar-marker.selected { r: 8; stroke: var(--accent); stroke-width: 3; fill: #fff; }
+.stats-radar-marker { fill: var(--accent); stroke: rgba(255,255,255,.9); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(124,255,24,.65)); transition: r 160ms ease, fill 160ms ease, stroke-width 160ms ease; }
+.stats-radar-marker-control, .stats-radar-label { cursor: pointer; outline: none; }
+.stats-radar-marker-hit { fill: transparent; }
+.stats-radar-marker-control.selected .stats-radar-marker { r: 8; stroke: var(--accent); stroke-width: 3; fill: #fff; }
+.stats-radar-label-hit { fill: transparent; stroke: transparent; stroke-width: 1.5; transition: fill 160ms ease, stroke 160ms ease; }
 .stats-radar-label text { font-family: Inter,sans-serif; pointer-events: none; }
 .stats-radar-label .axis-name { fill: #fff; font-size: 9px; font-weight: 750; }
 .stats-radar-label .axis-score { fill: var(--accent); font-size: 11px; font-weight: 900; }
 .stats-radar-label.missing .axis-name, .stats-radar-label.missing .axis-score { fill: rgba(255,255,255,.3); }
+.stats-radar-label.selected .stats-radar-label-hit { fill: rgba(124,255,24,.15); stroke: rgba(124,255,24,.72); }
 .stats-radar-label.selected .axis-name { fill: var(--accent); font-weight: 900; }
-.stats-radar-label:focus .axis-name, .stats-radar-marker:focus { filter: drop-shadow(0 0 5px rgba(124,255,24,.9)); }
+.stats-radar-label:focus .stats-radar-label-hit, .stats-radar-marker-control:focus .stats-radar-marker { stroke: var(--accent); stroke-width: 2.5; }
 .stats-radar-legend { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; color: var(--muted); font-size: 9px; font-weight: 650; }
 .stats-radar-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .stats-radar-legend i { width: 17px; height: 3px; border-radius: 999px; }
@@ -90,20 +93,14 @@
 .stats-axis-detail-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; color: var(--accent); background: var(--accent-soft); font-size: 18px; }
 .stats-axis-detail-copy h3 { margin: 0; font-size: 14px; }
 .stats-axis-detail-copy > p { margin: 3px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
-.stats-phase-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; margin-top: 12px; }
-.stats-phase-metric { position: relative; overflow: hidden; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.05); }
-.stats-phase-metric::before { position: absolute; top: 0; right: 0; left: 0; height: 2px; background: rgba(255,255,255,.3); content: ""; }
-.stats-phase-metric.start::before { background: var(--outbound); }
-.stats-phase-metric.turn::before { background: var(--turn); }
-.stats-phase-metric.end::before { background: var(--inbound); }
-.stats-phase-metric.total::before { background: #fff; }
-.stats-phase-metric small { display: block; color: var(--secondary); font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.stats-phase-metric strong { display: block; margin-top: 4px; font-size: 12px; }
-.stats-axis-detail-copy .stats-phase-note { margin-top: 7px; color: var(--secondary); font-size: 8px; }
 .stats-radar-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; color: var(--muted); background: rgba(255,255,255,.035); font-size: 10px; line-height: 1.45; }
 
 .stats-section-heading { padding: 3px 2px 0; }
-.stats-breakdowns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; align-items: start; }
+.stats-selected-breakdown { display: grid; gap: 12px; }
+.stats-breakdown-prompt { display: flex; min-height: 76px; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 15px; border: 1px dashed rgba(255,255,255,.14); border-radius: var(--small-radius); color: var(--muted); background: rgba(255,255,255,.025); font-size: 10px; text-align: center; }
+.stats-breakdown-prompt .material-symbols-outlined { color: var(--accent); font-size: 17px; }
+.stats-breakdown-prompt[hidden], .stats-selected-card[hidden] { display: none; }
+.stats-breakdowns { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: start; }
 .stats-breakdown-card { padding: 16px; }
 .stats-breakdown-card > header { display: grid; grid-template-columns: 32px minmax(0,1fr) auto; align-items: center; gap: 10px; }
 .stats-breakdown-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; color: var(--accent); background: var(--accent-soft); font-size: 16px; }
@@ -111,6 +108,18 @@
 .stats-breakdown-card header p { margin: 2px 0 0; color: var(--muted); font-size: 9px; }
 .stats-drill-score { color: var(--accent); font-size: 20px; font-weight: 900; text-align: center; }
 .stats-drill-score small { display: block; color: var(--secondary); font-size: 8px; font-weight: 650; }
+.stats-phase-list { display: grid; gap: 8px; margin-top: 12px; }
+.stats-phase-metric { padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: var(--row-radius); background: rgba(255,255,255,.045); }
+.stats-phase-metric > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.stats-phase-metric > div:first-child strong { font-size: 11px; }
+.stats-phase-metric > div:first-child span { font-size: 13px; font-weight: 850; }
+.stats-phase-track { height: 9px; margin: 9px 0 7px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.08); }
+.stats-phase-track i { display: block; height: 100%; border-radius: inherit; background: rgba(255,255,255,.75); }
+.stats-phase-metric.start .stats-phase-track i { background: var(--outbound); }
+.stats-phase-metric.turn .stats-phase-track i { background: var(--turn); }
+.stats-phase-metric.end .stats-phase-track i { background: var(--inbound); }
+.stats-phase-metric.total .stats-phase-track i { background: var(--accent); }
+.stats-phase-metric > p { margin: 0; color: var(--secondary); font-size: 8px; }
 .benchmark-list { display: grid; gap: 8px; margin-top: 12px; }
 .benchmark-meter { padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: var(--row-radius); background: rgba(255,255,255,.045); }
 .benchmark-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
@@ -156,7 +165,6 @@
   .stats-summary-row { flex: 0 0 185px; }
   .stats-radar-card { padding: 15px 12px; }
   .stats-radar { width: 100%; margin-block: -4px; }
-  .stats-phase-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .stats-breakdown-card { padding: 14px; }
 }
 

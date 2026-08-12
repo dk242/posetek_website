@@ -118,8 +118,8 @@
       overall: mean(scoredAxes.map(axis => axis.score)),
       totalReps: broadReps.length + codReps.length,
       totalSessions: sessionCount([...broadReps, ...codReps]),
-      broad: { key: "broadJump", title: "Broad Jump", icon: "arrow_right_alt", reps: broadReps, metrics: broadMetrics, score: power },
-      cod: { key: "changeOfDirection", title: "Change of Direction", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep }
+      broad: { key: "power", title: "Power", icon: "bolt", reps: broadReps, metrics: broadMetrics, score: power },
+      cod: { key: "agility", title: "Agility", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep }
     };
   }
 
@@ -156,12 +156,12 @@
       return `<line class="stats-radar-spoke${axis.score === null ? " missing" : ""}" x1="180" y1="148" x2="${edge.x}" y2="${edge.y}" />`;
     }).join("");
     const markers = athletePoints.map((current, index) => current
-      ? `<circle class="stats-radar-marker" cx="${current.x}" cy="${current.y}" r="5" data-stats-axis="${axes[index].key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axes[index].label)} summary" />`
+      ? `<g class="stats-radar-marker-control" data-stats-axis="${axes[index].key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axes[index].label)} summary"><circle class="stats-radar-marker-hit" cx="${current.x}" cy="${current.y}" r="25" /><circle class="stats-radar-marker" cx="${current.x}" cy="${current.y}" r="5" /></g>`
       : "").join("");
     const labels = axes.map((axis, index) => {
       const labelPoint = point(index, 1.34);
       const scoreText = axis.score === null ? "—" : Math.round(axis.score);
-      return `<g class="stats-radar-label${axis.score === null ? " missing" : ""}" transform="translate(${labelPoint.x} ${labelPoint.y})" data-stats-axis="${axis.key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axis.label)} summary"><text class="axis-name" text-anchor="middle" y="-2">${escapeHtml(axis.label)}</text><text class="axis-score" text-anchor="middle" y="13">${scoreText}</text></g>`;
+      return `<g class="stats-radar-label${axis.score === null ? " missing" : ""}" transform="translate(${labelPoint.x} ${labelPoint.y})" data-stats-axis="${axis.key}" tabindex="0" role="button" aria-label="View ${escapeHtml(axis.label)} summary"><rect class="stats-radar-label-hit" x="-56" y="-25" width="112" height="56" rx="11" /><text class="axis-name" text-anchor="middle" y="-2">${escapeHtml(axis.label)}</text><text class="axis-score" text-anchor="middle" y="13">${scoreText}</text></g>`;
     }).join("");
     return `<svg class="stats-radar" viewBox="0 0 360 300" role="img" aria-label="Athlete skill map compared with the D1 standard">
       ${[0.25, 0.5, 0.75, 1].map(ratio => `<polygon class="stats-radar-grid" points="${polygon(ratio)}" />`).join("")}
@@ -213,9 +213,15 @@
     return String(name || "Athlete").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
   }
 
-  function phaseMetric(label, value, className) {
+  function phaseMetric(label, value, className, total, detail) {
     const seconds = number(value);
-    return `<div class="stats-phase-metric ${className}"><small>${escapeHtml(label)}</small><strong>${seconds === null ? "—" : `${seconds.toFixed(2)} s`}</strong></div>`;
+    const totalSeconds = number(total);
+    const ratio = seconds !== null && totalSeconds !== null ? Math.min(seconds / totalSeconds * 100, 100) : 0;
+    return `<article class="stats-phase-metric ${className}">
+      <div><strong>${escapeHtml(label)}</strong><span>${seconds === null ? "—" : `${seconds.toFixed(2)} s`}</span></div>
+      <div class="stats-phase-track"><i style="width:${ratio.toFixed(1)}%"></i></div>
+      <p>${escapeHtml(detail || (seconds !== null && totalSeconds !== null ? `${Math.round(ratio)}% of total time` : "Not recorded"))}</p>
+    </article>`;
   }
 
   function axisDetail(axis, profile) {
@@ -224,26 +230,51 @@
       ? `${Math.round(axis.score)} vs D1, from ${axis.key === "power" ? "Broad Jump" : "Change of Direction"} across ${axis.repCount} ${axis.repCount === 1 ? "rep" : "reps"}.`
       : `No data yet — record ${axis.drills}.`;
     if (hasData && axis.repCount < 3) message += " Limited data.";
-    const phases = axis.key === "agility" && profile.cod.bestRep ? `<div class="stats-phase-grid" aria-label="Best agility rep phases">
-      ${phaseMetric("Start", profile.cod.bestRep.phase1Time, "start")}
-      ${phaseMetric("Turn", profile.cod.bestRep.phase2Time, "turn")}
-      ${phaseMetric("End", profile.cod.bestRep.phase3Time, "end")}
-      ${phaseMetric("Total time", profile.cod.bestRep.totalTime, "total")}
-    </div><p class="stats-phase-note">Phase times are from the athlete's fastest recorded change-of-direction rep.</p>` : "";
     return `<section class="stats-axis-detail" data-axis-panel="${axis.key}" hidden>
       <span class="stats-axis-detail-icon material-symbols-outlined">${axis.icon}</span>
-      <div class="stats-axis-detail-copy"><h3>${escapeHtml(axis.label)}</h3><p>${escapeHtml(message)}</p>${phases}</div>
+      <div class="stats-axis-detail-copy"><h3>${escapeHtml(axis.label)}</h3><p>${escapeHtml(message)}</p></div>
+    </section>`;
+  }
+
+  function agilityBreakdown(profile) {
+    const section = profile.cod;
+    const rep = section.bestRep;
+    const hasData = Boolean(rep);
+    const total = rep?.totalTime;
+    return `<section class="stats-breakdown-card stats-selected-card" data-breakdown-panel="agility" hidden>
+      <header><span class="stats-breakdown-icon material-symbols-outlined">switch_access_shortcut</span><span><h3>Agility</h3><p>${hasData ? `${section.reps.length} ${section.reps.length === 1 ? "rep" : "reps"} · ${sessionCount(section.reps)} ${sessionCount(section.reps) === 1 ? "session" : "sessions"}` : "Not recorded yet"}</p></span>${section.score === null ? "" : `<span class="stats-drill-score">${Math.round(section.score)}<small>vs D1</small></span>`}</header>
+      ${hasData ? `<div class="stats-phase-list" aria-label="Fastest agility rep phases">
+        ${phaseMetric("Start", rep.phase1Time, "start", total)}
+        ${phaseMetric("Turn", rep.phase2Time, "turn", total)}
+        ${phaseMetric("End", rep.phase3Time, "end", total)}
+        ${phaseMetric("Total time", total, "total", total, "Fastest recorded agility rep")}
+      </div>${section.reps.length < 3 ? `<p class="stats-confidence"><span class="material-symbols-outlined">info</span>Based on ${section.reps.length} ${section.reps.length === 1 ? "rep" : "reps"} — record more for a reliable score.</p>` : ""}` : `<div class="stats-empty"><span class="material-symbols-outlined">add_circle</span><span>Record agility to unlock this breakdown.</span></div>`}
+    </section>`;
+  }
+
+  function axisBreakdown(axis, profile) {
+    if (axis.key === "agility") return agilityBreakdown(profile);
+    if (axis.key === "power") {
+      return breakdown(profile.broad).replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"').replace("<section", '<section data-breakdown-panel="power" hidden');
+    }
+    return `<section class="stats-breakdown-card stats-selected-card" data-breakdown-panel="${axis.key}" hidden>
+      <header><span class="stats-breakdown-icon material-symbols-outlined">${axis.icon}</span><span><h3>${escapeHtml(axis.label)}</h3><p>Not recorded yet</p></span></header>
+      <div class="stats-empty"><span class="material-symbols-outlined">add_circle</span><span>Record ${escapeHtml(axis.drills)} to unlock this breakdown.</span></div>
     </section>`;
   }
 
   function bind(root) {
     if (!root || root.dataset.statsBound === "true") return;
     root.dataset.statsBound = "true";
+    let selectedAxis = null;
     const selectAxis = key => {
-      root.querySelector(".stats-axis-prompt")?.toggleAttribute("hidden", true);
-      root.querySelectorAll("[data-axis-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.axisPanel !== key));
+      selectedAxis = selectedAxis === key ? null : key;
+      root.querySelector(".stats-axis-prompt")?.toggleAttribute("hidden", selectedAxis !== null);
+      root.querySelector(".stats-breakdown-prompt")?.toggleAttribute("hidden", selectedAxis !== null);
+      root.querySelectorAll("[data-axis-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.axisPanel !== selectedAxis));
+      root.querySelectorAll("[data-breakdown-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.breakdownPanel !== selectedAxis));
       root.querySelectorAll("[data-stats-axis]").forEach(control => {
-        const selected = control.dataset.statsAxis === key;
+        const selected = control.dataset.statsAxis === selectedAxis;
         control.classList.toggle("selected", selected);
         control.setAttribute("aria-pressed", selected ? "true" : "false");
       });
@@ -265,7 +296,6 @@
     const strength = ranked[0];
     const focus = ranked.length > 1 ? ranked[ranked.length - 1] : null;
     const missing = profile.axes.filter(axis => axis.score === null).map(axis => axis.label).join(", ");
-    const breakdowns = [profile.broad, profile.cod].sort((left, right) => Number(right.metrics.length > 0) - Number(left.metrics.length > 0));
     const athlete = options.athlete || {};
     const athleteDisplayName = options.athleteName || "Athlete";
     return `<section class="athlete-stats" aria-label="Athlete Stats">
@@ -294,8 +324,11 @@
         </div>
         <p class="stats-radar-note">Power currently reflects Broad Jump. Agility reflects Change of Direction. The remaining axes will activate as the placeholder drills are connected.</p>
       </section>
-      <div class="stats-section-heading"><h2>D1 Comparison</h2><p>Every available component metric against the D1 standard</p></div>
-      <div class="stats-breakdowns">${breakdowns.map(breakdown).join("")}</div>
+      <section class="stats-selected-breakdown" aria-live="polite">
+        <div class="stats-section-heading"><h2>Skill Breakdown</h2><p>Every available metric for the selected skill</p></div>
+        <p class="stats-breakdown-prompt"><span class="material-symbols-outlined">touch_app</span>Choose a skill on the spider chart to reveal its metrics.</p>
+        <div class="stats-breakdowns">${profile.axes.map(axis => axisBreakdown(axis, profile)).join("")}</div>
+      </section>
       <p class="stats-methodology"><span class="material-symbols-outlined">info</span>Scores are indexed so 100 equals the D1 reference for each metric. These general reference values match the mobile app’s provisional benchmark set and will be replaced as measured cohort data grows.</p>
     </section>`;
   }

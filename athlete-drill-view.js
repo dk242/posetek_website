@@ -330,7 +330,9 @@
 
   function pageUrl(page, extra = {}) {
     const query = new URLSearchParams();
-    if (state.shareToken) {
+    if (state.preview) {
+      query.set("preview", "1");
+    } else if (state.shareToken) {
       query.set("share", state.shareToken);
     } else {
       if (state.player?.id) query.set("player", state.player.id);
@@ -346,7 +348,7 @@
     return drillCatalog.map(drill => {
       if (drill.enabled) {
         const active = drill.key === config.key ? " active" : "";
-        return `<a class="${active.trim()}" href="${escapeHtml(pageUrl(drill.page))}">${escapeHtml(drill.label)}</a>`;
+        return `<a class="${active.trim()}" href="${escapeHtml(pageUrl(drill.page, { view: "results" }))}">${escapeHtml(drill.label)}</a>`;
       }
       return `<button type="button" disabled aria-disabled="true" title="${escapeHtml(drill.label)} results are coming soon"><span>${escapeHtml(drill.label)}</span><small>Soon</small></button>`;
     }).join("");
@@ -384,7 +386,7 @@
 
     const copyButton = document.getElementById("copyLinkButton");
     const brandLink = document.querySelector(".brand");
-    if (brandLink && state.viewer?.role === "shared") brandLink.href = pageUrl(config.page);
+    if (brandLink) brandLink.href = pageUrl(config.page);
     if (copyButton) copyButton.classList.toggle("hidden", state.viewer?.role !== "coach");
     bindStaticEvents();
     setActiveView(state.activeView, false);
