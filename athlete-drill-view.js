@@ -51,16 +51,32 @@
       lowerIsBetter: true,
       emptyText: "No change-of-direction results have been recorded for this athlete yet.",
       artifacts: ["pose.json", "metadata.json"]
+    },
+    dribbling: {
+      key: "dribbling",
+      title: "Dribbling",
+      eyebrow: "Ball control · Timed course",
+      chartTitle: "Dribble Time Over Time",
+      drillIcon: "sports_soccer",
+      page: "dribblingPage.html",
+      primaryField: "totalTime",
+      primaryLabel: "Dribble time",
+      bestLabel: "Best time",
+      averageLabel: "Average time",
+      chartLabel: "Time (s)",
+      lowerIsBetter: true,
+      emptyText: "No dribbling results have been recorded for this athlete yet.",
+      artifacts: ["pose.json", "metadata.json"]
     }
   };
 
   const drillCatalog = [
-    { key: "broadJump", label: "Broad Jump", page: "broadJumpPage.html", enabled: true },
-    { key: "changeOfDirection", label: "Change of Direction", page: "changeOfDirectionPage.html", enabled: true },
-    { key: "dribbling", label: "Dribbling", enabled: false },
-    { key: "sprint", label: "Sprint", enabled: false },
-    { key: "jump", label: "Jump", enabled: false },
-    { key: "shooting", label: "Shooting", enabled: false }
+    { key: "shooting", label: "Shooting", page: "kickingview.html", extra: { tab: "kick" } },
+    { key: "sprint", label: "Sprint", page: "kickingview.html", extra: { tab: "sprint" } },
+    { key: "jump", label: "Jump", page: "kickingview.html", extra: { tab: "jump" } },
+    { key: "broadJump", label: "Broad Jump", page: "broadJumpPage.html", extra: { view: "results" } },
+    { key: "dribbling", label: "Dribbling", page: "dribblingPage.html", extra: { view: "results" } },
+    { key: "changeOfDirection", label: "Change of Direction", page: "changeOfDirectionPage.html", extra: { view: "results" } }
   ];
 
   const drillKey = document.body.dataset.drill;
@@ -346,11 +362,8 @@
 
   function renderDrillCatalog() {
     return drillCatalog.map(drill => {
-      if (drill.enabled) {
-        const active = drill.key === config.key ? " active" : "";
-        return `<a class="${active.trim()}" href="${escapeHtml(pageUrl(drill.page, { view: "results" }))}">${escapeHtml(drill.label)}</a>`;
-      }
-      return `<button type="button" disabled aria-disabled="true" title="${escapeHtml(drill.label)} results are coming soon"><span>${escapeHtml(drill.label)}</span><small>Soon</small></button>`;
+      const active = drill.key === config.key ? " active" : "";
+      return `<a class="${active.trim()}" href="${escapeHtml(pageUrl(drill.page, drill.extra || {}))}">${escapeHtml(drill.label)}</a>`;
     }).join("");
   }
 
@@ -1136,7 +1149,8 @@
     state.player = { id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete", height: 178, weight: 72.5 } };
     const previewValues = {
       broadJump: [1.82, 1.68, 1.74, 1.59],
-      changeOfDirection: [4.42, 4.58, 4.51, 4.77]
+      changeOfDirection: [4.42, 4.58, 4.51, 4.77],
+      dribbling: [8.64, 8.91, 9.12, 9.38]
     };
     state.statsReps = Object.values(configs).flatMap(drillConfig => previewValues[drillConfig.key].map((primary, index) => ({
       id: `preview-${drillConfig.key}-${index + 1}`,
@@ -1149,7 +1163,7 @@
       repNumber: index % 2 + 1,
       absoluteRepNumber: previewValues[drillConfig.key].length - index,
       createdAtMillis: Date.now() - index * 86400000 * 8,
-      ...(drillConfig.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 } : { totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 })
+      ...(drillConfig.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 } : drillConfig.key === "dribbling" ? { totalDistance: 18.2, avgBallDistance: 0.72, phase1Time: 2.81, phase2Time: 2.94, phase3Time: 2.89, markerDistance: 4.9 } : { totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 })
     })));
     state.reps = state.statsReps.filter(rep => rep._statsDrill === config.key);
     renderShell();

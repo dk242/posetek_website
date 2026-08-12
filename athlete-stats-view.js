@@ -5,7 +5,9 @@
   const D1_REFERENCES = {
     broadJumpDistance: 2.444,
     codTotalTime: 4.893617,
-    codTurnTime: 1.542553
+    codTurnTime: 1.542553,
+    dribbleTotalTime: 9.0,
+    dribbleBallControl: 0.90
   };
 
   const AXES = [
@@ -77,6 +79,7 @@
   function buildProfile(reps) {
     const broadReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "broadJump");
     const codReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "changeOfDirection");
+    const dribblingReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "dribbling");
     const broadMetrics = [bestMetric(broadReps, {
       key: "broadJumpDistance",
       field: "broadJumpDistance",
@@ -103,23 +106,43 @@
         format: value => `${value.toFixed(2)} s`
       })
     ].filter(Boolean);
+    const dribblingMetrics = [
+      bestMetric(dribblingReps, {
+        key: "dribbleTotalTime",
+        field: "totalTime",
+        label: "Completion Time",
+        reference: D1_REFERENCES.dribbleTotalTime,
+        lowerIsBetter: true,
+        format: value => `${value.toFixed(2)} s`
+      }),
+      bestMetric(dribblingReps, {
+        key: "dribbleBallControl",
+        field: "avgBallDistance",
+        label: "Ball Proximity",
+        reference: D1_REFERENCES.dribbleBallControl,
+        lowerIsBetter: true,
+        format: value => `${(value * 3.28084).toFixed(1)} ft`
+      })
+    ].filter(Boolean);
 
     const power = mean(broadMetrics.map(metric => metric.score));
     const agility = mean(codMetrics.map(metric => metric.score));
+    const ballControl = mean(dribblingMetrics.map(metric => metric.score));
     const bestCodRep = bestRep(codReps, "totalTime", true);
     const axes = AXES.map(axis => ({
       ...axis,
-      score: axis.key === "power" ? power : axis.key === "agility" ? agility : null,
-      repCount: axis.key === "power" ? broadReps.length : axis.key === "agility" ? codReps.length : 0
+      score: axis.key === "power" ? power : axis.key === "agility" ? agility : axis.key === "ballControl" ? ballControl : null,
+      repCount: axis.key === "power" ? broadReps.length : axis.key === "agility" ? codReps.length : axis.key === "ballControl" ? dribblingReps.length : 0
     }));
     const scoredAxes = axes.filter(axis => axis.score !== null);
     return {
       axes,
       overall: mean(scoredAxes.map(axis => axis.score)),
-      totalReps: broadReps.length + codReps.length,
-      totalSessions: sessionCount([...broadReps, ...codReps]),
+      totalReps: broadReps.length + codReps.length + dribblingReps.length,
+      totalSessions: sessionCount([...broadReps, ...codReps, ...dribblingReps]),
       broad: { key: "power", title: "Power", icon: "bolt", reps: broadReps, metrics: broadMetrics, score: power },
-      cod: { key: "agility", title: "Agility", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep }
+      cod: { key: "agility", title: "Agility", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep },
+      dribbling: { key: "ballControl", title: "Ball Control", icon: "sports_soccer", reps: dribblingReps, metrics: dribblingMetrics, score: ballControl }
     };
   }
 
@@ -224,18 +247,6 @@
     </article>`;
   }
 
-  function axisDetail(axis, profile) {
-    const hasData = axis.score !== null;
-    let message = hasData
-      ? `${Math.round(axis.score)} vs D1, from ${axis.key === "power" ? "Broad Jump" : "Change of Direction"} across ${axis.repCount} ${axis.repCount === 1 ? "rep" : "reps"}.`
-      : `No data yet — record ${axis.drills}.`;
-    if (hasData && axis.repCount < 3) message += " Limited data.";
-    return `<section class="stats-axis-detail" data-axis-panel="${axis.key}" hidden>
-      <span class="stats-axis-detail-icon material-symbols-outlined">${axis.icon}</span>
-      <div class="stats-axis-detail-copy"><h3>${escapeHtml(axis.label)}</h3><p>${escapeHtml(message)}</p></div>
-    </section>`;
-  }
-
   function agilityBreakdown(profile) {
     const section = profile.cod;
     const rep = section.bestRep;
@@ -257,6 +268,9 @@
     if (axis.key === "power") {
       return breakdown(profile.broad).replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"').replace("<section", '<section data-breakdown-panel="power" hidden');
     }
+    if (axis.key === "ballControl") {
+      return breakdown(profile.dribbling).replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"').replace("<section", '<section data-breakdown-panel="ballControl" hidden');
+    }
     return `<section class="stats-breakdown-card stats-selected-card" data-breakdown-panel="${axis.key}" hidden>
       <header><span class="stats-breakdown-icon material-symbols-outlined">${axis.icon}</span><span><h3>${escapeHtml(axis.label)}</h3><p>Not recorded yet</p></span></header>
       <div class="stats-empty"><span class="material-symbols-outlined">add_circle</span><span>Record ${escapeHtml(axis.drills)} to unlock this breakdown.</span></div>
@@ -269,9 +283,7 @@
     let selectedAxis = null;
     const selectAxis = key => {
       selectedAxis = selectedAxis === key ? null : key;
-      root.querySelector(".stats-axis-prompt")?.toggleAttribute("hidden", selectedAxis !== null);
       root.querySelector(".stats-breakdown-prompt")?.toggleAttribute("hidden", selectedAxis !== null);
-      root.querySelectorAll("[data-axis-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.axisPanel !== selectedAxis));
       root.querySelectorAll("[data-breakdown-panel]").forEach(panel => panel.toggleAttribute("hidden", panel.dataset.breakdownPanel !== selectedAxis));
       root.querySelectorAll("[data-stats-axis]").forEach(control => {
         const selected = control.dataset.statsAxis === selectedAxis;
@@ -299,35 +311,28 @@
     const athlete = options.athlete || {};
     const athleteDisplayName = options.athleteName || "Athlete";
     return `<section class="athlete-stats" aria-label="Athlete Stats">
-      <section class="stats-hero-card">
+      <section class="stats-profile-card">
         <div class="stats-athlete-identity">
           <span class="stats-athlete-avatar">${escapeHtml(athleteInitials(athleteDisplayName))}</span>
           <span class="stats-athlete-name"><small>Athlete profile</small><strong>${escapeHtml(athleteDisplayName)}</strong><em>${profile.totalReps} reps · ${profile.totalSessions} sessions</em></span>
           <span class="stats-athlete-measure"><small>Height</small><strong>${escapeHtml(formatHeight(athlete.height))}</strong></span>
           <span class="stats-athlete-measure"><small>Weight</small><strong>${escapeHtml(formatWeight(athlete.weight))}</strong></span>
         </div>
-        <div class="stats-score-block"><p>Overall vs D1</p><div><strong>${profile.overall === null ? "—" : Math.round(profile.overall)}</strong><span>/ 100</span></div>${profile.overall === null ? `<small>Record a drill to generate your profile</small>` : `<span class="benchmark-band ${band(profile.overall).key}"><span class="material-symbols-outlined">${band(profile.overall).icon}</span>${band(profile.overall).label}</span>`}</div>
-        <div class="stats-athlete-block"><small><span class="material-symbols-outlined">flag</span>General D1 standard</small></div>
         <div class="stats-focus-grid">
           ${strength ? summaryRow("star", "Strength", `${strength.label} · ${Math.round(strength.score)} vs D1`, "lime") : ""}
           ${focus ? summaryRow("center_focus_strong", "Focus area", `${focus.label} · ${Math.round(focus.score)} vs D1`, "orange") : ""}
           ${missing ? summaryRow("add_circle", "Missing data", missing, "cyan") : ""}
         </div>
-      </section>
-      <section class="stats-radar-card">
-        <header><div><h2>Skill Map</h2><p>Your profile against the D1 standard</p></div><span class="stats-recorded-count">${ranked.length}/${profile.axes.length} recorded</span></header>
-        ${radarSvg(profile.axes)}
-        <div class="stats-radar-legend"><span class="you"><i></i>You</span><span class="d1"><i></i>D1 standard</span><span class="untested"><i></i>Not tested</span></div>
-        <div class="stats-axis-details" aria-live="polite">
-          <p class="stats-axis-prompt"><span class="material-symbols-outlined">touch_app</span>Select any skill on the chart to view its summary.</p>
-          ${profile.axes.map(axis => axisDetail(axis, profile)).join("")}
+        <div class="stats-radar-section">
+          <header><div><h2>Skill Map</h2><p>Your profile against the D1 standard</p></div><span class="stats-recorded-count">${ranked.length}/${profile.axes.length} recorded</span></header>
+          ${radarSvg(profile.axes)}
+          <div class="stats-radar-legend"><span class="you"><i></i>You</span><span class="d1"><i></i>D1 standard</span><span class="untested"><i></i>Not tested</span></div>
         </div>
-        <p class="stats-radar-note">Power currently reflects Broad Jump. Agility reflects Change of Direction. The remaining axes will activate as the placeholder drills are connected.</p>
-      </section>
-      <section class="stats-selected-breakdown" aria-live="polite">
-        <div class="stats-section-heading"><h2>Skill Breakdown</h2><p>Every available metric for the selected skill</p></div>
-        <p class="stats-breakdown-prompt"><span class="material-symbols-outlined">touch_app</span>Choose a skill on the spider chart to reveal its metrics.</p>
-        <div class="stats-breakdowns">${profile.axes.map(axis => axisBreakdown(axis, profile)).join("")}</div>
+        <section class="stats-selected-breakdown" aria-live="polite">
+          <div class="stats-section-heading"><h2>Skill Breakdown</h2><p>Tap a skill above to view its metrics</p></div>
+          <p class="stats-breakdown-prompt"><span class="material-symbols-outlined">touch_app</span>Choose a skill on the chart.</p>
+          <div class="stats-breakdowns">${profile.axes.map(axis => axisBreakdown(axis, profile)).join("")}</div>
+        </section>
       </section>
       <p class="stats-methodology"><span class="material-symbols-outlined">info</span>Scores are indexed so 100 equals the D1 reference for each metric. These general reference values match the mobile app’s provisional benchmark set and will be replaced as measured cohort data grows.</p>
     </section>`;

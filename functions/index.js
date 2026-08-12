@@ -9,7 +9,7 @@ const db = admin.firestore();
 const ATHLETE_SHARE_COLLECTION = "athleteResultShares";
 const ATHLETE_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
-const ATHLETE_SHARE_DRILLS = new Set(["broadJump", "changeOfDirection"]);
+const ATHLETE_SHARE_DRILLS = new Set(["broadJump", "changeOfDirection", "dribbling"]);
 const ATHLETE_SHARE_ARTIFACTS = {
   broadJump: [
     "pose.json",
@@ -21,6 +21,7 @@ const ATHLETE_SHARE_ARTIFACTS = {
     "com_height.json",
   ],
   changeOfDirection: ["pose.json", "metadata.json"],
+  dribbling: ["pose.json", "metadata.json"],
 };
 
 function athleteShareTokenHash(token) {
@@ -133,6 +134,7 @@ function sanitizedAthleteRep(doc, drill) {
     phase1Time: finiteNumber(data.phase1Time),
     phase2Time: finiteNumber(data.phase2Time),
     phase3Time: finiteNumber(data.phase3Time),
+    avgBallDistance: finiteNumber(data.avgBallDistance),
     phase1Percent: finiteNumber(data.phase1Percent),
     phase2Percent: finiteNumber(data.phase2Percent),
     phase3Percent: finiteNumber(data.phase3Percent),
