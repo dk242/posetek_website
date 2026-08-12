@@ -1589,6 +1589,25 @@
             }
         });
 
+        // Athlete result links return here when the viewer is signed out. Only allow the two
+        // same-origin result pages so an external URL cannot turn login into an open redirect.
+        function getSafeReturnToUrl() {
+            const raw = new URLSearchParams(window.location.search).get('returnTo');
+            if (!raw) return null;
+            try {
+                const target = new URL(raw, window.location.href);
+                const fileName = target.pathname.split('/').pop();
+                const allowed = new Set(['broadJumpPage.html', 'changeOfDirectionPage.html']);
+                return target.origin === window.location.origin && allowed.has(fileName) ? target.href : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function redirectAfterAuth(fallback) {
+            window.location.href = getSafeReturnToUrl() || fallback;
+        }
+
         // Form submission handlers
         orgSignupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1621,10 +1640,22 @@
                     .limit(1)
                     .get();
                 
-                const playerQuery = await db.collection('players')
+                let playerQuery = await db.collection('players')
                     .where('authenticationUID', '==', user.uid)
                     .limit(1)
                     .get();
+                if (playerQuery.empty) {
+                    playerQuery = await db.collection('players')
+                        .where('userUID', '==', user.uid)
+                        .limit(1)
+                        .get();
+                }
+                if (playerQuery.empty && user.email) {
+                    playerQuery = await db.collection('players')
+                        .where('signupEmail', '==', user.email)
+                        .limit(1)
+                        .get();
+                }
                 
                 if (coachQuery.empty && playerQuery.empty) {
                     throw new Error("Account not found in system");
@@ -1639,7 +1670,7 @@
                     await db.collection('coaches').doc(coachDoc.id).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    window.location.href = 'coachesview.html?userType=coach';
+                    redirectAfterAuth('coachesview.html?userType=coach');
 
                 } else {
                     // Player logic
@@ -1647,7 +1678,7 @@
                     await db.collection('players').doc(playerDoc.id).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    window.location.href = 'profile.html?player=' + playerDoc.id + '&userType=player';
+                    redirectAfterAuth('profile.html?player=' + playerDoc.id + '&userType=player');
                 }
             } catch (error) {
                 loginError.textContent = error.message;
@@ -1889,6 +1920,7 @@
                 // No user is signed in
                 authBtn.textContent = 'Login';
                 authBtn.onclick = () => showModal(loginModal);
+                if (getSafeReturnToUrl()) showModal(loginModal);
             }
         });
 

@@ -958,6 +958,12 @@
                 <button class="rep-type-tab" data-rep-type="freerecord" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition); min-height: 44px;">
                     Free Record
                 </button>
+                <a id="broadJumpResultsLink" href="broadJumpPage.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);color:var(--text-muted);font-family:'Poppins','Inter',sans-serif;font-weight:600;padding:0.7rem 1.4rem;font-size:0.95rem;text-decoration:none;min-height:44px;">
+                    Broad Jump
+                </a>
+                <a id="changeOfDirectionResultsLink" href="changeOfDirectionPage.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);color:var(--text-muted);font-family:'Poppins','Inter',sans-serif;font-weight:600;padding:0.7rem 1.4rem;font-size:0.95rem;text-decoration:none;min-height:44px;">
+                    Change of Direction
+                </a>
             </div>
 
             <!-- Collapsible Sessions Section -->
@@ -1317,6 +1323,18 @@
             }
 
             populateSideLinks();
+
+            // The two locally processed tests have dedicated athlete result pages. Keep the
+            // resolved player document id in these links (it is not necessarily the Auth UID).
+            const resultPlayerId = currentPlayerInfo && currentPlayerInfo.docId;
+            const resultUserType = isCoach ? 'coach' : 'player';
+            const broadJumpResultsLink = document.getElementById('broadJumpResultsLink');
+            const changeOfDirectionResultsLink = document.getElementById('changeOfDirectionResultsLink');
+            if (resultPlayerId && broadJumpResultsLink && changeOfDirectionResultsLink) {
+                const resultQuery = `?player=${encodeURIComponent(resultPlayerId)}&userType=${resultUserType}`;
+                broadJumpResultsLink.href = `broadJumpPage.html${resultQuery}`;
+                changeOfDirectionResultsLink.href = `changeOfDirectionPage.html${resultQuery}`;
+            }
 
             // Load all reps (jump, sprint, kick) in a single query
             await loadAllReps();
@@ -3951,6 +3969,10 @@
                         destinationPage = 'sprintPage.html';
                     } else if (session.type === 'jump') {
                         destinationPage = 'StaticJumpPage.html';
+                    } else if (session.type === 'broadJump') {
+                        destinationPage = 'broadJumpPage.html';
+                    } else if (session.type === 'changeOfDirection') {
+                        destinationPage = 'changeOfDirectionPage.html';
                     } else if (session.type === 'side_kick') {
                         destinationPage = 'SideKickView.html';
                     }
@@ -4006,6 +4028,8 @@
                 'instepPass': 'instep',
                 'sprint': 'sprint',
                 'jump': 'jump',
+                'broadJump': 'jump',
+                'changeOfDirection': 'sprint',
                 'side_kick': 'deadball'
             };
             return typeMap[type] || 'deadball';
@@ -4019,6 +4043,8 @@
                 'instepPass': 'Instep Passing',
                 'sprint': 'Sprint Work',
                 'jump': 'Static Jump',
+                'broadJump': 'Broad Jump',
+                'changeOfDirection': 'Change of Direction',
                 'side_kick': 'Side Kick'
             };
             return typeMap[type] || type;
@@ -4032,6 +4058,8 @@
                 'instepPass': '<span class="badge instep">Instep Pass</span>',
                 'sprint': '<span class="badge sprint">Sprint</span>',
                 'jump': '<span class="badge jump">Jump</span>',
+                'broadJump': '<span class="badge jump">Broad Jump</span>',
+                'changeOfDirection': '<span class="badge sprint">Change of Direction</span>',
                 'side_kick': '<span class="badge deadball">Side Kick</span>'
             };
             return badges[type] || `<span class="badge">${type}</span>`;
@@ -4046,6 +4074,8 @@
                 'instepPass': 'videopage.html',
                 'sprint': 'sprintPage.html',
                 'jump': 'StaticJumpPage.html',
+                'broadJump': 'broadJumpPage.html',
+                'changeOfDirection': 'changeOfDirectionPage.html',
                 'side_kick': 'SideKickView.html'
             };
             

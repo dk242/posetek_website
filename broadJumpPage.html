@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10271f">
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <title>Broad Jump | PoseTek</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="athlete-drill-view.css?v=20260811">
+</head>
+<body data-drill="broadJump">
+  <header class="site-header">
+    <a class="brand" href="profile.html">Pose<span>Tek</span></a>
+    <div class="header-actions">
+      <a id="dashboardLink" class="header-link" href="kickingview.html"><span class="material-symbols-outlined">monitoring</span><span class="label">Dashboard</span></a>
+      <button id="copyLinkButton" class="action-button primary" type="button"><span class="material-symbols-outlined">link</span><span class="label">Copy athlete link</span></button>
+    </div>
+  </header>
+  <main id="app" class="page-shell" aria-live="polite"></main>
+  <footer class="footer">© 2026 PoseTek · Athlete data is visible only after authentication.</footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+  <script src="athlete-drill-view.js?v=20260811"></script>
+</body>
+</html>
