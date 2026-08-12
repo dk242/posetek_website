@@ -1114,13 +1114,21 @@
       state.shareToken = token;
       showLoading(`Opening shared ${config.title.toLowerCase()} results…`);
       const getShare = cloudFunctions.httpsCallable("getAthleteResultsShare");
-      const responses = await Promise.all(Object.values(configs).map(drillConfig => getShare({ token, drill: drillConfig.key })));
-      const payloads = responses.map((response, index) => ({ drillConfig: Object.values(configs)[index], payload: response?.data || {} }));
-      const currentPayload = payloads.find(item => item.drillConfig.key === config.key)?.payload || {};
+      const payloads = await Promise.all(Object.values(configs).map(async drillConfig => {
+        try {
+          const response = await getShare({ token, drill: drillConfig.key });
+          return { drillConfig, payload: response?.data || {}, error: null };
+        } catch (error) {
+          return { drillConfig, payload: null, error };
+        }
+      }));
+      const currentResult = payloads.find(item => item.drillConfig.key === config.key);
+      if (currentResult?.error) throw currentResult.error;
+      const currentPayload = currentResult?.payload || {};
       state.viewer = { role: "shared" };
       state.player = { id: null, data: currentPayload.athlete || {} };
       state.shareExpiresAtMillis = asNumber(currentPayload.expiresAtMillis);
-      state.statsReps = payloads.flatMap(({ drillConfig, payload }) => (Array.isArray(payload.reps) ? payload.reps : []).map(rep => ({
+      state.statsReps = payloads.flatMap(({ drillConfig, payload }) => (Array.isArray(payload?.reps) ? payload.reps : []).map(rep => ({
           ...rep,
           _statsDrill: drillConfig.key,
           primary: asNumber(rep[drillConfig.primaryField]),
