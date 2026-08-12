@@ -15,6 +15,7 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
+  const cloudFunctions = firebase.functions();
 
   const configs = {
     broadJump: {
@@ -69,8 +70,10 @@
     lastTick: 0,
     frameAccumulator: 0,
     chart: null,
-    resizeObserver: null
-    ,preview: false
+    resizeObserver: null,
+    preview: false,
+    shareToken: null,
+    shareExpiresAtMillis: null
   };
 
   const skeleton33 = [
@@ -234,8 +237,12 @@
 
   function pageUrl(page, extra = {}) {
     const query = new URLSearchParams();
-    if (state.player?.id) query.set("player", state.player.id);
-    query.set("userType", state.viewer?.role || "player");
+    if (state.shareToken) {
+      query.set("share", state.shareToken);
+    } else {
+      if (state.player?.id) query.set("player", state.player.id);
+      query.set("userType", state.viewer?.role || "player");
+    }
     Object.entries(extra).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== "") query.set(key, value);
     });
@@ -270,7 +277,14 @@
     `;
 
     const dashboardLink = document.getElementById("dashboardLink");
-    if (dashboardLink) dashboardLink.href = pageUrl("kickingview.html");
+    const copyButton = document.getElementById("copyLinkButton");
+    const brandLink = document.querySelector(".brand");
+    if (brandLink && state.viewer?.role === "shared") brandLink.href = pageUrl(config.page);
+    if (dashboardLink) {
+      dashboardLink.classList.toggle("hidden", state.viewer?.role === "shared");
+      if (state.viewer?.role !== "shared") dashboardLink.href = pageUrl("kickingview.html");
+    }
+    if (copyButton) copyButton.classList.toggle("hidden", state.viewer?.role !== "coach");
     bindStaticEvents();
     if (state.reps.length) {
       renderChart();
@@ -310,19 +324,44 @@
 
   async function copyAthleteLink() {
     if (!state.player) return;
-    const url = new URL(config.page, location.href);
-    url.search = "";
-    url.searchParams.set("player", state.player.id);
-    url.searchParams.set("userType", "player");
+    if (state.preview) {
+      const previewUrl = new URL(config.page, location.href);
+      previewUrl.search = "?preview=1";
+      await copyResultUrl(previewUrl.toString());
+      return;
+    }
+    if (state.viewer?.role !== "coach") return;
+    const button = document.getElementById("copyLinkButton");
+    const label = button?.querySelector(".label");
+    if (button) button.disabled = true;
+    if (label) label.textContent = "Creating secure linkâ€¦";
+    try {
+      const createShare = cloudFunctions.httpsCallable("createAthleteResultsShare");
+      const response = await createShare({ playerDocId: state.player.id });
+      const token = response?.data?.token;
+      if (!token) throw new Error("The secure link could not be created.");
+      const url = new URL(config.page, location.href);
+      url.search = "";
+      url.searchParams.set("share", token);
+      await copyResultUrl(url.toString());
+    } catch (error) {
+      console.error("[athlete-share] create failed", error);
+      window.alert(error?.message || "The secure results link could not be created.");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
+  async function copyResultUrl(url) {
     const button = document.getElementById("copyLinkButton");
     const label = button?.querySelector(".label");
     try {
-      await navigator.clipboard.writeText(url.toString());
-      if (label) label.textContent = "Link copied";
+      await navigator.clipboard.writeText(String(url));
+      if (label) label.textContent = "Secure link copied";
     } catch (_) {
-      window.prompt("Copy this athlete link:", url.toString());
+      window.prompt("Copy this athlete results link:", String(url));
     }
-    setTimeout(() => { if (label) label.textContent = "Copy athlete link"; }, 1800);
+    setTimeout(() => { if (label) label.textContent = "Copy secure results link"; }, 1800);
   }
 
   function renderChart() {
@@ -394,6 +433,27 @@
 
   async function loadArtifacts(rep) {
     if (state.preview) return previewArtifacts();
+    if (state.shareToken) {
+      const getArtifacts = cloudFunctions.httpsCallable("getAthleteSharedRepArtifacts");
+      const response = await getArtifacts({
+        token: state.shareToken,
+        drill: config.key,
+        repId: rep.id
+      });
+      const urls = response?.data?.artifactUrls || {};
+      const pairs = await Promise.all(config.artifacts.map(async fileName => {
+        const url = urls[fileName];
+        if (!url) return [fileName, null];
+        try {
+          const artifactResponse = await fetch(url, { cache: "no-store", referrerPolicy: "no-referrer" });
+          if (!artifactResponse.ok) throw new Error(`HTTP ${artifactResponse.status}`);
+          return [fileName, await artifactResponse.json()];
+        } catch (_) {
+          return [fileName, null];
+        }
+      }));
+      return { folder: "shared", ...Object.fromEntries(pairs) };
+    }
     const folders = folderCandidates(rep);
     for (const folder of folders) {
       try {
@@ -426,7 +486,7 @@
     if (subtitle) subtitle.textContent = `Session ${rep.sessionNumber} · Rep ${rep.repNumber} · ${formatDate(rep.createdAtMillis)}`;
 
     const requestedUrl = new URL(location.href);
-    requestedUrl.searchParams.set("player", state.player.id);
+    if (!state.shareToken) requestedUrl.searchParams.set("player", state.player.id);
     requestedUrl.searchParams.set("session", `session${rep.sessionNumber}`);
     requestedUrl.searchParams.set("rep", `kick${rep.repNumber}`);
     history.replaceState({}, "", requestedUrl);
@@ -905,6 +965,37 @@
     }
   }
 
+  async function startShared(token) {
+    try {
+      state.shareToken = token;
+      showLoading(`Opening shared ${config.title.toLowerCase()} resultsâ€¦`);
+      const getShare = cloudFunctions.httpsCallable("getAthleteResultsShare");
+      const response = await getShare({ token, drill: config.key });
+      const payload = response?.data || {};
+      state.viewer = { role: "shared" };
+      state.player = { id: null, data: payload.athlete || {} };
+      state.shareExpiresAtMillis = asNumber(payload.expiresAtMillis);
+      state.reps = (Array.isArray(payload.reps) ? payload.reps : []).map(rep => ({
+        ...rep,
+        primary: asNumber(rep[config.primaryField]),
+        createdAtMillis: asNumber(rep.createdAtMillis) || 0,
+        sessionNumber: asInteger(rep.sessionNumber) || 1,
+        repNumber: asInteger(rep.repNumber) || asInteger(rep.absoluteRepNumber) || 1,
+        absoluteRepNumber: asInteger(rep.absoluteRepNumber)
+      }));
+      renderShell();
+    } catch (error) {
+      console.error(`[${config.key}] shared link failed`, error);
+      const detail = error?.message && error.message !== "internal"
+        ? error.message
+        : "Ask the coach to send a new athlete results link.";
+      showError(
+        "This results link is unavailable",
+        detail
+      );
+    }
+  }
+
   function startPreview() {
     state.preview = true;
     state.viewer = { role: "coach", uid: "preview", docId: "preview-coach", data: { members: ["preview-player"] } };
@@ -931,6 +1022,11 @@
   showLoading();
   if (isLocal && params.get("preview") === "1") {
     startPreview();
+    return;
+  }
+  const sharedToken = params.get("share");
+  if (sharedToken) {
+    startShared(sharedToken);
     return;
   }
   auth.onAuthStateChanged(user => {

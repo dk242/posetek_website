@@ -1,6 +1,6 @@
 # Athlete result links
 
-The website now has dedicated authenticated result pages for the two locally processed mobile drills:
+The website has dedicated shareable result pages for the two locally processed mobile drills:
 
 - `broadJumpPage.html`
 - `changeOfDirectionPage.html`
@@ -9,30 +9,39 @@ The website now has dedicated authenticated result pages for the two locally pro
 
 1. Sign in as the coach and open the athlete in the Performance Dashboard.
 2. Select **Broad Jump** or **Change of Direction**.
-3. Use **Copy athlete link** on the result page.
+3. Use **Copy secure results link** on the result page.
 4. Paste that link into an email or text message.
 
-The link includes the athlete's Firestore player document ID, not their Firebase Auth UID. The recipient must sign in. After login, the website returns to the requested result page and verifies that the signed-in player resolves to that same player document.
+The recipient does not create an account or sign in. The link contains a random bearer token and opens the athlete's shared results immediately.
+
+One link gives the recipient access to both permitted result pages. They can switch between Broad Jump and Change of Direction from the page, so generate and send the link once rather than generating separate links for each drill.
 
 Example URL shapes:
 
 ```text
-broadJumpPage.html?player={playerDocumentID}&userType=player
-changeOfDirectionPage.html?player={playerDocumentID}&userType=player
+broadJumpPage.html?share={randomToken}
+changeOfDirectionPage.html?share={randomToken}
 ```
 
-Coaches can open the same pages for roster members. Client-side access checks require the player to be present in the coach's `members` array (or have a matching coach reference). Firebase Security Rules remain the authoritative server-side access control.
+The coach must be authenticated and authorized for that roster member to create the link. The raw token is returned once and only its SHA-256 hash is stored. Links expire after 30 days. Creating a replacement link revokes the athlete's previous link.
 
-## Player identity resolution
+The token is the viewing credential: anyone the recipient forwards it to can view the shared results until it expires or is replaced. Never place coach credentials or a player document ID in the public URL.
 
-The result pages use the same cascade as the current mobile app:
+## Backend flow
 
-1. `players.signupEmail == authenticated email`
-2. `players.authenticationUID == authenticated UID`
-3. `players.userUID == authenticated UID`
-4. Direct `players/{authenticated UID}` fallback
+Three Firebase callable functions implement accountless access:
 
-This is required because coach-provisioned player document IDs are often different from their Auth UIDs.
+- `createAthleteResultsShare`: authenticated coach authorization and token creation
+- `getAthleteResultsShare`: public-token validation and whitelisted athlete/rep metrics
+- `getAthleteSharedRepArtifacts`: public-token validation and 15-minute signed JSON artifact URLs
+
+Firestore and Storage remain private to unauthenticated clients. Public viewers receive sanitized fields through the Admin SDK only after the backend validates the token, expiry, revocation state, and requested drill.
+
+## Deployment requirement
+
+Accountless links require both the website files and these three callable functions to be deployed. A VS Code Live Server can test the coach UI, but **Copy secure results link** cannot work until the Firebase Functions are deployed to `kickai-69dd0`.
+
+After deployment, test the recipient link in a private/incognito window. It should open results immediately without showing the login page.
 
 ## Mobile data contract
 
