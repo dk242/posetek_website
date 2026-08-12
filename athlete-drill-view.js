@@ -22,6 +22,8 @@
       key: "broadJump",
       title: "Broad Jump",
       eyebrow: "Power · Horizontal jump",
+      chartTitle: "Broad Jump Distance Over Time",
+      drillIcon: "arrow_right_alt",
       page: "broadJumpPage.html",
       siblingPage: "changeOfDirectionPage.html",
       primaryField: "broadJumpDistance",
@@ -37,6 +39,8 @@
       key: "changeOfDirection",
       title: "Change of Direction",
       eyebrow: "Agility · Shuttle test",
+      chartTitle: "Shuttle Time Over Time",
+      drillIcon: "switch_access_shortcut",
       page: "changeOfDirectionPage.html",
       siblingPage: "broadJumpPage.html",
       primaryField: "totalTime",
@@ -123,6 +127,78 @@
     const value = asNumber(raw);
     if (value === null) return "—";
     return config.key === "broadJump" ? `${metersToFeet(value).toFixed(1)} ft` : `${value.toFixed(2)} s`;
+  }
+
+  function average(values) {
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+  }
+
+  function averageField(field) {
+    return average(state.reps.map(rep => asNumber(rep[field])).filter(value => value !== null));
+  }
+
+  function formatTrend() {
+    const ordered = [...state.reps].reverse().map(rep => rep.primary).filter(value => value !== null);
+    if (ordered.length < 2 || ordered[0] === 0) return "—";
+    const first = ordered[0];
+    const latest = ordered[ordered.length - 1];
+    const improvement = config.lowerIsBetter ? first - latest : latest - first;
+    const percent = Math.abs(improvement / first) * 100;
+    if (percent < 0.05) return "No change";
+    const arrow = improvement > 0 ? "↑" : "↓";
+    return `${arrow} ${percent.toFixed(1)}%`;
+  }
+
+  function summaryMetric(icon, label, value) {
+    return `<article class="summary-card"><span class="metric-icon material-symbols-outlined">${icon}</span><span class="summary-value">${escapeHtml(value)}</span><span class="summary-label">${escapeHtml(label)}</span></article>`;
+  }
+
+  function renderSummaryMetrics() {
+    const values = state.reps.map(rep => rep.primary).filter(value => value !== null);
+    const best = values.length ? (config.lowerIsBetter ? Math.min(...values) : Math.max(...values)) : null;
+    const mean = average(values);
+    if (config.key === "broadJump") {
+      return [
+        summaryMetric("straighten", "Avg Distance", formatPrimary(mean)),
+        summaryMetric("trophy", "Max Distance", formatPrimary(best)),
+        summaryMetric("directions_run", "Total Jumps", String(state.reps.length)),
+        summaryMetric("trending_up", "Recent Trend", formatTrend())
+      ].join("");
+    }
+    const averageDistance = averageField("totalDistance");
+    return [
+      summaryMetric("trophy", "Best Time", formatPrimary(best)),
+      summaryMetric("timer", "Avg Time", formatPrimary(mean)),
+      summaryMetric("straighten", "Avg Distance", averageDistance === null ? "—" : `${metersToFeet(averageDistance).toFixed(1)} ft`),
+      summaryMetric("arrow_forward", "Accel Phase", formatSeconds(averageField("phase1Time"))),
+      summaryMetric("switch_access_shortcut", "Turn Phase", formatSeconds(averageField("phase2Time"))),
+      summaryMetric("arrow_back", "Return Phase", formatSeconds(averageField("phase3Time"))),
+      summaryMetric("directions_run", "Total Runs", String(state.reps.length)),
+      summaryMetric("trending_down", "Time Trend", formatTrend())
+    ].join("");
+  }
+
+  function formatSeconds(value) {
+    return value === null ? "—" : `${value.toFixed(2)} s`;
+  }
+
+  function sessionGroups() {
+    const groups = new Map();
+    state.reps.forEach(rep => {
+      const key = rep.sessionNumber;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(rep);
+    });
+    return [...groups.entries()].map(([sessionNumber, reps]) => {
+      const valid = reps.map(rep => rep.primary).filter(value => value !== null);
+      return {
+        sessionNumber,
+        reps,
+        latestRep: reps[0],
+        createdAtMillis: Math.max(...reps.map(rep => rep.createdAtMillis || 0)),
+        best: valid.length ? (config.lowerIsBetter ? Math.min(...valid) : Math.max(...valid)) : null
+      };
+    }).sort((a, b) => b.createdAtMillis - a.createdAtMillis);
   }
 
   function showLoading(message = "Loading athlete results…") {
@@ -250,17 +326,16 @@
   }
 
   function renderShell() {
-    const values = state.reps.map(rep => rep.primary).filter(value => value !== null);
-    const best = values.length ? (config.lowerIsBetter ? Math.min(...values) : Math.max(...values)) : null;
-    const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
     const siblingTitle = config.key === "broadJump" ? "Change of Direction" : "Broad Jump";
 
     app.innerHTML = `
       <section class="page-intro">
-        <div>
+        <div class="intro-copy">
           <p class="eyebrow">${escapeHtml(config.eyebrow)}</p>
-          <h1>${escapeHtml(config.title)}</h1>
-          <p class="athlete-line"><strong>${escapeHtml(athleteName())}</strong> · ${state.reps.length ? `Latest test ${escapeHtml(formatDate(state.reps[0].createdAtMillis))}` : "Awaiting first test"}</p>
+          <div class="title-row">
+            <span class="drill-icon material-symbols-outlined">${config.drillIcon}</span>
+            <div><h1>${escapeHtml(config.title)}</h1><p class="athlete-line"><strong>${escapeHtml(athleteName())}</strong> · ${state.reps.length ? `Latest test ${escapeHtml(formatDate(state.reps[0].createdAtMillis))}` : "Awaiting first test"}</p></div>
+          </div>
         </div>
         <nav class="drill-switcher" aria-label="Athlete tests">
           <a class="active" href="${escapeHtml(pageUrl(config.page))}">${escapeHtml(config.title)}</a>
@@ -268,11 +343,6 @@
         </nav>
       </section>
       <div id="validationBanner" class="validation-banner hidden"><span class="material-symbols-outlined">warning</span><span id="validationMessage"></span></div>
-      <section class="summary-grid" aria-label="Performance summary">
-        <article class="summary-card"><span class="summary-value">${escapeHtml(formatPrimary(best))}</span><span class="summary-label">${escapeHtml(config.bestLabel)}</span></article>
-        <article class="summary-card"><span class="summary-value">${escapeHtml(formatPrimary(average))}</span><span class="summary-label">${escapeHtml(config.averageLabel)}</span></article>
-        <article class="summary-card"><span class="summary-value">${state.reps.length}</span><span class="summary-label">Recorded reps</span></article>
-      </section>
       ${state.reps.length ? renderResultsContent() : `<section class="empty-panel"><h2>No results yet</h2><p>${escapeHtml(config.emptyText)}</p></section>`}
     `;
 
@@ -293,20 +363,26 @@
   }
 
   function renderResultsContent() {
+    const sessions = sessionGroups();
     return `
-      <section class="panel">
-        <div class="panel-header"><div><h2 class="panel-title">Performance history</h2><p class="panel-subtitle">Select any result to open its detailed rep viewer.</p></div></div>
-        <div class="history-layout">
-          <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
-          <div id="historyList" class="history-list">${state.reps.map(rep => `
-            <button class="history-row" type="button" data-rep-id="${escapeHtml(rep.id)}">
-              <span>Session ${rep.sessionNumber} · Rep ${rep.repNumber}<small>${escapeHtml(formatDate(rep.createdAtMillis))}</small></span>
-              <span class="history-value">${escapeHtml(formatPrimary(rep.primary))}</span>
-            </button>`).join("")}</div>
-        </div>
+      <section class="panel chart-panel">
+        <div class="panel-header"><div><h2 class="panel-title">${escapeHtml(config.chartTitle)}</h2></div><span class="range-chip"><span class="material-symbols-outlined">calendar_month</span>All time</span></div>
+        <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
       </section>
-      <section class="panel" id="repPanel">
-        <div class="panel-header"><div><h2 class="panel-title">Rep analysis</h2><p id="repSubtitle" class="panel-subtitle">Loading rep artifacts…</p></div></div>
+      <section class="summary-grid" aria-label="Performance summary">${renderSummaryMetrics()}</section>
+      <section class="sessions-section">
+        <div class="section-heading"><h2>Latest sessions</h2><span>${sessions.length} total</span></div>
+        <div id="historyList" class="history-list">${sessions.map(session => `
+          <button class="history-row" type="button" data-rep-id="${escapeHtml(session.latestRep.id)}">
+            <span class="history-calendar material-symbols-outlined">calendar_month</span>
+            <span class="history-copy"><strong>${escapeHtml(formatDate(session.createdAtMillis))}</strong><small>${session.reps.length} ${session.reps.length === 1 ? "rep" : "reps"}</small></span>
+            <span class="history-session">Session ${session.sessionNumber}</span>
+            <span class="history-value">${escapeHtml(formatPrimary(session.best))}</span>
+            <span class="history-go">View</span>
+          </button>`).join("")}</div>
+      </section>
+      <section class="panel session-panel" id="repPanel">
+        <div class="panel-header"><div><p class="eyebrow">Session viewer</p><h2 class="panel-title">Rep Analysis</h2><p id="repSubtitle" class="panel-subtitle">Loading rep artifacts…</p></div></div>
         <div id="repStrip" class="rep-strip">${state.reps.map(rep => `<button class="rep-button" type="button" data-rep-id="${escapeHtml(rep.id)}">S${rep.sessionNumber} · R${rep.repNumber}</button>`).join("")}</div>
         <div id="repLoading" class="loading-screen" style="min-height:300px"><div><div class="spinner"></div><p>Loading pose and metrics…</p></div></div>
         <div id="repContent" class="hidden"></div>
@@ -320,6 +396,13 @@
     });
     const copyButton = document.getElementById("copyLinkButton");
     if (copyButton) copyButton.onclick = copyAthleteLink;
+    const backButton = document.getElementById("backButton");
+    if (backButton) {
+      backButton.onclick = () => {
+        if (history.length > 1) history.back();
+        else location.href = state.viewer?.role === "coach" ? "kickingview.html" : pageUrl(config.page);
+      };
+    }
   }
 
   async function copyAthleteLink() {
@@ -334,7 +417,7 @@
     const button = document.getElementById("copyLinkButton");
     const label = button?.querySelector(".label");
     if (button) button.disabled = true;
-    if (label) label.textContent = "Creating secure linkâ€¦";
+    if (label) label.textContent = "Creating secure link…";
     try {
       const createShare = cloudFunctions.httpsCallable("createAthleteResultsShare");
       const response = await createShare({ playerDocId: state.player.id });
@@ -377,13 +460,13 @@
         datasets: [{
           label: config.chartLabel,
           data: chartValues,
-          borderColor: "#63b487",
-          backgroundColor: "rgba(99,180,135,0.16)",
-          pointBackgroundColor: "#f7fbf9",
-          pointBorderColor: "#3f8e66",
+          borderColor: "#7cff18",
+          backgroundColor: "rgba(124,255,24,0.12)",
+          pointBackgroundColor: "#7cff18",
+          pointBorderColor: "#041610",
           pointRadius: 4,
           pointHoverRadius: 6,
-          borderWidth: 2,
+          borderWidth: 2.6,
           tension: 0.28,
           fill: true
         }]
@@ -394,8 +477,8 @@
         interaction: { intersect: false, mode: "index" },
         plugins: { legend: { display: false }, tooltip: { displayColors: false } },
         scales: {
-          x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "rgba(255,255,255,0.65)" } },
-          y: { beginAtZero: false, grid: { color: "rgba(255,255,255,0.08)" }, ticks: { color: "rgba(255,255,255,0.65)" }, title: { display: true, text: config.chartLabel, color: "rgba(255,255,255,0.65)" } }
+          x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.55)" } },
+          y: { beginAtZero: false, grid: { color: "rgba(255,255,255,0.07)" }, ticks: { color: "rgba(255,255,255,0.55)" }, title: { display: true, text: config.chartLabel, color: "rgba(255,255,255,0.55)" } }
         }
       }
     });
@@ -573,16 +656,17 @@
         <div>
           <div class="viewer-stage" id="viewerStage">
             <canvas id="poseCanvas" aria-label="Pose playback for the selected rep"></canvas>
-            <span id="frameChip" class="frame-chip">Frame 0</span>
+            <span class="viewer-title">${escapeHtml(config.title)}</span>
+            <span id="frameChip" class="frame-chip">Frame 1</span>
             <span id="phaseChip" class="phase-chip hidden"></span>
           </div>
           <div class="playback-controls">
             <button id="playButton" class="control-button" type="button" aria-label="Play"><span class="material-symbols-outlined">play_arrow</span></button>
-            <button id="previousButton" class="control-button" type="button" aria-label="Previous frame"><span class="material-symbols-outlined">skip_previous</span></button>
-            <button id="nextButton" class="control-button" type="button" aria-label="Next frame"><span class="material-symbols-outlined">skip_next</span></button>
-            <input id="frameSlider" class="frame-slider" type="range" min="0" max="${Math.max(0, state.frames.length - 1)}" value="0" aria-label="Frame">
-            <button id="speedButton" class="control-button" type="button" aria-label="Playback speed" style="width:auto;padding:0 .65rem">0.5×</button>
-            <span id="frameCount" class="frame-count">0 / ${Math.max(0, state.frames.length - 1)}</span>
+            <div class="scrubber-wrap">
+              <input id="frameSlider" class="frame-slider" type="range" min="0" max="${Math.max(0, state.frames.length - 1)}" value="0" aria-label="Frame">
+              <div class="frame-meta"><span id="frameCount">Frame 1</span><span>${state.frames.length} total</span></div>
+            </div>
+            <button id="speedButton" class="speed-button" type="button" aria-label="Playback speed">0.5×</button>
           </div>
           <div id="markerRow" class="marker-row">${renderMarkers()}</div>
           ${state.frames.length ? "" : `<div class="coach-note"><strong>Pose playback unavailable</strong><p>The summary metrics are available, but this rep's pose.json artifact could not be loaded. Raw video uploads are optional for locally processed drills.</p></div>`}
@@ -687,8 +771,6 @@
 
   function bindRepControls() {
     document.getElementById("playButton")?.addEventListener("click", togglePlayback);
-    document.getElementById("previousButton")?.addEventListener("click", () => setFrame(state.currentFrame - 1));
-    document.getElementById("nextButton")?.addEventListener("click", () => setFrame(state.currentFrame + 1));
     document.getElementById("frameSlider")?.addEventListener("input", event => setFrame(Number(event.target.value)));
     document.getElementById("speedButton")?.addEventListener("click", cycleSpeed);
     document.querySelectorAll("[data-frame]").forEach(button => button.addEventListener("click", () => setFrame(Number(button.dataset.frame))));
@@ -753,8 +835,8 @@
     const frameChip = document.getElementById("frameChip");
     const frameCount = document.getElementById("frameCount");
     if (slider) slider.value = state.currentFrame;
-    if (frameChip) frameChip.textContent = `Frame ${state.currentFrame}`;
-    if (frameCount) frameCount.textContent = `${state.currentFrame} / ${max}`;
+    if (frameChip) frameChip.textContent = `Frame ${state.currentFrame + 1}`;
+    if (frameCount) frameCount.textContent = `Frame ${state.currentFrame + 1}`;
     updateDynamicMetrics();
     drawFrame();
   }
@@ -793,8 +875,8 @@
     const { context, width, height } = setup;
     context.clearRect(0, 0, width, height);
     const gradient = context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "#10271f");
-    gradient.addColorStop(1, "#07130f");
+    gradient.addColorStop(0, "#0a281b");
+    gradient.addColorStop(1, "#03100b");
     context.fillStyle = gradient;
     context.fillRect(0, 0, width, height);
 
@@ -826,7 +908,7 @@
       if (!point) return;
       const p = mapped(point, width, height);
       context.beginPath(); context.arc(p.x, p.y, 3, 0, Math.PI * 2);
-      context.fillStyle = "#63b487"; context.fill();
+      context.fillStyle = "#7cff18"; context.fill();
       context.strokeStyle = "rgba(255,255,255,.8)"; context.lineWidth = 1; context.stroke();
     });
     updatePhaseChip();
@@ -968,7 +1050,7 @@
   async function startShared(token) {
     try {
       state.shareToken = token;
-      showLoading(`Opening shared ${config.title.toLowerCase()} resultsâ€¦`);
+      showLoading(`Opening shared ${config.title.toLowerCase()} results…`);
       const getShare = cloudFunctions.httpsCallable("getAthleteResultsShare");
       const response = await getShare({ token, drill: config.key });
       const payload = response?.data || {};
