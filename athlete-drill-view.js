@@ -54,6 +54,15 @@
     }
   };
 
+  const drillCatalog = [
+    { key: "broadJump", label: "Broad Jump", page: "broadJumpPage.html", enabled: true },
+    { key: "changeOfDirection", label: "Change of Direction", page: "changeOfDirectionPage.html", enabled: true },
+    { key: "dribbling", label: "Dribbling", enabled: false },
+    { key: "sprint", label: "Sprint", enabled: false },
+    { key: "jump", label: "Jump", enabled: false },
+    { key: "shooting", label: "Shooting", enabled: false }
+  ];
+
   const drillKey = document.body.dataset.drill;
   const config = configs[drillKey];
   const app = document.getElementById("app");
@@ -64,6 +73,8 @@
     viewer: null,
     player: null,
     reps: [],
+    statsReps: [],
+    activeView: params.get("view") === "stats" ? "stats" : "results",
     currentRep: null,
     artifacts: {},
     frames: [],
@@ -279,10 +290,10 @@
     return { id: playerDoc.id, data: playerData };
   }
 
-  async function loadReps(playerId) {
+  async function loadReps(playerId, drillConfig = config) {
     const repsRef = db.collection("players").doc(playerId).collection("reps");
-    let snapshot = await repsRef.where("repType", "==", config.key).get();
-    if (snapshot.empty) snapshot = await repsRef.where("drillType", "==", config.key).get();
+    let snapshot = await repsRef.where("repType", "==", drillConfig.key).get();
+    if (snapshot.empty) snapshot = await repsRef.where("drillType", "==", drillConfig.key).get();
 
     const seen = new Set();
     const reps = [];
@@ -290,10 +301,11 @@
       if (seen.has(doc.id)) return;
       seen.add(doc.id);
       const data = doc.data() || {};
-      const primary = asNumber(data[config.primaryField]);
+      const primary = asNumber(data[drillConfig.primaryField]);
       reps.push({
         id: doc.id,
         ...data,
+        _statsDrill: drillConfig.key,
         primary,
         createdAtMillis: timestampMillis(data.createdAt),
         sessionNumber: asInteger(data.sessionNumber) || 1,
@@ -303,6 +315,11 @@
     });
     reps.sort((a, b) => (b.createdAtMillis - a.createdAtMillis) || ((b.absoluteRepNumber || 0) - (a.absoluteRepNumber || 0)));
     return reps;
+  }
+
+  async function loadStatsReps(playerId) {
+    const repGroups = await Promise.all(Object.values(configs).map(drillConfig => loadReps(playerId, drillConfig)));
+    return repGroups.flat();
   }
 
   function athleteName() {
@@ -325,9 +342,24 @@
     return `${page}?${query.toString()}`;
   }
 
-  function renderShell() {
-    const siblingTitle = config.key === "broadJump" ? "Change of Direction" : "Broad Jump";
+  function renderDrillCatalog() {
+    return drillCatalog.map(drill => {
+      if (drill.enabled) {
+        const active = drill.key === config.key ? " active" : "";
+        return `<a class="${active.trim()}" href="${escapeHtml(pageUrl(drill.page))}">${escapeHtml(drill.label)}</a>`;
+      }
+      return `<button type="button" disabled aria-disabled="true" title="${escapeHtml(drill.label)} results are coming soon"><span>${escapeHtml(drill.label)}</span><small>Soon</small></button>`;
+    }).join("");
+  }
 
+  function renderStatsContent() {
+    if (!window.PoseTekAthleteStats) {
+      return `<section class="empty-panel"><h2>Stats unavailable</h2><p>The athlete stats module could not be loaded.</p></section>`;
+    }
+    return window.PoseTekAthleteStats.render({ reps: state.statsReps, athleteName: athleteName() });
+  }
+
+  function renderShell() {
     app.innerHTML = `
       <section class="page-intro">
         <div class="intro-copy">
@@ -337,13 +369,17 @@
             <div><h1>${escapeHtml(config.title)}</h1><p class="athlete-line"><strong>${escapeHtml(athleteName())}</strong> · ${state.reps.length ? `Latest test ${escapeHtml(formatDate(state.reps[0].createdAtMillis))}` : "Awaiting first test"}</p></div>
           </div>
         </div>
-        <nav class="drill-switcher" aria-label="Athlete tests">
-          <a class="active" href="${escapeHtml(pageUrl(config.page))}">${escapeHtml(config.title)}</a>
-          <a href="${escapeHtml(pageUrl(config.siblingPage))}">${escapeHtml(siblingTitle)}</a>
-        </nav>
+        <nav class="drill-switcher drill-catalog" aria-label="Athlete tests">${renderDrillCatalog()}</nav>
       </section>
-      <div id="validationBanner" class="validation-banner hidden"><span class="material-symbols-outlined">warning</span><span id="validationMessage"></span></div>
-      ${state.reps.length ? renderResultsContent() : `<section class="empty-panel"><h2>No results yet</h2><p>${escapeHtml(config.emptyText)}</p></section>`}
+      <nav class="page-view-switcher" aria-label="Results view">
+        <button class="page-view-button" type="button" data-page-view="results">Drill Results</button>
+        <button class="page-view-button" type="button" data-page-view="stats">Athlete Stats</button>
+      </nav>
+      <div id="resultsSurface">
+        <div id="validationBanner" class="validation-banner hidden"><span class="material-symbols-outlined">warning</span><span id="validationMessage"></span></div>
+        ${state.reps.length ? renderResultsContent() : `<section class="empty-panel"><h2>No results yet</h2><p>${escapeHtml(config.emptyText)}</p></section>`}
+      </div>
+      <div id="statsSurface">${renderStatsContent()}</div>
     `;
 
     const dashboardLink = document.getElementById("dashboardLink");
@@ -356,10 +392,7 @@
     }
     if (copyButton) copyButton.classList.toggle("hidden", state.viewer?.role !== "coach");
     bindStaticEvents();
-    if (state.reps.length) {
-      renderChart();
-      selectInitialRep();
-    }
+    setActiveView(state.activeView, false);
   }
 
   function renderResultsContent() {
@@ -396,12 +429,36 @@
     });
     const copyButton = document.getElementById("copyLinkButton");
     if (copyButton) copyButton.onclick = copyAthleteLink;
+    document.querySelectorAll("[data-page-view]").forEach(button => {
+      button.addEventListener("click", () => setActiveView(button.dataset.pageView));
+    });
     const backButton = document.getElementById("backButton");
     if (backButton) {
       backButton.onclick = () => {
         if (history.length > 1) history.back();
         else location.href = state.viewer?.role === "coach" ? "kickingview.html" : pageUrl(config.page);
       };
+    }
+  }
+
+  function setActiveView(view, updateUrl = true) {
+    state.activeView = view === "stats" ? "stats" : "results";
+    document.getElementById("resultsSurface")?.classList.toggle("hidden", state.activeView !== "results");
+    document.getElementById("statsSurface")?.classList.toggle("hidden", state.activeView !== "stats");
+    document.querySelectorAll("[data-page-view]").forEach(button => {
+      const active = button.dataset.pageView === state.activeView;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-current", active ? "page" : "false");
+    });
+    if (updateUrl) {
+      const nextUrl = new URL(location.href);
+      if (state.activeView === "stats") nextUrl.searchParams.set("view", "stats");
+      else nextUrl.searchParams.delete("view");
+      history.replaceState({}, "", nextUrl);
+    }
+    if (state.activeView === "results" && state.reps.length) {
+      if (!state.chart) renderChart();
+      if (!state.currentRep) selectInitialRep();
     }
   }
 
@@ -1039,7 +1096,8 @@
       state.viewer = await resolveViewer(user);
       state.player = await resolveAuthorizedPlayer(state.viewer);
       showLoading(`Loading ${config.title.toLowerCase()} results…`);
-      state.reps = await loadReps(state.player.id);
+      state.statsReps = await loadStatsReps(state.player.id);
+      state.reps = state.statsReps.filter(rep => rep._statsDrill === config.key);
       renderShell();
     } catch (error) {
       console.error(`[${config.key}]`, error);
@@ -1052,19 +1110,22 @@
       state.shareToken = token;
       showLoading(`Opening shared ${config.title.toLowerCase()} results…`);
       const getShare = cloudFunctions.httpsCallable("getAthleteResultsShare");
-      const response = await getShare({ token, drill: config.key });
-      const payload = response?.data || {};
+      const responses = await Promise.all(Object.values(configs).map(drillConfig => getShare({ token, drill: drillConfig.key })));
+      const payloads = responses.map((response, index) => ({ drillConfig: Object.values(configs)[index], payload: response?.data || {} }));
+      const currentPayload = payloads.find(item => item.drillConfig.key === config.key)?.payload || {};
       state.viewer = { role: "shared" };
-      state.player = { id: null, data: payload.athlete || {} };
-      state.shareExpiresAtMillis = asNumber(payload.expiresAtMillis);
-      state.reps = (Array.isArray(payload.reps) ? payload.reps : []).map(rep => ({
-        ...rep,
-        primary: asNumber(rep[config.primaryField]),
-        createdAtMillis: asNumber(rep.createdAtMillis) || 0,
-        sessionNumber: asInteger(rep.sessionNumber) || 1,
-        repNumber: asInteger(rep.repNumber) || asInteger(rep.absoluteRepNumber) || 1,
-        absoluteRepNumber: asInteger(rep.absoluteRepNumber)
-      }));
+      state.player = { id: null, data: currentPayload.athlete || {} };
+      state.shareExpiresAtMillis = asNumber(currentPayload.expiresAtMillis);
+      state.statsReps = payloads.flatMap(({ drillConfig, payload }) => (Array.isArray(payload.reps) ? payload.reps : []).map(rep => ({
+          ...rep,
+          _statsDrill: drillConfig.key,
+          primary: asNumber(rep[drillConfig.primaryField]),
+          createdAtMillis: asNumber(rep.createdAtMillis) || 0,
+          sessionNumber: asInteger(rep.sessionNumber) || 1,
+          repNumber: asInteger(rep.repNumber) || asInteger(rep.absoluteRepNumber) || 1,
+          absoluteRepNumber: asInteger(rep.absoluteRepNumber)
+        })));
+      state.reps = state.statsReps.filter(rep => rep._statsDrill === config.key);
       renderShell();
     } catch (error) {
       console.error(`[${config.key}] shared link failed`, error);
@@ -1082,17 +1143,24 @@
     state.preview = true;
     state.viewer = { role: "coach", uid: "preview", docId: "preview-coach", data: { members: ["preview-player"] } };
     state.player = { id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete" } };
-    const primaryValues = config.key === "broadJump" ? [1.82, 1.68, 1.74, 1.59] : [4.42, 4.58, 4.51, 4.77];
-    state.reps = primaryValues.map((primary, index) => ({
-      id: `preview-${index + 1}`,
-      [config.primaryField]: primary,
+    const previewValues = {
+      broadJump: [1.82, 1.68, 1.74, 1.59],
+      changeOfDirection: [4.42, 4.58, 4.51, 4.77]
+    };
+    state.statsReps = Object.values(configs).flatMap(drillConfig => previewValues[drillConfig.key].map((primary, index) => ({
+      id: `preview-${drillConfig.key}-${index + 1}`,
+      _statsDrill: drillConfig.key,
+      repType: drillConfig.key,
+      drillType: drillConfig.key,
+      [drillConfig.primaryField]: primary,
       primary,
       sessionNumber: index < 2 ? 2 : 1,
       repNumber: index % 2 + 1,
-      absoluteRepNumber: primaryValues.length - index,
+      absoluteRepNumber: previewValues[drillConfig.key].length - index,
       createdAtMillis: Date.now() - index * 86400000 * 8,
-      ...(config.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 } : { totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 })
-    }));
+      ...(drillConfig.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 } : { totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 })
+    })));
+    state.reps = state.statsReps.filter(rep => rep._statsDrill === config.key);
     renderShell();
   }
 
