@@ -15,30 +15,59 @@
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #1a3a2e;
-      --accent: #4c8c6a;
+      --primary: #125638;
+      --secondary: #246E4C;
+      --accent: #38AA6A;
+      --accent-light: #5EC48A;
       --text-light: #ffffff;
+      --text-muted: rgba(255,255,255,0.74);
       --card-bg: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.1);
+      --card-border: rgba(255, 255, 255, 0.12);
       --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
       --grid-gap: 40px; /* distance between grid lines in px */
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--primary);
+      background: linear-gradient(135deg, #091C18 0%, var(--primary) 50%, #061012 100%);
       color: var(--text-light);
+    }
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56,170,106,0.08), transparent),radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56,170,106,0.05), transparent);
+      pointer-events:none;
+      z-index:0;
     }
     header {
       display:flex; justify-content:space-between; align-items:center;
-      padding:1rem 2rem; background-color:rgba(0,0,0,0.2); backdrop-filter:blur(10px);
+      padding:1rem 2rem; background:rgba(15,31,27,0.85); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--card-border);
+      position:sticky;top:0;z-index:100;
     }
-    .logo { font-family:'SF Pro Display',sans-serif; font-size:1.8rem; font-weight:600; }
+    .logo {
+      font-family:'Poppins','SF Pro Display',sans-serif; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px;
+      background:linear-gradient(135deg, var(--text-light), var(--accent-light));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
     .nav-links a { color:var(--text-light); text-decoration:none; margin-left:1.5rem; font-weight:500; }
+
+    .builder-status{
+      position:relative;z-index:1;
+      margin:1rem 1rem 0;
+      padding:.7rem .9rem;
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+      font-weight:600;
+    }
 
     .topbar {
       display:flex; align-items:center; gap:.75rem;
       padding:1rem 1rem 0 1rem;
+      position:relative;z-index:1;
     }
     .name-wrap {
       display:flex; align-items:center; gap:.5rem;
@@ -54,7 +83,7 @@
       min-width:260px;
     }
 
-    .container { display:flex; padding:1rem; gap:1rem; }
+    .container { display:flex; padding:1rem; gap:1rem; position:relative;z-index:1; }
     .grid-wrap { position:relative; flex:1; }
     .grid {
       position:relative;
@@ -135,7 +164,7 @@
       background:transparent; color:#fff; border:1px solid #777;
     }
 
-    .controls { padding:1rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+    .controls { padding:1rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap; position:relative;z-index:1; }
     .controls label { display:flex; align-items:center; gap:.5rem; }
     .controls input, .controls textarea {
       padding:.5rem; border-radius:6px; border:1px solid var(--card-border); background:#fff; color:#000;
@@ -144,6 +173,21 @@
     .finish-btn {
       padding:.7rem 1.1rem; border:none; border-radius:8px;
       background:var(--accent); color:white; font-weight:600; cursor:pointer;
+    }
+    .secondary-btn{
+      padding:.65rem 1rem;
+      border:1px solid var(--card-border);
+      border-radius:8px;
+      background:rgba(255,255,255,.06);
+      color:var(--text-light);
+      font-weight:600;
+      cursor:pointer;
+    }
+    .template-wrap{
+      display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;
+    }
+    .helper-text{
+      font-size:.9rem;color:var(--text-muted);font-weight:600;
     }
 
     /* Grid header controls (top-left & top-right inside grid) */
@@ -169,6 +213,10 @@
   <div class="logo">PoseTek</div>
     <nav class="nav-links"><a href="sessions.html">Back to Sessions</a></nav>
   </header>
+  <div class="builder-status">
+    <div id="modeStatus">Mode: Place equipment</div>
+    <div class="helper-text">Tip: select an item, click on the field, then save your drill.</div>
+  </div>
 
   <!-- Drill name -->
   <div class="topbar">
@@ -213,7 +261,15 @@
     <label>Reps <input type="number" id="reps" min="1" value="1"></label>
     <label>Rest (s) <input type="number" id="rest" min="0" value="30"></label>
     <textarea id="summary" placeholder="Summary..."></textarea>
+    <div class="template-wrap">
+      <button type="button" class="secondary-btn" data-template="passing">Passing Setup</button>
+      <button type="button" class="secondary-btn" data-template="dribbling">Dribbling Setup</button>
+      <button type="button" class="secondary-btn" data-template="finishing">Finishing Setup</button>
+    </div>
+    <button id="clearCanvasBtn" class="secondary-btn" type="button">Clear Canvas</button>
+    <button id="resetMetaBtn" class="secondary-btn" type="button">Reset Details</button>
     <button id="finishDrillBtn" class="finish-btn">Finish Drill Creation</button>
+    <span id="saveStatus" class="helper-text" aria-live="polite"></span>
   </div>
 
   <div class="context-menu" id="contextMenu">
@@ -234,6 +290,7 @@
     const scriptApp = document.createElement('script'); scriptApp.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js'; document.head.appendChild(scriptApp);
     const scriptAuth = document.createElement('script'); scriptAuth.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js'; document.head.appendChild(scriptAuth);
     const scriptFs = document.createElement('script'); scriptFs.src = 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js'; document.head.appendChild(scriptFs);
+    let isViewMode = false;
 
     // Wait for scripts to load then init
     scriptFs.onload = () => {
@@ -249,18 +306,25 @@
       if (!window.firebase.apps?.length) firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const db = firebase.firestore();
+      const saveStatusEl = document.getElementById('saveStatus');
+      const finishDrillBtn = document.getElementById('finishDrillBtn');
+      let savingDrill = false;
+      const waitForAuthState = () => new Promise((resolve) => {
+        const unsub = auth.onAuthStateChanged((user) => {
+          unsub();
+          resolve(user || null);
+        });
+      });
 
       // If URL contains ?drill=ID, load it in view-only mode
       const urlParams = new URLSearchParams(location.search);
       const viewDrillId = urlParams.get('drill');
-      const viewPlayer = urlParams.get('player');
       if (viewDrillId) {
+        isViewMode = true;
         // Hide interactive controls for view-only
         document.getElementById('palette').style.display = 'none';
         document.querySelector('.controls').style.display = 'none';
         document.querySelector('.grid').style.cursor = 'default';
-        // prevent placing items
-        grid.removeEventListener('click', () => {});
         // Load drill doc and render
         (async ()=>{
           try {
@@ -309,6 +373,7 @@
 
       // Wait for auth to be ready and then handle save
       document.getElementById('finishDrillBtn').addEventListener('click', async ()=>{
+        if (savingDrill) return;
         const name = document.getElementById('drillName').value.trim() || 'Untitled Drill';
         const reps = Number(document.getElementById('reps').value) || 1;
         const rest = document.getElementById('rest').value || '0';
@@ -318,30 +383,40 @@
         const urlParams = new URLSearchParams(location.search);
         const assignedTo = urlParams.get('player') || null;
 
-        auth.onAuthStateChanged(async (user) => {
-          if (!user) {
-            alert('Please sign in to save drills.');
-            return;
-          }
+        const user = auth.currentUser || await waitForAuthState();
+        if (!user) {
+          saveStatusEl.textContent = 'Please sign in to save drills.';
+          return;
+        }
+        savingDrill = true;
+        finishDrillBtn.disabled = true;
+        finishDrillBtn.textContent = 'Saving...';
+        saveStatusEl.textContent = 'Saving drill...';
 
-          const doc = {
-            name, reps, rest, summary, items,
-            createdBy: user.uid,
-            assignedTo: assignedTo,
-            // include a client timestamp so the drill shows up immediately in client queries
-            createdAtClient: firebase.firestore.Timestamp.fromDate(new Date()),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          };
+        const doc = {
+          name, reps, rest, summary, items,
+          createdBy: user.uid,
+          assignedTo: assignedTo,
+          // include a client timestamp so the drill shows up immediately in client queries
+          createdAtClient: firebase.firestore.Timestamp.fromDate(new Date()),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-          try {
-            const res = await db.collection('drills').add(doc);
-            // redirect to drill list and highlight new drill
-            location.href = `drillList.html?new=${res.id}${assignedTo ? `&player=${assignedTo}` : ''}`;
-          } catch (err) {
-            console.error('Failed to save drill:', err);
-            alert('Failed to save drill. See console for details.');
+        let redirected = false;
+        try {
+          const res = await db.collection('drills').add(doc);
+          redirected = true;
+          location.href = `drillList.html?new=${res.id}${assignedTo ? `&player=${assignedTo}` : ''}`;
+        } catch (err) {
+          console.error('Failed to save drill:', err);
+          saveStatusEl.textContent = 'Failed to save drill. Please try again.';
+        } finally {
+          if (!redirected) {
+            savingDrill = false;
+            finishDrillBtn.disabled = false;
+            finishDrillBtn.textContent = 'Finish Drill Creation';
           }
-        });
+        }
       });
     };
 
@@ -354,6 +429,8 @@
       palette.querySelectorAll('.panel-item').forEach(p => p.classList.remove('active'));
       item.classList.add('active');
       selectedType = item.dataset.type;
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = `Mode: Place ${selectedType}`;
     });
 
     // ESC to clear palette selection and exit modes
@@ -368,6 +445,8 @@
       if (dupState.active) endDuplicate(true);
       if (pathState.active) finishPath(false);
       if (arrowState.active) finishArrow(false);
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Place equipment';
     }
 
     // ---------- Grid, overlay & coordinates ----------
@@ -399,6 +478,7 @@
     // ---------- Placing items ----------
     grid.addEventListener('click', (e) => {
       if (pathState.active || arrowState.active) return; // drawing modes handle their own clicks
+      if (isViewMode) return;
       if (!selectedType) return;
       if (e.target !== grid && e.target !== drawCanvas) return; // only empty grid
       const { x, y } = gridPointFromEvent(e);
@@ -597,6 +677,8 @@
       pathState.active = true;
       pathState.points = [];
       pathBtn.textContent = 'Finish';
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Draw path';
       redrawAll();
     }
 
@@ -609,6 +691,8 @@
       } else {
         pathState.smoothed = [...pathState.points];
       }
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Place equipment';
       redrawAll();
     }
 
@@ -662,6 +746,8 @@
       arrowState.start = null;
       arrowState.current = null;
       arrowState.dragging = false;
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Draw arrow';
       redrawAll();
     }
     function finishArrow(commit){
@@ -671,6 +757,8 @@
       arrowState.active = false;
       arrowBtn.textContent = 'Draw Arrow';
       arrowState.start = null; arrowState.current = null; arrowState.dragging = false;
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Place equipment';
       redrawAll();
     }
 
@@ -703,6 +791,52 @@
     // ---------- Dummy zoom buttons (no-op) ----------
     document.getElementById('zoomInBtn').addEventListener('click', () => {/* no-op */});
     document.getElementById('zoomOutBtn').addEventListener('click', () => {/* no-op */});
+
+    document.getElementById('clearCanvasBtn').addEventListener('click', () => {
+      document.querySelectorAll('.grid-item').forEach((el) => el.remove());
+      pathState.points = [];
+      pathState.smoothed = [];
+      arrows.length = 0;
+      if (dupState.active) endDuplicate(true);
+      redrawAll();
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = 'Mode: Place equipment';
+    });
+
+    document.getElementById('resetMetaBtn').addEventListener('click', () => {
+      document.getElementById('drillName').value = '';
+      document.getElementById('reps').value = 1;
+      document.getElementById('rest').value = 30;
+      document.getElementById('summary').value = '';
+      const statusEl = document.getElementById('saveStatus');
+      if (statusEl) statusEl.textContent = 'Details reset';
+    });
+
+    document.querySelectorAll('[data-template]').forEach((btn) => {
+      btn.addEventListener('click', () => applyTemplate(btn.dataset.template));
+    });
+
+    function applyTemplate(templateName) {
+      document.querySelectorAll('.grid-item').forEach((el) => el.remove());
+      const rect = grid.getBoundingClientRect();
+      const w = rect.width; const h = rect.height;
+      const place = (type, x, y) => placeItem(type, x * w, y * h);
+      if (templateName === 'passing') {
+        place('cone', 0.22, 0.45); place('cone', 0.40, 0.32); place('cone', 0.58, 0.58); place('cone', 0.75, 0.42);
+        place('goal', 0.90, 0.50);
+      } else if (templateName === 'dribbling') {
+        place('cone', 0.20, 0.22); place('cone', 0.33, 0.36); place('cone', 0.46, 0.22); place('cone', 0.59, 0.36); place('cone', 0.72, 0.22);
+        place('gate', 0.86, 0.32);
+      } else if (templateName === 'finishing') {
+        place('gate', 0.25, 0.45); place('cone', 0.40, 0.34); place('cone', 0.48, 0.56); place('goal', 0.82, 0.50);
+      }
+      pathState.points = [];
+      pathState.smoothed = [];
+      arrows.length = 0;
+      redrawAll();
+      const modeEl = document.getElementById('modeStatus');
+      if (modeEl) modeEl.textContent = `Mode: Template loaded (${templateName})`;
+    }
 
     // ---------- Drawing overlays (paths + duplicate arrow + arrows) ----------
     function redrawAll() {
@@ -781,4 +915,3 @@
   </script>
 </body>
 </html>
-

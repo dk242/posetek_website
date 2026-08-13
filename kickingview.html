@@ -19,10 +19,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
     <style>
         :root {
-            --primary: #1a3a2e;
-            --secondary: #2d5e4a;
-            --accent: #4c8c6a;
-            --accent-light: #5ea87e;
+            --primary: #125638;
+            --secondary: #246E4C;
+            --accent: #38AA6A;
+            --accent-light: #5EC48A;
             --accent-passing: #4c6a8c;
             --accent-longballs: #8c6a4c;
             --accent-instep: #6a4c8c;
@@ -31,7 +31,7 @@
             --text-muted: rgba(255, 255, 255, 0.7);
             --text-dark: #121212;
             --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.12);
             --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -40,13 +40,13 @@
             padding: 0;
             box-sizing: border-box;
             /* Improve touch scrolling on mobile */
-            -webkit-tap-highlight-color: rgba(76, 140, 106, 0.2);
+            -webkit-tap-highlight-color: rgba(56, 170, 106, 0.2);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-light);
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #091C18 0%, var(--primary) 50%, #061012 100%);
             line-height: 1.6;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
@@ -59,8 +59,8 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(76, 140, 106, 0.08), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(76, 140, 106, 0.05), transparent);
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56, 170, 106, 0.08), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56, 170, 106, 0.05), transparent);
             pointer-events: none;
             z-index: 0;
         }
@@ -255,7 +255,7 @@
 
         .action-btn {
             padding: 0.6rem 1.2rem;
-            background: linear-gradient(135deg, var(--accent) 0%, #56a07a 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             border: none;
             border-radius: 50px;
             color: var(--text-light);
@@ -263,7 +263,7 @@
             cursor: pointer;
             transition: var(--transition);
             min-height: 44px;
-            box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .action-btn:hover { transform: translateY(-2px); }
 
@@ -285,7 +285,7 @@
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -347,11 +347,11 @@
             border-color: var(--accent);
             color: #ffffff;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(76, 140, 106, 0.4);
+            box-shadow: 0 2px 8px rgba(56, 170, 106, 0.4);
         }
 
         .time-filter.active:hover {
-            background: #5a9b77;
+            background: var(--accent-light);
             transform: translateY(-1px);
         }
 
@@ -393,6 +393,27 @@
             margin-top: 0.25rem;
         }
 
+        .legacy-d1-panel {
+            margin: 0 0 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.045);
+        }
+        .legacy-d1-panel h3 { margin-bottom: 0.75rem; font-size: 1rem; }
+        .legacy-d1-list { display: grid; gap: 0.55rem; }
+        .legacy-d1-row { display: grid; grid-template-columns: minmax(120px, 1.4fr) 0.8fr 0.9fr 54px; align-items: center; gap: 0.75rem; padding: 0.7rem 0.8rem; border-radius: 12px; background: rgba(255,255,255,.05); }
+        .legacy-d1-row strong, .legacy-d1-row small { display: block; }
+        .legacy-d1-row strong { font-size: 0.78rem; }
+        .legacy-d1-row small { color: var(--text-muted); font-size: 0.65rem; }
+        .legacy-d1-best { font-weight: 800; }
+        .legacy-d1-score { color: var(--accent-light); font-weight: 850; text-align: right; }
+
+        @media (max-width: 520px) {
+            .legacy-d1-row { grid-template-columns: minmax(105px, 1.3fr) 0.8fr 0.9fr; gap: 0.5rem; }
+            .legacy-d1-score { grid-column: 3; text-align: left; }
+        }
+
         .best-jump-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -407,7 +428,7 @@
         }
 
         .pose-container {
-            background: #1a3a2e;
+            background: #125638;
             border-radius: 8px;
             display: flex;
             justify-content: center;
@@ -487,12 +508,12 @@
 
         .session-tab-btn.active[data-session-tab="all"] {
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .session-tab-btn.active[data-session-tab="deadball"] {
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .session-tab-btn.active[data-session-tab="freerecord"] {
@@ -699,7 +720,7 @@
             border-radius: 50%;
             top: 2px;
             left: 24px;
-            box-shadow: 0 0 8px rgba(76, 140, 106, 0.4);
+            box-shadow: 0 0 8px rgba(56, 170, 106, 0.4);
         }
         
         /* Body, arms, and legs */
@@ -883,7 +904,7 @@
             cursor: pointer;
             margin-top: 0.5rem;
             padding: 0.5rem 1.2rem;
-            background: var(--accent, #4c8c6a);
+            background: var(--accent, #38AA6A);
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -894,7 +915,7 @@
             display: inline-block;
         }
         .lock-overlay .unlock-btn:hover {
-            background: var(--accent-light, #5ea87e);
+            background: var(--accent-light, #5EC48A);
         }
     </style>
 </head>
@@ -946,11 +967,11 @@
         <div class="card">
             <!-- Main Activity Type Tabs -->
             <div class="tab-container" style="margin-bottom: 1rem;">
-                <button class="rep-type-tab active" data-rep-type="jump" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-light); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 700; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: var(--transition); min-height: 44px;">
+                <button class="rep-type-tab active" data-rep-type="jump" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-light); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 700; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: var(--transition); min-height: 44px;">
                     Jump
                 </button>
                 <button class="rep-type-tab" data-rep-type="kick" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition); min-height: 44px;">
-                    Kick
+                    Shooting
                 </button>
                 <button class="rep-type-tab" data-rep-type="sprint" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition); min-height: 44px;">
                     Sprint
@@ -958,6 +979,15 @@
                 <button class="rep-type-tab" data-rep-type="freerecord" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.7rem 1.4rem; cursor: pointer; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition); min-height: 44px;">
                     Free Record
                 </button>
+                <a id="broadJumpResultsLink" href="broadJumpPage.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);color:var(--text-muted);font-family:'Poppins','Inter',sans-serif;font-weight:600;padding:0.7rem 1.4rem;font-size:0.95rem;text-decoration:none;min-height:44px;">
+                    Broad Jump
+                </a>
+                <a id="dribblingResultsLink" href="dribblingPage.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);color:var(--text-muted);font-family:'Poppins','Inter',sans-serif;font-weight:600;padding:0.7rem 1.4rem;font-size:0.95rem;text-decoration:none;min-height:44px;">
+                    Dribbling
+                </a>
+                <a id="changeOfDirectionResultsLink" href="changeOfDirectionPage.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);color:var(--text-muted);font-family:'Poppins','Inter',sans-serif;font-weight:600;padding:0.7rem 1.4rem;font-size:0.95rem;text-decoration:none;min-height:44px;">
+                    Change of Direction
+                </a>
             </div>
 
             <!-- Collapsible Sessions Section -->
@@ -1009,25 +1039,35 @@
                 <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                     <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Statistics</h3>
                     <div style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1;">
-                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                             <div class="stat-value" id="avgJumpHeight">--</div>
                             <div class="stat-label">Avg Jump Height (in)</div>
                         </div>
-                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                             <div class="stat-value" id="maxJumpHeight">--</div>
                             <div class="stat-label">Max Jump Height (in)</div>
                         </div>
-                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                             <div class="stat-value" id="totalJumps">--</div>
                             <div class="stat-label">Total Jumps</div>
                         </div>
-                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                             <div class="stat-value" id="recentTrend">--</div>
                             <div class="stat-label">Trend</div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <section class="legacy-d1-panel" aria-label="Vertical jump D1 comparison">
+                <h3>Compare with D1 standard</h3>
+                <div class="legacy-d1-list"><div class="legacy-d1-row">
+                    <span><strong>Vertical Jump</strong><small>Best result</small></span>
+                    <span class="legacy-d1-best" id="d1JumpBest">--</span>
+                    <span><strong id="d1JumpStandard">--</strong><small>D1 standard</small></span>
+                    <span class="legacy-d1-score" id="d1JumpScore">--</span>
+                </div></div>
+            </section>
 
             <!-- Jump Technique Breakdown -->
             <div id="bestJumpSection" style="display: none; border-top: 1px solid var(--card-border); padding-top: 1rem; margin-top: 0.5rem;">
@@ -1038,12 +1078,12 @@
                     <div>
                         <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Pose at Key Frames</h4>
                         <div class="tab-container keyframe-container">
-                            <button class="keyframe-btn active" data-keyframe="coil" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-light); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: var(--transition);">Coil</button>
+                            <button class="keyframe-btn active" data-keyframe="coil" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-light); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: var(--transition);">Coil</button>
                             <button class="keyframe-btn" data-keyframe="midextension" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition);">Mid Ext</button>
                             <button class="keyframe-btn" data-keyframe="takeoff" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: var(--transition);">Takeoff</button>
                         </div>
                         <div style="text-align: center; margin-bottom: 0.5rem;">
-                            <span id="poseViewIndicator" style="font-size: 0.8rem; color: #4c8c6a; font-weight: 600; padding: 0.25rem 0.75rem; background: rgba(76, 140, 106, 0.15); border-radius: 12px; display: inline-block;">Viewing: Best Jump</span>
+                            <span id="poseViewIndicator" style="font-size: 0.8rem; color: #38AA6A; font-weight: 600; padding: 0.25rem 0.75rem; background: rgba(56, 170, 106, 0.15); border-radius: 12px; display: inline-block;">Viewing: Best Jump</span>
                             <label style="font-size: 0.75rem; color: var(--text-muted); margin-left: 1rem; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="overlayToggle" style="margin-right: 0.25rem; cursor: pointer;">
                                 Overlay Average
@@ -1052,7 +1092,7 @@
                         <!-- Movement Trajectory - Full Width -->
                         <div style="text-align: center;">
                             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Movement Trajectory (5 Key Joints)</div>
-                            <div class="pose-container" style="height: 350px; display: flex; justify-content: center; align-items: center; background: #1a3a2e; border-radius: 8px; position: relative;">
+                            <div class="pose-container" style="height: 350px; display: flex; justify-content: center; align-items: center; background: #125638; border-radius: 8px; position: relative;">
                                 <div id="trajectoryLoader" class="loader" style="position: absolute;">
                                     <div class="loader-body"></div>
                                     <div class="loader-arm-left"></div>
@@ -1091,7 +1131,7 @@
                 </div>
 
                 <div style="text-align: center; margin-top: 1rem;">
-                    <a href="#" id="viewBestJumpLink" style="display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.6rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; background: linear-gradient(135deg, var(--accent) 0%, #56a07a 100%); color: #fff; font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); min-height: 44px;">View Full Analysis →</a>
+                    <a href="#" id="viewBestJumpLink" style="display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.6rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); color: #fff; font-family: 'Poppins', 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); min-height: 44px;">View Full Analysis →</a>
                 </div>
             </div>
 
@@ -1126,25 +1166,34 @@
                     <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                         <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Statistics</h3>
                         <div style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1;">
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="avgSprintSpeed">--</div>
                                 <div class="stat-label">Avg Top Speed (mph)</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="maxSprintSpeed">--</div>
                                 <div class="stat-label">Max Top Speed (mph)</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="totalSprints">--</div>
                                 <div class="stat-label">Total Sprints</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="sprintTrend">--</div>
                                 <div class="stat-label">Trend</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <section class="legacy-d1-panel" aria-label="Sprint D1 comparison">
+                    <h3>Compare with D1 standards</h3>
+                    <div class="legacy-d1-list">
+                        <div class="legacy-d1-row"><span><strong>Acceleration</strong><small>Best result</small></span><span class="legacy-d1-best" id="d1SprintAccelBest">--</span><span><strong id="d1SprintAccelStandard">--</strong><small>D1 standard</small></span><span class="legacy-d1-score" id="d1SprintAccelScore">--</span></div>
+                        <div class="legacy-d1-row"><span><strong>Max Speed</strong><small>Best result</small></span><span class="legacy-d1-best" id="d1SprintSpeedBest">--</span><span><strong id="d1SprintSpeedStandard">--</strong><small>D1 standard</small></span><span class="legacy-d1-score" id="d1SprintSpeedScore">--</span></div>
+                        <div class="legacy-d1-row"><span><strong>Time to Complete</strong><small>Best result</small></span><span class="legacy-d1-best" id="d1SprintTimeBest">--</span><span><strong id="d1SprintTimeStandard">--</strong><small>D1 standard</small></span><span class="legacy-d1-score" id="d1SprintTimeScore">--</span></div>
+                    </div>
+                </section>
 
                 <div id="noSprintData" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
                     <h3>No sprint data available</h3>
@@ -1176,23 +1225,23 @@
                     <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                         <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Statistics</h3>
                         <div style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1;">
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="avgLaunchAngle">--</div>
                                 <div class="stat-label">Avg Launch Angle</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="avgKickSpeed">--</div>
                                 <div class="stat-label">Avg Ball Speed (mph)</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="maxKickSpeed">--</div>
                                 <div class="stat-label">Max Ball Speed (mph)</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="totalKicks">--</div>
                                 <div class="stat-label">Total Kicks</div>
                             </div>
-                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <div class="stat-item" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)); padding: 0.75rem; border-radius: 18px; border: 1px solid var(--card-border);">
                                 <div class="stat-value" id="kickTrend">--</div>
                                 <div class="stat-label">Trend</div>
                             </div>
@@ -1200,9 +1249,17 @@
                     </div>
                 </div>
 
+                <section class="legacy-d1-panel" aria-label="Shooting D1 comparison">
+                    <h3>Compare with D1 standards</h3>
+                    <div class="legacy-d1-list">
+                        <div class="legacy-d1-row"><span><strong>Ball Speed</strong><small>Best result</small></span><span class="legacy-d1-best" id="d1KickSpeedBest">--</span><span><strong id="d1KickSpeedStandard">--</strong><small>D1 standard</small></span><span class="legacy-d1-score" id="d1KickSpeedScore">--</span></div>
+                        <div class="legacy-d1-row"><span><strong>Accuracy</strong><small>Measurement unavailable</small></span><span class="legacy-d1-best">--</span><span><strong>Not published</strong><small>D1 standard</small></span><span class="legacy-d1-score">--</span></div>
+                    </div>
+                </section>
+
                 <div id="noKickData" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
-                    <h3>No kick data available</h3>
-                    <p>Complete kicking sessions to see your performance metrics here</p>
+                    <h3>No shooting data available</h3>
+                    <p>Complete shooting sessions to see your performance metrics here</p>
                 </div>
             </div>
 
@@ -1220,10 +1277,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
     
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="premiumCheckout.js"></script>
+    <script src="athlete-benchmarks.js?v=20260813-d1-standards"></script>
 
     <script>
        const firebaseConfig = {
@@ -1241,6 +1300,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
+        const cloudFunctions = firebase.functions();
         
         // Pose connections for visualization
         const POSE_CONNECTIONS = [
@@ -1259,12 +1319,22 @@
 
         // Authentication state observer
         auth.onAuthStateChanged(async (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareToken = urlParams.get('share');
+            const isLocalPreview = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && urlParams.get('preview') === '1';
+            if (isLocalPreview) {
+                loadLegacyPreview();
+                return;
+            }
+            if (shareToken) {
+                await loadSharedLegacyResults(shareToken);
+                return;
+            }
             if (!user && !window.location.search.includes('player=')) {
                 window.location.href = 'index.html';
                 return;
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
             const playerDocId = urlParams.get('player');
             const urlUserType = urlParams.get('userType');
             console.log('[kickingview.html] userType from URL:', urlUserType || 'not provided');
@@ -1318,6 +1388,20 @@
 
             populateSideLinks();
 
+            // The two locally processed tests have dedicated athlete result pages. Keep the
+            // resolved player document id in these links (it is not necessarily the Auth UID).
+            const resultPlayerId = currentPlayerInfo && currentPlayerInfo.docId;
+            const resultUserType = isCoach ? 'coach' : 'player';
+            const broadJumpResultsLink = document.getElementById('broadJumpResultsLink');
+            const dribblingResultsLink = document.getElementById('dribblingResultsLink');
+            const changeOfDirectionResultsLink = document.getElementById('changeOfDirectionResultsLink');
+            if (resultPlayerId && broadJumpResultsLink && dribblingResultsLink && changeOfDirectionResultsLink) {
+                const resultQuery = `?player=${encodeURIComponent(resultPlayerId)}&userType=${resultUserType}`;
+                broadJumpResultsLink.href = `broadJumpPage.html${resultQuery}`;
+                dribblingResultsLink.href = `dribblingPage.html${resultQuery}`;
+                changeOfDirectionResultsLink.href = `changeOfDirectionPage.html${resultQuery}`;
+            }
+
             // Load all reps (jump, sprint, kick) in a single query
             await loadAllReps();
             
@@ -1344,6 +1428,87 @@
             // Auto-expand sessions if fewer than 4 for current tab
             autoExpandSessionsIfFew();
         });
+
+        async function loadSharedLegacyResults(token) {
+            try {
+                configureAnonymousLegacyView();
+                const getShare = cloudFunctions.httpsCallable('getAthleteResultsShare');
+                const [jumpResult, sprintResult, shootingResult] = await Promise.all([
+                    getShare({ token, drill: 'jump' }),
+                    getShare({ token, drill: 'sprint' }),
+                    getShare({ token, drill: 'shooting' })
+                ]);
+                const athlete = jumpResult.data?.athlete || sprintResult.data?.athlete || shootingResult.data?.athlete || {};
+                currentPlayerInfo = { type: 'shared', docId: null, ...athlete };
+                isViewingPlayer = true;
+                isCoach = false;
+                document.getElementById('profileName').textContent = [athlete.firstName, athlete.lastName].filter(Boolean).join(' ') || athlete.name || 'Athlete';
+                document.getElementById('profileEmail').textContent = 'Secure athlete results';
+                document.getElementById('broadJumpResultsLink').href = `broadJumpPage.html?share=${encodeURIComponent(token)}&view=results`;
+                document.getElementById('dribblingResultsLink').href = `dribblingPage.html?share=${encodeURIComponent(token)}&view=results`;
+                document.getElementById('changeOfDirectionResultsLink').href = `changeOfDirectionPage.html?share=${encodeURIComponent(token)}&view=results`;
+                const normalize = rep => ({ ...rep, createdAt: new Date(rep.createdAtMillis || Date.now()) });
+                allJumpReps = (jumpResult.data?.reps || []).map(normalize);
+                allSprintReps = (sprintResult.data?.reps || []).map(rep => ({
+                    ...normalize(rep),
+                    maxVelocity: Number(rep.max_velocity ?? rep.maxVelocity) || 0,
+                    maxAcceleration: Number(rep.max_acceleration ?? rep.maxAcceleration) || 0,
+                    totalTime: Number(rep.totalTime) || 0
+                }));
+                allKickReps = (shootingResult.data?.reps || []).map(rep => ({ ...normalize(rep), velocity: Number(rep.velocity) || 0 }));
+                [allJumpReps, allSprintReps, allKickReps].forEach(reps => reps.sort((a, b) => b.createdAt - a.createdAt));
+                updateJumpDashboard();
+                updateSprintDashboard();
+                updateKickDashboard();
+                document.getElementById('bestJumpSection').style.display = 'none';
+                document.getElementById('noJumpData').style.display = allJumpReps.length ? 'none' : 'block';
+                document.getElementById('noSprintData').style.display = allSprintReps.length ? 'none' : 'block';
+                document.getElementById('noKickData').style.display = allKickReps.length ? 'none' : 'block';
+                const requestedTab = new URLSearchParams(window.location.search).get('tab') || 'jump';
+                showContentForRepType(requestedTab);
+            } catch (error) {
+                console.error('[shared results] unable to load', error);
+                document.querySelector('.container').innerHTML = '<div class="legacy-d1-panel"><h3>This results link is unavailable</h3><p>Ask the coach to send a new athlete results link.</p></div>';
+            }
+        }
+
+        function loadLegacyPreview() {
+            configureAnonymousLegacyView();
+            const now = Date.now();
+            const makeDate = index => new Date(now - index * 7 * 86400000);
+            currentPlayerInfo = { type: 'shared', docId: null, firstName: 'Jordan', lastName: 'Athlete' };
+            document.getElementById('profileName').textContent = 'Jordan Athlete';
+            document.getElementById('profileEmail').textContent = 'Preview results';
+            document.getElementById('broadJumpResultsLink').href = 'broadJumpPage.html?preview=1&view=results';
+            document.getElementById('dribblingResultsLink').href = 'dribblingPage.html?preview=1&view=results';
+            document.getElementById('changeOfDirectionResultsLink').href = 'changeOfDirectionPage.html?preview=1&view=results';
+            allJumpReps = [0.50, 0.46, 0.42, 0.39].map((jumpHeight, index) => ({ id: `preview-jump-${index}`, jumpHeight, createdAt: makeDate(index) }));
+            allSprintReps = [
+                { maxVelocity: 6.6, maxAcceleration: 6.5, totalTime: 1.76 },
+                { maxVelocity: 6.3, maxAcceleration: 6.3, totalTime: 1.84 },
+                { maxVelocity: 6.0, maxAcceleration: 6.0, totalTime: 1.94 }
+            ].map((rep, index) => ({ id: `preview-sprint-${index}`, ...rep, createdAt: makeDate(index) }));
+            allKickReps = [34.0, 32.2, 31.1, 30.4].map((velocity, index) => ({ id: `preview-kick-${index}`, velocity, strikeFoot: index % 2 ? 'left' : 'right', launchAngle: 18 + index, createdAt: makeDate(index) }));
+            updateJumpDashboard();
+            updateSprintDashboard();
+            updateKickDashboard();
+            document.getElementById('bestJumpSection').style.display = 'none';
+            document.getElementById('noJumpData').style.display = 'none';
+            document.getElementById('noSprintData').style.display = 'none';
+            document.getElementById('noKickData').style.display = 'none';
+            showContentForRepType(new URLSearchParams(window.location.search).get('tab') || 'jump');
+        }
+
+        function configureAnonymousLegacyView() {
+            const navigationButton = document.getElementById('navToggle');
+            const leaderboardButton = document.getElementById('leaderboardBtn');
+            const homeButton = document.querySelector('header .home-btn');
+            const sessionsPanel = document.getElementById('sessionsCollapsible');
+            if (navigationButton) navigationButton.style.display = 'none';
+            if (leaderboardButton) leaderboardButton.style.display = 'none';
+            if (homeButton) homeButton.style.display = 'none';
+            if (sessionsPanel) sessionsPanel.style.display = 'none';
+        }
 
         // Load user info from Firestore (for authenticated users)
         // Helper: find a player doc by the auth UID, checking both field names used
@@ -1494,7 +1659,7 @@
                     tab.style.border = '1px solid rgba(255, 255, 255, 0.2)';
                     tab.style.color = 'var(--text-light)';
                     tab.style.fontWeight = '700';
-                    tab.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                    tab.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
                     
                     // Update current rep type and reload data
                     currentRepType = repType;
@@ -1576,6 +1741,22 @@
             showContentForRepType(repType);
         }
 
+        function updateD1Metric(prefix, key, values) {
+            const definition = window.PoseTekBenchmarks?.get(key);
+            if (!definition) return;
+            const standard = document.getElementById(`${prefix}Standard`);
+            const bestNode = document.getElementById(`${prefix}Best`);
+            const scoreNode = document.getElementById(`${prefix}Score`);
+            if (standard) standard.textContent = window.PoseTekBenchmarks.format(key, definition.reference);
+            const valid = values.map(Number).filter(value => Number.isFinite(value) && value > 0);
+            const best = valid.length
+                ? (definition.direction === 'lower' ? Math.min(...valid) : Math.max(...valid))
+                : null;
+            if (bestNode) bestNode.textContent = best === null ? '--' : window.PoseTekBenchmarks.format(key, best);
+            const score = best === null ? null : window.PoseTekBenchmarks.score(key, best);
+            if (scoreNode) scoreNode.textContent = score === null ? '--' : `${Math.round(score)}%`;
+        }
+
         // Load all reps from Firestore in a single query and sort into type-specific arrays
         async function loadAllReps() {
             if (!currentPlayerInfo || !currentPlayerInfo.docId) {
@@ -1596,7 +1777,7 @@
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const repType = data.repType;
+                    const repType = data.repType || data.drillType;
 
                     // Normalize createdAt timestamp (shared across all types)
                     const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() :
@@ -1610,15 +1791,17 @@
                             createdAt
                         });
                     } else if (repType === 'sprint') {
-                        if (data.max_velocity != null) {
+                        if (data.max_velocity != null || data.maxVelocity != null || data.max_acceleration != null || data.maxAcceleration != null || data.totalTime != null) {
                             allSprintReps.push({
                                 id: doc.id,
                                 ...data,
-                                maxVelocity: Number(data.max_velocity) || 0,
+                                maxVelocity: Number(data.max_velocity ?? data.maxVelocity) || 0,
+                                maxAcceleration: Number(data.max_acceleration ?? data.maxAcceleration) || 0,
+                                totalTime: Number(data.totalTime) || 0,
                                 createdAt
                             });
                         }
-                    } else if (repType === 'side_kick') {
+                    } else if (repType === 'side_kick' || repType === 'deadballShot' || repType === 'shooting') {
                         if (data.velocity != null) {
                             allKickReps.push({
                                 id: doc.id,
@@ -1697,6 +1880,7 @@
         // Update jump dashboard with filtered data
         function updateJumpDashboard() {
             const filteredReps = filterRepsByPeriod(allJumpReps, currentTimePeriod);
+            updateD1Metric('d1Jump', 'verticalJumpHeight', filteredReps.map(rep => rep.jumpHeight));
 
             // Update chart title to Jump
             const chartTitle = document.getElementById('chartTitle');
@@ -1775,8 +1959,8 @@
                     datasets: [{
                         label: 'Jump Height (in)',
                         data: data,
-                        borderColor: '#4c8c6a',
-                        backgroundColor: 'rgba(76, 140, 106, 0.1)',
+                        borderColor: '#38AA6A',
+                        backgroundColor: 'rgba(56, 170, 106, 0.1)',
                         tension: 0.4,
                         fill: true,
                         pointRadius: 4,
@@ -1818,6 +2002,9 @@
         // Update sprint dashboard with filtered data
         function updateSprintDashboard() {
             const filteredReps = filterRepsByPeriod(allSprintReps, currentSprintTimePeriod);
+            updateD1Metric('d1SprintAccel', 'sprintMaxAcceleration', filteredReps.map(rep => rep.maxAcceleration));
+            updateD1Metric('d1SprintSpeed', 'sprintMaxSpeed', filteredReps.map(rep => rep.maxVelocity));
+            updateD1Metric('d1SprintTime', 'sprintCompletionTime', filteredReps.map(rep => rep.totalTime));
 
             // Update chart title
             const chartTitle = document.getElementById('sprintChartTitle');
@@ -1925,6 +2112,7 @@
         // Update kick dashboard with filtered data
         function updateKickDashboard() {
             let filteredReps = filterRepsByPeriod(allKickReps, currentKickTimePeriod);
+            updateD1Metric('d1KickSpeed', 'ballSpeed', filteredReps.map(rep => rep.velocity));
 
             // Update chart title
             const chartTitle = document.getElementById('kickChartTitle');
@@ -2054,8 +2242,8 @@
                 datasets.push({
                     label: 'Ball Speed',
                     data: sortedReps.map(r => (r.velocity || 0) * MS_TO_MPH),
-                    borderColor: '#4c8c6a',
-                    backgroundColor: 'rgba(76, 140, 106, 0.1)',
+                    borderColor: '#38AA6A',
+                    backgroundColor: 'rgba(56, 170, 106, 0.1)',
                     tension: 0.4,
                     fill: true,
                     pointRadius: 4,
@@ -2409,8 +2597,8 @@
                     indicator.style.background = 'rgba(255, 255, 255, 0.15)';
                 } else {
                     indicator.textContent = 'Viewing: Best Jump';
-                    indicator.style.color = '#4c8c6a';
-                    indicator.style.background = 'rgba(76, 140, 106, 0.15)';
+                    indicator.style.color = '#38AA6A';
+                    indicator.style.background = 'rgba(56, 170, 106, 0.15)';
                 }
             }
 
@@ -2439,7 +2627,7 @@
                 
                 // Still draw something to show canvas is working
                 const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#1a3a2e';
+                ctx.fillStyle = '#125638';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.font = '14px Inter';
@@ -2454,7 +2642,7 @@
 
             // Clear canvas
             ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = '#1a3a2e';
+            ctx.fillStyle = '#125638';
             ctx.fillRect(0, 0, W, H);
 
             // Function to draw a single pose
@@ -2676,7 +2864,7 @@
 
             // Clear canvas
             ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = '#1a3a2e';
+            ctx.fillStyle = '#125638';
             ctx.fillRect(0, 0, W, H);
 
             // Use the pose data we already determined
@@ -2849,7 +3037,7 @@
 
             // Clear canvas
             ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = '#1a3a2e';
+            ctx.fillStyle = '#125638';
             ctx.fillRect(0, 0, W, H);
 
             if (!filteredTrajectoryData || !Array.isArray(filteredTrajectoryData)) {
@@ -3065,8 +3253,8 @@
                         {
                             label: 'Best Jump',
                             data: bestAngles,
-                            backgroundColor: '#4c8c6a',
-                            borderColor: '#4c8c6a',
+                            backgroundColor: '#38AA6A',
+                            borderColor: '#38AA6A',
                             borderWidth: 1
                         },
                         {
@@ -3160,7 +3348,7 @@
                 btn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
                 btn.style.color = 'var(--text-light)';
                 btn.style.fontWeight = '700';
-                btn.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                btn.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
                 
                 currentTimePeriod = btn.dataset.period;
                 
@@ -3206,7 +3394,7 @@
                 btn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
                 btn.style.color = 'var(--text-light)';
                 btn.style.fontWeight = '700';
-                btn.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                btn.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
                 
                 currentSprintTimePeriod = btn.dataset.period;
                 
@@ -3252,7 +3440,7 @@
                 btn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
                 btn.style.color = 'var(--text-light)';
                 btn.style.fontWeight = '700';
-                btn.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                btn.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
                 
                 currentKickTimePeriod = btn.dataset.period;
                 
@@ -3298,7 +3486,7 @@
                 btn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
                 btn.style.color = 'var(--text-light)';
                 btn.style.fontWeight = '700';
-                btn.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                btn.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
                 
                 currentKeyframe = btn.dataset.keyframe;
                 drawBestJumpPose();
@@ -3339,14 +3527,14 @@
         if (viewFullAnalysisBtn) {
             viewFullAnalysisBtn.addEventListener('mouseenter', () => {
                 viewFullAnalysisBtn.style.transform = 'translateY(-2px)';
-                viewFullAnalysisBtn.style.boxShadow = '0 6px 16px rgba(76, 140, 106, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                viewFullAnalysisBtn.style.background = 'linear-gradient(135deg, #56a07a 0%, var(--accent) 100%)';
+                viewFullAnalysisBtn.style.boxShadow = '0 6px 16px rgba(56, 170, 106, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                viewFullAnalysisBtn.style.background = 'linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%)';
             });
             
             viewFullAnalysisBtn.addEventListener('mouseleave', () => {
                 viewFullAnalysisBtn.style.transform = 'translateY(0)';
-                viewFullAnalysisBtn.style.boxShadow = '0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                viewFullAnalysisBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, #56a07a 100%)';
+                viewFullAnalysisBtn.style.boxShadow = '0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                viewFullAnalysisBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
             });
             
             viewFullAnalysisBtn.addEventListener('mousedown', () => {
@@ -3609,7 +3797,7 @@
         function getRepTypeDisplayName(repType) {
             const names = {
                 'jump': 'Jump',
-                'kick': 'Kick',
+                'kick': 'Shooting',
                 'sprint': 'Sprint',
                 'freerecord': 'Free Record'
             };
@@ -3951,6 +4139,10 @@
                         destinationPage = 'sprintPage.html';
                     } else if (session.type === 'jump') {
                         destinationPage = 'StaticJumpPage.html';
+                    } else if (session.type === 'broadJump') {
+                        destinationPage = 'broadJumpPage.html';
+                    } else if (session.type === 'changeOfDirection') {
+                        destinationPage = 'changeOfDirectionPage.html';
                     } else if (session.type === 'side_kick') {
                         destinationPage = 'SideKickView.html';
                     }
@@ -4006,6 +4198,8 @@
                 'instepPass': 'instep',
                 'sprint': 'sprint',
                 'jump': 'jump',
+                'broadJump': 'jump',
+                'changeOfDirection': 'sprint',
                 'side_kick': 'deadball'
             };
             return typeMap[type] || 'deadball';
@@ -4019,6 +4213,8 @@
                 'instepPass': 'Instep Passing',
                 'sprint': 'Sprint Work',
                 'jump': 'Static Jump',
+                'broadJump': 'Broad Jump',
+                'changeOfDirection': 'Change of Direction',
                 'side_kick': 'Side Kick'
             };
             return typeMap[type] || type;
@@ -4032,6 +4228,8 @@
                 'instepPass': '<span class="badge instep">Instep Pass</span>',
                 'sprint': '<span class="badge sprint">Sprint</span>',
                 'jump': '<span class="badge jump">Jump</span>',
+                'broadJump': '<span class="badge jump">Broad Jump</span>',
+                'changeOfDirection': '<span class="badge sprint">Change of Direction</span>',
                 'side_kick': '<span class="badge deadball">Side Kick</span>'
             };
             return badges[type] || `<span class="badge">${type}</span>`;
@@ -4046,6 +4244,8 @@
                 'instepPass': 'videopage.html',
                 'sprint': 'sprintPage.html',
                 'jump': 'StaticJumpPage.html',
+                'broadJump': 'broadJumpPage.html',
+                'changeOfDirection': 'changeOfDirectionPage.html',
                 'side_kick': 'SideKickView.html'
             };
             

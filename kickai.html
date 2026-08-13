@@ -17,9 +17,9 @@
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a3a2e;
-            --secondary: #2d5e4a;
-            --accent: #4c8c6a;
+            --primary: #125638;
+            --secondary: #246E4C;
+            --accent: #38AA6A;
             --text-light: #ffffff;
             --text-dark: #121212;
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -36,7 +36,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             color: var(--text-light);
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #091C18 0%, var(--primary) 50%, #061012 100%);
             line-height: 1.6;
             overflow-x: hidden;
             /* Smooth scrolling for mobile */
@@ -103,7 +103,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, var(--primary) 100%), 
+            background: linear-gradient(90deg, rgba(18,86,56,0.9) 0%, rgba(18,86,56,0.7) 100%), 
                         url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
         }
 
@@ -132,14 +132,14 @@
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
-            background: linear-gradient(135deg, #ffffff, #e8f5e9);
+            background: linear-gradient(135deg, #ffffff, #F0FAF4);
             padding: 1rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
             display: inline-block;
             transition: var(--transition);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.22),
+                        0 0 0 1px rgba(56, 170, 106, 0.12) inset;
             position: relative;
             overflow: hidden;
             /* Mobile touch improvements */
@@ -171,6 +171,8 @@
 
         .cta-button:active {
             transform: translateY(-1px) scale(1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12),
+                        0 0 0 1px rgba(56, 170, 106, 0.12) inset;
         }
 
         /* Modal Styles */
@@ -180,7 +182,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.95));
+            background: linear-gradient(135deg, rgba(18, 86, 56, 0.95), rgba(36, 110, 76, 0.95));
             backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
@@ -197,18 +199,17 @@
         }
 
         .auth-modal {
-            background: linear-gradient(145deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.9));
+            background: rgba(255, 255, 255, 0.03);
             padding: 0;
-            border-radius: 24px;
+            border-radius: 16px;
             width: 100%;
             max-width: 500px;
             max-height: 90vh;
             overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
             transform: scale(0.95) translateY(20px);
             transition: var(--transition);
-            border: 1px solid rgba(76, 140, 106, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .modal-overlay.active .auth-modal {
@@ -310,14 +311,14 @@
         .form-group input, 
         .form-group select {
             width: 100%;
-            padding: 0.9rem 1.1rem;
-            border-radius: 12px;
-            border: 1.5px solid rgba(255,255,255,0.15);
-            background-color: rgba(0, 0, 0, 0.2);
+            min-height: 44px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background-color: rgba(255,255,255,0.06);
             color: var(--text-light);
             font-size: 1rem;
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) inset;
         }
 
         .form-group input::placeholder {
@@ -329,7 +330,7 @@
             outline: none;
             border-color: var(--accent);
             background-color: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.15),
+            box-shadow: 0 0 0 3px rgba(56, 170, 106, 0.15),
                         0 4px 12px rgba(0, 0, 0, 0.1) inset;
         }
 
@@ -363,7 +364,7 @@
             width: 100%;
             padding: 1rem;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ffffff, #e8f5e9);
+            background: linear-gradient(135deg, #ffffff, #F0FAF4);
             color: var(--primary);
             border: none;
             font-weight: 700;
@@ -371,8 +372,8 @@
             cursor: pointer;
             transition: var(--transition);
             position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
-                        0 0 0 1px rgba(76, 140, 106, 0.2);
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.22),
+                        0 0 0 1px rgba(56, 170, 106, 0.12);
             /* Mobile touch improvements */
             touch-action: manipulation;
             -webkit-user-select: none;
@@ -383,11 +384,13 @@
             background: linear-gradient(135deg, #f5f5f5, #c8e6c9);
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
-                        0 0 0 1px rgba(76, 140, 106, 0.3);
+                        0 0 0 1px rgba(56, 170, 106, 0.3);
         }
 
         .submit-btn:active {
             transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12),
+                        0 0 0 1px rgba(56, 170, 106, 0.12);
         }
 
         .submit-btn:disabled {
@@ -1586,6 +1589,25 @@
             }
         });
 
+        // Athlete result links return here when the viewer is signed out. Only allow the two
+        // same-origin result pages so an external URL cannot turn login into an open redirect.
+        function getSafeReturnToUrl() {
+            const raw = new URLSearchParams(window.location.search).get('returnTo');
+            if (!raw) return null;
+            try {
+                const target = new URL(raw, window.location.href);
+                const fileName = target.pathname.split('/').pop();
+                const allowed = new Set(['broadJumpPage.html', 'changeOfDirectionPage.html']);
+                return target.origin === window.location.origin && allowed.has(fileName) ? target.href : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function redirectAfterAuth(fallback) {
+            window.location.href = getSafeReturnToUrl() || fallback;
+        }
+
         // Form submission handlers
         orgSignupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1618,10 +1640,22 @@
                     .limit(1)
                     .get();
                 
-                const playerQuery = await db.collection('players')
+                let playerQuery = await db.collection('players')
                     .where('authenticationUID', '==', user.uid)
                     .limit(1)
                     .get();
+                if (playerQuery.empty) {
+                    playerQuery = await db.collection('players')
+                        .where('userUID', '==', user.uid)
+                        .limit(1)
+                        .get();
+                }
+                if (playerQuery.empty && user.email) {
+                    playerQuery = await db.collection('players')
+                        .where('signupEmail', '==', user.email)
+                        .limit(1)
+                        .get();
+                }
                 
                 if (coachQuery.empty && playerQuery.empty) {
                     throw new Error("Account not found in system");
@@ -1636,7 +1670,7 @@
                     await db.collection('coaches').doc(coachDoc.id).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    window.location.href = 'coachesview.html?userType=coach';
+                    redirectAfterAuth('coachesview.html?userType=coach');
 
                 } else {
                     // Player logic
@@ -1644,7 +1678,7 @@
                     await db.collection('players').doc(playerDoc.id).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    window.location.href = 'profile.html?player=' + playerDoc.id + '&userType=player';
+                    redirectAfterAuth('profile.html?player=' + playerDoc.id + '&userType=player');
                 }
             } catch (error) {
                 loginError.textContent = error.message;
@@ -1886,6 +1920,7 @@
                 // No user is signed in
                 authBtn.textContent = 'Login';
                 authBtn.onclick = () => showModal(loginModal);
+                if (getSafeReturnToUrl()) showModal(loginModal);
             }
         });
 

@@ -1349,7 +1349,7 @@
                     <div class="session-stats">
                         <div class="session-stat">
                             <span class="stat-icon">⚽</span>
-                            <span>${session.kickCount} ${session.type === 'sprintWork' ? 'sprints' : (session.type === 'jump' ? 'jumps' : (session.type === 'freeRecord' ? 'reps' : 'kicks'))}</span>
+                            <span>${session.kickCount} ${(session.type === 'sprintWork' || session.type === 'sprint') ? 'sprints' : ((session.type === 'jump' || session.type === 'broadJump') ? 'jumps' : ((session.type === 'freeRecord' || session.type === 'changeOfDirection') ? 'reps' : 'kicks'))}</span>
                         </div>
                     </div>
                     ${sessionTypeBadge}
@@ -1364,6 +1364,10 @@
                         destinationPage = 'sprintPage.html';
                     } else if (session.type === 'jump') {
                         destinationPage = 'StaticJumpPage.html';
+                    } else if (session.type === 'broadJump') {
+                        destinationPage = 'broadJumpPage.html';
+                    } else if (session.type === 'changeOfDirection') {
+                        destinationPage = 'changeOfDirectionPage.html';
                     } else if (session.type === 'side_kick') {
                         destinationPage = 'SideKickView.html';
                     }
@@ -1420,6 +1424,8 @@
                 'sprintWork': 'Sprint Work',
                 'sprint': 'Sprint Work',
                 'jump': 'Static Jump',
+                'broadJump': 'Broad Jump',
+                'changeOfDirection': 'Change of Direction',
                 'side_kick': 'Side Kick'
             };
             return typeMap[type] || 'Training';
@@ -1434,6 +1440,8 @@
                 'sprintWork': 'sprintwork',
                 'sprint': 'sprintwork',
                 'jump': 'sprintwork',
+                'broadJump': 'sprintwork',
+                'changeOfDirection': 'sprintwork',
                 'side_kick': 'deadball'
             };
             return typeMap[type] || '';
@@ -1446,7 +1454,10 @@
                 'longballPass': { class: 'longball', text: 'Long Ball' },
                 'instepPass': { class: 'instep', text: 'Instep Passing' },
                 'sprintWork': { class: 'sprintwork', text: 'Sprint Work' },
-                'jump': { class: 'sprintwork', text: 'Static Jump' }
+                'sprint': { class: 'sprintwork', text: 'Sprint Work' },
+                'jump': { class: 'sprintwork', text: 'Static Jump' },
+                'broadJump': { class: 'sprintwork', text: 'Broad Jump' },
+                'changeOfDirection': { class: 'sprintwork', text: 'Change of Direction' }
             };
             
             const badgeInfo = typeMap[type] || { class: '', text: 'Session' };

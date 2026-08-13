@@ -19,15 +19,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
     <style>
         :root {
-            --primary: #1a3a2e;
-            --secondary: #2d5e4a;
-            --accent: #4c8c6a;
-            --accent-light: #5ea87e;
+            --primary: #125638;
+            --secondary: #246E4C;
+            --accent: #38AA6A;
+            --accent-light: #5EC48A;
             --text-light: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.7);
             --text-dark: #121212;
             --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.12);
             --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -36,13 +36,13 @@
             padding: 0;
             box-sizing: border-box;
             /* Improve touch scrolling on mobile */
-            -webkit-tap-highlight-color: rgba(76, 140, 106, 0.2);
+            -webkit-tap-highlight-color: rgba(56, 170, 106, 0.2);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-light);
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #091C18 0%, var(--primary) 50%, #061012 100%);
             line-height: 1.6;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
@@ -55,8 +55,8 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(76, 140, 106, 0.08), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(76, 140, 106, 0.05), transparent);
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56, 170, 106, 0.08), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56, 170, 106, 0.05), transparent);
             pointer-events: none;
             z-index: 0;
         }
@@ -167,6 +167,123 @@
             font-size: 0.8rem;
         }
 
+        .profile-hero {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .profile-hero-avatar {
+            flex-shrink: 0;
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-hero-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .profile-hero-welcome {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .profile-hero-name {
+            margin: 0;
+        }
+
+        .profile-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .profile-hero-badge .material-symbols-outlined {
+            font-size: 1.1rem;
+        }
+
+        .profile-metric-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-metric-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-metric-icon {
+            font-size: 1.15rem;
+            color: var(--accent);
+        }
+
+        .profile-metric-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .profile-metric-unit {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .profile-metric-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        @media (max-width: 480px) {
+            .profile-metric-strip {
+                grid-template-columns: 1fr;
+            }
+            .profile-hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
         .profile-content {
             display: flex;
             flex-direction: column;
@@ -213,7 +330,7 @@
         .idp-prominent {
             order: -1; /* Move to top */
             flex: 1 1 100%; /* Full width */
-            background: linear-gradient(135deg, rgba(76, 140, 106, 0.15), rgba(45, 94, 74, 0.15));
+            background: linear-gradient(135deg, rgba(56, 170, 106, 0.15), rgba(36, 110, 76, 0.15));
             border: 2px solid var(--accent);
         }
 
@@ -250,7 +367,7 @@
 
         .idp-expandable.expanded {
             border-color: var(--accent);
-            background: rgba(76, 140, 106, 0.12);
+            background: rgba(56, 170, 106, 0.12);
         }
 
         .idp-expanded-content {
@@ -449,7 +566,7 @@
             cursor: pointer;
             margin-top: 0.5rem;
             padding: 0.5rem 1.2rem;
-            background: var(--accent, #4c8c6a);
+            background: var(--accent, #38AA6A);
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -460,7 +577,7 @@
             display: inline-block;
         }
         .lock-overlay .unlock-btn:hover {
-            background: var(--accent-light, #5ea87e);
+            background: var(--accent-light, #5EC48A);
         }
 
         .pose-card {
@@ -680,7 +797,7 @@
         .drill-select:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.15);
+            box-shadow: 0 0 0 3px rgba(56, 170, 106, 0.15);
         }
 
         .nav-toggle {
@@ -825,7 +942,7 @@
 
         .action-btn {
             padding: 0.6rem 1.2rem;
-            background: linear-gradient(135deg, var(--accent) 0%, #56a07a 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             border: none;
             border-radius: 50px;
             color: var(--text-light);
@@ -833,7 +950,7 @@
             cursor: pointer;
             transition: var(--transition);
             min-height: 44px;
-            box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .action-btn:hover { transform: translateY(-2px); }
 
@@ -1242,13 +1359,13 @@
                 --urgent: #ff6b6b;
                 --high: #ffa94d;
                 --medium: #e6c619;
-                --low: #4c8c6a;
+                --low: #38AA6A;
             }
             /* Modal for drill details */
             .drill-modal-overlay {
                 position: fixed;
                 inset: 0;
-                background: linear-gradient(135deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.95));
+                background: linear-gradient(135deg, rgba(18, 86, 56, 0.95), rgba(36, 110, 76, 0.95));
                 backdrop-filter: blur(10px);
                 display: none;
                 align-items: center;
@@ -1264,8 +1381,8 @@
 
             .drill-modal {
                 width: min(720px, 96%);
-                background: linear-gradient(145deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.9));
-                border: 1px solid rgba(76, 140, 106, 0.2);
+                background: linear-gradient(145deg, rgba(18, 86, 56, 0.95), rgba(36, 110, 76, 0.9));
+                border: 1px solid rgba(56, 170, 106, 0.2);
                 border-radius: 24px;
                 padding: 2rem;
                 color: var(--text-light);
@@ -1295,7 +1412,7 @@
             .drill-modal .modal-header h3 {
                 font-size: 1.8rem;
                 font-weight: 700;
-                background: linear-gradient(135deg, #ffffff, #4c8c6a);
+                background: linear-gradient(135deg, #ffffff, #38AA6A);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
@@ -1320,12 +1437,12 @@
             }
 
             .drill-modal .modal-body::-webkit-scrollbar-thumb {
-                background: rgba(76, 140, 106, 0.5);
+                background: rgba(56, 170, 106, 0.5);
                 border-radius: 10px;
             }
 
             .drill-modal .modal-body::-webkit-scrollbar-thumb:hover {
-                background: rgba(76, 140, 106, 0.7);
+                background: rgba(56, 170, 106, 0.7);
             }
 
             .drill-modal .close-btn {
@@ -1556,12 +1673,38 @@
     <div id="sideBackdrop" class="side-backdrop" tabindex="-1"></div>
 
     <div class="container">
-        <div class="profile-header">
-            <h1 class="profile-title" id="profileTitle">Player Profile</h1>
-            <p class="profile-subtitle" id="profileSubtitle">
-                <span id="playerInfo"></span>
-                <span id="coachInfo"></span>
-            </p>
+        <div class="profile-hero">
+            <div class="profile-hero-avatar" id="profileHeroAvatar">P</div>
+            <div class="profile-hero-info">
+                <span class="profile-hero-welcome">Welcome back</span>
+                <h1 class="profile-title profile-hero-name" id="profileTitle">Player Profile</h1>
+                <span class="profile-hero-badge">
+                    <span class="material-symbols-outlined">bolt</span>
+                    Performance profile active
+                </span>
+                <p class="profile-subtitle" id="profileSubtitle">
+                    <span id="playerInfo"></span>
+                    <span id="coachInfo"></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-metric-strip">
+            <div class="profile-metric-card">
+                <span class="material-symbols-outlined profile-metric-icon">event_repeat</span>
+                <div class="profile-metric-value"><span id="heroMetricSessions">0</span><span class="profile-metric-unit">sessions</span></div>
+                <div class="profile-metric-label">Total Sessions</div>
+            </div>
+            <div class="profile-metric-card">
+                <span class="material-symbols-outlined profile-metric-icon">local_fire_department</span>
+                <div class="profile-metric-value"><span id="heroMetricStreak">0</span><span class="profile-metric-unit">days</span></div>
+                <div class="profile-metric-label">Consistency Streak</div>
+            </div>
+            <div class="profile-metric-card">
+                <span class="material-symbols-outlined profile-metric-icon">trending_up</span>
+                <div class="profile-metric-value"><span id="heroMetricImprovement">+0</span><span class="profile-metric-unit">%</span></div>
+                <div class="profile-metric-label">Improvement</div>
+            </div>
         </div>
 
         <div class="profile-content">
@@ -1721,6 +1864,10 @@
         const infoImprovementEl = document.getElementById('infoImprovement');
         const infoConsistencyEl = document.getElementById('infoConsistency');
         const infoBestSkillEl = document.getElementById('infoBestSkill');
+        const heroMetricSessionsEl = document.getElementById('heroMetricSessions');
+        const heroMetricStreakEl = document.getElementById('heroMetricStreak');
+        const heroMetricImprovementEl = document.getElementById('heroMetricImprovement');
+        const profileHeroAvatarEl = document.getElementById('profileHeroAvatar');
 
         let selectedPlayerDocId = null;
         let currentAnthropometrics = null;
@@ -2568,9 +2715,12 @@
                 snapshotState.bestSkill = overrides.bestSkill;
             }
 
-            // Update UI elements
+            // update UI elements
             if (infoTotalSessionsEl) {
                 infoTotalSessionsEl.textContent = snapshotState.totalSessions;
+            }
+            if (heroMetricSessionsEl) {
+                heroMetricSessionsEl.textContent = snapshotState.totalSessions;
             }
             if (infoTotalTimeEl) {
                 infoTotalTimeEl.textContent = `${snapshotState.totalTime} min`;
@@ -2582,11 +2732,19 @@
                 const imp = snapshotState.improvement;
                 const prefix = imp >= 0 ? '+' : '';
                 infoImprovementEl.textContent = `${prefix}${imp}%`;
-                // Green for positive, red for negative
-                infoImprovementEl.style.color = imp >= 0 ? '#4c8c6a' : '#e74c3c';
+                infoImprovementEl.style.color = imp >= 0 ? '#38AA6A' : '#e74c3c';
+            }
+            if (heroMetricImprovementEl) {
+                const imp = snapshotState.improvement;
+                const prefix = imp >= 0 ? '+' : '';
+                heroMetricImprovementEl.textContent = `${prefix}${imp}`;
+                heroMetricImprovementEl.style.color = imp >= 0 ? '#38AA6A' : '#e74c3c';
             }
             if (infoConsistencyEl) {
                 infoConsistencyEl.textContent = `${snapshotState.streak} days`;
+            }
+            if (heroMetricStreakEl) {
+                heroMetricStreakEl.textContent = snapshotState.streak;
             }
             if (infoBestSkillEl) {
                 infoBestSkillEl.textContent = snapshotState.bestSkill;
@@ -2833,11 +2991,6 @@
             });
         }
 
-        function refreshAssignDrillLink() {
-            if (!assignDrillLink) return;
-            assignDrillLink.href = buildDrillAssignUrl();
-        }
-
         function refreshIDPLink() {
             if (!idpLink) return;
             const params = new URLSearchParams();
@@ -2846,6 +2999,15 @@
             const targetUrl = `individualDevelopmentPlan.html?${params.toString()}`;
             idpLink.href = targetUrl;
             console.log('[IDPLink] refreshed', { playerId: selectedPlayerDocId, url: targetUrl });
+        }
+
+        function getHeroInitials(name) {
+            if (!name) return 'P';
+            const parts = String(name).trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return 'P';
+            const first = parts[0][0] || '';
+            const second = parts.length > 1 ? parts[1][0] : '';
+            return (first + second || first).toUpperCase();
         }
 
         function getMockStreak(seedKey) {
@@ -2862,6 +3024,9 @@
 
             // Set the profile title to player name (bright and center)
             profileTitle.textContent = currentPlayerInfo.name;
+            if (profileHeroAvatarEl) {
+                profileHeroAvatarEl.textContent = getHeroInitials(currentPlayerInfo.name);
+            }
 
             // Clear previous info
             coachInfo.innerHTML = '';
@@ -3055,9 +3220,9 @@
                             
                             // THRESHOLD: white (grayscale > 128) = filled, black = empty
                             if (grayscale > BRIGHTNESS_THRESHOLD) {
-                                // Filled pixel (white in mask) - light green (#4c8c6a)
-                                outPixels[outIdx] = 76;      // R
-                                outPixels[outIdx + 1] = 140; // G
+                                // Filled pixel (white in mask) - light green (#38AA6A)
+                                outPixels[outIdx] = 56;      // R
+                                outPixels[outIdx + 1] = 170; // G
                                 outPixels[outIdx + 2] = 106; // B
                                 outPixels[outIdx + 3] = 180; // A (70% opacity)
                                 filledPixels++;
@@ -3425,12 +3590,12 @@
             {
                 label: 'Current Skills',
                 data: currentSkills,
-                backgroundColor: 'rgba(76, 140, 106, 0.2)',
-                borderColor: '#4c8c6a',
-                pointBackgroundColor: '#4c8c6a',
+                backgroundColor: 'rgba(56, 170, 106, 0.2)',
+                borderColor: '#38AA6A',
+                pointBackgroundColor: '#38AA6A',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#4c8c6a',
+                pointHoverBorderColor: '#38AA6A',
                 borderWidth: 2
             },
             {
@@ -3609,7 +3774,7 @@
          */
         function showNotification(message, type = 'info') {
             const colors = {
-                success: '#4c8c6a',
+                success: '#38AA6A',
                 error: '#e74c3c',
                 warning: '#f39c12',
                 info: '#3498db'
@@ -3930,7 +4095,7 @@
                                     <div class="drill-section-title">Equipment</div>
                                     <div class="drill-section-content">
                                         ${drillData.items.map(item => `
-                                            <div style="display: inline-block; padding: 0.5rem 0.75rem; margin: 0.25rem; background: rgba(76, 140, 106, 0.15); border: 1px solid rgba(76, 140, 106, 0.3); border-radius: 6px;">
+                                            <div style="display: inline-block; padding: 0.5rem 0.75rem; margin: 0.25rem; background: rgba(56, 170, 106, 0.15); border: 1px solid rgba(56, 170, 106, 0.3); border-radius: 6px;">
                                                 <strong>${getItemEmoji(item.type)} ${item.type || 'Item'}</strong>
                                                 ${item.label ? ` - ${item.label}` : ''}
                                             </div>
@@ -4132,11 +4297,11 @@
                             
                         case 'player':
                             // Draw player as circle
-                            ctx.fillStyle = '#4C8C6A';
+                            ctx.fillStyle = '#38AA6A';
                             ctx.beginPath();
                             ctx.arc(0, 0, 12, 0, Math.PI * 2);
                             ctx.fill();
-                            ctx.strokeStyle = '#2D5E4A';
+                            ctx.strokeStyle = '#246E4C';
                             ctx.lineWidth = 2;
                             ctx.stroke();
                             break;

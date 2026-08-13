@@ -19,15 +19,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
     <style>
         :root {
-            --primary: #1a3a2e;
-            --secondary: #2d5e4a;
-            --accent: #4c8c6a;
-            --accent-light: #5ea87e;
+            --primary: #125638;
+            --secondary: #246E4C;
+            --accent: #38AA6A;
+            --accent-light: #5EC48A;
             --text-light: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.7);
             --text-dark: #121212;
             --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.12);
             --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -36,13 +36,13 @@
             padding: 0;
             box-sizing: border-box;
             /* Improve touch scrolling on mobile */
-            -webkit-tap-highlight-color: rgba(76, 140, 106, 0.2);
+            -webkit-tap-highlight-color: rgba(56, 170, 106, 0.2);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-light);
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #091C18 0%, var(--primary) 50%, #061012 100%);
             line-height: 1.6;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
@@ -55,8 +55,8 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(76, 140, 106, 0.08), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(76, 140, 106, 0.05), transparent);
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56, 170, 106, 0.08), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(56, 170, 106, 0.05), transparent);
             pointer-events: none;
             z-index: 0;
         }
@@ -280,7 +280,7 @@
 
         .action-btn {
             padding: 0.6rem 1.2rem;
-            background: linear-gradient(135deg, var(--accent) 0%, #56a07a 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             border: none;
             border-radius: 50px;
             color: var(--text-light);
@@ -288,7 +288,7 @@
             cursor: pointer;
             transition: var(--transition);
             min-height: 44px;
-            box-shadow: 0 4px 12px rgba(76, 140, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(56, 170, 106, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .action-btn:hover { transform: translateY(-2px); }
 
@@ -306,7 +306,7 @@
 
         .player-card {
             background-color: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 18px;
             padding: 1rem;
             backdrop-filter: blur(10px);
             border: 1px solid var(--card-border);
@@ -380,7 +380,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.95));
+            background: linear-gradient(135deg, rgba(18, 86, 56, 0.95), rgba(36, 110, 76, 0.95));
             backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
@@ -397,7 +397,7 @@
         }
 
         .modal-content {
-            background: linear-gradient(145deg, rgba(26, 58, 46, 0.95), rgba(45, 94, 74, 0.9));
+            background: linear-gradient(145deg, rgba(18, 86, 56, 0.95), rgba(36, 110, 76, 0.9));
             padding: 2rem;
             border-radius: 24px;
             width: 100%;
@@ -410,7 +410,7 @@
             -webkit-overflow-scrolling: touch;
             transform: scale(0.95) translateY(20px);
             transition: var(--transition);
-            border: 1px solid rgba(76, 140, 106, 0.2);
+            border: 1px solid rgba(56, 170, 106, 0.2);
         }
 
         .modal-overlay.active .modal-content {
@@ -429,12 +429,12 @@
         }
 
         .modal-content::-webkit-scrollbar-thumb {
-            background: rgba(76, 140, 106, 0.5);
+            background: rgba(56, 170, 106, 0.5);
             border-radius: 10px;
         }
 
         .modal-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(76, 140, 106, 0.7);
+            background: rgba(56, 170, 106, 0.7);
         }
 
         .modal-header {
@@ -449,7 +449,7 @@
         .modal-title {
             font-size: 1.8rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #ffffff, #4c8c6a);
+            background: linear-gradient(135deg, #ffffff, #38AA6A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -553,7 +553,7 @@
             outline: none;
             border-color: var(--accent);
             background-color: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 0 0 3px rgba(76, 140, 106, 0.15),
+            box-shadow: 0 0 0 3px rgba(56, 170, 106, 0.15),
                         0 4px 12px rgba(0, 0, 0, 0.1) inset;
         }
 
@@ -576,7 +576,7 @@
             transition: var(--transition);
             position: relative;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
-                        0 0 0 1px rgba(76, 140, 106, 0.2);
+                        0 0 0 1px rgba(56, 170, 106, 0.2);
             /* Mobile touch improvements */
             touch-action: manipulation;
             -webkit-user-select: none;
@@ -587,7 +587,7 @@
             background: linear-gradient(135deg, #f5f5f5, #c8e6c9);
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
-                        0 0 0 1px rgba(76, 140, 106, 0.3);
+                        0 0 0 1px rgba(56, 170, 106, 0.3);
         }
 
         .submit-btn:active {
@@ -608,7 +608,7 @@
             transform: translateY(-50%);
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(26, 58, 46, 0.3);
+            border: 3px solid rgba(18, 86, 56, 0.3);
             border-radius: 50%;
             border-top-color: var(--primary);
             animation: spin 1s ease-in-out infinite;
@@ -629,9 +629,9 @@
         }
 
         .success-message {
-            color: #4c8c6a;
-            background: rgba(76, 140, 106, 0.15);
-            border: 1px solid rgba(76, 140, 106, 0.4);
+            color: #38AA6A;
+            background: rgba(56, 170, 106, 0.15);
+            border: 1px solid rgba(56, 170, 106, 0.4);
             border-radius: 10px;
             padding: 0.75rem 1rem;
             font-size: 0.9rem;

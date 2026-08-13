@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"name": "posetek_website"
+		},
+		{
+			"path": "../posetek-mobile-app",
+			"name": "mobile-app (reference only)"
+		}
+	],
+	"settings": {}
+}
