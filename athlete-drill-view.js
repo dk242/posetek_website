@@ -16,10 +16,32 @@
   const db = firebase.firestore();
   const storage = firebase.storage();
   const cloudFunctions = firebase.functions();
+  const benchmarks = window.PoseTekBenchmarks;
+  if (!benchmarks) throw new Error("PoseTek benchmark definitions were not loaded.");
 
   const configs = {
+    shooting: {
+      key: "shooting",
+      acceptedRepTypes: ["side_kick", "deadballShot"],
+      primaryFields: ["velocity"],
+      statsOnly: true
+    },
+    sprint: {
+      key: "sprint",
+      acceptedRepTypes: ["sprint"],
+      primaryFields: ["max_velocity", "maxVelocity"],
+      statsOnly: true
+    },
+    jump: {
+      key: "jump",
+      acceptedRepTypes: ["jump"],
+      primaryFields: ["jumpHeight"],
+      statsOnly: true
+    },
     broadJump: {
       key: "broadJump",
+      acceptedRepTypes: ["broadJump"],
+      primaryFields: ["broadJumpDistance"],
       title: "Broad Jump",
       eyebrow: "Power · Horizontal jump",
       chartTitle: "Broad Jump Distance Over Time",
@@ -37,6 +59,8 @@
     },
     changeOfDirection: {
       key: "changeOfDirection",
+      acceptedRepTypes: ["changeOfDirection"],
+      primaryFields: ["totalTime"],
       title: "Change of Direction",
       eyebrow: "Agility · Shuttle test",
       chartTitle: "Shuttle Time Over Time",
@@ -54,6 +78,8 @@
     },
     dribbling: {
       key: "dribbling",
+      acceptedRepTypes: ["dribbling"],
+      primaryFields: ["totalTime"],
       title: "Dribbling",
       eyebrow: "Ball control · Timed course",
       chartTitle: "Dribble Time Over Time",
@@ -205,6 +231,59 @@
     ].join("");
   }
 
+  const drillBenchmarks = {
+    broadJump: [
+      { key: "broadJumpDistance", fields: ["broadJumpDistance"] }
+    ],
+    changeOfDirection: [
+      { key: "codTotalTime", fields: ["totalTime"] },
+      { key: "codOutboundTime", fields: ["phase1Time"] },
+      { key: "codTurnTime", fields: ["phase2Time"] },
+      { key: "codReturnTime", fields: ["phase3Time"] }
+    ],
+    dribbling: [
+      { key: "dribbleTotalTime", fields: ["totalTime"] },
+      { key: "dribbleBallControl", fields: ["avgBallDistance"] },
+      { key: "dribbleOutboundTime", fields: ["phase1Time"] },
+      { key: "dribbleTurnTime", fields: ["phase2Time"] },
+      { key: "dribbleReturnTime", fields: ["phase3Time"] }
+    ]
+  };
+
+  function repMetric(rep, fields) {
+    for (const field of fields) {
+      const value = asNumber(rep[field]);
+      if (value !== null) return value;
+    }
+    return null;
+  }
+
+  function bestMetricValue(definition) {
+    const metric = benchmarks.get(definition.key);
+    const values = state.reps.map(rep => repMetric(rep, definition.fields)).filter(value => value !== null);
+    if (!metric || !values.length) return null;
+    return metric.direction === "lower" ? Math.min(...values) : Math.max(...values);
+  }
+
+  function renderD1Comparison() {
+    const definitions = drillBenchmarks[config.key] || [];
+    if (!definitions.length) return "";
+    return `<section class="panel d1-comparison-panel">
+      <div class="panel-header"><div><p class="eyebrow">Senior benchmark</p><h2 class="panel-title">Compare with D1 standards</h2></div><span class="range-chip">Generation ${benchmarks.generation}</span></div>
+      <div class="d1-comparison-grid">${definitions.map(definition => {
+        const metric = benchmarks.get(definition.key);
+        const best = bestMetricValue(definition);
+        const score = best === null ? null : benchmarks.score(definition.key, best);
+        return `<article class="d1-comparison-row">
+          <span><strong>${escapeHtml(metric.label)}</strong><small>Best result</small></span>
+          <span class="d1-athlete-value">${best === null ? "—" : escapeHtml(benchmarks.format(definition.key, best))}</span>
+          <span><strong>${escapeHtml(benchmarks.format(definition.key, metric.reference))}</strong><small>D1 standard</small></span>
+          <span class="d1-score">${score === null ? "—" : `${Math.round(score)}%`}</span>
+        </article>`;
+      }).join("")}</div>
+    </section>`;
+  }
+
   function formatSeconds(value) {
     return value === null ? "—" : `${value.toFixed(2)} s`;
   }
@@ -308,16 +387,20 @@
 
   async function loadReps(playerId, drillConfig = config) {
     const repsRef = db.collection("players").doc(playerId).collection("reps");
-    let snapshot = await repsRef.where("repType", "==", drillConfig.key).get();
-    if (snapshot.empty) snapshot = await repsRef.where("drillType", "==", drillConfig.key).get();
+    const accepted = drillConfig.acceptedRepTypes || [drillConfig.key];
+    const snapshots = await Promise.all(accepted.flatMap(type => [
+      repsRef.where("repType", "==", type).get(),
+      repsRef.where("drillType", "==", type).get()
+    ]));
 
     const seen = new Set();
     const reps = [];
-    snapshot.docs.forEach(doc => {
+    snapshots.flatMap(snapshot => snapshot.docs).forEach(doc => {
       if (seen.has(doc.id)) return;
       seen.add(doc.id);
       const data = doc.data() || {};
-      const primary = asNumber(data[drillConfig.primaryField]);
+      const primaryFields = drillConfig.primaryFields || [drillConfig.primaryField];
+      const primary = primaryFields.map(field => asNumber(data[field])).find(value => value !== null) ?? null;
       reps.push({
         id: doc.id,
         ...data,
@@ -414,6 +497,7 @@
         <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
       </section>
       <section class="summary-grid" aria-label="Performance summary">${renderSummaryMetrics()}</section>
+      ${renderD1Comparison()}
       <section class="sessions-section">
         <div class="section-heading"><h2>Latest sessions</h2><span>${sessions.length} total</span></div>
         <div id="historyList" class="history-list">${sessions.map(session => `
@@ -687,12 +771,20 @@
         "com_height.json": heights
       };
     }
+    const rep = state.currentRep || {};
     return {
       folder: "preview",
       "pose.json": pose,
       "metadata.json": {
-        totalTime: 4.42, totalDistance: 9.8, outboundDistance: 4.9, returnDistance: 4.9,
-        phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9,
+        totalTime: asNumber(rep.totalTime) ?? 4.42,
+        totalDistance: asNumber(rep.totalDistance) ?? 9.8,
+        outboundDistance: asNumber(rep.outboundDistance) ?? 4.9,
+        returnDistance: asNumber(rep.returnDistance) ?? 4.9,
+        avgBallDistance: asNumber(rep.avgBallDistance),
+        phase1Time: asNumber(rep.phase1Time) ?? 1.72,
+        phase2Time: asNumber(rep.phase2Time) ?? 0.91,
+        phase3Time: asNumber(rep.phase3Time) ?? 1.79,
+        markerDistance: asNumber(rep.markerDistance) ?? 4.9,
         startFrame: 4, phase1EndFrame: 42, apexFrame: 48, phase2EndFrame: 56, endFrame: 92,
         framesPerSecond: 24, failedSteps: []
       }
@@ -1156,6 +1248,9 @@
     state.viewer = { role: "coach", uid: "preview", docId: "preview-coach", data: { members: ["preview-player"] } };
     state.player = { id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete", height: 178, weight: 72.5 } };
     const previewValues = {
+      shooting: [34.0, 32.2, 31.1, 30.4],
+      sprint: [6.6, 6.3, 6.0, 5.8],
+      jump: [0.50, 0.46, 0.42, 0.39],
       broadJump: [1.82, 1.68, 1.74, 1.59],
       changeOfDirection: [4.42, 4.58, 4.51, 4.77],
       dribbling: [8.64, 8.91, 9.12, 9.38]
@@ -1165,13 +1260,18 @@
       _statsDrill: drillConfig.key,
       repType: drillConfig.key,
       drillType: drillConfig.key,
-      [drillConfig.primaryField]: primary,
+      [drillConfig.primaryFields?.[0] || drillConfig.primaryField]: primary,
       primary,
       sessionNumber: index < 2 ? 2 : 1,
       repNumber: index % 2 + 1,
       absoluteRepNumber: previewValues[drillConfig.key].length - index,
       createdAtMillis: Date.now() - index * 86400000 * 8,
-      ...(drillConfig.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 } : drillConfig.key === "dribbling" ? { totalDistance: 18.2, avgBallDistance: 0.72, phase1Time: 2.81, phase2Time: 2.94, phase3Time: 2.89, markerDistance: 4.9 } : { totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 })
+      ...(drillConfig.key === "broadJump" ? { jumpHeight: 0.29, takeoffFrame: 18, landingFrame: 80 }
+        : drillConfig.key === "dribbling" ? { totalTime: primary, totalDistance: 18.2, avgBallDistance: 0.72, phase1Time: 2.81, phase2Time: 2.94, phase3Time: 2.89, markerDistance: 4.9 }
+        : drillConfig.key === "changeOfDirection" ? { totalTime: primary, totalDistance: 9.8, phase1Time: 1.72, phase2Time: 0.91, phase3Time: 1.79, markerDistance: 4.9 }
+        : drillConfig.key === "sprint" ? { max_velocity: primary, maxVelocity: primary, max_acceleration: 6.5 - index * 0.2, totalTime: 1.76 + index * 0.08 }
+        : drillConfig.key === "shooting" ? { velocity: primary }
+        : { jumpHeight: primary })
     })));
     state.reps = state.statsReps.filter(rep => rep._statsDrill === config.key);
     renderShell();

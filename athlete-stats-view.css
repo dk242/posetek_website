@@ -102,6 +102,9 @@
 .benchmark-band.approaching { color: #39cbef; }
 .benchmark-band.developing { color: #ffc969; }
 .benchmark-band.early { color: rgba(255,255,255,.55); }
+.benchmark-meter.unavailable { opacity: .72; }
+.benchmark-fill.unavailable { width: 0; }
+.benchmark-band.unavailable { color: var(--muted); }
 .stats-delta { margin-left: auto; font-weight: 800; }
 .stats-delta.up { color: var(--accent); }
 .stats-delta.down { color: #ffc969; }

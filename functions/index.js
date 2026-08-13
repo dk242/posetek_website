@@ -9,7 +9,15 @@ const db = admin.firestore();
 const ATHLETE_SHARE_COLLECTION = "athleteResultShares";
 const ATHLETE_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
-const ATHLETE_SHARE_DRILLS = new Set(["broadJump", "changeOfDirection", "dribbling"]);
+const ATHLETE_SHARE_DRILLS = new Set(["shooting", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling"]);
+const ATHLETE_SHARE_REP_TYPES = {
+  shooting: new Set(["side_kick", "deadballShot", "shooting"]),
+  sprint: new Set(["sprint"]),
+  jump: new Set(["jump"]),
+  broadJump: new Set(["broadJump"]),
+  changeOfDirection: new Set(["changeOfDirection"]),
+  dribbling: new Set(["dribbling"]),
+};
 const ATHLETE_SHARE_ARTIFACTS = {
   broadJump: [
     "pose.json",
@@ -105,6 +113,13 @@ function integerNumber(value) {
   return number === null ? null : Math.round(number);
 }
 
+function repMatchesDrill(rep, drill) {
+  const accepted = ATHLETE_SHARE_REP_TYPES[drill];
+  return Boolean(
+    accepted && (accepted.has(rep.repType) || accepted.has(rep.drillType))
+  );
+}
+
 function sanitizedAthleteRep(doc, drill) {
   const data = doc.data() || {};
   const common = {
@@ -123,6 +138,30 @@ function sanitizedAthleteRep(doc, drill) {
       jumpHeight: finiteNumber(data.jumpHeight),
       takeoffFrame: integerNumber(data.takeoffFrame),
       landingFrame: integerNumber(data.landingFrame),
+    };
+  }
+  if (drill === "shooting") {
+    return {
+      ...common,
+      velocity: finiteNumber(data.velocity),
+    };
+  }
+  if (drill === "jump") {
+    return {
+      ...common,
+      jumpHeight: finiteNumber(data.jumpHeight),
+    };
+  }
+  if (drill === "sprint") {
+    const maxAcceleration = finiteNumber(data.max_acceleration) ?? finiteNumber(data.maxAcceleration);
+    const maxVelocity = finiteNumber(data.max_velocity) ?? finiteNumber(data.maxVelocity);
+    return {
+      ...common,
+      max_acceleration: maxAcceleration,
+      maxAcceleration,
+      max_velocity: maxVelocity,
+      maxVelocity,
+      totalTime: finiteNumber(data.totalTime),
     };
   }
   return {
@@ -260,7 +299,7 @@ exports.getAthleteResultsShare = functions.https.onCall(async (data) => {
   const reps = repsSnapshot.docs
     .filter((doc) => {
       const rep = doc.data() || {};
-      return rep.repType === drill || rep.drillType === drill;
+      return repMatchesDrill(rep, drill);
     })
     .map((doc) => sanitizedAthleteRep(doc, drill))
     .sort(
@@ -296,7 +335,7 @@ exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
     .get();
   if (!repDoc.exists) throw athleteShareError();
   const rep = repDoc.data() || {};
-  if (rep.repType !== drill && rep.drillType !== drill) {
+  if (!repMatchesDrill(rep, drill)) {
     throw athleteShareError();
   }
 

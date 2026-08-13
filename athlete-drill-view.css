@@ -417,6 +417,15 @@ h1 { margin: 0; font-size: clamp(24px, 5vw, 30px); font-weight: 850; line-height
 .coach-note { margin-top: 11px; padding: 14px 15px; border: 1px solid rgba(124, 255, 24, 0.15); border-radius: var(--small-radius); background: rgba(124, 255, 24, 0.06); }
 .coach-note strong { display: block; margin-bottom: 4px; color: var(--accent); font-size: 11px; }
 .coach-note p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.d1-comparison-panel { margin-top: 13px; padding: 18px; }
+.d1-comparison-grid { display: grid; gap: 8px; margin-top: 14px; }
+.d1-comparison-row { display: grid; grid-template-columns: minmax(130px,1.5fr) minmax(72px,.7fr) minmax(105px,1fr) 54px; align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--row-radius); background: rgba(255,255,255,.035); }
+.d1-comparison-row > span { min-width: 0; }
+.d1-comparison-row strong, .d1-comparison-row small { display: block; }
+.d1-comparison-row strong { font-size: 11px; }
+.d1-comparison-row small { margin-top: 2px; color: var(--secondary); font-size: 8px; }
+.d1-athlete-value { color: #fff; font-size: 14px; font-weight: 850; }
+.d1-score { justify-self: end; color: var(--accent); font-size: 14px; font-weight: 900; }
 .footer { padding: 28px 16px; color: rgba(255, 255, 255, 0.36); text-align: center; font-size: 10px; }
 
 @media (max-width: 720px) {
@@ -451,6 +460,9 @@ h1 { margin: 0; font-size: clamp(24px, 5vw, 30px); font-weight: 850; line-height
   .viewer-title { top: 12px; left: 13px; }
   .playback-controls { grid-template-columns: 42px minmax(80px, 1fr) auto; gap: 8px; }
   .control-button { width: 42px; height: 42px; }
+  .d1-comparison-panel { padding: 14px; }
+  .d1-comparison-row { grid-template-columns: minmax(110px,1.4fr) minmax(66px,.8fr) minmax(88px,1fr); gap: 8px; }
+  .d1-score { grid-column: 3; justify-self: start; font-size: 11px; }
 }
 
 @media (max-width: 390px) {

@@ -2,13 +2,8 @@
   "use strict";
 
   const RADAR_CEILING = 130;
-  const D1_REFERENCES = {
-    broadJumpDistance: 2.444,
-    codTotalTime: 4.893617,
-    codTurnTime: 1.542553,
-    dribbleTotalTime: 9.0,
-    dribbleBallControl: 0.90
-  };
+  const benchmarks = window.PoseTekBenchmarks;
+  if (!benchmarks) throw new Error("PoseTek benchmark definitions were not loaded.");
 
   const AXES = [
     { key: "power", label: "Power", icon: "bolt", drills: "Broad Jump and Jump" },
@@ -17,6 +12,40 @@
     { key: "ballControl", label: "Ball Control", icon: "sports_soccer", drills: "Dribbling" },
     { key: "striking", label: "Striking", icon: "target", drills: "Shooting" }
   ];
+
+  const METRICS = [
+    definition("ballSpeed", "striking", ["shooting"], ["velocity"]),
+    definition("shotAccuracy", "striking", ["shooting"], []),
+    definition("broadJumpDistance", "power", ["broadJump"], ["broadJumpDistance"]),
+    definition("verticalJumpHeight", "power", ["jump"], ["jumpHeight"]),
+    definition("sprintMaxAcceleration", "speed", ["sprint"], ["max_acceleration", "maxAcceleration"]),
+    definition("sprintMaxSpeed", "speed", ["sprint"], ["max_velocity", "maxVelocity"]),
+    definition("sprintCompletionTime", "speed", ["sprint"], ["totalTime"]),
+    definition("dribbleTotalTime", "ballControl", ["dribbling"], ["totalTime"]),
+    definition("dribbleBallControl", "ballControl", ["dribbling"], ["avgBallDistance"]),
+    definition("dribbleOutboundTime", "ballControl", ["dribbling"], ["phase1Time"]),
+    definition("dribbleTurnTime", "ballControl", ["dribbling"], ["phase2Time"]),
+    definition("dribbleReturnTime", "ballControl", ["dribbling"], ["phase3Time"]),
+    definition("codTotalTime", "agility", ["changeOfDirection"], ["totalTime"]),
+    definition("codOutboundTime", "agility", ["changeOfDirection"], ["phase1Time"]),
+    definition("codTurnTime", "agility", ["changeOfDirection"], ["phase2Time"]),
+    definition("codReturnTime", "agility", ["changeOfDirection"], ["phase3Time"])
+  ];
+
+  function definition(key, axis, drills, fields) {
+    const benchmark = benchmarks.get(key);
+    return {
+      key,
+      axis,
+      drills,
+      fields,
+      label: benchmark.label,
+      reference: benchmark.reference,
+      lowerIsBetter: benchmark.direction === "lower",
+      placeholder: benchmark.placeholder,
+      format: value => benchmarks.format(key, value)
+    };
+  }
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>'"]/g, character => ({
@@ -33,32 +62,40 @@
     return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
   }
 
-  function score(value, reference, lowerIsBetter) {
-    if (!value || !reference) return null;
-    return 100 * (lowerIsBetter ? reference / value : value / reference);
+  function drillFor(rep) {
+    return rep._statsDrill || rep.repType || rep.drillType;
   }
 
-  function scoreDelta(reps, field, reference, lowerIsBetter) {
+  function metricValue(rep, definition) {
+    for (const field of definition.fields) {
+      const value = number(rep[field]);
+      if (value !== null) return value;
+    }
+    return null;
+  }
+
+  function scoreDelta(reps, definition) {
     const values = [...reps]
       .sort((left, right) => (left.createdAtMillis || 0) - (right.createdAtMillis || 0))
-      .map(rep => number(rep[field]))
+      .map(rep => metricValue(rep, definition))
       .filter(value => value !== null)
-      .map(value => score(value, reference, lowerIsBetter));
+      .map(value => benchmarks.score(definition.key, value));
     if (values.length < 2) return null;
     const split = Math.floor(values.length / 2);
     return mean(values.slice(split)) - mean(values.slice(0, split));
   }
 
   function bestMetric(reps, definition) {
-    const values = reps.map(rep => number(rep[definition.field])).filter(value => value !== null);
+    if (definition.placeholder || !definition.reference) return null;
+    const values = reps.map(rep => metricValue(rep, definition)).filter(value => value !== null);
     if (!values.length) return null;
     const best = definition.lowerIsBetter ? Math.min(...values) : Math.max(...values);
     return {
       ...definition,
       best,
-      score: score(best, definition.reference, definition.lowerIsBetter),
+      score: benchmarks.score(definition.key, best),
       repCount: values.length,
-      delta: scoreDelta(reps, definition.field, definition.reference, definition.lowerIsBetter)
+      delta: scoreDelta(reps, definition)
     };
   }
 
@@ -66,83 +103,38 @@
     return new Set(reps.map(rep => `${rep._statsDrill || rep.repType || rep.drillType}:${rep.sessionNumber || 1}`)).size;
   }
 
-  function bestRep(reps, field, lowerIsBetter = true) {
-    return reps.reduce((best, rep) => {
-      const value = number(rep[field]);
-      if (value === null) return best;
-      if (!best) return rep;
-      const bestValue = number(best[field]);
-      return lowerIsBetter ? value < bestValue ? rep : best : value > bestValue ? rep : best;
-    }, null);
-  }
-
   function buildProfile(reps) {
-    const broadReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "broadJump");
-    const codReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "changeOfDirection");
-    const dribblingReps = reps.filter(rep => (rep._statsDrill || rep.repType || rep.drillType) === "dribbling");
-    const broadMetrics = [bestMetric(broadReps, {
-      key: "broadJumpDistance",
-      field: "broadJumpDistance",
-      label: "Broad Jump",
-      reference: D1_REFERENCES.broadJumpDistance,
-      lowerIsBetter: false,
-      format: value => `${(value * 3.28084).toFixed(1)} ft`
-    })].filter(Boolean);
-    const codMetrics = [
-      bestMetric(codReps, {
-        key: "codTotalTime",
-        field: "totalTime",
-        label: "Shuttle Time",
-        reference: D1_REFERENCES.codTotalTime,
-        lowerIsBetter: true,
-        format: value => `${value.toFixed(2)} s`
-      }),
-      bestMetric(codReps, {
-        key: "codTurnTime",
-        field: "phase2Time",
-        label: "Turn Phase",
-        reference: D1_REFERENCES.codTurnTime,
-        lowerIsBetter: true,
-        format: value => `${value.toFixed(2)} s`
-      })
-    ].filter(Boolean);
-    const dribblingMetrics = [
-      bestMetric(dribblingReps, {
-        key: "dribbleTotalTime",
-        field: "totalTime",
-        label: "Completion Time",
-        reference: D1_REFERENCES.dribbleTotalTime,
-        lowerIsBetter: true,
-        format: value => `${value.toFixed(2)} s`
-      }),
-      bestMetric(dribblingReps, {
-        key: "dribbleBallControl",
-        field: "avgBallDistance",
-        label: "Ball Proximity",
-        reference: D1_REFERENCES.dribbleBallControl,
-        lowerIsBetter: true,
-        format: value => `${(value * 3.28084).toFixed(1)} ft`
-      })
-    ].filter(Boolean);
-
-    const power = mean(broadMetrics.map(metric => metric.score));
-    const agility = mean(codMetrics.map(metric => metric.score));
-    const ballControl = mean(dribblingMetrics.map(metric => metric.score));
-    const bestCodRep = bestRep(codReps, "totalTime", true);
-    const axes = AXES.map(axis => ({
-      ...axis,
-      score: axis.key === "power" ? power : axis.key === "agility" ? agility : axis.key === "ballControl" ? ballControl : null,
-      repCount: axis.key === "power" ? broadReps.length : axis.key === "agility" ? codReps.length : axis.key === "ballControl" ? dribblingReps.length : 0
-    }));
+    const sections = {};
+    AXES.forEach(axis => {
+      const slots = METRICS.filter(metric => metric.axis === axis.key);
+      const drillKeys = new Set(slots.flatMap(metric => metric.drills));
+      const sectionReps = reps.filter(rep => drillKeys.has(drillFor(rep)));
+      const availableByKey = new Map();
+      slots.forEach(slot => {
+        const metricReps = sectionReps.filter(rep => slot.drills.includes(drillFor(rep)));
+        const result = bestMetric(metricReps, slot);
+        if (result) availableByKey.set(slot.key, result);
+      });
+      const availableMetrics = slots.map(slot => availableByKey.get(slot.key)).filter(Boolean);
+      sections[axis.key] = {
+        key: axis.key,
+        title: axis.label,
+        icon: axis.icon,
+        reps: sectionReps,
+        slots,
+        availableByKey,
+        metrics: availableMetrics,
+        score: mean(availableMetrics.map(metric => metric.score))
+      };
+    });
+    const axes = AXES.map(axis => ({ ...axis, score: sections[axis.key].score, repCount: sections[axis.key].reps.length }));
     const scoredAxes = axes.filter(axis => axis.score !== null);
     return {
       axes,
       overall: mean(scoredAxes.map(axis => axis.score)),
-      totalReps: broadReps.length + codReps.length + dribblingReps.length,
-      totalSessions: sessionCount([...broadReps, ...codReps, ...dribblingReps]),
-      broad: { key: "power", title: "Power", icon: "bolt", reps: broadReps, metrics: broadMetrics, score: power },
-      cod: { key: "agility", title: "Agility", icon: "switch_access_shortcut", reps: codReps, metrics: codMetrics, score: agility, bestRep: bestCodRep },
-      dribbling: { key: "ballControl", title: "Ball Control", icon: "sports_soccer", reps: dribblingReps, metrics: dribblingMetrics, score: ballControl }
+      totalReps: reps.length,
+      totalSessions: sessionCount(reps),
+      sections
     };
   }
 
@@ -220,6 +212,29 @@
     </section>`;
   }
 
+  function unavailableMeter(slot) {
+    const standard = slot.reference ? `D1 standard ${slot.format(slot.reference)}` : "D1 standard not published";
+    const message = slot.placeholder ? "Measurement not available yet" : "No recorded result";
+    return `<article class="benchmark-meter unavailable">
+      <div class="benchmark-title"><strong>${escapeHtml(slot.label)}</strong><span>—</span></div>
+      <div class="benchmark-track"><span class="benchmark-fill unavailable"></span><i class="benchmark-reference" aria-hidden="true"></i></div>
+      <div class="benchmark-meta"><span class="benchmark-band unavailable"><span class="material-symbols-outlined">remove</span>${escapeHtml(message)}</span><span>— vs D1</span></div>
+      <p>${escapeHtml(standard)}</p>
+    </article>`;
+  }
+
+  function standardBreakdown(section) {
+    const hasData = section.metrics.length > 0;
+    const repSummary = hasData
+      ? `${section.reps.length} ${section.reps.length === 1 ? "rep" : "reps"} · ${sessionCount(section.reps)} ${sessionCount(section.reps) === 1 ? "session" : "sessions"}`
+      : "Not recorded yet";
+    return `<section class="stats-breakdown-card">
+      <header><span class="stats-breakdown-icon material-symbols-outlined">${section.icon}</span><span><h3>${escapeHtml(section.title)}</h3><p>${repSummary}</p></span>${section.score === null ? "" : `<span class="stats-drill-score">${Math.round(section.score)}<small>vs D1</small></span>`}</header>
+      <div class="benchmark-list">${section.slots.map(slot => section.availableByKey.get(slot.key) ? meter(section.availableByKey.get(slot.key)) : unavailableMeter(slot)).join("")}</div>
+      ${hasData && section.reps.length < 3 ? `<p class="stats-confidence"><span class="material-symbols-outlined">info</span>Based on ${section.reps.length} ${section.reps.length === 1 ? "rep" : "reps"} — record more for a reliable score.</p>` : ""}
+    </section>`;
+  }
+
   function formatHeight(value) {
     const centimeters = number(value);
     if (centimeters === null) return "—";
@@ -264,17 +279,9 @@
   }
 
   function axisBreakdown(axis, profile) {
-    if (axis.key === "agility") return agilityBreakdown(profile);
-    if (axis.key === "power") {
-      return breakdown(profile.broad).replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"').replace("<section", '<section data-breakdown-panel="power" hidden');
-    }
-    if (axis.key === "ballControl") {
-      return breakdown(profile.dribbling).replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"').replace("<section", '<section data-breakdown-panel="ballControl" hidden');
-    }
-    return `<section class="stats-breakdown-card stats-selected-card" data-breakdown-panel="${axis.key}" hidden>
-      <header><span class="stats-breakdown-icon material-symbols-outlined">${axis.icon}</span><span><h3>${escapeHtml(axis.label)}</h3><p>Not recorded yet</p></span></header>
-      <div class="stats-empty"><span class="material-symbols-outlined">add_circle</span><span>Record ${escapeHtml(axis.drills)} to unlock this breakdown.</span></div>
-    </section>`;
+    return standardBreakdown(profile.sections[axis.key])
+      .replace('class="stats-breakdown-card"', 'class="stats-breakdown-card stats-selected-card"')
+      .replace("<section", `<section data-breakdown-panel="${axis.key}" hidden`);
   }
 
   function bind(root) {
@@ -334,7 +341,7 @@
           <div class="stats-breakdowns">${profile.axes.map(axis => axisBreakdown(axis, profile)).join("")}</div>
         </section>
       </section>
-      <p class="stats-methodology"><span class="material-symbols-outlined">info</span>Scores are indexed so 100 equals the D1 reference for each metric. These general reference values match the mobile app’s provisional benchmark set and will be replaced as measured cohort data grows.</p>
+      <p class="stats-methodology"><span class="material-symbols-outlined">info</span>Scores are indexed so 100 equals the approved Generation 2 senior D1 reference for each metric. Shooting accuracy is shown as unavailable until a standard is published.</p>
     </section>`;
   }
 
