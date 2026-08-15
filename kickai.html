@@ -1597,7 +1597,17 @@
             try {
                 const target = new URL(raw, window.location.href);
                 const fileName = target.pathname.split('/').pop();
-                const allowed = new Set(['broadJumpPage.html', 'changeOfDirectionPage.html']);
+                const allowed = new Set([
+                    'profile.html',
+                    'coachesview.html',
+                    'broadJumpPage.html',
+                    'changeOfDirectionPage.html',
+                    'dribblingPage.html',
+                    'kickingview.html',
+                    'sprintPage.html',
+                    'StaticJumpPage.html',
+                    'freeRecordPage.html'
+                ]);
                 return target.origin === window.location.origin && allowed.has(fileName) ? target.href : null;
             } catch (_) {
                 return null;

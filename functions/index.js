@@ -9,7 +9,7 @@ const db = admin.firestore();
 const ATHLETE_SHARE_COLLECTION = "athleteResultShares";
 const ATHLETE_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
-const ATHLETE_SHARE_DRILLS = new Set(["shooting", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling"]);
+const ATHLETE_SHARE_DRILLS = new Set(["shooting", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling", "freeRecord"]);
 const ATHLETE_SHARE_REP_TYPES = {
   shooting: new Set(["side_kick", "deadballShot", "shooting"]),
   sprint: new Set(["sprint"]),
@@ -17,8 +17,12 @@ const ATHLETE_SHARE_REP_TYPES = {
   broadJump: new Set(["broadJump"]),
   changeOfDirection: new Set(["changeOfDirection"]),
   dribbling: new Set(["dribbling"]),
+  freeRecord: new Set(["freeRecord"]),
 };
 const ATHLETE_SHARE_ARTIFACTS = {
+  shooting: ["pose.json", "metadata.json", "ball_detections.json"],
+  sprint: ["pose.json", "metadata.json", "com_midpoints.json", "com_velocity.json"],
+  jump: ["pose.json", "metadata.json", "com_height.json", "torso_midpoints.json"],
   broadJump: [
     "pose.json",
     "metadata.json",
@@ -30,6 +34,17 @@ const ATHLETE_SHARE_ARTIFACTS = {
   ],
   changeOfDirection: ["pose.json", "metadata.json"],
   dribbling: ["pose.json", "metadata.json"],
+  freeRecord: ["pose.json", "metadata.json", "ball_detections.json"],
+};
+
+const ATHLETE_STORAGE_DRILL = {
+  shooting: "deadballShot",
+  sprint: "sprint",
+  jump: "jump",
+  broadJump: "broadJump",
+  changeOfDirection: "changeOfDirection",
+  dribbling: "dribbling",
+  freeRecord: "freeRecord",
 };
 
 function athleteShareTokenHash(token) {
@@ -204,10 +219,53 @@ function storageFolderCandidates(playerDocId, drill, rep) {
   }
   const sessionNumber = integerNumber(rep.sessionNumber) || 1;
   const repNumber = integerNumber(rep.repNumber) || 1;
-  folders.push(
-    `${playerDocId}/${drill}/session${sessionNumber}/kick${repNumber}`
-  );
+  folders.push(`${playerDocId}/${ATHLETE_STORAGE_DRILL[drill] || drill}/session${sessionNumber}/kick${repNumber}`);
   return [...new Set(folders.filter(Boolean))];
+}
+
+async function sharedFreeRecordRows(playerDocId) {
+  const prefix = `${playerDocId}/freeRecord/`;
+  const [files] = await admin.storage().bucket().getFiles({ prefix });
+  const grouped = new Map();
+  for (const file of files) {
+    const relative = file.name.slice(prefix.length);
+    const parts = relative.split("/").filter(Boolean);
+    if (!parts.length) continue;
+    const sessionFolder = parts[0];
+    if (!/^session\d+$/i.test(sessionFolder)) continue;
+    const repFolder = /^kick\d+$/i.test(parts[1] || "") ? parts[1] : "";
+    const key = `${sessionFolder}/${repFolder || "root"}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        id: `freeRecord-${sessionFolder}-${repFolder || "root"}`,
+        repType: "freeRecord",
+        drillType: "freeRecord",
+        sessionFolder,
+        repFolder,
+        sessionRoot: !repFolder,
+        sessionNumber: Number(sessionFolder.replace(/\D/g, "")) || 1,
+        repNumber: Number(repFolder.replace(/\D/g, "")) || 1,
+        createdAtMillis: file.metadata?.updated
+          ? Date.parse(file.metadata.updated)
+          : null,
+      });
+    }
+  }
+  const rows = [...grouped.values()];
+  const sessionsWithRepFolders = new Set(
+    rows.filter((row) => !row.sessionRoot).map((row) => row.sessionFolder)
+  );
+  return rows
+    .filter(
+      (row) =>
+        !row.sessionRoot || !sessionsWithRepFolders.has(row.sessionFolder)
+    )
+    .sort(
+    (left, right) =>
+      (right.createdAtMillis || 0) - (left.createdAtMillis || 0) ||
+      right.sessionNumber - left.sessionNumber ||
+      right.repNumber - left.repNumber
+    );
 }
 
 /**
@@ -294,19 +352,23 @@ exports.getAthleteResultsShare = functions.https.onCall(async (data) => {
   const drill = String(data?.drill || "");
   const { share, playerDoc } = await verifiedAthleteShare(data?.token, drill);
   const playerRef = db.collection("players").doc(share.playerDocId);
-  const repsSnapshot = await playerRef.collection("reps").get();
-
-  const reps = repsSnapshot.docs
-    .filter((doc) => {
-      const rep = doc.data() || {};
-      return repMatchesDrill(rep, drill);
-    })
-    .map((doc) => sanitizedAthleteRep(doc, drill))
-    .sort(
-      (left, right) =>
-        (right.createdAtMillis || 0) - (left.createdAtMillis || 0) ||
-        (right.absoluteRepNumber || 0) - (left.absoluteRepNumber || 0)
-    );
+  let reps;
+  if (drill === "freeRecord") {
+    reps = await sharedFreeRecordRows(share.playerDocId);
+  } else {
+    const repsSnapshot = await playerRef.collection("reps").get();
+    reps = repsSnapshot.docs
+      .filter((doc) => {
+        const rep = doc.data() || {};
+        return repMatchesDrill(rep, drill);
+      })
+      .map((doc) => sanitizedAthleteRep(doc, drill))
+      .sort(
+        (left, right) =>
+          (right.createdAtMillis || 0) - (left.createdAtMillis || 0) ||
+          (right.absoluteRepNumber || 0) - (left.absoluteRepNumber || 0)
+      );
+  }
   const player = playerDoc.data() || {};
   return {
     athlete: {
@@ -327,36 +389,45 @@ exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
   const repId = String(data?.repId || "").trim();
   if (!repId || repId.includes("/")) throw athleteShareError();
   const { share } = await verifiedAthleteShare(data?.token, drill);
-  const repDoc = await db
-    .collection("players")
-    .doc(share.playerDocId)
-    .collection("reps")
-    .doc(repId)
-    .get();
-  if (!repDoc.exists) throw athleteShareError();
-  const rep = repDoc.data() || {};
-  if (!repMatchesDrill(rep, drill)) {
-    throw athleteShareError();
-  }
-
   const bucket = admin.storage().bucket();
   const fileNames = ATHLETE_SHARE_ARTIFACTS[drill] || [];
-  const folders = storageFolderCandidates(share.playerDocId, drill, rep);
+  let folders;
+  if (drill === "freeRecord") {
+    const sessionNumber = integerNumber(data?.sessionNumber);
+    const repNumber = integerNumber(data?.repNumber);
+    if (!sessionNumber || repNumber === null || repNumber < 0) {
+      throw athleteShareError();
+    }
+    const root = `${share.playerDocId}/freeRecord/session${sessionNumber}`;
+    folders = [repNumber === 0 ? root : `${root}/kick${repNumber}`];
+  } else {
+    const repDoc = await db
+      .collection("players")
+      .doc(share.playerDocId)
+      .collection("reps")
+      .doc(repId)
+      .get();
+    if (!repDoc.exists) throw athleteShareError();
+    const rep = repDoc.data() || {};
+    if (!repMatchesDrill(rep, drill)) throw athleteShareError();
+    folders = storageFolderCandidates(share.playerDocId, drill, rep);
+  }
   let selectedFolder = null;
   for (const folder of folders) {
-    const [poseExists, metadataExists] = await Promise.all([
+    const [poseExists, metadataExists, listed] = await Promise.all([
       bucket.file(`${folder}/pose.json`).exists().then(([exists]) => exists),
       bucket
         .file(`${folder}/metadata.json`)
         .exists()
         .then(([exists]) => exists),
+      bucket.getFiles({ prefix: `${folder}/`, maxResults: 10 }).then(([files]) => files.length > 0),
     ]);
-    if (poseExists || metadataExists) {
+    if (poseExists || metadataExists || listed) {
       selectedFolder = folder;
       break;
     }
   }
-  if (!selectedFolder) return { artifactUrls: {} };
+  if (!selectedFolder) return { artifactUrls: {}, mediaUrl: null };
 
   const expires = Date.now() + ATHLETE_ARTIFACT_URL_TTL_MS;
   const entries = await Promise.all(
@@ -368,7 +439,19 @@ exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
       return [fileName, url];
     })
   );
-  return { artifactUrls: Object.fromEntries(entries.filter(Boolean)) };
+  const [folderFiles] = await bucket.getFiles({ prefix: `${selectedFolder}/` });
+  const directFiles = folderFiles.filter((file) => {
+    const relative = file.name.slice(selectedFolder.length + 1);
+    return relative && !relative.includes("/");
+  });
+  const movie = directFiles.find((file) => /\.(mov|mp4)$/i.test(file.name));
+  const mediaUrl = movie
+    ? (await movie.getSignedUrl({ action: "read", expires }))[0]
+    : null;
+  return {
+    artifactUrls: Object.fromEntries(entries.filter(Boolean)),
+    mediaUrl,
+  };
 });
 
 /**
