@@ -12,14 +12,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="athlete-stats-view.css?v=20260813-d1-standards">
-  <link rel="stylesheet" href="pose-portal.css?v=20260815-mobile-port">
+  <link rel="stylesheet" href="pose-portal.css?v=20260816-athlete-navigation">
 </head>
 <body class="portal-body athlete-body">
   <header class="portal-header athlete-header">
-    <a class="portal-brand" id="brandLink" href="profile.html"><span class="portal-brand-mark">P</span><span>POSETEK</span></a>
-    <nav class="top-view-tabs" aria-label="Athlete pages"><button type="button" data-view="home" class="active">Athlete Home</button><button type="button" data-view="drills">Drill Results</button></nav>
+    <button class="portal-menu-button" id="portalMenuButton" type="button" aria-label="Open athlete navigation" aria-expanded="false" aria-controls="portalDrawer">
+      <span class="portal-brand-mark">P</span>
+      <span class="menu-lines" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+    <a class="portal-brand portal-wordmark" id="brandLink" href="profile.html"><span>POSETEK</span></a>
+    <div class="portal-current-view" id="currentViewLabel">Athlete Home</div>
     <div class="portal-header-actions"><a class="quiet-button" id="rosterLink" href="coachesview.html?userType=coach" hidden><span class="material-symbols-outlined">groups</span><span>Roster</span></a><button class="quiet-button share-button" id="shareButton" type="button" hidden><span class="material-symbols-outlined">ios_share</span><span>Share</span></button></div>
   </header>
+
+  <div class="portal-drawer-backdrop" id="portalDrawerBackdrop" hidden></div>
+  <aside class="portal-drawer" id="portalDrawer" aria-hidden="true" aria-label="Athlete navigation">
+    <header class="drawer-header">
+      <div><span class="portal-brand-mark">P</span><strong>POSETEK</strong></div>
+      <button class="icon-button" id="portalDrawerClose" type="button" aria-label="Close navigation"><span class="material-symbols-outlined">close</span></button>
+    </header>
+    <div class="drawer-athlete" id="drawerAthlete"><span class="athlete-avatar">A</span><div><strong>Athlete</strong><small>Performance portal</small></div></div>
+    <nav class="drawer-navigation" id="drawerNavigation">
+      <button type="button" data-view="home"><span class="material-symbols-outlined">home</span><span><strong>Athlete Home</strong><small>Skill chart and breakdown</small></span></button>
+      <button type="button" data-view="profile"><span class="material-symbols-outlined">accessibility_new</span><span><strong>Body Profile</strong><small>Scan and measurements</small></span></button>
+      <button type="button" data-view="aiCoach"><span class="material-symbols-outlined">forum</span><span><strong>AI Coach</strong><small>Ask about your performance</small></span></button>
+      <button type="button" data-view="drills"><span class="material-symbols-outlined">exercise</span><span><strong>Drill Results</strong><small>Sessions, metrics, and video</small></span></button>
+      <button type="button" data-view="training"><span class="material-symbols-outlined">fitness_center</span><span><strong>Training</strong><small>Plan, workouts, and history</small></span></button>
+      <button type="button" data-view="leaderboards"><span class="material-symbols-outlined">leaderboard</span><span><strong>Leaderboards</strong><small>Team rankings and standards</small></span></button>
+    </nav>
+    <footer class="drawer-footer"><span class="material-symbols-outlined">verified_user</span><span>Secure athlete access</span></footer>
+  </aside>
 
   <main class="athlete-shell">
     <nav class="drill-tabs" id="drillTabs" aria-label="Drill results" hidden></nav>
@@ -35,6 +57,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
   <script src="athlete-benchmarks.js?v=20260813-d1-standards"></script>
   <script src="athlete-stats-view.js?v=20260813-d1-standards"></script>
-  <script src="athlete-portal.js?v=20260815-mobile-port"></script>
+  <script src="athlete-mobile-pages.js?v=20260816-athlete-navigation"></script>
+  <script src="athlete-portal.js?v=20260816-athlete-navigation"></script>
 </body>
 </html>

@@ -47,6 +47,28 @@ const ATHLETE_STORAGE_DRILL = {
   freeRecord: "freeRecord",
 };
 
+const AI_COACH_GATEWAY_URL =
+  "https://agent-gateway-keycy7dkua-uw.a.run.app/v1/chat/stream";
+const AI_COACH_WEB_ORIGINS = new Set([
+  "https://posetek.net",
+  "https://www.posetek.net",
+  "https://kickai-69dd0.web.app",
+  "https://kickai-69dd0.firebaseapp.com",
+]);
+
+function allowedAiCoachWebOrigin(origin) {
+  if (AI_COACH_WEB_ORIGINS.has(origin)) return true;
+  try {
+    const url = new URL(origin);
+    return (
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+      (url.protocol === "http:" || url.protocol === "https:")
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
 function athleteShareTokenHash(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
@@ -863,3 +885,92 @@ exports.createPremiumCheckoutSession = functions.https.onRequest(
     }
   }
 );
+
+/**
+ * aiCoachStreamProxy
+ *
+ * The native app can call the Cloud Run SSE endpoint directly. Browsers cannot
+ * because that endpoint intentionally has no public CORS policy, so this thin
+ * authenticated proxy preserves the same streaming contract for posetek.net.
+ */
+exports.aiCoachStreamProxy = functions
+  .runWith({ timeoutSeconds: 300, memory: "256MB" })
+  .https.onRequest(async (req, res) => {
+    const origin = req.get("origin") || "";
+    if (allowedAiCoachWebOrigin(origin)) {
+      res.set("Access-Control-Allow-Origin", origin);
+      res.set("Vary", "Origin");
+    }
+    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.set(
+      "Access-Control-Allow-Headers",
+      "Authorization, Content-Type, Accept, X-Firebase-AppCheck"
+    );
+    res.set("Access-Control-Expose-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+      return allowedAiCoachWebOrigin(origin)
+        ? res.status(204).send("")
+        : res.status(403).send("Origin not allowed");
+    }
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+    if (!allowedAiCoachWebOrigin(origin)) {
+      return res.status(403).json({ error: "Origin not allowed" });
+    }
+
+    const authorization = req.get("authorization") || "";
+    const match = authorization.match(/^Bearer\s+(.+)$/i);
+    if (!match) {
+      return res.status(401).json({ error: { code: "unauthenticated", message: "Sign in required." } });
+    }
+
+    try {
+      await admin.auth().verifyIdToken(match[1]);
+    } catch (error) {
+      console.warn("aiCoachStreamProxy rejected token", error.message);
+      return res.status(401).json({ error: { code: "unauthenticated", message: "Your sign-in has expired." } });
+    }
+
+    const controller = new AbortController();
+    req.on("aborted", () => controller.abort());
+    res.on("close", () => {
+      if (!res.writableEnded) controller.abort();
+    });
+    const headers = {
+      Authorization: authorization,
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    };
+    const appCheck = req.get("x-firebase-appcheck");
+    if (appCheck) headers["X-Firebase-AppCheck"] = appCheck;
+
+    try {
+      const upstream = await fetch(AI_COACH_GATEWAY_URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(req.body || {}),
+        signal: controller.signal,
+      });
+
+      res.status(upstream.status);
+      res.set("Content-Type", upstream.headers.get("content-type") || "text/event-stream; charset=utf-8");
+      res.set("Cache-Control", "no-cache, no-transform");
+      res.set("X-Accel-Buffering", "no");
+      if (!upstream.body) return res.end();
+
+      for await (const chunk of upstream.body) {
+        if (res.destroyed) break;
+        res.write(Buffer.from(chunk));
+      }
+      if (!res.destroyed) res.end();
+    } catch (error) {
+      if (error.name === "AbortError" || res.destroyed) return;
+      console.error("aiCoachStreamProxy failed", error);
+      if (!res.headersSent) {
+        return res.status(502).json({ error: { code: "provider_error", message: "AI Coach is temporarily unavailable." } });
+      }
+      res.end();
+    }
+  });
