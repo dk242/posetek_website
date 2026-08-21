@@ -1,0 +1,222 @@
+// Firestore / Storage / Functions access for the athlete portal — collection
+// names, field fallbacks, query shapes, and error messages byte-identical to
+// athlete-portal.js and athlete-mobile-pages.js.
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import firebase, { auth, cloud, db, storage } from "../../../lib/firebase";
+import type { Drill } from "./drills";
+import { DRILLS } from "./drills";
+import { accepted, artifactFolder, fullName, mergeUnique, normalizeRep, num, repNumber, sessionNumber } from "./metrics";
+import { boardsFromPlayers, number } from "./mobile";
+
+export type Access = "athlete" | "coach" | "shared" | "preview";
+
+export interface PortalData {
+  access: Access;
+  playerId: string | null;
+  athlete: any;
+  reps: Record<string, any[]>;
+}
+
+const emptyReps = (): Record<string, any[]> => Object.fromEntries(DRILLS.map(d => [d.key, []]));
+
+async function findCoach(uid: string): Promise<any> {
+  const direct = await db.collection("coaches").doc(uid).get();
+  if (direct.exists) return direct;
+  const query = await db.collection("coaches").where("userUID", "==", uid).limit(1).get();
+  return query.empty ? null : query.docs[0];
+}
+
+async function findOwnPlayer(uid: string): Promise<any> {
+  const direct = await db.collection("players").doc(uid).get();
+  if (direct.exists) return direct;
+  for (const field of ["userUID", "uid", "authUID"]) {
+    const query = await db.collection("players").where(field, "==", uid).limit(1).get();
+    if (!query.empty) return query.docs[0];
+  }
+  return null;
+}
+
+export async function loadAuthenticated(user: any, requestedPlayer: string | null): Promise<PortalData> {
+  const playerDoc: any = requestedPlayer
+    ? await db.collection("players").doc(requestedPlayer).get()
+    : await findOwnPlayer(user.uid);
+  if (!playerDoc?.exists) throw new Error("This athlete profile could not be found.");
+  const own = playerDoc.id === user.uid || [playerDoc.data().userUID, playerDoc.data().uid, playerDoc.data().authUID].includes(user.uid);
+  const coach = await findCoach(user.uid);
+  const coachData = coach?.data?.() || {};
+  const linked = [playerDoc.data().coachUID, playerDoc.data().coachId, playerDoc.data().coachDocId];
+  const coachAllowed = Boolean(coach && ((coachData.members || []).includes(playerDoc.id) || linked.includes(coach.id) || linked.includes(user.uid)));
+  if (!own && !coachAllowed) throw new Error("You do not have permission to view this athlete.");
+  const access: Access = coachAllowed ? "coach" : "athlete";
+  const athlete = { id: playerDoc.id, ...playerDoc.data() };
+  const snapshot = await playerDoc.ref.collection("reps").get();
+  const all = snapshot.docs.map(normalizeRep);
+  const reps = emptyReps();
+  DRILLS.forEach(drill => { reps[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
+  try {
+    reps.freeRecord = mergeUnique(reps.freeRecord, await listFreeRecordStorage(playerDoc.id));
+  } catch (error) {
+    console.warn("[profile] Free Record listing unavailable", error);
+  }
+  return { access, playerId: playerDoc.id, athlete, reps };
+}
+
+export async function listFreeRecordStorage(playerId: string): Promise<any[]> {
+  const root = storage.ref(`${playerId}/freeRecord`);
+  const result = await root.listAll();
+  const rows: any[] = [];
+  for (const sessionRef of result.prefixes) {
+    const sessionResult = await sessionRef.listAll();
+    if (sessionResult.prefixes.length) {
+      sessionResult.prefixes.forEach((ref, index) => rows.push({
+        id: `freeRecord-${sessionRef.name}-${ref.name}`,
+        repType: "freeRecord",
+        sessionFolder: sessionRef.name,
+        repFolder: ref.name,
+        sessionNumber: num(sessionRef.name.match(/\d+/)?.[0]) || 1,
+        repNumber: num(ref.name.match(/\d+/)?.[0]) || index + 1,
+      }));
+    } else if (sessionResult.items.length) {
+      rows.push({
+        id: `freeRecord-${sessionRef.name}-root`,
+        repType: "freeRecord",
+        sessionFolder: sessionRef.name,
+        repFolder: "",
+        sessionNumber: num(sessionRef.name.match(/\d+/)?.[0]) || 1,
+        repNumber: 1,
+        sessionRoot: true,
+      });
+    }
+  }
+  return rows;
+}
+
+export async function loadShared(token: string): Promise<PortalData> {
+  const calls = DRILLS.map(drill =>
+    cloud.httpsCallable("getAthleteResultsShare")({ token, drill: drill.key })
+      .then(result => ({ drill, payload: result.data as any, error: null as any }))
+      .catch(error => ({ drill, payload: null as any, error })),
+  );
+  const results = await Promise.all(calls);
+  const valid = results.filter(item => item.payload);
+  if (!valid.length) throw results[0]?.error || new Error("This results link is invalid or expired.");
+  const reps = emptyReps();
+  valid.forEach(({ drill, payload }) => { reps[drill.key] = (payload.reps || []).map(normalizeRep); });
+  return { access: "shared", playerId: null, athlete: valid[0].payload.athlete, reps };
+}
+
+export interface RepArtifacts {
+  artifactUrls?: Record<string, string>;
+  mediaUrl?: string | null;
+  folder?: string;
+}
+
+export async function authArtifacts(drill: Drill, rep: any, playerId: string): Promise<RepArtifacts> {
+  const folder = artifactFolder(rep, drill, playerId);
+  const base = storage.ref(folder);
+  const urls: Record<string, string> = {};
+  await Promise.all(drill.artifacts.map(async name => {
+    try { urls[name] = await base.child(name).getDownloadURL(); } catch { /* missing artifact */ }
+  }));
+  let mediaUrl: string | null = null;
+  try {
+    const listing = await base.listAll();
+    const movie = listing.items.find(item => /\.(mov|mp4)$/i.test(item.name));
+    if (movie) mediaUrl = await movie.getDownloadURL();
+  } catch { /* listing unavailable */ }
+  if (!mediaUrl && rep.sessionRoot) {
+    for (const name of ["free_record_video.mov", "video.mov"]) {
+      try { mediaUrl = await base.child(name).getDownloadURL(); break; } catch { /* try next */ }
+    }
+  }
+  return { artifactUrls: urls, mediaUrl, folder };
+}
+
+export async function sharedArtifacts(drill: Drill, rep: any, token: string | null): Promise<RepArtifacts> {
+  const result = await cloud.httpsCallable("getAthleteSharedRepArtifacts")({
+    token,
+    drill: drill.key,
+    repId: rep.id,
+    sessionNumber: sessionNumber(rep),
+    repNumber: rep.sessionRoot ? 0 : repNumber(rep),
+  });
+  return (result.data as any) || {};
+}
+
+export async function fetchJson(url: string | undefined | null): Promise<any> {
+  if (!url) return null;
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Could not load ${response.status}`);
+  return response.json();
+}
+
+export async function storageJson(reference: any): Promise<any> {
+  const url = await reference.getDownloadURL();
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Could not load ${reference.name}`);
+  return response.json();
+}
+
+export async function submitLlmJob(playerId: string, capability: string, params: any): Promise<any> {
+  const ref = db.collection("llmJobs").doc();
+  await ref.set({
+    schemaVersion: 1,
+    capability,
+    playerId,
+    params,
+    requestedByUid: auth.currentUser!.uid,
+    clientVersion: "1.1+4",
+    status: "pending",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return ref;
+}
+
+export function waitForJob(
+  jobId: string,
+  onStatus: (text: string) => void,
+  register: (unsubscribe: () => void) => void,
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = db.collection("llmJobs").doc(jobId).onSnapshot(snapshot => {
+      const job: any = snapshot.data() || {};
+      onStatus(job.status === "running" ? "Building your plan…" : "Waiting for the training engine…");
+      if (job.status === "complete") { unsubscribe(); resolve(job); }
+      if (job.status === "failed") { unsubscribe(); reject(new Error(job.error?.detail || job.error?.message || "The training engine could not finish.")); }
+    }, error => { unsubscribe(); reject(error); });
+    register(unsubscribe);
+  });
+}
+
+export async function loadTeamStandings(playerId: string): Promise<Record<string, { id: string; name: string; value: number }[]>> {
+  let coachDoc: any = await db.collection("coaches").doc(auth.currentUser!.uid).get();
+  if (!coachDoc.exists) {
+    const own = await db.collection("coaches").where("userUID", "==", auth.currentUser!.uid).limit(1).get();
+    if (!own.empty) coachDoc = own.docs[0];
+  }
+  if (!coachDoc.exists) {
+    const query = await db.collection("coaches").where("members", "array-contains", playerId).limit(1).get();
+    if (query.empty) throw new Error("No connected team");
+    coachDoc = query.docs[0];
+  }
+  const ids: string[] = [...new Set<string>([...(coachDoc.data().members || []), playerId])];
+  const players = await Promise.all(ids.map(async id => {
+    const [player, reps] = await Promise.all([
+      db.collection("players").doc(id).get(),
+      db.collection("players").doc(id).collection("reps").get(),
+    ]);
+    return { id, name: fullName(player.data() || {}), reps: reps.docs.map(doc => doc.data()) };
+  }));
+  return boardsFromPlayers(players);
+}
+
+// Body Profile: list `${playerId}/bodyScans` prefixes newest-first.
+export async function listBodyScans(playerId: string): Promise<{ ref: any; number: number }[]> {
+  const root = storage.ref(`${playerId}/bodyScans`);
+  const listing = await root.listAll();
+  return listing.prefixes
+    .map(ref => ({ ref, number: number(ref.name.replace(/^kick/i, "")) ?? 0 }))
+    .sort((a, b) => b.number - a.number);
+}
