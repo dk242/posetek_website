@@ -6,14 +6,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, cloud } from "../../lib/firebase";
+import { useThemeColor } from "../../lib/use-theme-color";
+// drill-share.scss is imported BEFORE AthleteStats (and its stylesheet) so the
+// bundle keeps the legacy cascade order: athlete-drill-view.css loaded first,
+// athlete-stats-view.css second — stats rules win equal-specificity ties.
+import "./drill-share.scss";
 import AthleteStats from "../../components/athlete-stats/AthleteStats";
 import {
   buildPageUrl,
   configs,
   pageConfigs,
-  routeFor,
   type PageDrillKey,
   type PageUrlState,
 } from "./drill-config";
@@ -26,7 +30,6 @@ import {
 } from "./drill-lib";
 import { loadStatsReps, resolveAuthorizedPlayer, resolveViewer, type ViewerInfo } from "./drill-data";
 import ResultsSurface from "./ResultsSurface";
-import "./drill-share.scss";
 
 interface PlayerState {
   id: string | null;
@@ -39,9 +42,13 @@ type Boot =
   | { phase: "ready" };
 
 export default function DrillSharePage({ drill }: { drill: "broadJump" | "changeOfDirection" | "dribbling" }) {
-  // Key by drill so switching between the three drill routes fully resets state,
-  // matching the legacy full page loads.
-  return <DrillShareApp key={drill} drill={drill} />;
+  // Key by drill AND router location so every router navigation — including
+  // clicking the brand or the already-active catalog entry — fully remounts and
+  // re-boots, matching the legacy full page loads. In-page URL sync
+  // (setActiveView/selectRep) uses history.replaceState, which does not touch
+  // the router location, so it never triggers a remount.
+  const location = useLocation();
+  return <DrillShareApp key={`${drill}|${location.key}`} drill={drill} />;
 }
 
 function DrillShareApp({ drill }: { drill: PageDrillKey }) {
@@ -68,9 +75,23 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
   const [copyBusy, setCopyBusy] = useState(false);
   const copyTimerRef = useRef<number | undefined>(undefined);
 
+  useThemeColor("#041610"); // legacy drill pages: <meta name="theme-color" content="#041610">
+
   useEffect(() => {
     document.title = `${config.title} | PoseTek`;
   }, [config.title]);
+
+  // Legacy set color-scheme:dark at the html level (dark viewport scrollbar), and
+  // every navigation was a full page load landing at the top.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const root = document.documentElement;
+    const previous = root.style.colorScheme;
+    root.style.colorScheme = "dark";
+    return () => {
+      root.style.colorScheme = previous;
+    };
+  }, []);
 
   useEffect(() => () => window.clearTimeout(copyTimerRef.current), []);
 
@@ -197,7 +218,9 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
   async function copyAthleteLink() {
     if (!player) return;
     if (preview) {
-      const previewUrl = new URL(routeFor(config.page), window.location.href);
+      // Minted links keep the documented legacy .html shape (ATHLETE_RESULTS_LINKS.md);
+      // the SPA serves those paths via its alias routes.
+      const previewUrl = new URL(`/${config.page}`, window.location.origin);
       previewUrl.search = "?preview=1";
       await copyResultUrl(previewUrl.toString());
       return;
@@ -210,7 +233,7 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
       const response = await createShare({ playerDocId: player.id });
       const token = (response as any)?.data?.token;
       if (!token) throw new Error("The secure link could not be created.");
-      const url = new URL(routeFor(config.page), window.location.href);
+      const url = new URL(`/${config.page}`, window.location.origin);
       url.search = "";
       url.searchParams.set("share", token);
       await copyResultUrl(url.toString());

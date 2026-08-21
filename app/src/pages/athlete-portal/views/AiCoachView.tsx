@@ -35,6 +35,9 @@ function AiCoachContent({ ctx }: { ctx: PortalContext }) {
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
   const streamWipedRef = useRef(false);
+  // The composer is disabled while busy; focus() must wait for the re-render
+  // that removes the disabled attribute, so it runs from the effect below.
+  const focusAfterBusyRef = useRef(false);
   const messagesRootRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -47,6 +50,11 @@ function AiCoachContent({ ctx }: { ctx: PortalContext }) {
     detach();
     conversationIdRef.current = id;
     if (!id || ctx.access === "preview") {
+      // "New conversation" during an in-flight reply: discard the stream like
+      // legacy's wholesale DOM wipe did (abort stops further deltas too).
+      controllerRef.current?.abort();
+      streamWipedRef.current = true;
+      setStream(null);
       setMessages([]);
       return;
     }
@@ -98,8 +106,18 @@ function AiCoachContent({ ctx }: { ctx: PortalContext }) {
     if (root) root.scrollTop = root.scrollHeight;
   }, [messages, stream]);
 
+  useEffect(() => {
+    if (!busy && focusAfterBusyRef.current) {
+      focusAfterBusyRef.current = false;
+      inputRef.current?.focus();
+    }
+  }, [busy]);
+
   async function streamChat(message: string) {
     streamWipedRef.current = false;
+    // Deliberate fix vs legacy: a retry replaces the previous failed bubble.
+    // Legacy left the failed bubble in the DOM and streamed the new reply's
+    // deltas into it (duplicate-id bug), garbling the transcript.
     setStream({ user: message, answer: "", failed: null });
     setBusy(true);
     controllerRef.current = new AbortController();
@@ -169,9 +187,9 @@ function AiCoachContent({ ctx }: { ctx: PortalContext }) {
       }
     } finally {
       controllerRef.current = null;
+      focusAfterBusyRef.current = true;
       setBusy(false);
       setToolStatus(null);
-      inputRef.current?.focus();
     }
   }
 

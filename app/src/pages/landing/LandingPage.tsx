@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import firebase, { auth, db } from "../../lib/firebase";
+import { useThemeColor } from "../../lib/use-theme-color";
 import { getSafeReturnToUrl, redirectAfterAuth } from "./landing-helpers";
 import {
   createCoachDocument,
@@ -36,6 +37,7 @@ function unlockScroll() {
 }
 
 export default function LandingPage() {
+  useThemeColor(null); // legacy kickai.html had no theme-color meta
   // Auth state (drives the Login/Logout nav button, like legacy onAuthStateChanged)
   const [currentUser, setCurrentUser] = useState<any>(null);
 

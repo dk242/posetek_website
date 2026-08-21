@@ -56,6 +56,7 @@ export default function AthletePortalPage() {
   const [athlete, setAthlete] = useState<any>(null);
   const [reps, setReps] = useState<Record<string, any[]>>(() => Object.fromEntries(DRILLS.map(d => [d.key, []])));
   const [view, setView] = useState("home");
+  const [viewEpoch, setViewEpoch] = useState(0);
   const [drill, setDrill] = useState("shooting");
   const [session, setSession] = useState<{ folder: string; repId: any } | null>(null);
   const [shareBusy, setShareBusy] = useState(false);
@@ -163,11 +164,14 @@ export default function AthletePortalPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Legacy chooseView().
+  // Legacy chooseView() re-ran render() unconditionally, so re-selecting the
+  // active drawer item rebuilt (and re-fetched) the view; the epoch key mirrors
+  // that by remounting the secondary views on every selection.
   const chooseView = (requested: string) => {
     const allowed = access === "shared" ? ["home", "drills"] : Object.keys(VIEW_LABELS);
     const nextView = allowed.includes(requested) ? requested : "home";
     const nextDrill = nextView === "drills" && !drill ? "shooting" : drill;
+    setViewEpoch(epoch => epoch + 1);
     setView(nextView);
     setDrill(nextDrill);
     setSession(null);
@@ -360,10 +364,10 @@ export default function AthletePortalPage() {
               />
             )
           )}
-          {phase === "ready" && view === "profile" && <BodyProfileView ctx={ctx} />}
-          {phase === "ready" && view === "aiCoach" && <AiCoachView ctx={ctx} />}
-          {phase === "ready" && view === "training" && <TrainingView ctx={ctx} />}
-          {phase === "ready" && view === "leaderboards" && <LeaderboardsView ctx={ctx} />}
+          {phase === "ready" && view === "profile" && <BodyProfileView key={viewEpoch} ctx={ctx} />}
+          {phase === "ready" && view === "aiCoach" && <AiCoachView key={viewEpoch} ctx={ctx} />}
+          {phase === "ready" && view === "training" && <TrainingView key={viewEpoch} ctx={ctx} />}
+          {phase === "ready" && view === "leaderboards" && <LeaderboardsView key={viewEpoch} ctx={ctx} />}
         </section>
       </main>
 

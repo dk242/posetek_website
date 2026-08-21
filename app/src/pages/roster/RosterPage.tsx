@@ -108,10 +108,10 @@ export default function RosterPage() {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (!user) {
         if (signingOutRef.current) return;
-        navigate(
-          `/signin?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`,
-          { replace: true },
-        );
+        // Legacy sent no returnTo from here: a signed-out player who lands on
+        // the roster should sign in and get the role-based destination
+        // (profile for players), not bounce back to the coach roster.
+        navigate("/signin", { replace: true });
         return;
       }
       loadRoster().catch(showError);

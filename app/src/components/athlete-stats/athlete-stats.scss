@@ -35,6 +35,9 @@
   .stats-focus-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
   .stats-summary-row { display: flex; min-width: 0; align-items: center; gap: 9px; padding: 10px; border-radius: var(--row-radius); background: rgba(255,255,255,.04); }
   .stats-summary-icon { display: grid; width: 27px; height: 27px; flex: 0 0 auto; place-items: center; border-radius: 50%; font-size: 14px; }
+  // Beat host-page .material-symbols-outlined sizing regardless of bundle order
+  // (legacy loaded this sheet last, so its sizes won equal-specificity ties).
+  .stats-summary-icon.material-symbols-outlined { font-size: 14px; }
   .stats-summary-icon.lime { color: var(--accent); background: var(--accent-soft); }
   .stats-summary-icon.orange { color: #ffc969; background: rgba(255,201,105,.14); }
   .stats-summary-icon.cyan { color: #39cbef; background: rgba(57,203,239,.14); }
@@ -80,6 +83,7 @@
   .stats-breakdown-card { padding: 13px; border-radius: var(--small-radius); box-shadow: none; background: rgba(255,255,255,.035); }
   .stats-breakdown-card > header { display: grid; grid-template-columns: 32px minmax(0,1fr) auto; align-items: center; gap: 10px; }
   .stats-breakdown-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; color: var(--accent); background: var(--accent-soft); font-size: 16px; }
+  .stats-breakdown-icon.material-symbols-outlined { font-size: 16px; }
   .stats-breakdown-card h3 { margin: 0; font-size: 14px; }
   .stats-breakdown-card header p { margin: 2px 0 0; color: var(--muted); font-size: 9px; }
   .stats-drill-score { color: var(--accent); font-size: 20px; font-weight: 900; text-align: center; }

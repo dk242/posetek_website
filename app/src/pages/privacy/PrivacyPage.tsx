@@ -1,10 +1,12 @@
 // Port of legacy privacy.html.
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useThemeColor } from "../../lib/use-theme-color";
 import { injectClarity } from "./clarity";
 import "./privacy.scss";
 
 export default function PrivacyPage() {
+  useThemeColor(null); // legacy privacy.html had no theme-color meta
   useEffect(() => {
     document.title = "Privacy Policy | PoseTek";
     injectClarity();

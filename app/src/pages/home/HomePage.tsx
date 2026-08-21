@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useThemeColor } from "../../lib/use-theme-color";
+import { useBodyBackground } from "../../lib/use-body-background";
 import { injectClarity } from "./clarity";
 import {
   findNextSection,
@@ -23,6 +24,7 @@ const CAROUSEL_MS = 3000;
 
 export default function HomePage() {
   useThemeColor(null); // legacy index.html had no theme-color meta (light page)
+  useBodyBackground("#ffffff"); // light canvas on overscroll, like the legacy document
   const [navHidden, setNavHidden] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [upVisible, setUpVisible] = useState(false);

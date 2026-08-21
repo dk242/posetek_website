@@ -64,6 +64,8 @@ export default function ResultsSurface({
   const seqRef = useRef(0);
   const chartRef = useRef<Chart<"line", number[], string> | null>(null);
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  // Playback rate survives rep switches (legacy kept the rate across rep loads).
+  const speedMemoryRef = useRef(0.5);
 
   const sessions = useMemo(() => sessionGroups(reps, config.lowerIsBetter), [reps, config.lowerIsBetter]);
   const summary = useMemo(() => summaryMetrics(config.key, reps, config.lowerIsBetter), [config, reps]);
@@ -300,6 +302,8 @@ export default function ResultsSurface({
                   config={config}
                   rep={artifactsBundle.rep}
                   artifacts={artifactsBundle.artifacts}
+                  initialSpeed={speedMemoryRef.current}
+                  onSpeedChange={speed => { speedMemoryRef.current = speed; }}
                 />
               )}
             </div>

@@ -79,6 +79,16 @@ All page styles are GLOBAL once bundled, and legacy stylesheets collide (bare `b
   (`Record<string, any>` / `any`) — parity beats type ceremony — but exported pure
   functions get real signatures. `tsc` must pass with zero errors.
 
+## Accepted deviations (reviewed, deliberate)
+
+- Unknown URLs return HTTP 200 with the React 404 page (SPA fallback); legacy
+  Firebase Hosting returned a real 404 status. Revisit only if SEO requires it.
+- Microsoft Clarity, once injected on a page that uses it, keeps tracking for
+  the rest of the SPA session (scripts cannot be unloaded).
+- Minted share links keep the documented legacy `.html` shapes
+  (`profile.html?share=…`, `broadJumpPage.html?share=…`); the SPA serves those
+  paths through its alias routes.
+
 ## Verification (every port task)
 
 - `npx tsc -b` from `app/` — zero errors.

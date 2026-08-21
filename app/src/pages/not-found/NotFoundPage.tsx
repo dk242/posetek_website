@@ -2,11 +2,13 @@
 // router renders this for any URL without a route.
 import { useEffect } from "react";
 import { useThemeColor } from "../../lib/use-theme-color";
+import { useBodyBackground } from "../../lib/use-body-background";
 import { injectClarity } from "./clarity";
 import "./not-found.scss";
 
 export default function NotFoundPage() {
   useThemeColor(null); // legacy 404.html had no theme-color meta (light page)
+  useBodyBackground("#ECEFF1"); // light canvas on overscroll, like the legacy document
   useEffect(() => {
     document.title = "Page Not Found";
     injectClarity();

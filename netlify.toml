@@ -3,12 +3,9 @@
   publish = "dist"
 
 # Hashed SPA bundles are immutable; everything else stays fresh so legacy
-# pages and the SPA shell update on every deploy.
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
+# pages and the SPA shell update on every deploy. The /assets rule comes LAST:
+# when multiple header rules match, the later rule's value wins for the same
+# header key, and the generic *.js/*.css patterns also match /assets files.
 [[headers]]
   for = "/*.html"
   [headers.values]
@@ -23,6 +20,11 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # SPA fallback: files that exist in dist/ (unported legacy pages, assets) are
 # served directly; everything else — including the ported legacy URLs like

@@ -22,9 +22,13 @@ export interface RepViewerProps {
   config: PageDrillConfig;
   rep: Rep;
   artifacts: Record<string, any>;
+  // Legacy kept the chosen playback rate across rep switches; the viewer is
+  // remounted per rep, so the parent remembers the rate and seeds it back in.
+  initialSpeed?: number;
+  onSpeedChange?: (speed: number) => void;
 }
 
-export default function RepViewer({ config, rep, artifacts }: RepViewerProps) {
+export default function RepViewer({ config, rep, artifacts, initialSpeed, onSpeedChange }: RepViewerProps) {
   const frames = useMemo(() => normalizeFrames(artifacts["pose.json"]), [artifacts]);
   const meta = (artifacts["metadata.json"] || {}) as Record<string, any>;
 
@@ -38,13 +42,13 @@ export default function RepViewer({ config, rep, artifacts }: RepViewerProps) {
 
   const frameRef = useRef(0);
   const playingRef = useRef(false);
-  const speedRef = useRef(0.5);
+  const speedRef = useRef(initialSpeed ?? 0.5);
   const animationRef = useRef(0);
   const lastTickRef = useRef(0);
   const frameAccumulatorRef = useRef(0);
 
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(0.5);
+  const [speed, setSpeed] = useState(initialSpeed ?? 0.5);
 
   function updateDynamicMetrics() {
     if (config.key !== "broadJump") return;
@@ -143,6 +147,7 @@ export default function RepViewer({ config, rep, artifacts }: RepViewerProps) {
     const next = speeds[(speeds.indexOf(speedRef.current) + 1) % speeds.length];
     speedRef.current = next;
     setSpeed(next);
+    onSpeedChange?.(next);
   }
 
   useEffect(() => {
