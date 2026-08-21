@@ -36,6 +36,8 @@
 }
 
 .pt-home {
+  /* Legacy index.html did not antialias; undo base.css's global smoothing. */
+  -webkit-font-smoothing: auto;
   --white: #ffffff;
   --off-white: #f7f8f6;
   --green-dark: #1a3a2e;

@@ -1,6 +1,7 @@
 // Port of legacy index.html (marketing homepage).
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useThemeColor } from "../../lib/use-theme-color";
 import { injectClarity } from "./clarity";
 import {
   findNextSection,
@@ -21,6 +22,7 @@ const SLIDES = [
 const CAROUSEL_MS = 3000;
 
 export default function HomePage() {
+  useThemeColor(null); // legacy index.html had no theme-color meta (light page)
   const [navHidden, setNavHidden] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [upVisible, setUpVisible] = useState(false);

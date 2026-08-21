@@ -68,8 +68,10 @@ export default function RosterPage() {
     const user = auth.currentUser;
     if (!user) return;
     const coachDoc = await findCoach(user.uid);
-    if (!coachDoc) throw new Error("No coach profile is linked to this sign-in.");
+    // Assign before the throw (legacy order): a failed refresh must clear the
+    // stale coach doc so add/create can't write against it afterwards.
     coachDocRef.current = coachDoc;
+    if (!coachDoc) throw new Error("No coach profile is linked to this sign-in.");
     const coach = coachDoc.data() || {};
     if (coach.org?.get) {
       try {
@@ -287,7 +289,17 @@ export default function RosterPage() {
   return (
     <div className="pt-pose portal-body roster-body">
       <header className="portal-header">
-        <Link className="portal-brand" to="/roster?userType=coach" aria-label="PoseTek roster">
+        <Link
+          className="portal-brand"
+          to="/roster?userType=coach"
+          aria-label="PoseTek roster"
+          onClick={() => {
+            // Legacy brand link full-reloaded coachesview.html, refetching the
+            // roster; self-navigation in the SPA must refetch too. Skipped in
+            // preview mode (no signed-in user to load for).
+            if (auth.currentUser) loadRoster().catch(showError);
+          }}
+        >
           <span className="portal-brand-mark">P</span>
           <span>POSETEK</span>
         </Link>

@@ -98,6 +98,11 @@ export default function LandingPage() {
   const [coachOrgError, setCoachOrgError] = useState("");
   const coachOrgResolver = useRef<((value: CoachOrgChoice | null) => void) | null>(null);
   const coachOrgInputRef = useRef<HTMLInputElement>(null);
+  // Post-signup redirect timer: legacy full page loads implicitly cancelled it;
+  // in the SPA it must not fire after the user navigates away from this page.
+  const redirectTimerRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(redirectTimerRef.current), []);
 
   // Microsoft Clarity — injected from this page only (legacy had it inline in
   // kickai.html's <head>). Guarded so React StrictMode's double effect run (and
@@ -433,7 +438,7 @@ export default function LandingPage() {
 
       setPlayerCodeSuccess("Account created successfully!");
 
-      setTimeout(() => {
+      redirectTimerRef.current = window.setTimeout(() => {
         window.location.href = "profile.html?userType=player";
       }, 1500);
     } catch (error: any) {
@@ -488,6 +493,8 @@ export default function LandingPage() {
               id="authBtn"
               onClick={() => {
                 if (currentUser) {
+                  // Deliberate fix vs legacy: kickai.html kept a second always-on
+                  // click handler that flashed the login modal during sign-out.
                   auth.signOut().then(() => {
                     window.location.reload();
                   });
