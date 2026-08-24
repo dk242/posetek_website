@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PoseTek turns standardized soccer performance tests into a living athlete profile and a focused training plan.">
+    <meta name="theme-color" content="#04130e">
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <title>PoseTek | Test. Understand. Improve.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -11,1130 +17,843 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "w8lex8gzl7");
     </script>
-    <title>PoseTek - Soccer Performance Analytics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --white: #ffffff;
-            --off-white: #f7f8f6;
-            --green-dark: #1a3a2e;
-            --green-mid: #2d5e4a;
-            --green-accent: #4c8c6a;
-            --green-light: #e8f3ee;
-            --text-dark: #111111;
-            --text-mid: #444444;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --ink: #f7fbf9;
+            --muted: #9fb8ae;
+            --muted-strong: #c5d5cf;
+            --bg: #04130e;
+            --bg-deep: #020b08;
+            --panel: #0b261d;
+            --panel-light: #103127;
+            --line: rgba(255,255,255,.11);
+            --line-strong: rgba(183,243,74,.27);
+            --lime: #b7f34a;
+            --green: #45d17a;
+            --amber: #ffbd59;
+            --cyan: #4bd7e8;
+            --violet: #b49bff;
+            --radius-lg: 30px;
+            --radius-md: 22px;
+            --radius-sm: 15px;
+            --shadow: 0 32px 90px rgba(0,0,0,.32);
+            --max: 1180px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: clip; background: var(--bg); }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: var(--text-dark);
-            background-color: var(--white);
-            line-height: 1.6;
+            margin: 0;
+            min-height: 100vh;
             overflow-x: hidden;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 4%, rgba(69,209,122,.16), transparent 31rem),
+                radial-gradient(circle at 88% 22%, rgba(183,243,74,.08), transparent 25rem),
+                linear-gradient(145deg, #04120d 0%, #08271d 48%, #020d09 100%);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.2rem 5%;
+        body::before {
+            content: "";
             position: fixed;
-            width: 100%;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            background-size: 54px 54px;
+            mask-image: linear-gradient(to bottom, black, transparent 78%);
+        }
+        a { color: inherit; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button { font: inherit; }
+        img, svg { display: block; }
+        section { scroll-margin-top: 88px; }
+
+        .site-header {
+            position: fixed;
             z-index: 100;
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: var(--transition);
             top: 0;
             left: 0;
-            border-bottom: 1px solid rgba(26, 58, 46, 0.08);
+            right: 0;
+            border-bottom: 1px solid transparent;
+            transition: background .2s ease, border-color .2s ease;
         }
-
-        .nav-hidden {
-            opacity: 0;
-            transform: translateY(-20px);
-            pointer-events: none;
+        .site-header.scrolled {
+            background: rgba(3,16,11,.88);
+            border-color: var(--line);
+            backdrop-filter: blur(18px);
         }
-
-        .brand-container {
+        .nav-shell {
+            width: min(var(--max), calc(100% - 40px));
+            height: 76px;
+            margin: auto;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 30px;
         }
-
-        .logo {
-            font-family: 'Inter', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--green-dark);
-            letter-spacing: -0.5px;
-        }
-
-        .logo span {
-            color: var(--green-accent);
-        }
-
-        .tagline {
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 3px 10px;
-            border: 1px solid var(--green-accent);
-            border-radius: 50px;
-            opacity: 0.9;
-        }
-
-        .nav-cta {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--white);
-            background-color: var(--green-dark);
-            padding: 0.55rem 1.4rem;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .nav-cta:hover {
-            background-color: var(--green-mid);
-            transform: translateY(-1px);
-        }
-
-        .hero-container {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-            padding-top: 70px;
-            align-items: center;
-            overflow: hidden;
-            background-color: var(--white);
-        }
-
-        .hero-inner {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 4rem 7%;
-            gap: 4rem;
-        }
-
-        .hero-text {
-            flex: 1;
-            max-width: 560px;
-        }
-
-        .hero-eyebrow {
-            display: inline-block;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            margin-bottom: 1.2rem;
-        }
-
-        .hero-title {
-            font-size: 3.6rem;
-            font-weight: 700;
-            line-height: 1.08;
-            color: var(--text-dark);
-            margin-bottom: 1.4rem;
-            letter-spacing: -1.5px;
-        }
-
-        .hero-title em {
-            font-style: normal;
-            color: var(--green-dark);
-        }
-
-        .hero-subtitle {
-            font-size: 1.15rem;
-            font-weight: 400;
-            color: var(--text-mid);
-            line-height: 1.75;
-            margin-bottom: 2.5rem;
-            max-width: 460px;
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn-primary {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--white);
-            background-color: var(--green-dark);
-            padding: 0.85rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: var(--transition);
-            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--green-mid);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(26, 58, 46, 0.4);
-        }
-
-        .btn-secondary {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--green-dark);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-
-        .btn-secondary:hover {
-            color: var(--green-mid);
-            gap: 10px;
-        }
-
-        /* ── Animated hero CTA ── */
-        @keyframes ring-pulse {
-            0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.55; }
-            100% { transform: translate(-50%, -50%) scale(1.85); opacity: 0; }
-        }
-
-        @keyframes arrow-bounce {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(5px); }
-        }
-
-        .btn-hilight {
-            position: relative;
+        .brand {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--white);
-            background-color: var(--green-dark);
-            padding: 0.85rem 2rem;
-            border-radius: 50px;
+            gap: 11px;
+            color: var(--ink);
             text-decoration: none;
-            transition: var(--transition);
-            box-shadow: 0 4px 20px rgba(26, 58, 46, 0.3);
-            overflow: visible;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: .13em;
         }
-
-        .btn-hilight::before,
-        .btn-hilight::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50px;
-            border: 2px solid rgba(76, 140, 106, 0.7);
-            animation: ring-pulse 3.6s ease-out infinite;
-            pointer-events: none;
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--lime);
+            color: #082116;
+            box-shadow: 0 0 0 6px rgba(183,243,74,.07);
+            font-size: 18px;
+            letter-spacing: 0;
         }
-
-        .btn-hilight::after {
-            animation-delay: 1.8s;
-        }
-
-        .btn-hilight:hover {
-            background-color: var(--green-mid);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(26, 58, 46, 0.4);
-        }
-
-        .btn-hilight:hover::before,
-        .btn-hilight:hover::after {
-            animation-play-state: paused;
-        }
-
-        .btn-arrow {
-            display: inline-block;
-            animation: arrow-bounce 1.2s ease-in-out infinite;
-        }
-
-        .sport-card {
-            flex: 1;
-            max-width: 580px;
-            position: relative;
-            overflow: visible;
-            transition: var(--transition);
-            will-change: transform;
-            display: flex;
-            flex-direction: column;
-            gap: 0.85rem;
-        }
-
-        .image-container {
-            width: 100%;
-            height: 480px;
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 30px 70px rgba(26, 58, 46, 0.35), 0 8px 24px rgba(0, 0, 0, 0.2);
-            transition: var(--transition);
-            border: 1px solid rgba(76, 140, 106, 0.2);
-            position: relative;
-            background-color: #1a3a2e;
-        }
-
-        .image-container::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 26px;
-            box-shadow: inset 0 0 0 1px rgba(76, 140, 106, 0.12);
-            pointer-events: none;
-        }
-
-        .image-container:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 44px 88px rgba(26, 58, 46, 0.45), 0 12px 32px rgba(0, 0, 0, 0.25);
-        }
-
-        .sport-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .slide {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+        .nav-links {
+            margin-left: auto;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background: radial-gradient(ellipse at 60% 40%, rgba(45, 94, 74, 0.45), rgba(26, 58, 46, 0.0));
+            gap: 28px;
         }
-
-        .slide.active {
-            opacity: 1;
+        .nav-links a {
+            color: var(--muted-strong);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: color .18s ease;
         }
-
-        .slide-card {
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(76, 140, 106, 0.25);
-            display: flex;
+        .nav-links a:hover { color: var(--lime); }
+        .nav-actions { display: flex; align-items: center; gap: 9px; }
+        .nav-login {
+            min-height: 42px;
+            padding: 0 15px;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            max-width: 100%;
-            max-height: 100%;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
         }
-
-        .slide-card img {
-            display: block;
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 18px;
-        }
-
-        .hero-badge {
-            position: absolute;
-            bottom: -18px;
-            left: 30px;
-            background: var(--white);
-            border: 1px solid var(--green-light);
-            border-radius: 14px;
-            padding: 0.9rem 1.4rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .hero-badge-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--green-light);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .hero-badge-text {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            line-height: 1.3;
-        }
-
-        .hero-badge-text span {
-            display: block;
-            font-weight: 400;
-            color: var(--text-mid);
-            font-size: 0.72rem;
-        }
-
-        /* ── Features Strip ── */
-        .features-strip {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 0.25rem 0;
-        }
-
-        .feature-pill {
-            display: flex;
+        .nav-cta {
+            min-height: 42px;
+            padding: 0 17px;
+            display: inline-flex;
             align-items: center;
             gap: 7px;
-            color: var(--text-mid);
-            font-size: 0.82rem;
-            font-weight: 500;
-            padding: 5px 13px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            border: 1px solid var(--green-light);
-            background: var(--white);
-            user-select: none;
-            white-space: nowrap;
-            min-width: max-content;
-        }
-
-        .feature-pill.active {
-            color: var(--green-dark);
-            font-weight: 700;
-            background: var(--green-light);
-            border-color: var(--green-accent);
-        }
-
-        /* Reserve bold width so layout doesn't shift on active */
-        .feature-pill::after {
-            content: attr(data-label);
-            display: block;
-            font-weight: 700;
-            height: 0;
-            overflow: hidden;
-            visibility: hidden;
-        }
-
-        .feature-pill.active .feature-pill-dot {
-            background: var(--green-dark);
-            transform: scale(1.3);
-        }
-
-        .feature-pill-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green-accent);
-            flex-shrink: 0;
-            transition: all 0.35s ease;
-        }
-
-        /* ── Feature Sections ── */
-        .tripod-section,
-        .postestimation-section,
-        .team-section {
-            display: flex;
-            min-height: 85vh;
-            align-items: center;
-            padding: 7% 7%;
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-
-        .tripod-section {
-            transform: translateY(80px);
-            background-color: var(--white);
-        }
-
-        .postestimation-section {
-            transform: translateY(80px);
-            background-color: var(--off-white);
-        }
-
-        .team-section {
-            flex-direction: column;
-            transform: scale(0.95);
-            background-color: var(--white);
-        }
-
-        .tripod-image,
-        .postestimation-image {
-            width: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 22px;
-            transform: translateX(-80px);
-            opacity: 0;
-            transition: all 0.8s ease 0.2s;
-        }
-
-        .tripod-image {
-            height: 65vh;
-        }
-
-        .postestimation-image {
-            transform: translateX(80px);
-            background-color: transparent;
-            border-radius: 0;
-            box-shadow: none;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 2%;
-        }
-
-        .postestimation-image-card {
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 16px 48px rgba(26, 58, 46, 0.14), 0 2px 8px rgba(26, 58, 46, 0.08);
-            border: 1px solid rgba(26, 58, 46, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-width: 92%;
-        }
-
-        .postestimation-image-card img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 18px;
-        }
-
-        .tripod-content,
-        .postestimation-content {
-            width: 50%;
-            padding-left: 6%;
-            transform: translateX(80px);
-            opacity: 0;
-            transition: all 0.8s ease;
-        }
-
-        .postestimation-content {
-            transform: translateX(-80px);
-            padding-left: 0;
-            padding-right: 6%;
-        }
-
-        .section-number {
-            display: inline-block;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            margin-bottom: 1rem;
-        }
-
-        .tripod-content h2,
-        .postestimation-content h2 {
-            font-size: 2.6rem;
-            font-weight: 700;
-            line-height: 1.15;
-            color: var(--text-dark);
-            letter-spacing: -1px;
-            margin-bottom: 1.2rem;
-        }
-
-        .tripod-content h2 em,
-        .postestimation-content h2 em {
-            font-style: normal;
-            color: var(--green-dark);
-        }
-
-        .tripod-content p,
-        .postestimation-content p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-mid);
-        }
-
-        .section-visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .section-visible .tripod-image,
-        .section-visible .postestimation-image,
-        .section-visible .tripod-content,
-        .section-visible .postestimation-content {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* ── Team Section ── */
-        .team-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .team-eyebrow {
-            display: inline-block;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            margin-bottom: 1rem;
-        }
-
-        .team-title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: -1.2px;
-            margin-bottom: 0;
-        }
-
-        .team-title em {
-            font-style: normal;
-            color: var(--green-dark);
-        }
-
-        .team-grid {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 40px;
-            max-width: 1000px;
-        }
-
-        .team-member {
-            position: relative;
-            width: 300px;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .member-image-container {
-            width: 210px;
-            height: 210px;
-            margin: 0 auto 1.4rem;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--green-light);
-            box-shadow: 0 12px 35px rgba(26, 58, 46, 0.15);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .member-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .member-bio {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, var(--green-dark), var(--green-mid));
-            color: rgba(255,255,255,0.95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 28px;
-            opacity: 0;
-            transform: scale(0.85);
-            transition: var(--transition);
-            pointer-events: none;
-            font-size: 0.88rem;
-            line-height: 1.55;
-        }
-
-        .member-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.3rem;
-        }
-
-        .member-title {
-            font-size: 0.9rem;
-            color: var(--green-accent);
-            font-weight: 500;
-        }
-
-        .team-member:hover .member-image-container {
-            transform: scale(1.05);
-            border-color: var(--green-accent);
-            box-shadow: 0 20px 45px rgba(26, 58, 46, 0.25);
-        }
-
-        .team-member:hover .member-bio {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* ── Footer ── */
-        footer {
-            background-color: var(--green-dark);
-            color: rgba(255,255,255,0.65);
-            text-align: center;
-            padding: 2.5rem 5%;
-            font-size: 0.85rem;
-        }
-
-        footer a {
-            color: var(--green-accent);
+            border-radius: 13px;
+            color: #092116;
+            background: var(--lime);
             text-decoration: none;
+            font-size: 12px;
+            font-weight: 900;
         }
-
-        /* ── Scroll Indicators ── */
-        .scroll-nav {
-            position: fixed;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            z-index: 90;
+        .nav-cta:hover, .button-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+        .menu-button {
+            display: none;
+            width: 42px;
+            height: 42px;
+            margin-left: auto;
+            padding: 0;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            background: rgba(255,255,255,.05);
+            color: var(--ink);
+            cursor: pointer;
         }
+        .menu-button span, .menu-button span::before, .menu-button span::after {
+            width: 17px;
+            height: 2px;
+            display: block;
+            position: relative;
+            border-radius: 3px;
+            background: currentColor;
+        }
+        .menu-button span::before, .menu-button span::after { content: ""; position: absolute; left: 0; }
+        .menu-button span::before { top: -6px; }
+        .menu-button span::after { top: 6px; }
 
-        .scroll-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.88);
-            border: 1.5px solid rgba(76, 140, 106, 0.28);
-            box-shadow: 0 4px 14px rgba(26, 58, 46, 0.13);
+        .hero {
+            width: min(var(--max), calc(100% - 40px));
+            min-height: 860px;
+            margin: auto;
+            padding: 148px 0 98px;
+            display: grid;
+            grid-template-columns: minmax(0, .92fr) minmax(520px, 1.08fr);
+            align-items: center;
+            gap: 72px;
+        }
+        .eyebrow {
+            margin: 0 0 15px;
             display: flex;
             align-items: center;
+            gap: 10px;
+            color: var(--lime);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 2px;
+            border-radius: 4px;
+            background: var(--lime);
+        }
+        h1 {
+            max-width: 650px;
+            margin: 0;
+            font-size: clamp(52px, 6.4vw, 82px);
+            line-height: .98;
+            letter-spacing: -.065em;
+            font-weight: 900;
+        }
+        h1 span { color: var(--lime); }
+        .hero-copy {
+            max-width: 565px;
+            margin: 25px 0 0;
+            color: var(--muted-strong);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+        .hero-actions { margin-top: 31px; display: flex; flex-wrap: wrap; gap: 11px; }
+        .button-primary, .button-secondary {
+            min-height: 54px;
+            padding: 0 21px;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            gap: 9px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 900;
+            transition: transform .18s ease, filter .18s ease, border-color .18s ease;
         }
-
-        .scroll-btn.visible {
-            opacity: 1;
-            pointer-events: all;
+        .button-primary { background: var(--lime); color: #092116; box-shadow: 0 15px 35px rgba(183,243,74,.14); }
+        .button-secondary { border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--ink); }
+        .button-secondary:hover { border-color: rgba(183,243,74,.42); transform: translateY(-1px); }
+        .hero-proof {
+            margin-top: 27px;
+            padding-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px 23px;
+            border-top: 1px solid var(--line);
         }
+        .hero-proof span { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+        .hero-proof i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(69,209,122,.1); }
 
-        .scroll-btn:hover {
-            background: var(--green-light);
-            border-color: var(--green-accent);
-            box-shadow: 0 6px 20px rgba(26, 58, 46, 0.2);
-            transform: scale(1.1);
+        .profile-demo {
+            position: relative;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 34px;
+            background: rgba(255,255,255,.045);
+            box-shadow: var(--shadow);
+            isolation: isolate;
         }
-
-        .scroll-btn svg {
-            width: 15px;
-            height: 15px;
-            stroke: var(--green-dark);
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        @keyframes nudge-up {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-4px); }
-        }
-
-        @keyframes nudge-down {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(4px); }
-        }
-
-        @keyframes soft-pulse {
-            0%, 100% { box-shadow: 0 4px 14px rgba(26, 58, 46, 0.13); }
-            50%       { box-shadow: 0 4px 20px rgba(76, 140, 106, 0.35); }
-        }
-
-        @keyframes gloss-sweep {
-            0%        { background-position: -120% center; opacity: 0; }
-            5%        { opacity: 1; }
-            30%       { background-position: 160% center; opacity: 0; }
-            100%      { background-position: 160% center; opacity: 0; }
-        }
-
-        .scroll-btn::before {
-            content: '';
+        .profile-demo::before {
+            content: "";
             position: absolute;
-            inset: 0;
+            z-index: -1;
+            inset: 12% -12% -8% 26%;
             border-radius: 50%;
-            background: linear-gradient(
-                105deg,
-                transparent 30%,
-                rgba(76, 140, 106, 0.55) 50%,
-                rgba(180, 230, 200, 0.35) 58%,
-                transparent 70%
-            );
-            background-size: 250% 100%;
-            background-position: -120% center;
-            opacity: 0;
-            pointer-events: none;
+            background: rgba(183,243,74,.11);
+            filter: blur(65px);
+        }
+        .demo-window {
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 24px;
+            background: linear-gradient(145deg, #0c2b20, #061710 80%);
+        }
+        .demo-topbar {
+            height: 51px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+        .mini-mark { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 8px; background: var(--lime); color: #082116; font-size: 11px; }
+        .live-chip { margin-left: auto; display: flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 99px; color: #7df3a1; background: rgba(69,209,122,.11); font-size: 8px; }
+        .live-chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+        .demo-content { padding: 17px; }
+        .athlete-row { display: grid; grid-template-columns: 48px 1fr auto; gap: 11px; align-items: center; }
+        .avatar { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; color: #082116; background: linear-gradient(145deg, var(--lime), #61d46e); font-weight: 900; }
+        .athlete-row strong, .athlete-row small { display: block; }
+        .athlete-row strong { font-size: 14px; }
+        .athlete-row small { margin-top: 4px; color: var(--muted); font-size: 9px; }
+        .sample-chip { padding: 6px 8px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: 8px; font-weight: 800; }
+        .demo-main { margin-top: 16px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 12px; }
+        .radar-card, .breakdown-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.035); }
+        .card-kicker { color: var(--muted); font-size: 8px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+        .radar-wrap { width: 100%; max-width: 240px; margin: 2px auto -2px; aspect-ratio: 1; position: relative; }
+        .radar-wrap svg { width: 100%; height: 100%; overflow: visible; }
+        .radar-axis { fill: none; stroke: rgba(255,255,255,.10); stroke-width: 1; }
+        .radar-spoke { stroke: rgba(255,255,255,.09); stroke-width: 1; }
+        .radar-value { fill: rgba(183,243,74,.20); stroke: var(--lime); stroke-width: 2; filter: drop-shadow(0 0 7px rgba(183,243,74,.18)); transition: points .3s ease; }
+        .radar-point { fill: var(--lime); stroke: #092116; stroke-width: 2; }
+        .radar-label {
+            position: absolute;
+            min-width: 50px;
+            min-height: 32px;
+            padding: 5px 7px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: color .18s ease, background .18s ease;
+        }
+        .radar-label:hover, .radar-label.active { color: var(--lime); background: rgba(183,243,74,.11); }
+        .label-speed { left: 50%; top: 0; transform: translateX(-50%); }
+        .label-shooting { right: -3px; top: 41%; }
+        .label-power { right: 9%; bottom: 2%; }
+        .label-control { left: 3%; bottom: 2%; }
+        .label-agility { left: -4px; top: 41%; }
+        .breakdown-card { display: flex; flex-direction: column; }
+        .breakdown-head { margin-top: 9px; display: flex; align-items: center; gap: 8px; }
+        .skill-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 5px rgba(255,189,89,.09); }
+        .breakdown-head strong { font-size: 15px; }
+        .score-line { margin-top: 16px; display: flex; align-items: end; justify-content: space-between; }
+        .score-line strong { font-size: 30px; line-height: 1; }
+        .score-line span { color: var(--green); font-size: 9px; font-weight: 800; }
+        .progress-track { height: 6px; margin-top: 9px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.08); }
+        .progress-fill { width: 68%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--amber), var(--lime)); transition: width .3s ease; }
+        .metric-list { margin-top: 15px; display: grid; gap: 7px; }
+        .metric-row { padding: 9px; display: flex; align-items: center; justify-content: space-between; gap: 9px; border: 1px solid rgba(255,255,255,.07); border-radius: 11px; background: rgba(0,0,0,.12); }
+        .metric-row span { color: var(--muted); font-size: 8px; }
+        .metric-row strong { font-size: 10px; }
+        .focus-note { margin-top: auto; padding-top: 12px; color: var(--muted); font-size: 8px; line-height: 1.5; }
+        .floating-plan {
+            position: absolute;
+            right: -33px;
+            bottom: -34px;
+            width: 230px;
+            padding: 14px;
+            border: 1px solid var(--line-strong);
+            border-radius: 18px;
+            background: rgba(8,35,26,.94);
+            box-shadow: 0 22px 55px rgba(0,0,0,.4);
+            backdrop-filter: blur(18px);
+        }
+        .plan-title { display: flex; align-items: center; gap: 9px; }
+        .plan-icon { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 10px; background: rgba(183,243,74,.12); color: var(--lime); font-size: 15px; }
+        .plan-title strong, .plan-title small { display: block; }
+        .plan-title strong { font-size: 11px; }
+        .plan-title small { margin-top: 2px; color: var(--muted); font-size: 8px; }
+        .plan-item { margin-top: 10px; padding: 9px; display: grid; grid-template-columns: 24px 1fr auto; align-items: center; gap: 7px; border-radius: 10px; background: rgba(255,255,255,.045); }
+        .plan-item > span:first-child { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 8px; background: var(--lime); color: #082116; font-size: 9px; font-weight: 900; }
+        .plan-item strong, .plan-item small { display: block; }
+        .plan-item strong { font-size: 8px; }
+        .plan-item small, .plan-item > small { color: var(--muted); font-size: 7px; }
+
+        .section-shell { width: min(var(--max), calc(100% - 40px)); margin: auto; padding: 108px 0; }
+        .section-head { max-width: 700px; }
+        .section-head.center { margin: auto; text-align: center; }
+        .section-head.center .eyebrow { justify-content: center; }
+        h2 { margin: 0; font-size: clamp(38px, 5vw, 62px); line-height: 1.02; letter-spacing: -.055em; font-weight: 900; }
+        h2 span { color: var(--lime); }
+        .section-copy { max-width: 625px; margin: 19px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
+        .section-head.center .section-copy { margin-left: auto; margin-right: auto; }
+
+        .flow-section { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(0,0,0,.11); }
+        .flow-grid { margin-top: 58px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; counter-reset: flow; }
+        .flow-card {
+            min-height: 265px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025));
+            counter-increment: flow;
+        }
+        .flow-card::after { content: "0" counter(flow); position: absolute; right: 14px; bottom: -18px; color: rgba(255,255,255,.035); font-size: 85px; font-weight: 900; letter-spacing: -.08em; }
+        .flow-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: rgba(183,243,74,.12); color: var(--lime); font-size: 20px; font-weight: 900; }
+        .flow-card h3 { margin: 25px 0 9px; font-size: 19px; letter-spacing: -.02em; }
+        .flow-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+        .flow-link { margin-top: 21px; display: inline-flex; align-items: center; gap: 6px; color: var(--lime); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+
+        .tests-layout { margin-top: 55px; display: grid; grid-template-columns: .72fr 1.28fr; gap: 40px; align-items: start; }
+        .tests-sticky { position: sticky; top: 112px; }
+        .tests-sticky h3 { margin: 0; max-width: 380px; font-size: clamp(29px, 3.3vw, 44px); line-height: 1.08; letter-spacing: -.045em; }
+        .tests-sticky p { max-width: 380px; margin: 18px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+        .protocol-note { margin-top: 25px; padding: 15px; display: flex; align-items: flex-start; gap: 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: rgba(255,255,255,.035); color: var(--muted); font-size: 10px; line-height: 1.55; }
+        .protocol-note span:first-child { color: var(--lime); font-size: 16px; }
+        .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+        .test-card { min-height: 190px; padding: 19px; border: 1px solid var(--line); border-radius: 19px; background: rgba(255,255,255,.04); transition: border-color .18s ease, transform .18s ease, background .18s ease; }
+        .test-card:hover { transform: translateY(-3px); border-color: rgba(183,243,74,.35); background: rgba(255,255,255,.06); }
+        .test-card header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .test-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 13px; font-size: 17px; font-weight: 900; }
+        .speed { color: var(--cyan); background: rgba(75,215,232,.12); }
+        .power { color: var(--lime); background: rgba(183,243,74,.12); }
+        .control { color: var(--violet); background: rgba(180,155,255,.12); }
+        .agility { color: var(--amber); background: rgba(255,189,89,.12); }
+        .shooting { color: #ff8c8c; background: rgba(255,140,140,.12); }
+        .test-number { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .12em; }
+        .test-card h3 { margin: 17px 0 7px; font-size: 15px; letter-spacing: -.02em; }
+        .test-card p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+        .metric-tags { margin-top: 13px; display: flex; flex-wrap: wrap; gap: 5px; }
+        .metric-tags span { padding: 5px 7px; border: 1px solid rgba(255,255,255,.07); border-radius: 7px; color: var(--muted-strong); background: rgba(0,0,0,.12); font-size: 7px; font-weight: 800; }
+
+        .profile-section { position: relative; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: linear-gradient(145deg, rgba(11,44,33,.7), rgba(3,14,10,.65)); }
+        .profile-section::after { content: ""; position: absolute; width: 520px; height: 520px; right: -180px; top: 120px; border-radius: 50%; background: rgba(183,243,74,.07); filter: blur(35px); }
+        .profile-layout { position: relative; z-index: 1; display: grid; grid-template-columns: .88fr 1.12fr; align-items: center; gap: 75px; }
+        .profile-points { margin-top: 31px; display: grid; gap: 17px; }
+        .profile-point { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; }
+        .profile-point > span { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--lime); background: rgba(255,255,255,.04); font-weight: 900; }
+        .profile-point strong, .profile-point small { display: block; }
+        .profile-point strong { font-size: 13px; }
+        .profile-point small { margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.55; }
+        .session-mock { padding: 15px; border: 1px solid var(--line); border-radius: 27px; background: rgba(4,18,13,.8); box-shadow: var(--shadow); }
+        .session-head { padding: 8px 5px 17px; display: flex; align-items: center; gap: 9px; }
+        .session-head strong, .session-head small { display: block; }
+        .session-head strong { font-size: 13px; }
+        .session-head small { margin-top: 3px; color: var(--muted); font-size: 8px; }
+        .session-tabs { margin-left: auto; display: flex; gap: 5px; }
+        .session-tabs span { padding: 6px 8px; border-radius: 8px; color: var(--muted); background: rgba(255,255,255,.04); font-size: 7px; font-weight: 800; }
+        .session-tabs .active { color: #082116; background: var(--lime); }
+        .session-video { min-height: 288px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: radial-gradient(circle at 48% 44%, rgba(69,209,122,.13), transparent 35%), linear-gradient(160deg, #0e3529, #030d09); }
+        .field-lines { position: absolute; inset: 0; opacity: .15; background: linear-gradient(90deg, transparent 49.8%, #fff 50%, transparent 50.2%), radial-gradient(ellipse at 50% 50%, transparent 19%, #fff 19.4%, transparent 20%); }
+        .pose-figure { position: absolute; left: 50%; top: 49%; width: 130px; height: 205px; transform: translate(-50%, -50%); }
+        .pose-figure i { position: absolute; display: block; height: 3px; transform-origin: left center; background: var(--lime); border-radius: 5px; box-shadow: 0 0 8px rgba(183,243,74,.4); }
+        .pose-figure .head { width: 25px; height: 25px; left: 53px; top: 7px; border: 3px solid var(--lime); border-radius: 50%; background: transparent; }
+        .pose-figure .torso { width: 62px; left: 64px; top: 37px; transform: rotate(92deg); }
+        .pose-figure .arm-a { width: 61px; left: 66px; top: 52px; transform: rotate(24deg); }
+        .pose-figure .arm-b { width: 55px; left: 66px; top: 52px; transform: rotate(156deg); }
+        .pose-figure .leg-a { width: 72px; left: 62px; top: 99px; transform: rotate(63deg); }
+        .pose-figure .leg-b { width: 70px; left: 62px; top: 99px; transform: rotate(117deg); }
+        .pose-figure .shin-a { width: 58px; left: 95px; top: 163px; transform: rotate(93deg); }
+        .pose-figure .shin-b { width: 58px; left: 31px; top: 163px; transform: rotate(87deg); }
+        .video-chip { position: absolute; left: 12px; top: 12px; padding: 7px 9px; border-radius: 99px; color: var(--lime); background: rgba(0,0,0,.5); font-size: 7px; font-weight: 900; letter-spacing: .1em; }
+        .timeline { position: absolute; left: 14px; right: 14px; bottom: 13px; display: grid; grid-template-columns: 27px 1fr auto; gap: 9px; align-items: center; }
+        .play { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; color: #082116; background: var(--lime); font-size: 9px; }
+        .timeline-track { height: 4px; position: relative; border-radius: 99px; background: rgba(255,255,255,.18); }
+        .timeline-track::before { content: ""; display: block; width: 62%; height: 100%; border-radius: inherit; background: var(--lime); }
+        .timeline small { color: var(--muted); font-size: 7px; }
+        .session-metrics { margin-top: 9px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+        .session-metrics article { padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); }
+        .session-metrics span, .session-metrics strong { display: block; }
+        .session-metrics span { color: var(--muted); font-size: 7px; text-transform: uppercase; }
+        .session-metrics strong { margin-top: 5px; font-size: 12px; }
+        .session-metrics article:nth-child(3) strong { color: var(--lime); }
+
+        .training-layout { margin-top: 58px; display: grid; grid-template-columns: 1.02fr .98fr; gap: 50px; align-items: center; }
+        .plan-board { padding: 15px; border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025)); box-shadow: var(--shadow); }
+        .plan-board-head { padding: 8px 6px 17px; display: flex; align-items: center; justify-content: space-between; }
+        .plan-board-head strong, .plan-board-head small { display: block; }
+        .plan-board-head strong { font-size: 14px; }
+        .plan-board-head small { margin-top: 4px; color: var(--muted); font-size: 8px; }
+        .week-ring { width: 55px; height: 55px; display: grid; place-content: center; text-align: center; border: 5px solid rgba(183,243,74,.22); border-radius: 50%; box-shadow: inset 0 0 0 2px var(--lime); }
+        .week-ring strong { color: var(--lime); font-size: 15px; line-height: 1; }
+        .week-ring span { margin-top: 3px; color: var(--muted); font-size: 6px; text-transform: uppercase; }
+        .workout { overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: rgba(0,0,0,.12); }
+        .workout + .workout { margin-top: 8px; }
+        .workout header { padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+        .workout header span, .workout header strong { display: block; }
+        .workout header span { color: var(--lime); font-size: 7px; font-weight: 900; text-transform: uppercase; }
+        .workout header strong { margin-top: 4px; font-size: 11px; }
+        .workout-status { padding: 5px 7px; border-radius: 99px; color: var(--amber); background: rgba(255,189,89,.11); font-size: 7px; font-weight: 900; }
+        .exercise { padding: 10px 12px; display: grid; grid-template-columns: 35px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,.07); }
+        .exercise-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 10px; color: var(--lime); background: rgba(183,243,74,.1); font-size: 12px; font-weight: 900; }
+        .exercise strong, .exercise small { display: block; }
+        .exercise strong { font-size: 9px; }
+        .exercise small { margin-top: 3px; color: var(--muted); font-size: 7px; }
+        .exercise > span:last-child { color: var(--lime); font-size: 9px; }
+        .training-copy .section-copy { max-width: 530px; }
+        .logic-list { margin-top: 28px; display: grid; gap: 9px; }
+        .logic-row { padding: 14px; display: grid; grid-template-columns: 34px 1fr; gap: 11px; align-items: center; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.035); }
+        .logic-row > span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: rgba(183,243,74,.11); color: var(--lime); font-size: 12px; font-weight: 900; }
+        .logic-row strong, .logic-row small { display: block; }
+        .logic-row strong { font-size: 12px; }
+        .logic-row small { margin-top: 4px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+
+        .loop-section { padding-bottom: 128px; }
+        .loop-card { padding: 64px; position: relative; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 34px; background: linear-gradient(135deg, rgba(183,243,74,.14), rgba(255,255,255,.035) 48%, rgba(75,215,232,.06)); }
+        .loop-card::after { content: ""; position: absolute; right: -90px; bottom: -170px; width: 440px; height: 440px; border: 80px solid rgba(183,243,74,.07); border-radius: 50%; }
+        .loop-content { max-width: 715px; position: relative; z-index: 1; }
+        .loop-content .section-copy { max-width: 680px; color: var(--muted-strong); }
+        .loop-actions { margin-top: 29px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .loop-steps { margin-top: 45px; position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .loop-step { padding: 14px; display: flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 14px; background: rgba(3,16,11,.36); color: var(--muted-strong); font-size: 10px; font-weight: 800; }
+        .loop-step span { width: 25px; height: 25px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; color: #082116; background: var(--lime); font-size: 9px; font-weight: 900; }
+
+        footer { border-top: 1px solid var(--line); background: rgba(1,8,5,.38); }
+        .footer-shell { width: min(var(--max), calc(100% - 40px)); margin: auto; padding: 42px 0; display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
+        .footer-copy { max-width: 420px; margin: 15px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 18px; }
+        .footer-links a { color: var(--muted); text-decoration: none; font-size: 10px; font-weight: 700; }
+        .footer-links a:hover { color: var(--lime); }
+
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+            .reveal { opacity: 1; transform: none; }
         }
 
-        #scrollUp.visible::before,
-        #scrollDown.visible::before { animation: gloss-sweep 5s ease-in-out infinite; }
-        #scrollDown.visible::before { animation-delay: 1.9s; }
-
-        #scrollUp.visible svg   { animation: nudge-up   1.6s ease-in-out infinite; }
-        #scrollDown.visible svg { animation: nudge-down 1.6s ease-in-out infinite; }
-        #scrollUp.visible,
-        #scrollDown.visible     { animation: soft-pulse 1.6s ease-in-out infinite; position: relative; overflow: hidden; }
-
-        @media (max-width: 900px) {
-            .scroll-nav { display: none; }
-
-            .hero-inner {
-                flex-direction: column;
-                padding: 3rem 5%;
-                gap: 3rem;
-                text-align: center;
-            }
-
-            .hero-text {
-                max-width: 100%;
-            }
-
-            .hero-subtitle {
-                max-width: 100%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .hero-actions {
-                justify-content: center;
-            }
-
-            .hero-title {
-                font-size: 2.6rem;
-            }
-
-            .sport-card {
-                max-width: 100%;
-                width: 100%;
-            }
-
-            .image-container {
-                height: 50vw;
-                min-height: 280px;
-            }
-
-            .features-strip {
-                gap: 0.4rem;
-                justify-content: flex-start;
-            }
-
-            .tagline {
-                display: none;
-            }
-
-            .tripod-section,
-            .postestimation-section,
-            .team-section {
-                flex-direction: column;
-                padding: 10% 6%;
-            }
-
-            .tripod-image {
-                width: 100%;
-                height: 45vw;
-                min-height: 250px;
-                margin-bottom: 2rem;
-                transform: translateX(0);
-            }
-
-            .postestimation-image {
-                width: 100%;
-                height: auto;
-                min-height: 0;
-                margin-bottom: 2rem;
-                transform: translateX(0);
-                justify-content: center;
-                padding-right: 0;
-            }
-
-            .postestimation-image-card {
-                max-width: 100%;
-                width: 100%;
-            }
-
-            .tripod-content,
-            .postestimation-content {
-                width: 100%;
-                padding-left: 0;
-                padding-right: 0;
-                transform: translateX(0);
-            }
-
-            .tripod-content h2,
-            .postestimation-content h2 {
-                font-size: 2rem;
-            }
-
-            .team-grid {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .team-member {
-                width: 100%;
-                max-width: 280px;
-            }
-
-            .team-title {
-                font-size: 2.2rem;
-            }
+        @media (max-width: 1050px) {
+            .nav-links { display: none; }
+            .hero { grid-template-columns: 1fr 1fr; gap: 35px; }
+            .floating-plan { right: -10px; }
+            .flow-grid { grid-template-columns: 1fr 1fr; }
+            .profile-layout { gap: 40px; }
+        }
+        @media (max-width: 860px) {
+            .nav-shell { width: min(100% - 28px, var(--max)); }
+            .nav-actions { display: none; }
+            .menu-button { display: grid; }
+            .site-header.menu-open { background: rgba(3,16,11,.97); }
+            .site-header.menu-open .nav-links { position: absolute; top: 76px; left: 14px; right: 14px; padding: 15px; display: grid; gap: 4px; border: 1px solid var(--line); border-radius: 17px; background: #09231a; box-shadow: var(--shadow); }
+            .site-header.menu-open .nav-links a { padding: 11px; border-radius: 10px; }
+            .site-header.menu-open .nav-links a:hover { background: rgba(255,255,255,.05); }
+            .hero { min-height: auto; padding-top: 132px; grid-template-columns: 1fr; }
+            .hero-copy { max-width: 620px; }
+            .profile-demo { max-width: 650px; margin: 15px auto 20px; }
+            .tests-layout, .profile-layout, .training-layout { grid-template-columns: 1fr; }
+            .tests-sticky { position: static; }
+            .tests-sticky p { max-width: 650px; }
+            .profile-layout { gap: 50px; }
+            .profile-copy { order: 1; }
+            .session-mock { order: 2; }
+            .training-layout { gap: 50px; }
+            .plan-board { max-width: 650px; }
+            .loop-steps { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 620px) {
+            .nav-shell, .hero, .section-shell, .footer-shell { width: min(100% - 28px, var(--max)); }
+            .site-header.menu-open .nav-links { left: 7px; right: 7px; }
+            .brand { font-size: 13px; }
+            .brand-mark { width: 33px; height: 33px; }
+            .hero { padding: 122px 0 76px; gap: 38px; }
+            h1 { font-size: clamp(45px, 14vw, 66px); }
+            .hero-copy { font-size: 15px; line-height: 1.65; }
+            .hero-actions { display: grid; grid-template-columns: 1fr; }
+            .button-primary, .button-secondary { width: 100%; }
+            .profile-demo { padding: 8px; border-radius: 25px; }
+            .demo-window { border-radius: 19px; }
+            .demo-content { padding: 12px; }
+            .demo-main { grid-template-columns: 1fr; }
+            .radar-card { min-height: 310px; }
+            .radar-wrap { max-width: 270px; }
+            .breakdown-card { min-height: 238px; }
+            .floating-plan { width: calc(100% - 24px); right: 12px; bottom: -74px; }
+            .profile-demo { margin-bottom: 92px; }
+            .section-shell { padding: 82px 0; }
+            h2 { font-size: clamp(36px, 11vw, 48px); }
+            .section-copy { font-size: 14px; }
+            .flow-grid, .test-grid { grid-template-columns: 1fr; }
+            .flow-card { min-height: 230px; }
+            .tests-layout { gap: 32px; }
+            .session-head { align-items: flex-start; }
+            .session-tabs { max-width: 150px; overflow: hidden; }
+            .session-tabs span:nth-child(n+3) { display: none; }
+            .session-video { min-height: 250px; }
+            .session-metrics { grid-template-columns: 1fr 1fr; }
+            .loop-card { padding: 35px 21px; }
+            .loop-steps { grid-template-columns: 1fr; margin-top: 32px; }
+            .footer-shell { grid-template-columns: 1fr; align-items: start; }
+            .footer-links { justify-content: flex-start; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav id="mainNav">
-            <div class="brand-container">
-                <div class="logo">Pose<span>Tek</span></div>
+    <header class="site-header" id="siteHeader">
+        <nav class="nav-shell" aria-label="Primary navigation">
+            <a class="brand" href="#top" aria-label="PoseTek home">
+                <span class="brand-mark">P</span>
+                <span>POSETEK</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#how-it-works">How it works</a>
+                <a href="#tests">Test suite</a>
+                <a href="#profile">Athlete profile</a>
+                <a href="#training">Training</a>
             </div>
-            <a href="kickai.html" class="nav-cta">Launch PoseTek →</a>
+            <div class="nav-actions">
+                <a class="nav-login" href="kickai.html">Sign in</a>
+                <a class="nav-cta" href="bookPerformanceTest.html">Book a test <span aria-hidden="true">↗</span></a>
+            </div>
+            <button class="menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false"><span></span></button>
         </nav>
     </header>
 
-    <main>
-        <!-- Hero -->
-        <div class="hero-container">
-            <div class="hero-inner">
-                <div class="hero-text">
-                    <h1 class="hero-title">A New Form of <em>Deliberate Practice</em></h1>
-                    <p class="hero-subtitle">Professional-grade biomechanical analysis that helps athletes and coaches understand movement, track development, and unlock performance.</p>
-                    <div class="hero-actions">
-                        <a href="#how-it-works" class="btn-hilight">See How It Works <span class="btn-arrow">↓</span></a>
-                    </div>
+    <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-text reveal visible">
+                <p class="eyebrow">Soccer performance intelligence</p>
+                <h1 id="hero-title">Turn every test into a plan to <span>improve.</span></h1>
+                <p class="hero-copy">PoseTek measures how an athlete moves, turns those results into a living performance profile, and connects the right areas of development to focused training.</p>
+                <div class="hero-actions">
+                    <a class="button-primary" href="bookPerformanceTest.html">Book a performance test <span aria-hidden="true">→</span></a>
+                    <a class="button-secondary" href="#how-it-works">See the system <span aria-hidden="true">↓</span></a>
                 </div>
-                <div class="sport-card">
-                    <div class="image-container">
-                        <div class="slide active" data-index="0">
-                            <div class="slide-card"><img src="images/postestimation.png" alt="Pose Estimation"></div>
-                        </div>
-                        <div class="slide" data-index="1">
-                            <div class="slide-card"><img src="images/kickanalysis.png" alt="Kick Analysis"></div>
-                        </div>
-                        <div class="slide" data-index="2">
-                            <div class="slide-card"><img src="images/sprintBreakdown.png" alt="Sprint Tracking"></div>
-                        </div>
-                        <div class="slide" data-index="3">
-                            <div class="slide-card"><img src="images/profilepose.PNG" alt="Coach Dashboard"></div>
-                        </div>
-                        <div class="slide" data-index="4">
-                            <div class="slide-card"><img src="images/graphpose.PNG" alt="Progress Over Time"></div>
-                        </div>
-                    </div>
-                    <div class="features-strip">
-                        <div class="feature-pill active" data-index="0" data-label="Pose Estimation"><div class="feature-pill-dot"></div>Pose Estimation</div>
-                        <div class="feature-pill" data-index="1" data-label="Kick Analysis"><div class="feature-pill-dot"></div>Kick Analysis</div>
-                        <div class="feature-pill" data-index="2" data-label="Sprint Tracking"><div class="feature-pill-dot"></div>Sprint Tracking</div>
-                        <div class="feature-pill" data-index="3" data-label="Coach Dashboard"><div class="feature-pill-dot"></div>Coach Dashboard</div>
-                        <div class="feature-pill" data-index="4" data-label="Progress Over Time"><div class="feature-pill-dot"></div>Progress Over Time</div>
-                    </div>
+                <div class="hero-proof" aria-label="PoseTek highlights">
+                    <span><i></i>6 standardized tests</span>
+                    <span><i></i>Athlete-specific profile</span>
+                    <span><i></i>Focused training pathway</span>
                 </div>
             </div>
-        </div>
 
-        <!-- How it works -->
-        <section id="how-it-works" class="tripod-section">
-            <div class="tripod-image" style="background-image: url('images/tripod.png')"></div>
-            <div class="tripod-content">
-                <span class="section-number">Step 01</span>
-                <h2>Set Up Your <em>Tripod</em></h2>
-                <p>Position your camera and start the session. Our proprietary technology automatically clips out the relevant actions for you to analyze — no manual editing required.</p>
+            <div class="profile-demo reveal" aria-label="Sample PoseTek athlete profile">
+                <div class="demo-window">
+                    <div class="demo-topbar">
+                        <span class="mini-mark">P</span>
+                        Athlete home
+                        <span class="live-chip">Profile updated</span>
+                    </div>
+                    <div class="demo-content">
+                        <div class="athlete-row">
+                            <span class="avatar">AJ</span>
+                            <span><strong>Alex Johnson</strong><small>Midfielder · U17 · Sample profile</small></span>
+                            <span class="sample-chip">Latest test</span>
+                        </div>
+                        <div class="demo-main">
+                            <div class="radar-card">
+                                <span class="card-kicker">Skill map</span>
+                                <div class="radar-wrap">
+                                    <svg viewBox="0 0 240 240" role="img" aria-label="Interactive sample skill map">
+                                        <polygon class="radar-axis" points="120,25 210,91 176,197 64,197 30,91"></polygon>
+                                        <polygon class="radar-axis" points="120,50 186,98 161,175 79,175 54,98"></polygon>
+                                        <polygon class="radar-axis" points="120,76 162,106 146,153 94,153 78,106"></polygon>
+                                        <line class="radar-spoke" x1="120" y1="120" x2="120" y2="25"></line>
+                                        <line class="radar-spoke" x1="120" y1="120" x2="210" y2="91"></line>
+                                        <line class="radar-spoke" x1="120" y1="120" x2="176" y2="197"></line>
+                                        <line class="radar-spoke" x1="120" y1="120" x2="64" y2="197"></line>
+                                        <line class="radar-spoke" x1="120" y1="120" x2="30" y2="91"></line>
+                                        <polygon class="radar-value" points="120,43 185,99 161,176 82,172 51,98"></polygon>
+                                        <circle class="radar-point" cx="120" cy="43" r="4"></circle>
+                                        <circle class="radar-point" cx="185" cy="99" r="4"></circle>
+                                        <circle class="radar-point" cx="161" cy="176" r="4"></circle>
+                                        <circle class="radar-point" cx="82" cy="172" r="4"></circle>
+                                        <circle class="radar-point" cx="51" cy="98" r="4"></circle>
+                                    </svg>
+                                    <button class="radar-label label-speed" type="button" data-skill="speed" aria-pressed="false">Speed</button>
+                                    <button class="radar-label label-shooting" type="button" data-skill="shooting" aria-pressed="false">Shooting</button>
+                                    <button class="radar-label label-power" type="button" data-skill="power" aria-pressed="false">Power</button>
+                                    <button class="radar-label label-control" type="button" data-skill="control" aria-pressed="false">Control</button>
+                                    <button class="radar-label label-agility active" type="button" data-skill="agility" aria-pressed="true">Agility</button>
+                                </div>
+                            </div>
+                            <div class="breakdown-card" aria-live="polite">
+                                <span class="card-kicker">Skill breakdown</span>
+                                <div class="breakdown-head"><span class="skill-dot" id="skillDot"></span><strong id="skillName">Agility</strong></div>
+                                <div class="score-line"><strong id="skillScore">68</strong><span id="skillChange">↑ Improving</span></div>
+                                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                                <div class="metric-list" id="metricList">
+                                    <div class="metric-row"><span>Total time</span><strong>5.12 s</strong></div>
+                                    <div class="metric-row"><span>Start phase</span><strong>1.82 s</strong></div>
+                                    <div class="metric-row"><span>Turn phase</span><strong>1.48 s</strong></div>
+                                </div>
+                                <p class="focus-note" id="focusNote">Focus: faster braking and redirection through the turn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="floating-plan" aria-label="Sample training recommendation">
+                    <div class="plan-title"><span class="plan-icon">↗</span><span><strong>Next focus identified</strong><small>Built from repeated test results</small></span></div>
+                    <div class="plan-item"><span>1</span><span><strong>Deceleration to lateral exit</strong><small>Agility progression</small></span><small>3 × 4</small></div>
+                </aside>
             </div>
         </section>
 
-        <section class="postestimation-section">
-            <div class="postestimation-image">
-                <div class="postestimation-image-card">
-                    <img src="images/analysiskick.PNG" alt="Kick Analysis">
+        <section class="flow-section" id="how-it-works">
+            <div class="section-shell">
+                <div class="section-head center reveal">
+                    <p class="eyebrow">One connected development loop</p>
+                    <h2>From first test to <span>next breakthrough.</span></h2>
+                    <p class="section-copy">PoseTek gives every result somewhere to go. Testing becomes understanding, understanding becomes action, and every retest makes the profile more useful.</p>
                 </div>
-            </div>
-            <div class="postestimation-content">
-                <span class="section-number">Step 02</span>
-                <h2><em>Biomechanical</em> Insights</h2>
-                <p>Our app delivers instant biomechanical feedback, tools to guide your players, and statistical models to track individual development over time.</p>
+                <div class="flow-grid">
+                    <article class="flow-card reveal"><span class="flow-icon">⌁</span><h3>Capture the athlete</h3><p>A coach runs the test suite with a phone, a repeatable setup, and the athlete’s profile selected.</p><span class="flow-link">Standardized setup <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">◎</span><h3>Measure performance</h3><p>Pose tracking and drill-specific processing surface the metrics that matter for that test.</p><span class="flow-link">Rep-level analysis <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">◇</span><h3>Build the profile</h3><p>Results organize into speed, power, agility, shooting, and ball-control views with video and benchmarks.</p><span class="flow-link">A profile that grows <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">↗</span><h3>Train and retest</h3><p>Repeated, valid results guide priority areas and relevant progressions—then the next test closes the loop.</p><span class="flow-link">Focused development <span>→</span></span></article>
+                </div>
             </div>
         </section>
 
-        <section class="team-section">
-            <div class="team-header">
-                <span class="team-eyebrow">The People Behind It</span>
-                <h2 class="team-title">Meet the <em>Team</em></h2>
-            </div>
-            <div class="team-grid">
-                <div class="team-member">
-                    <div class="member-image-container">
-                        <img src="images/Nolan.png" class="member-image" alt="Nolan Jetter">
-                        <div class="member-bio">
-                            <p>CEO & Founder with former Div I soccer experience at Lehigh University</p>
-                        </div>
+        <section id="tests">
+            <div class="section-shell">
+                <div class="section-head reveal">
+                    <p class="eyebrow">The assessment suite</p>
+                    <h2>Six tests. One complete <span>athlete story.</span></h2>
+                    <p class="section-copy">Each test has its own capture protocol and its own performance language—so a sprint is measured like a sprint, and a turn is understood phase by phase.</p>
+                </div>
+                <div class="tests-layout">
+                    <div class="tests-sticky reveal">
+                        <h3>Measure what the athlete can do today.</h3>
+                        <p>PoseTek combines movement video with drill-specific metrics. Coaches can review the rep. Athletes can open their profile and understand the outcome without needing to interpret raw data.</p>
+                        <div class="protocol-note"><span>✓</span><span>Priorities are based on repeatable, protocol-valid results—not a label generated from one clip.</span></div>
                     </div>
-                    <div class="member-info">
-                        <h3 class="member-name">Nolan Jetter</h3>
-                        <p class="member-title">Chief Executive Officer</p>
+                    <div class="test-grid">
+                        <article class="test-card reveal"><header><span class="test-icon speed">→</span><span class="test-number">PT 01</span></header><h3>Sprint</h3><p>Acceleration and speed across a measured lane up to 20 yards.</p><div class="metric-tags"><span>Total time</span><span>Max velocity</span><span>Acceleration</span></div></article>
+                        <article class="test-card reveal"><header><span class="test-icon power">↑</span><span class="test-number">PT 02</span></header><h3>Straight Vertical Jump</h3><p>Vertical output and movement positions from coil through peak height.</p><div class="metric-tags"><span>Jump height</span><span>Takeoff</span><span>Landing control</span></div></article>
+                        <article class="test-card reveal"><header><span class="test-icon power">↗</span><span class="test-number">PT 03</span></header><h3>Standing Broad Jump</h3><p>Horizontal power from a two-foot takeoff through a controlled landing.</p><div class="metric-tags"><span>Distance</span><span>Flight height</span><span>Landing</span></div></article>
+                        <article class="test-card reveal"><header><span class="test-icon control">∞</span><span class="test-number">PT 04</span></header><h3>Dribbling Shuttle</h3><p>An out-turn-return view of ball control and dribbling efficiency.</p><div class="metric-tags"><span>Total time</span><span>Phase splits</span><span>Ball distance</span></div></article>
+                        <article class="test-card reveal"><header><span class="test-icon agility">↔</span><span class="test-number">PT 05</span></header><h3>Change of Direction</h3><p>Planned agility separated into start, turn, and return phases.</p><div class="metric-tags"><span>Total time</span><span>Turn split</span><span>Phase %</span></div></article>
+                        <article class="test-card reveal"><header><span class="test-icon shooting">●</span><span class="test-number">PT 06</span></header><h3>Side-View Shooting</h3><p>Ball speed and mechanics around the plant, contact, and strike path.</p><div class="metric-tags"><span>Velocity</span><span>Launch angle</span><span>Strike mechanics</span></div></article>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="team-member">
-                    <div class="member-image-container">
-                        <img src="images/Dylan.png" class="member-image" alt="Dylan Keller">
-                        <div class="member-bio">
-                            <p>Former Div I soccer player at University of Memphis specializing in market insight</p>
+        <section class="profile-section" id="profile">
+            <div class="section-shell profile-layout">
+                <div class="profile-copy reveal">
+                    <p class="eyebrow">The athlete profile</p>
+                    <h2>Every result has a place to <span>live.</span></h2>
+                    <p class="section-copy">The athlete sees a clear skill map first, then can move from the big picture into each drill, each session, and each rep.</p>
+                    <div class="profile-points">
+                        <div class="profile-point"><span>1</span><div><strong>One home for performance</strong><small>Skill breakdowns and athlete information stay together in a profile that updates over time.</small></div></div>
+                        <div class="profile-point"><span>2</span><div><strong>Context, not just numbers</strong><small>Benchmark comparisons help show where a result sits, while drill pages preserve the details behind it.</small></div></div>
+                        <div class="profile-point"><span>3</span><div><strong>Review every rep</strong><small>Video, pose overlays, key frames, and drill-specific metrics make feedback easier to understand.</small></div></div>
+                    </div>
+                </div>
+                <div class="session-mock reveal" aria-label="Sample drill session analysis">
+                    <div class="session-head"><span class="mini-mark">P</span><span><strong>Change of Direction</strong><small>Session 02 · Rep 01</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
+                    <div class="session-video"><div class="field-lines"></div><span class="video-chip">POSE OVERLAY · SAMPLE</span><div class="pose-figure" aria-hidden="true"><i class="head"></i><i class="torso"></i><i class="arm-a"></i><i class="arm-b"></i><i class="leg-a"></i><i class="leg-b"></i><i class="shin-a"></i><i class="shin-b"></i></div><div class="timeline"><span class="play">▶</span><span class="timeline-track"></span><small>00:05 / 00:10</small></div></div>
+                    <div class="session-metrics"><article><span>Start</span><strong>1.82 s</strong></article><article><span>Turn</span><strong>1.48 s</strong></article><article><span>Return</span><strong>1.82 s</strong></article><article><span>Total</span><strong>5.12 s</strong></article></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="training">
+            <div class="section-shell">
+                <div class="section-head center reveal">
+                    <p class="eyebrow">Profile to plan</p>
+                    <h2>Training built around the <span>athlete in front of you.</span></h2>
+                    <p class="section-copy">The drill matrix connects measured needs to relevant exercise tags, progressions, dosage, and retest points—while keeping unmeasured areas honest and goal-led.</p>
+                </div>
+                <div class="training-layout">
+                    <div class="plan-board reveal" aria-label="Sample athlete training plan">
+                        <div class="plan-board-head"><span><strong>Alex’s development plan</strong><small>Priority: braking + redirection</small></span><span class="week-ring"><strong>2/4</strong><span>week</span></span></div>
+                        <article class="workout"><header><span><span>Workout 01</span><strong>Quality movement + ball</strong></span><span class="workout-status">Up next</span></header><div class="exercise"><span class="exercise-icon">↘</span><span><strong>Deceleration gate</strong><small>3 sets · 4 quality reps · full recovery</small></span><span>▶</span></div><div class="exercise"><span class="exercise-icon">↔</span><span><strong>Planned cut progression</strong><small>3 sets · both directions</small></span><span>▶</span></div><div class="exercise"><span class="exercise-icon">∞</span><span><strong>Tight-box ball mastery</strong><small>3 rounds · 30 seconds</small></span><span>▶</span></div></article>
+                        <article class="workout"><header><span><span>Retest checkpoint</span><strong>Change-of-direction shuttle</strong></span><span class="workout-status">Week 4</span></header></article>
+                    </div>
+                    <div class="training-copy reveal">
+                        <p class="eyebrow">A disciplined recommendation engine</p>
+                        <h2>From a measured gap to a <span>clear next step.</span></h2>
+                        <p class="section-copy">A result does not become a diagnosis. PoseTek uses repeated performance evidence to identify plausible priorities and keeps the coach in the loop.</p>
+                        <div class="logic-list">
+                            <div class="logic-row"><span>✓</span><div><strong>Evidence before priority</strong><small>Valid results across sessions reduce one-clip noise.</small></div></div>
+                            <div class="logic-row"><span>↗</span><div><strong>Progressions that fit</strong><small>Training maps to the athlete’s measured dimension, age, level, and practical setup.</small></div></div>
+                            <div class="logic-row"><span>⟳</span><div><strong>A built-in feedback loop</strong><small>Retesting shows whether performance is moving and what should come next.</small></div></div>
                         </div>
                     </div>
-                    <div class="member-info">
-                        <h3 class="member-name">Dylan Keller</h3>
-                        <p class="member-title">Chief Marketing Officer</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="loop-section">
+            <div class="section-shell">
+                <div class="loop-card reveal">
+                    <div class="loop-content">
+                        <p class="eyebrow">Start the athlete’s profile</p>
+                        <h2>Stop guessing what to work on <span>next.</span></h2>
+                        <p class="section-copy">Run the test suite. Give the athlete a profile they can understand. Build the next block of work around what the performance actually shows.</p>
+                        <div class="loop-actions"><a class="button-primary" href="bookPerformanceTest.html">Book a performance test <span>→</span></a><a class="button-secondary" href="kickai.html">Coach sign in</a></div>
                     </div>
+                    <div class="loop-steps" aria-label="PoseTek development loop"><div class="loop-step"><span>1</span>Test</div><div class="loop-step"><span>2</span>Understand</div><div class="loop-step"><span>3</span>Train</div><div class="loop-step"><span>4</span>Retest</div></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Scroll Navigation -->
-    <div class="scroll-nav" id="scrollNav">
-        <button class="scroll-btn" id="scrollUp" title="Scroll up">
-            <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
-        </button>
-        <button class="scroll-btn" id="scrollDown" title="Scroll down">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
-    </div>
-
     <footer>
-        <p>© 2026 PoseTek · <a href="kickai.html">Launch App</a> · <a href="privacy.html">Privacy Policy</a></p>
+        <div class="footer-shell">
+            <div><a class="brand" href="#top"><span class="brand-mark">P</span><span>POSETEK</span></a><p class="footer-copy">Soccer performance testing, athlete profiles, and focused development—connected in one system.</p></div>
+            <div class="footer-links"><a href="#how-it-works">How it works</a><a href="bookPerformanceTest.html">Book a test</a><a href="kickai.html">Sign in</a><a href="privacy.html">Privacy</a><span>© 2026 PoseTek</span></div>
+        </div>
     </footer>
 
     <script>
-        // Scroll Handler
-        let isScrolling;
-        window.addEventListener('scroll', () => {
-            window.clearTimeout(isScrolling);
-            isScrolling = setTimeout(() => {
-                const nav = document.getElementById('mainNav');
-                nav.classList.toggle('nav-hidden', window.scrollY > 300);
-            }, 100);
+        const header = document.getElementById('siteHeader');
+        const menuButton = document.getElementById('menuButton');
+        const navLinks = document.querySelectorAll('#navLinks a');
+
+        const updateHeader = () => header.classList.toggle('scrolled', window.scrollY > 12);
+        window.addEventListener('scroll', updateHeader, { passive: true });
+        updateHeader();
+
+        menuButton.addEventListener('click', () => {
+            const open = header.classList.toggle('menu-open');
+            menuButton.setAttribute('aria-expanded', String(open));
+            menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
         });
+        navLinks.forEach(link => link.addEventListener('click', () => {
+            header.classList.remove('menu-open');
+            menuButton.setAttribute('aria-expanded', 'false');
+        }));
 
-        // Feature Carousel
-        const slides = document.querySelectorAll('.slide');
-        const pills = document.querySelectorAll('.feature-pill');
-        let currentIndex = 0;
+        const skillData = {
+            speed: { name: 'Speed', score: 81, color: '#4bd7e8', change: '↑ Improving', metrics: [['Total time', '2.41 s'], ['Max velocity', '8.2 m/s'], ['Acceleration', '3.4 m/s²']], note: 'Focus: hold speed mechanics through the end of the lane.' },
+            shooting: { name: 'Shooting', score: 74, color: '#ff8c8c', change: '↑ Building', metrics: [['Ball velocity', '24.7 m/s'], ['Launch angle', '14.2°'], ['Plant offset', '18 cm']], note: 'Focus: consistent plant position through ball contact.' },
+            power: { name: 'Power', score: 72, color: '#b7f34a', change: '↑ Improving', metrics: [['Broad jump', '2.18 m'], ['Jump height', '48 cm'], ['Landing', 'Controlled']], note: 'Focus: horizontal force without losing landing control.' },
+            control: { name: 'Control', score: 70, color: '#b49bff', change: '→ Developing', metrics: [['Shuttle time', '6.18 s'], ['Out phase', '2.55 s'], ['Ball distance', '0.42 m']], note: 'Focus: keep the ball in a playable radius through the turn.' },
+            agility: { name: 'Agility', score: 68, color: '#ffbd59', change: '↑ Improving', metrics: [['Total time', '5.12 s'], ['Start phase', '1.82 s'], ['Turn phase', '1.48 s']], note: 'Focus: faster braking and redirection through the turn.' }
+        };
+        const skillLabels = document.querySelectorAll('.radar-label');
+        const skillName = document.getElementById('skillName');
+        const skillScore = document.getElementById('skillScore');
+        const skillChange = document.getElementById('skillChange');
+        const skillDot = document.getElementById('skillDot');
+        const progressFill = document.getElementById('progressFill');
+        const metricList = document.getElementById('metricList');
+        const focusNote = document.getElementById('focusNote');
 
-        function goToSlide(index) {
-            slides[currentIndex].classList.remove('active');
-            pills[currentIndex].classList.remove('active');
-            currentIndex = index;
-            slides[currentIndex].classList.add('active');
-            pills[currentIndex].classList.add('active');
-        }
-
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                clearInterval(carouselInterval);
-                goToSlide(parseInt(pill.dataset.index));
-                carouselInterval = setInterval(() => goToSlide((currentIndex + 1) % slides.length), 3000);
+        skillLabels.forEach(label => label.addEventListener('click', () => {
+            const data = skillData[label.dataset.skill];
+            skillLabels.forEach(item => {
+                const isActive = item === label;
+                item.classList.toggle('active', isActive);
+                item.setAttribute('aria-pressed', String(isActive));
             });
-        });
+            skillName.textContent = data.name;
+            skillScore.textContent = data.score;
+            skillChange.textContent = data.change;
+            skillDot.style.background = data.color;
+            skillDot.style.boxShadow = `0 0 0 5px ${data.color}1c`;
+            progressFill.style.width = `${data.score}%`;
+            progressFill.style.background = `linear-gradient(90deg, ${data.color}, #b7f34a)`;
+            metricList.innerHTML = data.metrics.map(([key, value]) => `<div class="metric-row"><span>${key}</span><strong>${value}</strong></div>`).join('');
+            focusNote.textContent = data.note;
+        }));
 
-        let carouselInterval = setInterval(() => goToSlide((currentIndex + 1) % slides.length), 3000);
-
-        // Section Transition Observer
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('section-visible');
-                } else {
-                    entry.target.classList.remove('section-visible');
-                }
-            });
-        }, { 
-            threshold: 0.25,
-            rootMargin: '0px 0px -100px 0px'
-        });
-
-        document.querySelectorAll('.tripod-section, .postestimation-section, .team-section').forEach(section => {
-            sectionObserver.observe(section);
-        });
-
-        // Scroll Indicators
-        const snapSections = [
-            document.querySelector('.hero-container'),
-            document.querySelector('#how-it-works'),
-            document.querySelector('.postestimation-section'),
-            document.querySelector('.team-section')
-        ];
-        const scrollUpBtn = document.getElementById('scrollUp');
-        const scrollDownBtn = document.getElementById('scrollDown');
-
-        function updateScrollIndicators() {
-            const scrollY = window.scrollY;
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-            const heroH = document.querySelector('.hero-container').offsetHeight;
-            const pastHero = scrollY > heroH * 0.45;
-
-            scrollUpBtn.classList.toggle('visible', pastHero);
-            scrollDownBtn.classList.toggle('visible', pastHero && scrollY < maxScroll - 80);
-        }
-
-        scrollUpBtn.addEventListener('click', () => {
-            const scrollY = window.scrollY;
-            const prev = [...snapSections].reverse().find(s => s.offsetTop < scrollY - 80);
-            if (prev) prev.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        scrollDownBtn.addEventListener('click', () => {
-            const scrollY = window.scrollY;
-            const next = snapSections.find(s => s.offsetTop > scrollY + 80);
-            if (next) next.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        window.addEventListener('scroll', updateScrollIndicators, { passive: true });
-        updateScrollIndicators();
-
-        // Mobile initialization
-        function handleResize() {
-            if(window.innerWidth <= 768) {
-                document.querySelectorAll('.tripod-section, .postestimation-section, .team-section').forEach(section => {
-                    section.classList.add('section-visible');
+        if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
                 });
-            }
+            }, { threshold: .12, rootMargin: '0px 0px -45px' });
+            document.querySelectorAll('.reveal:not(.visible)').forEach(element => observer.observe(element));
+        } else {
+            document.querySelectorAll('.reveal').forEach(element => element.classList.add('visible'));
         }
-        window.addEventListener('resize', handleResize);
-        handleResize();
     </script>
 </body>
 </html>
