@@ -9,7 +9,7 @@
     <title>PoseTek | Test. Understand. Improve.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -48,9 +48,8 @@
             overflow-x: hidden;
             color: var(--ink);
             background:
-                radial-gradient(circle at 12% 4%, rgba(69,209,122,.16), transparent 31rem),
-                radial-gradient(circle at 88% 22%, rgba(183,243,74,.08), transparent 25rem),
-                linear-gradient(145deg, #04120d 0%, #08271d 48%, #020d09 100%);
+                linear-gradient(90deg, transparent calc(50% - .5px), rgba(255,255,255,.025) 50%, transparent calc(50% + .5px)),
+                linear-gradient(145deg, #04120d 0%, #08251c 52%, #020d09 100%);
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             -webkit-font-smoothing: antialiased;
         }
@@ -60,10 +59,8 @@
             inset: 0;
             pointer-events: none;
             z-index: -1;
-            background-image:
-                linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-            background-size: 54px 54px;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            background-size: 90px 100%;
             mask-image: linear-gradient(to bottom, black, transparent 78%);
         }
         a { color: inherit; }
@@ -198,25 +195,28 @@
             align-items: center;
             gap: 10px;
             color: var(--lime);
-            font-size: 11px;
-            font-weight: 900;
-            letter-spacing: .16em;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .11em;
             text-transform: uppercase;
         }
         .eyebrow::before {
-            content: "";
-            width: 24px;
-            height: 2px;
-            border-radius: 4px;
-            background: var(--lime);
+            content: "//";
+            width: auto;
+            height: auto;
+            color: rgba(183,243,74,.48);
+            background: none;
         }
         h1 {
             max-width: 650px;
             margin: 0;
-            font-size: clamp(52px, 6.4vw, 82px);
-            line-height: .98;
-            letter-spacing: -.065em;
-            font-weight: 900;
+            font-family: "Barlow Condensed", sans-serif;
+            font-size: clamp(58px, 6.6vw, 92px);
+            line-height: .82;
+            letter-spacing: -.035em;
+            font-weight: 800;
+            text-transform: uppercase;
         }
         h1 span { color: var(--lime); }
         .hero-copy {
@@ -371,28 +371,31 @@
         .section-head { max-width: 700px; }
         .section-head.center { margin: auto; text-align: center; }
         .section-head.center .eyebrow { justify-content: center; }
-        h2 { margin: 0; font-size: clamp(38px, 5vw, 62px); line-height: 1.02; letter-spacing: -.055em; font-weight: 900; }
+        h2 { margin: 0; font-family: "Barlow Condensed", sans-serif; font-size: clamp(46px, 5.7vw, 74px); line-height: .9; letter-spacing: -.035em; font-weight: 800; text-transform: uppercase; }
         h2 span { color: var(--lime); }
         .section-copy { max-width: 625px; margin: 19px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
         .section-head.center .section-copy { margin-left: auto; margin-right: auto; }
 
         .flow-section { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(0,0,0,.11); }
-        .flow-grid { margin-top: 58px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; counter-reset: flow; }
+        .flow-grid { margin-top: 58px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--line); counter-reset: flow; }
         .flow-card {
-            min-height: 265px;
-            padding: 22px;
+            min-height: 240px;
+            padding: 27px 24px 24px 0;
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-md);
-            background: linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025));
+            border: 0;
+            border-right: 1px solid var(--line);
+            border-radius: 0;
+            background: transparent;
             counter-increment: flow;
         }
-        .flow-card::after { content: "0" counter(flow); position: absolute; right: 14px; bottom: -18px; color: rgba(255,255,255,.035); font-size: 85px; font-weight: 900; letter-spacing: -.08em; }
-        .flow-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: rgba(183,243,74,.12); color: var(--lime); font-size: 20px; font-weight: 900; }
-        .flow-card h3 { margin: 25px 0 9px; font-size: 19px; letter-spacing: -.02em; }
+        .flow-card + .flow-card { padding-left: 24px; }
+        .flow-card:last-child { border-right: 0; }
+        .flow-card::after { display: none; }
+        .flow-icon { width: auto; height: auto; display: block; color: var(--lime); background: none; border-radius: 0; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; }
+        .flow-card h3 { margin: 48px 0 9px; font-family: "Barlow Condensed", sans-serif; font-size: 25px; font-weight: 700; letter-spacing: -.01em; text-transform: uppercase; }
         .flow-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-        .flow-link { margin-top: 21px; display: inline-flex; align-items: center; gap: 6px; color: var(--lime); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+        .flow-link { margin-top: 21px; display: inline-flex; align-items: center; gap: 6px; color: var(--lime); font-family: "IBM Plex Mono", monospace; font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
 
         .tests-layout { margin-top: 55px; display: grid; grid-template-columns: .72fr 1.28fr; gap: 40px; align-items: start; }
         .tests-sticky { position: sticky; top: 112px; }
@@ -401,8 +404,8 @@
         .protocol-note { margin-top: 25px; padding: 15px; display: flex; align-items: flex-start; gap: 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: rgba(255,255,255,.035); color: var(--muted); font-size: 10px; line-height: 1.55; }
         .protocol-note span:first-child { color: var(--lime); font-size: 16px; }
         .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-        .test-card { min-height: 190px; padding: 19px; border: 1px solid var(--line); border-radius: 19px; background: rgba(255,255,255,.04); transition: border-color .18s ease, transform .18s ease, background .18s ease; }
-        .test-card:hover { transform: translateY(-3px); border-color: rgba(183,243,74,.35); background: rgba(255,255,255,.06); }
+        .test-card { min-height: 190px; padding: 19px; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,.025); transition: border-color .18s ease, background .18s ease; }
+        .test-card:hover { border-color: rgba(183,243,74,.35); background: rgba(255,255,255,.045); }
         .test-card header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .test-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 13px; font-size: 17px; font-weight: 900; }
         .speed { color: var(--cyan); background: rgba(75,215,232,.12); }
@@ -435,16 +438,12 @@
         .session-tabs .active { color: #082116; background: var(--lime); }
         .session-video { min-height: 288px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: radial-gradient(circle at 48% 44%, rgba(69,209,122,.13), transparent 35%), linear-gradient(160deg, #0e3529, #030d09); }
         .field-lines { position: absolute; inset: 0; opacity: .15; background: linear-gradient(90deg, transparent 49.8%, #fff 50%, transparent 50.2%), radial-gradient(ellipse at 50% 50%, transparent 19%, #fff 19.4%, transparent 20%); }
-        .pose-figure { position: absolute; left: 50%; top: 49%; width: 130px; height: 205px; transform: translate(-50%, -50%); }
-        .pose-figure i { position: absolute; display: block; height: 3px; transform-origin: left center; background: var(--lime); border-radius: 5px; box-shadow: 0 0 8px rgba(183,243,74,.4); }
-        .pose-figure .head { width: 25px; height: 25px; left: 53px; top: 7px; border: 3px solid var(--lime); border-radius: 50%; background: transparent; }
-        .pose-figure .torso { width: 62px; left: 64px; top: 37px; transform: rotate(92deg); }
-        .pose-figure .arm-a { width: 61px; left: 66px; top: 52px; transform: rotate(24deg); }
-        .pose-figure .arm-b { width: 55px; left: 66px; top: 52px; transform: rotate(156deg); }
-        .pose-figure .leg-a { width: 72px; left: 62px; top: 99px; transform: rotate(63deg); }
-        .pose-figure .leg-b { width: 70px; left: 62px; top: 99px; transform: rotate(117deg); }
-        .pose-figure .shin-a { width: 58px; left: 95px; top: 163px; transform: rotate(93deg); }
-        .pose-figure .shin-b { width: 58px; left: 31px; top: 163px; transform: rotate(87deg); }
+        #landingPoseCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .pose-readout { position: absolute; z-index: 2; right: 12px; top: 12px; display: grid; justify-items: end; gap: 4px; font-family: "IBM Plex Mono", monospace; }
+        .pose-readout strong { color: var(--ink); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+        .pose-readout small { color: var(--lime); font-size: 7px; letter-spacing: .09em; text-transform: uppercase; }
+        .scan-line { position: absolute; z-index: 1; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, rgba(183,243,74,.7), transparent); box-shadow: 0 0 16px rgba(183,243,74,.42); animation: pose-scan 4.2s ease-in-out infinite; }
+        @keyframes pose-scan { 0%,100% { left: 18%; opacity: .2; } 50% { left: 82%; opacity: .75; } }
         .video-chip { position: absolute; left: 12px; top: 12px; padding: 7px 9px; border-radius: 99px; color: var(--lime); background: rgba(0,0,0,.5); font-size: 7px; font-weight: 900; letter-spacing: .1em; }
         .timeline { position: absolute; left: 14px; right: 14px; bottom: 13px; display: grid; grid-template-columns: 27px 1fr auto; gap: 9px; align-items: center; }
         .play { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; color: #082116; background: var(--lime); font-size: 9px; }
@@ -505,8 +504,8 @@
         .footer-links a { color: var(--muted); text-decoration: none; font-size: 10px; font-weight: 700; }
         .footer-links a:hover { color: var(--lime); }
 
-        .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal { opacity: 1; transform: none; }
+        .reveal.visible { opacity: 1; transform: none; }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
@@ -547,7 +546,7 @@
             .brand { font-size: 13px; }
             .brand-mark { width: 33px; height: 33px; }
             .hero { padding: 122px 0 76px; gap: 38px; }
-            h1 { font-size: clamp(45px, 14vw, 66px); }
+            h1 { font-size: clamp(49px, 14.5vw, 68px); line-height: .86; }
             .hero-copy { font-size: 15px; line-height: 1.65; }
             .hero-actions { display: grid; grid-template-columns: 1fr; }
             .button-primary, .button-secondary { width: 100%; }
@@ -564,7 +563,9 @@
             h2 { font-size: clamp(36px, 11vw, 48px); }
             .section-copy { font-size: 14px; }
             .flow-grid, .test-grid { grid-template-columns: 1fr; }
-            .flow-card { min-height: 230px; }
+            .flow-card, .flow-card + .flow-card { min-height: 0; padding: 24px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+            .flow-card:last-child { border-bottom: 0; }
+            .flow-card h3 { margin-top: 28px; }
             .tests-layout { gap: 32px; }
             .session-head { align-items: flex-start; }
             .session-tabs { max-width: 150px; overflow: hidden; }
@@ -602,9 +603,9 @@
     <main id="top">
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-text reveal visible">
-                <p class="eyebrow">Soccer performance intelligence</p>
-                <h1 id="hero-title">Turn every test into a plan to <span>improve.</span></h1>
-                <p class="hero-copy">PoseTek measures how an athlete moves, turns those results into a living performance profile, and connects the right areas of development to focused training.</p>
+                <p class="eyebrow">PoseTek performance system · 2026</p>
+                <h1 id="hero-title">Test the player.<br><span>Build the profile.</span><br>Train what matters.</h1>
+                <p class="hero-copy">One connected system for measuring soccer athletes, showing them exactly where they stand, and turning repeatable results into focused development.</p>
                 <div class="hero-actions">
                     <a class="button-primary" href="bookPerformanceTest.html">Book a performance test <span aria-hidden="true">→</span></a>
                     <a class="button-secondary" href="#how-it-works">See the system <span aria-hidden="true">↓</span></a>
@@ -686,10 +687,10 @@
                     <p class="section-copy">PoseTek gives every result somewhere to go. Testing becomes understanding, understanding becomes action, and every retest makes the profile more useful.</p>
                 </div>
                 <div class="flow-grid">
-                    <article class="flow-card reveal"><span class="flow-icon">⌁</span><h3>Capture the athlete</h3><p>A coach runs the test suite with a phone, a repeatable setup, and the athlete’s profile selected.</p><span class="flow-link">Standardized setup <span>→</span></span></article>
-                    <article class="flow-card reveal"><span class="flow-icon">◎</span><h3>Measure performance</h3><p>Pose tracking and drill-specific processing surface the metrics that matter for that test.</p><span class="flow-link">Rep-level analysis <span>→</span></span></article>
-                    <article class="flow-card reveal"><span class="flow-icon">◇</span><h3>Build the profile</h3><p>Results organize into speed, power, agility, shooting, and ball-control views with video and benchmarks.</p><span class="flow-link">A profile that grows <span>→</span></span></article>
-                    <article class="flow-card reveal"><span class="flow-icon">↗</span><h3>Train and retest</h3><p>Repeated, valid results guide priority areas and relevant progressions—then the next test closes the loop.</p><span class="flow-link">Focused development <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">PT / 01</span><h3>Capture the athlete</h3><p>A coach runs the test suite with a phone, a repeatable setup, and the athlete’s profile selected.</p><span class="flow-link">Standardized setup <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">PT / 02</span><h3>Measure performance</h3><p>Pose tracking and drill-specific processing surface the metrics that matter for that test.</p><span class="flow-link">Rep-level analysis <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">PT / 03</span><h3>Build the profile</h3><p>Results organize into speed, power, agility, shooting, and ball-control views with video and benchmarks.</p><span class="flow-link">A profile that grows <span>→</span></span></article>
+                    <article class="flow-card reveal"><span class="flow-icon">PT / 04</span><h3>Train and retest</h3><p>Repeated, valid results guide priority areas and relevant progressions—then the next test closes the loop.</p><span class="flow-link">Focused development <span>→</span></span></article>
                 </div>
             </div>
         </section>
@@ -732,9 +733,9 @@
                     </div>
                 </div>
                 <div class="session-mock reveal" aria-label="Sample drill session analysis">
-                    <div class="session-head"><span class="mini-mark">P</span><span><strong>Change of Direction</strong><small>Session 02 · Rep 01</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
-                    <div class="session-video"><div class="field-lines"></div><span class="video-chip">POSE OVERLAY · SAMPLE</span><div class="pose-figure" aria-hidden="true"><i class="head"></i><i class="torso"></i><i class="arm-a"></i><i class="arm-b"></i><i class="leg-a"></i><i class="leg-b"></i><i class="shin-a"></i><i class="shin-b"></i></div><div class="timeline"><span class="play">▶</span><span class="timeline-track"></span><small>00:05 / 00:10</small></div></div>
-                    <div class="session-metrics"><article><span>Start</span><strong>1.82 s</strong></article><article><span>Turn</span><strong>1.48 s</strong></article><article><span>Return</span><strong>1.82 s</strong></article><article><span>Total</span><strong>5.12 s</strong></article></div>
+                    <div class="session-head"><span class="mini-mark">P</span><span><strong id="poseDrillTitle">Change of Direction</strong><small id="poseSessionLabel">Anonymized demo · app-format</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
+                    <div class="session-video"><div class="field-lines"></div><canvas id="landingPoseCanvas" aria-label="Anonymized PoseTek keypoint playback"></canvas><span class="scan-line" aria-hidden="true"></span><span class="video-chip">POSETEK KEYPOINT VIEW</span><span class="pose-readout"><strong id="poseSequenceLabel">Agility · turn phase</strong><small>17 joints / live playback</small></span><div class="timeline"><span class="play">▶</span><span class="timeline-track"></span><small id="poseTimer">00:00 / 00:04</small></div></div>
+                    <div class="session-metrics" id="poseMetricGrid"><article><span>Start</span><strong>1.82 s</strong></article><article><span>Turn</span><strong>1.48 s</strong></article><article><span>Return</span><strong>1.82 s</strong></article><article><span>Total</span><strong>5.12 s</strong></article></div>
                 </div>
             </div>
         </section>
@@ -841,19 +842,113 @@
             focusNote.textContent = data.note;
         }));
 
-        if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: .12, rootMargin: '0px 0px -45px' });
-            document.querySelectorAll('.reveal:not(.visible)').forEach(element => observer.observe(element));
-        } else {
-            document.querySelectorAll('.reveal').forEach(element => element.classList.add('visible'));
+        // App-format COCO-17 playback. The edge table and white-line/lime-joint treatment
+        // mirror PoseTek's production session renderer; these poses are anonymized demo geometry.
+        const poseCanvas = document.getElementById('landingPoseCanvas');
+        const poseLabel = document.getElementById('poseSequenceLabel');
+        const poseTimer = document.getElementById('poseTimer');
+        const poseEdges = [[0,1],[0,2],[1,3],[2,4],[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
+        const poseSequences = [
+            {
+                title: 'Change of Direction',
+                label: 'Agility · turn phase',
+                metrics: [['Start','1.82 s'],['Turn','1.48 s'],['Return','1.82 s'],['Total','5.12 s']],
+                frames: [
+                    [[.50,.14],[.48,.13],[.52,.13],[.46,.15],[.54,.15],[.43,.29],[.57,.29],[.35,.40],[.66,.42],[.29,.52],[.74,.51],[.46,.53],[.57,.53],[.39,.70],[.65,.69],[.34,.89],[.76,.84]],
+                    [[.48,.18],[.46,.17],[.50,.17],[.44,.19],[.52,.19],[.39,.32],[.54,.34],[.30,.43],[.66,.45],[.22,.52],[.76,.54],[.42,.56],[.55,.57],[.32,.71],[.68,.72],[.22,.88],[.80,.88]],
+                    [[.45,.15],[.43,.14],[.47,.14],[.41,.16],[.49,.16],[.38,.29],[.52,.30],[.30,.42],[.61,.40],[.23,.53],[.69,.49],[.42,.53],[.53,.53],[.35,.69],[.61,.70],[.27,.84],[.70,.88]]
+                ]
+            },
+            {
+                title: 'Standing Broad Jump',
+                label: 'Broad jump · flight phase',
+                metrics: [['Takeoff','00:00.7'],['Apex','00:01.4'],['Landing','Stable'],['Distance','2.18 m']],
+                frames: [
+                    [[.36,.24],[.34,.23],[.38,.23],[.32,.25],[.40,.25],[.33,.36],[.46,.36],[.25,.48],[.53,.48],[.19,.59],[.59,.58],[.37,.55],[.49,.55],[.34,.72],[.55,.72],[.31,.90],[.63,.89]],
+                    [[.52,.17],[.50,.16],[.54,.16],[.48,.18],[.56,.18],[.43,.30],[.57,.30],[.36,.40],[.65,.39],[.30,.50],[.72,.47],[.47,.51],[.58,.51],[.38,.63],[.67,.63],[.34,.73],[.74,.72]],
+                    [[.69,.20],[.67,.19],[.71,.19],[.65,.21],[.73,.21],[.62,.33],[.76,.33],[.54,.44],[.83,.43],[.48,.55],[.90,.51],[.66,.55],[.77,.55],[.59,.72],[.82,.72],[.54,.89],[.90,.88]]
+                ]
+            }
+        ];
+
+        function poseAt(sequence, progress) {
+            const scaled = progress * (sequence.frames.length - 1);
+            const fromIndex = Math.floor(scaled);
+            const toIndex = Math.min(sequence.frames.length - 1, fromIndex + 1);
+            const rawT = scaled - fromIndex;
+            const t = rawT * rawT * (3 - 2 * rawT);
+            return sequence.frames[fromIndex].map((point, index) => {
+                const next = sequence.frames[toIndex][index];
+                return [point[0] + (next[0] - point[0]) * t, point[1] + (next[1] - point[1]) * t];
+            });
         }
+
+        function drawPose(context, points, width, height, opacity, current) {
+            const map = point => ({ x: point[0] * width, y: (.04 + point[1] * .84) * height });
+            context.save();
+            context.globalAlpha = opacity;
+            context.strokeStyle = current ? 'rgba(247,251,249,.92)' : 'rgba(255,189,89,.55)';
+            context.lineWidth = current ? 3 : 2;
+            context.lineCap = 'round';
+            context.lineJoin = 'round';
+            context.beginPath();
+            poseEdges.forEach(([start, end]) => {
+                const a = map(points[start]);
+                const b = map(points[end]);
+                context.moveTo(a.x, a.y);
+                context.lineTo(b.x, b.y);
+            });
+            context.stroke();
+            if (current) {
+                points.forEach(point => {
+                    const mapped = map(point);
+                    context.beginPath();
+                    context.arc(mapped.x, mapped.y, 3, 0, Math.PI * 2);
+                    context.fillStyle = '#b7f34a';
+                    context.fill();
+                    context.strokeStyle = 'rgba(255,255,255,.76)';
+                    context.lineWidth = 1;
+                    context.stroke();
+                });
+            }
+            context.restore();
+        }
+
+        let poseStart = performance.now();
+        let lastPoseSequence = -1;
+        function renderLandingPose(now) {
+            if (!poseCanvas) return;
+            const rect = poseCanvas.getBoundingClientRect();
+            const ratio = Math.min(2, window.devicePixelRatio || 1);
+            const pixelWidth = Math.max(1, Math.round(rect.width * ratio));
+            const pixelHeight = Math.max(1, Math.round(rect.height * ratio));
+            if (poseCanvas.width !== pixelWidth || poseCanvas.height !== pixelHeight) {
+                poseCanvas.width = pixelWidth;
+                poseCanvas.height = pixelHeight;
+            }
+            const context = poseCanvas.getContext('2d');
+            context.setTransform(ratio, 0, 0, ratio, 0, 0);
+            context.clearRect(0, 0, rect.width, rect.height);
+
+            const elapsed = Math.max(0, (now - poseStart) / 1000);
+            const sequenceIndex = Math.floor(elapsed / 4) % poseSequences.length;
+            const localSeconds = elapsed % 4;
+            const progress = (1 - Math.cos((localSeconds / 4) * Math.PI * 2)) / 2;
+            const sequence = poseSequences[sequenceIndex];
+            if (sequenceIndex !== lastPoseSequence) {
+                poseLabel.textContent = sequence.label;
+                document.getElementById('poseDrillTitle').textContent = sequence.title;
+                document.getElementById('poseMetricGrid').innerHTML = sequence.metrics.map(([key,value]) => `<article><span>${key}</span><strong>${value}</strong></article>`).join('');
+                lastPoseSequence = sequenceIndex;
+            }
+            poseTimer.textContent = `00:0${Math.floor(localSeconds)} / 00:04`;
+            drawPose(context, poseAt(sequence, Math.max(0, progress - .12)), rect.width, rect.height, .18, false);
+            drawPose(context, poseAt(sequence, Math.max(0, progress - .06)), rect.width, rect.height, .28, false);
+            drawPose(context, poseAt(sequence, progress), rect.width, rect.height, 1, true);
+
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(renderLandingPose);
+        }
+        requestAnimationFrame(renderLandingPose);
     </script>
 </body>
 </html>
