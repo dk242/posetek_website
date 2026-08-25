@@ -996,9 +996,6 @@
             <span class="brand-mark" aria-hidden="true">P</span>
             <span>POSETEK</span>
         </a>
-        <div class="nav-buttons">
-            <button class="nav-btn" id="authBtn" type="button">Sign In</button>
-        </div>
     </header>
 
     <main>
@@ -1283,7 +1280,6 @@
         const storage = firebase.storage();
 
         // DOM Elements
-        const authBtn = document.getElementById('authBtn');
         const closeModal = document.getElementById('closeModal');
         const loginModal = document.getElementById('loginModal');
         const loginForm = document.getElementById('loginForm');
@@ -1584,13 +1580,6 @@
         }
 
         // Event Listeners
-        authBtn.addEventListener('click', () => {
-            if (auth.currentUser) {
-                auth.signOut().then(() => window.location.reload());
-                return;
-            }
-            showModal(loginModal);
-        });
         getStartedBtn.addEventListener('click', () => {
             showModal(signupModal);
             // Reset to first tab when opening modal
@@ -1943,14 +1932,7 @@
 
         // Check auth state to update UI
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in
-                authBtn.textContent = 'Logout';
-            } else {
-                // No user is signed in
-                authBtn.textContent = 'Sign In';
-                if (getSafeReturnToUrl()) showModal(loginModal);
-            }
+            if (!user && getSafeReturnToUrl()) showModal(loginModal);
         });
 
         // Initialize tab switching when page loads
