@@ -436,20 +436,30 @@
         .session-tabs { margin-left: auto; display: flex; gap: 5px; }
         .session-tabs span { padding: 6px 8px; border-radius: 8px; color: var(--muted); background: rgba(255,255,255,.04); font-size: 7px; font-weight: 800; }
         .session-tabs .active { color: #082116; background: var(--lime); }
-        .session-video { min-height: 288px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: radial-gradient(circle at 48% 44%, rgba(69,209,122,.13), transparent 35%), linear-gradient(160deg, #0e3529, #030d09); }
+        .pose-drill-switcher { margin: 0 0 9px; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 12px; background: rgba(0,0,0,.16); }
+        .pose-drill-switcher button { min-height: 44px; padding: 0 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 11px; color: var(--muted); background: transparent; font: 800 8px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; touch-action: manipulation; transition: color 120ms cubic-bezier(0,0,.2,1), background-color 120ms cubic-bezier(0,0,.2,1); }
+        .pose-drill-switcher button span { color: rgba(255,255,255,.34); }
+        .pose-drill-switcher button.active { color: #082116; background: var(--lime); }
+        .pose-drill-switcher button.active span { color: rgba(8,33,22,.52); }
+        .pose-drill-switcher button:focus-visible, .pose-play:focus-visible, .pose-scrubber:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+        .session-video { aspect-ratio: 16 / 9; min-height: 0; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: radial-gradient(circle at 48% 44%, rgba(69,209,122,.13), transparent 35%), linear-gradient(160deg, #0e3529, #030d09); }
         .field-lines { position: absolute; inset: 0; opacity: .15; background: linear-gradient(90deg, transparent 49.8%, #fff 50%, transparent 50.2%), radial-gradient(ellipse at 50% 50%, transparent 19%, #fff 19.4%, transparent 20%); }
         #landingPoseCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
         .pose-readout { position: absolute; z-index: 2; right: 12px; top: 12px; display: grid; justify-items: end; gap: 4px; font-family: "IBM Plex Mono", monospace; }
         .pose-readout strong { color: var(--ink); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
         .pose-readout small { color: var(--lime); font-size: 7px; letter-spacing: .09em; text-transform: uppercase; }
-        .scan-line { position: absolute; z-index: 1; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, rgba(183,243,74,.7), transparent); box-shadow: 0 0 16px rgba(183,243,74,.42); animation: pose-scan 4.2s ease-in-out infinite; }
-        @keyframes pose-scan { 0%,100% { left: 18%; opacity: .2; } 50% { left: 82%; opacity: .75; } }
         .video-chip { position: absolute; left: 12px; top: 12px; padding: 7px 9px; border-radius: 99px; color: var(--lime); background: rgba(0,0,0,.5); font-size: 7px; font-weight: 900; letter-spacing: .1em; }
-        .timeline { position: absolute; left: 14px; right: 14px; bottom: 13px; display: grid; grid-template-columns: 27px 1fr auto; gap: 9px; align-items: center; }
-        .play { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; color: #082116; background: var(--lime); font-size: 9px; }
-        .timeline-track { height: 4px; position: relative; border-radius: 99px; background: rgba(255,255,255,.18); }
-        .timeline-track::before { content: ""; display: block; width: 62%; height: 100%; border-radius: inherit; background: var(--lime); }
-        .timeline small { color: var(--muted); font-size: 7px; }
+        .pose-phase { --phase-color: var(--lime); position: absolute; z-index: 2; left: 12px; bottom: 64px; padding: 6px 8px; border: 1px solid color-mix(in srgb, var(--phase-color) 45%, transparent); border-radius: 5px; color: var(--phase-color); background: rgba(0,0,0,.62); font: 700 7px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+        .pose-controls { position: absolute; z-index: 3; left: 10px; right: 10px; bottom: 10px; min-height: 44px; padding: 0 10px 0 0; display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; background: rgba(0,0,0,.72); backdrop-filter: blur(8px); }
+        .pose-play { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 11px; color: #082116; background: var(--lime); font: 900 11px/1 "IBM Plex Mono", monospace; cursor: pointer; touch-action: manipulation; transition: background-color 120ms cubic-bezier(0,0,.2,1), transform 90ms cubic-bezier(0,0,.2,1); }
+        .pose-play:hover { background: #c9ff65; }
+        .pose-play:active { transform: scale(.98); }
+        .pose-scrubber { width: 100%; height: 32px; margin: 0; accent-color: var(--lime); cursor: pointer; touch-action: manipulation; }
+        .pose-scrubber::-webkit-slider-runnable-track { height: 4px; border-radius: 99px; background: rgba(255,255,255,.2); }
+        .pose-scrubber::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5px; border: 2px solid #082116; border-radius: 50%; background: var(--lime); -webkit-appearance: none; }
+        .pose-scrubber::-moz-range-track { height: 4px; border-radius: 99px; background: rgba(255,255,255,.2); }
+        .pose-scrubber::-moz-range-thumb { width: 12px; height: 12px; border: 2px solid #082116; border-radius: 50%; background: var(--lime); }
+        .pose-time { min-width: 76px; color: var(--muted-strong); font: 700 7px/1 "IBM Plex Mono", monospace; text-align: right; white-space: nowrap; }
         .session-metrics { margin-top: 9px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
         .session-metrics article { padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); }
         .session-metrics span, .session-metrics strong { display: block; }
@@ -570,7 +580,14 @@
             .session-head { align-items: flex-start; }
             .session-tabs { max-width: 150px; overflow: hidden; }
             .session-tabs span:nth-child(n+3) { display: none; }
-            .session-video { min-height: 250px; }
+            .session-video { min-height: 0; }
+            .pose-readout { top: 10px; right: 10px; }
+            .pose-readout strong { font-size: 7px; }
+            .pose-readout small { font-size: 6px; }
+            .video-chip { top: 10px; left: 10px; }
+            .pose-phase { left: 10px; bottom: 61px; }
+            .pose-controls { left: 7px; right: 7px; bottom: 7px; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 6px; padding-right: 8px; }
+            .pose-time { min-width: 61px; font-size: 6px; }
             .session-metrics { grid-template-columns: 1fr 1fr; }
             .loop-card { padding: 35px 21px; }
             .loop-steps { grid-template-columns: 1fr; margin-top: 32px; }
@@ -733,9 +750,24 @@
                     </div>
                 </div>
                 <div class="session-mock reveal" aria-label="Sample drill session analysis">
-                    <div class="session-head"><span class="mini-mark">P</span><span><strong id="poseDrillTitle">Change of Direction</strong><small id="poseSessionLabel">Anonymized demo · app-format</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
-                    <div class="session-video"><div class="field-lines"></div><canvas id="landingPoseCanvas" aria-label="Anonymized PoseTek keypoint playback"></canvas><span class="scan-line" aria-hidden="true"></span><span class="video-chip">POSETEK KEYPOINT VIEW</span><span class="pose-readout"><strong id="poseSequenceLabel">Agility · turn phase</strong><small>17 joints / live playback</small></span><div class="timeline"><span class="play">▶</span><span class="timeline-track"></span><small id="poseTimer">00:00 / 00:04</small></div></div>
-                    <div class="session-metrics" id="poseMetricGrid"><article><span>Start</span><strong>1.82 s</strong></article><article><span>Turn</span><strong>1.48 s</strong></article><article><span>Return</span><strong>1.82 s</strong></article><article><span>Total</span><strong>5.12 s</strong></article></div>
+                    <div class="session-head"><span class="mini-mark">P</span><span><strong id="poseDrillTitle">Change of Direction</strong><small id="poseSessionLabel">Consented adult demo · identity removed</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
+                    <div class="pose-drill-switcher" role="group" aria-label="Choose a recorded pose demo">
+                        <button class="active" type="button" data-pose-drill="changeOfDirection" aria-pressed="true"><span>01</span>Agility</button>
+                        <button type="button" data-pose-drill="broadJump" aria-pressed="false"><span>02</span>Broad jump</button>
+                    </div>
+                    <div class="session-video">
+                        <div class="field-lines" aria-hidden="true"></div>
+                        <canvas id="landingPoseCanvas" role="img" aria-label="Recorded anonymized MediaPipe pose playback"></canvas>
+                        <span class="video-chip">RECORDED POSE</span>
+                        <span class="pose-readout" aria-live="polite"><strong id="poseSequenceLabel">Agility · recorded rep</strong><small>33 joints · app renderer</small></span>
+                        <span class="pose-phase" id="posePhaseChip">Start · 0.00 s</span>
+                        <div class="pose-controls">
+                            <button class="pose-play" id="posePlayButton" type="button" aria-label="Play pose playback" aria-pressed="false"><span id="posePlayIcon" aria-hidden="true">▶</span></button>
+                            <input class="pose-scrubber" id="poseScrubber" type="range" min="0" max="281" value="0" step="1" aria-label="Pose playback position">
+                            <small class="pose-time" id="poseTimer">0:00.00 / 0:04.68</small>
+                        </div>
+                    </div>
+                    <div class="session-metrics" id="poseMetricGrid"><article><span>Start</span><strong>1.99 s</strong></article><article><span>Turn</span><strong>1.08 s</strong></article><article><span>End</span><strong>1.61 s</strong></article><article><span>Total</span><strong>4.68 s</strong></article></div>
                 </div>
             </div>
         </section>
@@ -842,113 +874,8 @@
             focusNote.textContent = data.note;
         }));
 
-        // App-format COCO-17 playback. The edge table and white-line/lime-joint treatment
-        // mirror PoseTek's production session renderer; these poses are anonymized demo geometry.
-        const poseCanvas = document.getElementById('landingPoseCanvas');
-        const poseLabel = document.getElementById('poseSequenceLabel');
-        const poseTimer = document.getElementById('poseTimer');
-        const poseEdges = [[0,1],[0,2],[1,3],[2,4],[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
-        const poseSequences = [
-            {
-                title: 'Change of Direction',
-                label: 'Agility · turn phase',
-                metrics: [['Start','1.82 s'],['Turn','1.48 s'],['Return','1.82 s'],['Total','5.12 s']],
-                frames: [
-                    [[.50,.14],[.48,.13],[.52,.13],[.46,.15],[.54,.15],[.43,.29],[.57,.29],[.35,.40],[.66,.42],[.29,.52],[.74,.51],[.46,.53],[.57,.53],[.39,.70],[.65,.69],[.34,.89],[.76,.84]],
-                    [[.48,.18],[.46,.17],[.50,.17],[.44,.19],[.52,.19],[.39,.32],[.54,.34],[.30,.43],[.66,.45],[.22,.52],[.76,.54],[.42,.56],[.55,.57],[.32,.71],[.68,.72],[.22,.88],[.80,.88]],
-                    [[.45,.15],[.43,.14],[.47,.14],[.41,.16],[.49,.16],[.38,.29],[.52,.30],[.30,.42],[.61,.40],[.23,.53],[.69,.49],[.42,.53],[.53,.53],[.35,.69],[.61,.70],[.27,.84],[.70,.88]]
-                ]
-            },
-            {
-                title: 'Standing Broad Jump',
-                label: 'Broad jump · flight phase',
-                metrics: [['Takeoff','00:00.7'],['Apex','00:01.4'],['Landing','Stable'],['Distance','2.18 m']],
-                frames: [
-                    [[.36,.24],[.34,.23],[.38,.23],[.32,.25],[.40,.25],[.33,.36],[.46,.36],[.25,.48],[.53,.48],[.19,.59],[.59,.58],[.37,.55],[.49,.55],[.34,.72],[.55,.72],[.31,.90],[.63,.89]],
-                    [[.52,.17],[.50,.16],[.54,.16],[.48,.18],[.56,.18],[.43,.30],[.57,.30],[.36,.40],[.65,.39],[.30,.50],[.72,.47],[.47,.51],[.58,.51],[.38,.63],[.67,.63],[.34,.73],[.74,.72]],
-                    [[.69,.20],[.67,.19],[.71,.19],[.65,.21],[.73,.21],[.62,.33],[.76,.33],[.54,.44],[.83,.43],[.48,.55],[.90,.51],[.66,.55],[.77,.55],[.59,.72],[.82,.72],[.54,.89],[.90,.88]]
-                ]
-            }
-        ];
-
-        function poseAt(sequence, progress) {
-            const scaled = progress * (sequence.frames.length - 1);
-            const fromIndex = Math.floor(scaled);
-            const toIndex = Math.min(sequence.frames.length - 1, fromIndex + 1);
-            const rawT = scaled - fromIndex;
-            const t = rawT * rawT * (3 - 2 * rawT);
-            return sequence.frames[fromIndex].map((point, index) => {
-                const next = sequence.frames[toIndex][index];
-                return [point[0] + (next[0] - point[0]) * t, point[1] + (next[1] - point[1]) * t];
-            });
-        }
-
-        function drawPose(context, points, width, height, opacity, current) {
-            const map = point => ({ x: point[0] * width, y: (.04 + point[1] * .84) * height });
-            context.save();
-            context.globalAlpha = opacity;
-            context.strokeStyle = current ? 'rgba(247,251,249,.92)' : 'rgba(255,189,89,.55)';
-            context.lineWidth = current ? 3 : 2;
-            context.lineCap = 'round';
-            context.lineJoin = 'round';
-            context.beginPath();
-            poseEdges.forEach(([start, end]) => {
-                const a = map(points[start]);
-                const b = map(points[end]);
-                context.moveTo(a.x, a.y);
-                context.lineTo(b.x, b.y);
-            });
-            context.stroke();
-            if (current) {
-                points.forEach(point => {
-                    const mapped = map(point);
-                    context.beginPath();
-                    context.arc(mapped.x, mapped.y, 3, 0, Math.PI * 2);
-                    context.fillStyle = '#b7f34a';
-                    context.fill();
-                    context.strokeStyle = 'rgba(255,255,255,.76)';
-                    context.lineWidth = 1;
-                    context.stroke();
-                });
-            }
-            context.restore();
-        }
-
-        let poseStart = performance.now();
-        let lastPoseSequence = -1;
-        function renderLandingPose(now) {
-            if (!poseCanvas) return;
-            const rect = poseCanvas.getBoundingClientRect();
-            const ratio = Math.min(2, window.devicePixelRatio || 1);
-            const pixelWidth = Math.max(1, Math.round(rect.width * ratio));
-            const pixelHeight = Math.max(1, Math.round(rect.height * ratio));
-            if (poseCanvas.width !== pixelWidth || poseCanvas.height !== pixelHeight) {
-                poseCanvas.width = pixelWidth;
-                poseCanvas.height = pixelHeight;
-            }
-            const context = poseCanvas.getContext('2d');
-            context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            context.clearRect(0, 0, rect.width, rect.height);
-
-            const elapsed = Math.max(0, (now - poseStart) / 1000);
-            const sequenceIndex = Math.floor(elapsed / 4) % poseSequences.length;
-            const localSeconds = elapsed % 4;
-            const progress = (1 - Math.cos((localSeconds / 4) * Math.PI * 2)) / 2;
-            const sequence = poseSequences[sequenceIndex];
-            if (sequenceIndex !== lastPoseSequence) {
-                poseLabel.textContent = sequence.label;
-                document.getElementById('poseDrillTitle').textContent = sequence.title;
-                document.getElementById('poseMetricGrid').innerHTML = sequence.metrics.map(([key,value]) => `<article><span>${key}</span><strong>${value}</strong></article>`).join('');
-                lastPoseSequence = sequenceIndex;
-            }
-            poseTimer.textContent = `00:0${Math.floor(localSeconds)} / 00:04`;
-            drawPose(context, poseAt(sequence, Math.max(0, progress - .12)), rect.width, rect.height, .18, false);
-            drawPose(context, poseAt(sequence, Math.max(0, progress - .06)), rect.width, rect.height, .28, false);
-            drawPose(context, poseAt(sequence, progress), rect.width, rect.height, 1, true);
-
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(renderLandingPose);
-        }
-        requestAnimationFrame(renderLandingPose);
     </script>
+    <script src="landing-pose-demo-data.js"></script>
+    <script src="landing-pose-demo.js"></script>
 </body>
 </html>
