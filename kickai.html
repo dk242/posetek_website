@@ -13,8 +13,12 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "w8lex8gzl7");
     </script>
-    <title>PoseTek - Soccer Performance Analytics</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#04130e">
+    <meta name="description" content="Sign in to PoseTek to review athlete testing, drill sessions, and performance profiles.">
+    <title>Sign In | PoseTek</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #125638;
@@ -22,7 +26,7 @@
             --accent: #38AA6A;
             --text-light: #ffffff;
             --text-dark: #121212;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition: background-color 0.2s cubic-bezier(0, 0, 0.2, 1), border-color 0.2s cubic-bezier(0, 0, 0.2, 1), color 0.2s cubic-bezier(0, 0, 0.2, 1), opacity 0.2s cubic-bezier(0, 0, 0.2, 1), transform 0.2s cubic-bezier(0, 0, 0.2, 1);
         }
 
         * {
@@ -984,66 +988,76 @@
             color: rgba(255,255,255,0.55);
         }
     </style>
+    <link rel="stylesheet" href="kickai-theme.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo" style="text-decoration:none;">PoseTek</a>
-            <div class="nav-buttons">
-                <button class="nav-btn" id="authBtn">Login</button>
-            </div>
-        </nav>
+    <header class="site-chrome">
+        <a href="index.html" class="brand-lockup" aria-label="PoseTek home">
+            <span class="brand-mark" aria-hidden="true">P</span>
+            <span>POSETEK</span>
+        </a>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="authBtn" type="button">Sign In</button>
+        </div>
     </header>
 
     <main>
-        <section class="hero">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1>Precision Training for Athletes</h1>
-                <p class="subtitle">Elevate your game with AI-powered biomechanical analysis</p>
-                <a href="#" class="cta-button" id="getStartedBtn">Get Started</a>
-            </div>
-        </section>
-    </main>
+        <div class="auth-shell">
+            <section class="auth-context" aria-labelledby="auth-page-title">
+                <p class="eyebrow">Athlete performance system · 2026</p>
+                <h1 id="auth-page-title">Your performance lives here.</h1>
+                <p class="auth-intro">Sign in to review test results, movement video, and the training work that follows each session.</p>
+                <ul class="access-list" aria-label="PoseTek account access">
+                    <li><strong>Coaches</strong> Manage athletes</li>
+                    <li><strong>Athletes</strong> Review results</li>
+                    <li><strong>Teams</strong> Track progress</li>
+                </ul>
+            </section>
 
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="auth-modal">
-            <div class="modal-content-wrapper">
-                <div class="modal-header">
-                    <h3 class="modal-title">Login to PoseTek</h3>
-                    <button class="close-btn" id="closeModal">&times;</button>
+            <section id="loginModal" class="login-panel" aria-labelledby="login-title">
+                <div class="login-card">
+                    <p class="login-kicker">Secure account access</p>
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="login-title">Welcome back</h2>
+                        <p class="login-support">PoseTek will open the correct coach or athlete view after sign-in.</p>
+                        <button class="close-btn" id="closeModal" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="verification-banner" id="verificationBanner" role="status" aria-live="polite">
+                        <p>Your email is not verified</p>
+                        <a href="#" id="resendVerification">Resend verification email</a>
+                    </div>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email" inputmode="email" spellcheck="false" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        </div>
+                        <div class="login-form-row">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="rememberMe">
+                                <label for="rememberMe">Remember me</label>
+                            </div>
+                            <a href="#" class="text-link" id="forgotPassword">Forgot password?</a>
+                        </div>
+                        <div class="error-message" id="loginError" role="alert"></div>
+                        <div class="success-message" id="loginSuccess" role="status" aria-live="polite"></div>
+                        <button type="submit" class="submit-btn" id="loginSubmit">
+                            <span>Sign In</span>
+                            <span class="spinner" id="loginSpinner" aria-hidden="true"></span>
+                        </button>
+                    </form>
+                    <div class="signup-prompt">
+                        <p>New to PoseTek?</p>
+                        <button type="button" class="secondary-action" id="getStartedBtn">Create an Account</button>
+                    </div>
+                    <p class="access-note">Your account permissions determine which athlete and team data you can access.</p>
                 </div>
-                <div class="verification-banner" id="verificationBanner">
-                    <p>Your email is not verified</p>
-                    <a id="resendVerification">Resend verification email</a>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password" required>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="rememberMe">
-                        <label for="rememberMe">Remember me</label>
-                    </div>
-                    <div class="error-message" id="loginError"></div>
-                    <div class="success-message" id="loginSuccess"></div>
-                    <button type="submit" class="submit-btn" id="loginSubmit">
-                        <span>Login</span>
-                        <span class="spinner" id="loginSpinner"></span>
-                    </button>
-                    <div class="auth-links">
-                        <a href="#" id="forgotPassword">Forgot password?</a>
-                    </div>
-                </form>
-            </div>
+            </section>
         </div>
-    </div>
+    </main>
 
     <!-- Signup Modal -->
     <div class="modal-overlay" id="signupModal">
@@ -1051,13 +1065,13 @@
             <div class="modal-content-wrapper">
                 <div class="modal-header">
                     <h3 class="modal-title">Create Account</h3>
-                    <button class="close-btn" id="closeSignupModal">&times;</button>
+                    <button class="close-btn" id="closeSignupModal" type="button" aria-label="Close account creation">&times;</button>
                 </div>
                 
                 <div class="tab-container">
-                    <div class="tab active" data-tab="playerCode">Player</div>
-                    <div class="tab" data-tab="organization">Organization</div>
-                    <div class="tab" data-tab="independent">Coach</div>
+                    <button class="tab active" type="button" data-tab="playerCode">Player</button>
+                    <button class="tab" type="button" data-tab="organization">Organization</button>
+                    <button class="tab" type="button" data-tab="independent">Coach</button>
                 </div>
 
                 <!-- Player Tab -->
@@ -1065,22 +1079,22 @@
                     <form id="playerCodeForm">
                         <div class="form-group">
                             <label for="playerCode">Player Code</label>
-                            <input type="text" id="playerCode" placeholder="Enter login code" required>
+                            <input type="text" id="playerCode" name="player-code" placeholder="Enter login code" autocomplete="off" spellcheck="false" required>
                         </div>
                         <div class="form-group">
                             <label for="playerEmail">Email</label>
-                            <input type="email" id="playerEmail" placeholder="Enter your email" required>
+                            <input type="email" id="playerEmail" name="player-email" placeholder="name@example.com" autocomplete="email" inputmode="email" spellcheck="false" required>
                         </div>
                         <div class="form-group">
                             <label for="playerPassword">Password</label>
-                            <input type="password" id="playerPassword" placeholder="Create password" required minlength="6">
+                            <input type="password" id="playerPassword" name="player-password" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6">
                         </div>
                         <div class="form-group">
                             <label for="playerConfirmPassword">Confirm Password</label>
-                            <input type="password" id="playerConfirmPassword" placeholder="Confirm password" required>
+                            <input type="password" id="playerConfirmPassword" name="player-confirm-password" placeholder="Enter the password again" autocomplete="new-password" required>
                         </div>
-                        <div class="error-message" id="playerCodeError"></div>
-                        <div class="success-message" id="playerCodeSuccess"></div>
+                        <div class="error-message" id="playerCodeError" role="alert"></div>
+                        <div class="success-message" id="playerCodeSuccess" role="status" aria-live="polite"></div>
                         <button type="submit" class="submit-btn" id="playerCodeSubmit">
                             <span>Create Account</span>
                             <span class="spinner" id="playerCodeSpinner"></span>
@@ -1094,24 +1108,24 @@
                         <div class="name-fields">
                             <div class="form-group">
                                 <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" placeholder="First name" required>
+                                <input type="text" id="firstName" name="first-name" placeholder="First name" autocomplete="given-name" required>
                             </div>
                             <div class="form-group">
                                 <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" placeholder="Last name" required>
+                                <input type="text" id="lastName" name="last-name" placeholder="Last name" autocomplete="family-name" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="signupEmail">Email</label>
-                            <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                            <input type="email" id="signupEmail" name="signup-email" placeholder="name@example.com" autocomplete="email" inputmode="email" spellcheck="false" required>
                         </div>
                         <div class="form-group">
                             <label for="signupPassword">Password (min 6 characters)</label>
-                            <input type="password" id="signupPassword" placeholder="Create a password" required minlength="6">
+                            <input type="password" id="signupPassword" name="signup-password" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6">
                         </div>
                         <div class="form-group">
                             <label for="confirmPassword">Confirm Password</label>
-                            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                            <input type="password" id="confirmPassword" name="confirm-password" placeholder="Enter the password again" autocomplete="new-password" required>
                         </div>
                         <div class="form-group">
                             <label for="userType">I am a:</label>
@@ -1123,10 +1137,10 @@
                         </div>
                         <div class="form-group" id="orgCodeGroup">
                             <label for="orgCode">Organization Code (if joining existing)</label>
-                            <input type="text" id="orgCode" placeholder="Enter organization code">
+                            <input type="text" id="orgCode" name="organization-code" placeholder="Enter organization code" autocomplete="off" spellcheck="false">
                         </div>
-                        <div class="error-message" id="orgSignupError"></div>
-                        <div class="success-message" id="orgSignupSuccess"></div>
+                        <div class="error-message" id="orgSignupError" role="alert"></div>
+                        <div class="success-message" id="orgSignupSuccess" role="status" aria-live="polite"></div>
                         <button type="submit" class="submit-btn" id="orgSignupSubmit">
                             <span>Sign Up</span>
                             <span class="spinner" id="orgSignupSpinner"></span>
@@ -1140,27 +1154,27 @@
                         <div class="name-fields">
                             <div class="form-group">
                                 <label for="indFirstName">First Name</label>
-                                <input type="text" id="indFirstName" placeholder="First name" required>
+                                <input type="text" id="indFirstName" name="coach-first-name" placeholder="First name" autocomplete="given-name" required>
                             </div>
                             <div class="form-group">
                                 <label for="indLastName">Last Name</label>
-                                <input type="text" id="indLastName" placeholder="Last name" required>
+                                <input type="text" id="indLastName" name="coach-last-name" placeholder="Last name" autocomplete="family-name" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="indEmail">Email</label>
-                            <input type="email" id="indEmail" placeholder="Enter your email" required>
+                            <input type="email" id="indEmail" name="coach-email" placeholder="name@example.com" autocomplete="email" inputmode="email" spellcheck="false" required>
                         </div>
                         <div class="form-group">
                             <label for="indPassword">Password</label>
-                            <input type="password" id="indPassword" placeholder="Create password" required minlength="6">
+                            <input type="password" id="indPassword" name="coach-password" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6">
                         </div>
                         <div class="form-group">
                             <label for="indConfirmPassword">Confirm Password</label>
-                            <input type="password" id="indConfirmPassword" placeholder="Confirm password" required>
+                            <input type="password" id="indConfirmPassword" name="coach-confirm-password" placeholder="Enter the password again" autocomplete="new-password" required>
                         </div>
-                        <div class="error-message" id="independentError"></div>
-                        <div class="success-message" id="independentSuccess"></div>
+                        <div class="error-message" id="independentError" role="alert"></div>
+                        <div class="success-message" id="independentSuccess" role="status" aria-live="polite"></div>
                         <button type="submit" class="submit-btn" id="independentSubmit">
                             <span>Sign Up</span>
                             <span class="spinner" id="independentSpinner"></span>
@@ -1177,16 +1191,16 @@
 
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotPasswordModal">
-        <div class="auth-modal" style="max-width:420px;">
+        <div class="auth-modal">
             <div class="modal-content-wrapper">
                 <div class="modal-header">
                     <h3 class="modal-title">Reset Password</h3>
-                    <button class="close-btn" id="closeForgotModal">&times;</button>
+                    <button class="close-btn" id="closeForgotModal" type="button" aria-label="Close password reset">&times;</button>
                 </div>
-                <p style="color:rgba(255,255,255,0.7);margin-bottom:1.5rem;font-size:0.95rem;">Enter your email and we'll send you a reset link.</p>
+                <p class="mini-modal-copy">Enter your email and we’ll send you a reset link.</p>
                 <div class="form-group">
                     <label for="forgotEmailInput">Email Address</label>
-                    <input type="email" id="forgotEmailInput" placeholder="Enter your email" autocomplete="email">
+                    <input type="email" id="forgotEmailInput" name="reset-email" placeholder="name@example.com" autocomplete="email" inputmode="email" spellcheck="false">
                 </div>
                 <div class="mini-modal-buttons">
                     <button class="mini-cancel-btn" id="forgotCancelBtn">Cancel</button>
@@ -1198,15 +1212,15 @@
 
     <!-- Coach Organization Setup Modal -->
     <div class="modal-overlay" id="coachOrgModal">
-        <div class="auth-modal" style="max-width:420px;">
+        <div class="auth-modal">
             <div class="modal-content-wrapper">
                 <!-- Step 1: Choose action -->
                 <div id="coachOrgStep1">
                     <div class="modal-header">
                         <h3 class="modal-title">Organization Setup</h3>
-                        <button class="close-btn" id="closeCoachOrgModal">&times;</button>
+                        <button class="close-btn" id="closeCoachOrgModal" type="button" aria-label="Close organization setup">&times;</button>
                     </div>
-                    <p style="color:rgba(255,255,255,0.7);margin-bottom:1.5rem;font-size:0.95rem;">As a coach, how would you like to get started?</p>
+                    <p class="mini-modal-copy">As a coach, how would you like to get started?</p>
                     <div style="display:flex;flex-direction:column;gap:1rem;">
                         <button class="org-choice-btn" id="coachCreateOrgBtn">
                             <span class="org-choice-icon">＋</span>
@@ -1228,11 +1242,11 @@
                 <div id="coachOrgStep2" style="display:none;">
                     <div class="modal-header">
                         <h3 class="modal-title" id="coachOrgStep2Title">Organization Name</h3>
-                        <button class="close-btn" id="closeCoachOrgModal2">&times;</button>
+                        <button class="close-btn" id="closeCoachOrgModal2" type="button" aria-label="Close organization setup">&times;</button>
                     </div>
                     <div class="form-group">
                         <label id="coachOrgInputLabel">Organization Name</label>
-                        <input type="text" id="coachOrgInput" placeholder="">
+                        <input type="text" id="coachOrgInput" name="coach-organization" placeholder="" autocomplete="off" spellcheck="false">
                     </div>
                     <div id="coachOrgInputError" class="error-message"></div>
                     <div class="mini-modal-buttons">
@@ -1292,11 +1306,17 @@
 
         // Modal toggle functions
         function showModal(modal) {
+            if (modal === loginModal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                window.setTimeout(() => document.getElementById('email').focus(), 220);
+                return;
+            }
             document.body.style.overflow = 'hidden';
             modal.classList.add('active');
         }
 
         function hideModal(modal) {
+            if (modal === loginModal) return;
             document.body.style.overflow = 'auto';
             modal.classList.remove('active');
         }
@@ -1564,7 +1584,13 @@
         }
 
         // Event Listeners
-        authBtn.addEventListener('click', () => showModal(loginModal));
+        authBtn.addEventListener('click', () => {
+            if (auth.currentUser) {
+                auth.signOut().then(() => window.location.reload());
+                return;
+            }
+            showModal(loginModal);
+        });
         getStartedBtn.addEventListener('click', () => {
             showModal(signupModal);
             // Reset to first tab when opening modal
@@ -1584,8 +1610,7 @@
         // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (loginModal.classList.contains('active')) hideModal(loginModal);
-                if (signupModal.classList.contains('active')) hideModal(signupModal);
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => hideModal(modal));
             }
         });
 
@@ -1921,15 +1946,9 @@
             if (user) {
                 // User is signed in
                 authBtn.textContent = 'Logout';
-                authBtn.onclick = () => {
-                    auth.signOut().then(() => {
-                        window.location.reload();
-                    });
-                };
             } else {
                 // No user is signed in
-                authBtn.textContent = 'Login';
-                authBtn.onclick = () => showModal(loginModal);
+                authBtn.textContent = 'Sign In';
                 if (getSafeReturnToUrl()) showModal(loginModal);
             }
         });
@@ -1940,8 +1959,9 @@
         });
     </script>
 
-    <footer style="text-align:center;padding:1.5rem;font-size:0.82rem;color:rgba(255,255,255,0.4);border-top:1px solid rgba(255,255,255,0.08);margin-top:2rem;">
-        © 2026 PoseTek &nbsp;·&nbsp; <a href="privacy.html" style="color:#4c8c6a;text-decoration:none;">Privacy Policy</a>
+    <footer class="site-footer">
+        <span>© 2026 PoseTek</span>
+        <a href="privacy.html">Privacy Policy</a>
     </footer>
 </body>
 </html>
