@@ -15,6 +15,10 @@
   const drillTitle = document.getElementById("poseDrillTitle");
   const metricGrid = document.getElementById("poseMetricGrid");
   const drillButtons = Array.from(document.querySelectorAll("[data-pose-drill]"));
+  const telemetryDrill = document.getElementById("telemetryDrill");
+  const telemetryResult = document.getElementById("telemetryResult");
+  const telemetryResultLabel = document.getElementById("telemetryResultLabel");
+  const telemetryPhase = document.getElementById("telemetryPhase");
   const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   const mediaPipe33Edges = [
@@ -47,6 +51,20 @@
     const minutes = Math.floor(safe / 60);
     const remainder = safe - minutes * 60;
     return `${minutes}:${remainder.toFixed(2).padStart(5, "0")}`;
+  }
+
+  function updateFlap(element, value) {
+    if (!element || element.textContent === value) return;
+    if (reducedMotionQuery.matches) {
+      element.textContent = value;
+      return;
+    }
+    element.classList.remove("is-flipping");
+    requestAnimationFrame(() => {
+      element.classList.add("is-flipping");
+      window.setTimeout(() => { element.textContent = value; }, 80);
+      window.setTimeout(() => { element.classList.remove("is-flipping"); }, 190);
+    });
   }
 
   function mapPoint(point) {
@@ -212,6 +230,7 @@
     timer.textContent = `${formatTime(elapsed)} / ${formatTime(total)}`;
     phaseChip.textContent = `${phase.title} · ${elapsed.toFixed(2)} s`;
     phaseChip.style.setProperty("--phase-color", phase.color);
+    if (telemetryPhase && telemetryPhase.textContent !== phase.title) telemetryPhase.textContent = phase.title;
     scrubber.value = String(state.frame);
     scrubber.setAttribute("aria-valuetext", `${phase.title}, ${elapsed.toFixed(2)} seconds`);
   }
@@ -290,6 +309,10 @@
     }
     drillTitle.textContent = sequence.title;
     sequenceLabel.textContent = sequence.label;
+    const isBroadJump = sequence.key === "broadJump";
+    updateFlap(telemetryDrill, isBroadJump ? "Broad jump" : "Agility");
+    updateFlap(telemetryResult, isBroadJump ? sequence.metrics[0][1] : sequence.metrics[sequence.metrics.length - 1][1]);
+    if (telemetryResultLabel) telemetryResultLabel.textContent = isBroadJump ? "Distance" : "Total";
     scrubber.max = String(sequence.frames.length - 1);
     metricGrid.replaceChildren(...sequence.metrics.map(([label, value]) => {
       const article = document.createElement("article");

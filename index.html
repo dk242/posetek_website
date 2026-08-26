@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PoseTek turns standardized soccer performance tests into a living athlete profile and a focused training plan.">
     <meta name="theme-color" content="#04130e">
+    <meta property="og:title" content="PoseTek | See the Rep. Understand the Player.">
+    <meta property="og:description" content="Recorded performance tests, athlete profiles, and focused soccer development in one connected system.">
+    <meta property="og:type" content="website">
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
-    <title>PoseTek | Test. Understand. Improve.</title>
+    <title>PoseTek | See the Rep. Understand the Player.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,7 +35,7 @@
             --green: #45d17a;
             --amber: #ffbd59;
             --cyan: #4bd7e8;
-            --violet: #b49bff;
+            --violet: #66d6e8;
             --radius-lg: 30px;
             --radius-md: 22px;
             --radius-sm: 15px;
@@ -410,7 +413,7 @@
         .test-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 13px; font-size: 17px; font-weight: 900; }
         .speed { color: var(--cyan); background: rgba(75,215,232,.12); }
         .power { color: var(--lime); background: rgba(183,243,74,.12); }
-        .control { color: var(--violet); background: rgba(180,155,255,.12); }
+        .control { color: var(--cyan); background: rgba(75,215,232,.12); }
         .agility { color: var(--amber); background: rgba(255,189,89,.12); }
         .shooting { color: #ff8c8c; background: rgba(255,140,140,.12); }
         .test-number { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .12em; }
@@ -594,6 +597,188 @@
             .footer-shell { grid-template-columns: 1fr; align-items: start; }
             .footer-links { justify-content: flex-start; }
         }
+
+        /* 2026 performance-lab refresh */
+        .hero {
+            position: relative;
+            isolation: isolate;
+            min-height: auto;
+            padding: 150px 0 104px;
+            display: block;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            z-index: -2;
+            inset: 0 50% auto;
+            width: 100vw;
+            height: 760px;
+            transform: translateX(-50%);
+            background-image:
+                radial-gradient(circle, rgba(183,243,74,.24) 1px, transparent 1.5px),
+                radial-gradient(circle at 50% 24%, rgba(183,243,74,.17), transparent 36%);
+            background-size: 22px 22px, 100% 100%;
+            mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 96%);
+            opacity: .62;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            left: 50%;
+            top: 570px;
+            width: 70%;
+            height: 360px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(183,243,74,.12);
+            filter: blur(90px);
+            pointer-events: none;
+        }
+        .hero-text {
+            max-width: 970px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .hero-text .eyebrow { justify-content: center; }
+        .hero h1 {
+            max-width: 960px;
+            margin-inline: auto;
+            font-size: clamp(62px, 8vw, 112px);
+            line-height: .84;
+            letter-spacing: -.048em;
+        }
+        .hero-copy { max-width: 710px; margin: 27px auto 0; }
+        .hero-actions, .hero-proof { justify-content: center; }
+        .hero-proof { max-width: 710px; margin-inline: auto; }
+        .performance-stage {
+            margin-top: 72px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(270px, .45fr);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 6px;
+            background: rgba(2,12,8,.92);
+            box-shadow: 0 44px 110px rgba(0,0,0,.46);
+        }
+        .performance-stage .session-mock {
+            min-width: 0;
+            order: 0;
+            padding: 16px;
+            border: 0;
+            border-right: 1px solid var(--line);
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+        .performance-stage .session-video { aspect-ratio: 16 / 8.6; min-height: 430px; }
+        .performance-stage .pose-drill-switcher { max-width: 420px; }
+        .stage-aside {
+            min-width: 0;
+            order: 1;
+            display: flex;
+            flex-direction: column;
+            background:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px),
+                #061711;
+            background-size: 28px 28px;
+        }
+        .stage-aside-head { padding: 22px; border-bottom: 1px solid var(--line); }
+        .stage-kicker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--lime);
+            font: 700 9px/1.2 "IBM Plex Mono", monospace;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        .stage-kicker::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 5px rgba(183,243,74,.09); }
+        .stage-aside h2 { margin: 16px 0 0; font-size: 35px; line-height: .92; }
+        .stage-aside p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+        .telemetry-board { display: grid; grid-template-columns: 1fr 1fr; }
+        .telemetry-cell { min-height: 116px; padding: 19px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .telemetry-cell:nth-child(even) { border-right: 0; }
+        .telemetry-cell span, .proof-strip span { display: block; color: var(--muted); font: 700 8px/1.3 "IBM Plex Mono", monospace; letter-spacing: .09em; text-transform: uppercase; }
+        .telemetry-cell strong {
+            margin-top: 15px;
+            display: block;
+            overflow: hidden;
+            color: var(--ink);
+            font: 800 22px/.95 "Barlow Condensed", sans-serif;
+            letter-spacing: -.02em;
+            text-transform: uppercase;
+            transform-origin: 50% 50%;
+        }
+        .telemetry-cell strong.is-flipping { animation: flap .18s ease both; }
+        @keyframes flap { 50% { opacity: .25; transform: scaleY(.22); } }
+        .stage-note { margin-top: auto; padding: 20px 22px 24px; }
+        .stage-note strong { display: block; color: var(--muted-strong); font-size: 11px; }
+        .stage-note a { margin-top: 11px; display: inline-flex; gap: 8px; color: var(--lime); font-size: 10px; font-weight: 800; text-decoration: none; }
+        .proof-strip { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+        .proof-strip div { padding: 18px 22px; border-right: 1px solid var(--line); }
+        .proof-strip div:last-child { border-right: 0; }
+        .proof-strip strong { display: block; margin-top: 7px; color: var(--muted-strong); font-size: 11px; line-height: 1.4; }
+
+        .profile-layout { grid-template-columns: .8fr 1.2fr; }
+        .profile-section .profile-demo { order: 2; }
+        .profile-section .profile-demo::before { display: none; }
+        .profile-section .floating-plan { right: 30px; }
+        .flow-grid { position: relative; }
+        .flow-grid::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: linear-gradient(90deg, var(--lime), rgba(183,243,74,.08)); transform-origin: left; }
+        .test-grid { grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }
+        .test-card {
+            min-height: 0;
+            padding: 21px 4px;
+            display: grid;
+            grid-template-columns: 100px minmax(170px, .7fr) 1.25fr;
+            gap: 22px;
+            align-items: center;
+            border: 0;
+            border-bottom: 1px solid var(--line);
+            border-radius: 0;
+            background: transparent;
+        }
+        .test-card:hover { padding-left: 12px; border-color: rgba(183,243,74,.35); background: rgba(183,243,74,.025); }
+        .test-card header { justify-content: flex-start; }
+        .test-card .test-number { order: -1; }
+        .test-card p { margin: 0; }
+        .metric-tags { margin: 0; justify-content: flex-end; }
+        .tests-layout { grid-template-columns: minmax(250px,.65fr) minmax(0,1.35fr); }
+
+        @media (max-width: 980px) {
+            .performance-stage { grid-template-columns: 1fr; }
+            .performance-stage .session-mock { border-right: 0; border-bottom: 1px solid var(--line); }
+            .stage-aside { display: grid; grid-template-columns: .8fr 1.2fr; }
+            .stage-aside-head { border-bottom: 0; border-right: 1px solid var(--line); }
+            .stage-note { grid-column: 1 / -1; border-top: 1px solid var(--line); }
+            .proof-strip { grid-template-columns: 1fr 1fr; }
+            .proof-strip div:nth-child(2) { border-right: 0; }
+            .proof-strip div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+        }
+        @media (max-width: 700px) {
+            .hero { width: calc(100% - 28px); padding-top: 122px; }
+            .hero-text, .hero-copy, .hero-proof, .hero-actions { width: 100%; max-width: 340px; margin-left: auto; margin-right: auto; }
+            .hero h1 { max-width: 340px; font-size: clamp(38px, 10.6vw, 44px); line-height: .9; letter-spacing: -.035em; }
+            .hero-copy { font-size: 14px; }
+            .hero-text .eyebrow { font-size: 8px; }
+            .hero-proof { display: grid; grid-template-columns: 1fr; justify-items: center; }
+            .performance-stage, .proof-strip { width: 100%; max-width: 362px; margin-left: auto; margin-right: auto; }
+            .performance-stage { margin-top: 50px; }
+            .performance-stage .session-mock { padding: 9px; }
+            .performance-stage .session-video { min-height: 0; aspect-ratio: 4 / 3; }
+            .stage-aside { display: block; }
+            .stage-aside-head { border-right: 0; border-bottom: 1px solid var(--line); }
+            .telemetry-cell { min-height: 100px; }
+            .proof-strip { grid-template-columns: 1fr; }
+            .proof-strip div, .proof-strip div:nth-child(2) { border-right: 0; border-bottom: 1px solid var(--line); }
+            .proof-strip div:last-child { border-bottom: 0; }
+            .test-card { grid-template-columns: 78px 1fr; gap: 15px; }
+            .test-card p, .test-card .metric-tags { grid-column: 1 / -1; }
+            .metric-tags { justify-content: flex-start; }
+            .profile-section .profile-demo { margin-bottom: 92px; }
+        }
     </style>
 </head>
 <body>
@@ -620,79 +805,61 @@
     <main id="top">
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-text reveal visible">
-                <p class="eyebrow">PoseTek performance system · 2026</p>
-                <h1 id="hero-title">Test the player.<br><span>Build the profile.</span><br>Train what matters.</h1>
-                <p class="hero-copy">One connected system for measuring soccer athletes, showing them exactly where they stand, and turning repeatable results into focused development.</p>
+                <p class="eyebrow">The performance lab for developing soccer players</p>
+                <h1 id="hero-title">See the rep.<br><span>Understand the player.</span><br>Train what’s next.</h1>
+                <p class="hero-copy">PoseTek turns standardized movement tests into an athlete profile coaches can explain—and a focused development plan players can act on.</p>
                 <div class="hero-actions">
                     <a class="button-primary" href="bookPerformanceTest.html">Book a performance test <span aria-hidden="true">→</span></a>
-                    <a class="button-secondary" href="#how-it-works">See the system <span aria-hidden="true">↓</span></a>
+                    <a class="button-secondary" href="#how-it-works">Explore the system <span aria-hidden="true">↓</span></a>
                 </div>
                 <div class="hero-proof" aria-label="PoseTek highlights">
-                    <span><i></i>6 standardized tests</span>
-                    <span><i></i>Athlete-specific profile</span>
-                    <span><i></i>Focused training pathway</span>
+                    <span><i></i>Recorded rep playback</span>
+                    <span><i></i>33-joint pose tracking</span>
+                    <span><i></i>Drill-specific metrics</span>
                 </div>
             </div>
 
-            <div class="profile-demo reveal" aria-label="Sample PoseTek athlete profile">
-                <div class="demo-window">
-                    <div class="demo-topbar">
-                        <span class="mini-mark">P</span>
-                        Athlete home
-                        <span class="live-chip">Profile updated</span>
+            <div class="performance-stage reveal" aria-label="PoseTek performance analysis demo">
+                <div class="session-mock">
+                    <div class="session-head"><span class="mini-mark">P</span><span><strong id="poseDrillTitle">Change of Direction</strong><small id="poseSessionLabel">Consented adult demo · identity removed</small></span><div class="session-tabs"><span>Overview</span><span class="active">Live analysis</span><span>Profile</span></div></div>
+                    <div class="pose-drill-switcher" role="group" aria-label="Choose a recorded pose demo">
+                        <button class="active" type="button" data-pose-drill="changeOfDirection" aria-pressed="true"><span>01</span>Agility</button>
+                        <button type="button" data-pose-drill="broadJump" aria-pressed="false"><span>02</span>Broad jump</button>
                     </div>
-                    <div class="demo-content">
-                        <div class="athlete-row">
-                            <span class="avatar">AJ</span>
-                            <span><strong>Alex Johnson</strong><small>Midfielder · U17 · Sample profile</small></span>
-                            <span class="sample-chip">Latest test</span>
-                        </div>
-                        <div class="demo-main">
-                            <div class="radar-card">
-                                <span class="card-kicker">Skill map</span>
-                                <div class="radar-wrap">
-                                    <svg viewBox="0 0 240 240" role="img" aria-label="Interactive sample skill map">
-                                        <polygon class="radar-axis" points="120,25 210,91 176,197 64,197 30,91"></polygon>
-                                        <polygon class="radar-axis" points="120,50 186,98 161,175 79,175 54,98"></polygon>
-                                        <polygon class="radar-axis" points="120,76 162,106 146,153 94,153 78,106"></polygon>
-                                        <line class="radar-spoke" x1="120" y1="120" x2="120" y2="25"></line>
-                                        <line class="radar-spoke" x1="120" y1="120" x2="210" y2="91"></line>
-                                        <line class="radar-spoke" x1="120" y1="120" x2="176" y2="197"></line>
-                                        <line class="radar-spoke" x1="120" y1="120" x2="64" y2="197"></line>
-                                        <line class="radar-spoke" x1="120" y1="120" x2="30" y2="91"></line>
-                                        <polygon class="radar-value" points="120,43 185,99 161,176 82,172 51,98"></polygon>
-                                        <circle class="radar-point" cx="120" cy="43" r="4"></circle>
-                                        <circle class="radar-point" cx="185" cy="99" r="4"></circle>
-                                        <circle class="radar-point" cx="161" cy="176" r="4"></circle>
-                                        <circle class="radar-point" cx="82" cy="172" r="4"></circle>
-                                        <circle class="radar-point" cx="51" cy="98" r="4"></circle>
-                                    </svg>
-                                    <button class="radar-label label-speed" type="button" data-skill="speed" aria-pressed="false">Speed</button>
-                                    <button class="radar-label label-shooting" type="button" data-skill="shooting" aria-pressed="false">Shooting</button>
-                                    <button class="radar-label label-power" type="button" data-skill="power" aria-pressed="false">Power</button>
-                                    <button class="radar-label label-control" type="button" data-skill="control" aria-pressed="false">Control</button>
-                                    <button class="radar-label label-agility active" type="button" data-skill="agility" aria-pressed="true">Agility</button>
-                                </div>
-                            </div>
-                            <div class="breakdown-card" aria-live="polite">
-                                <span class="card-kicker">Skill breakdown</span>
-                                <div class="breakdown-head"><span class="skill-dot" id="skillDot"></span><strong id="skillName">Agility</strong></div>
-                                <div class="score-line"><strong id="skillScore">68</strong><span id="skillChange">↑ Improving</span></div>
-                                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-                                <div class="metric-list" id="metricList">
-                                    <div class="metric-row"><span>Total time</span><strong>5.12 s</strong></div>
-                                    <div class="metric-row"><span>Start phase</span><strong>1.82 s</strong></div>
-                                    <div class="metric-row"><span>Turn phase</span><strong>1.48 s</strong></div>
-                                </div>
-                                <p class="focus-note" id="focusNote">Focus: faster braking and redirection through the turn.</p>
-                            </div>
+                    <div class="session-video">
+                        <div class="field-lines" aria-hidden="true"></div>
+                        <canvas id="landingPoseCanvas" role="img" aria-label="Recorded anonymized MediaPipe pose playback"></canvas>
+                        <span class="video-chip">RECORDED POSE</span>
+                        <span class="pose-readout" aria-live="polite"><strong id="poseSequenceLabel">Agility · recorded rep</strong><small>33 joints · app renderer</small></span>
+                        <span class="pose-phase" id="posePhaseChip">Start · 0.00 s</span>
+                        <div class="pose-controls">
+                            <button class="pose-play" id="posePlayButton" type="button" aria-label="Play pose playback" aria-pressed="false"><span id="posePlayIcon" aria-hidden="true">▶</span></button>
+                            <input class="pose-scrubber" id="poseScrubber" type="range" min="0" max="281" value="0" step="1" aria-label="Pose playback position">
+                            <small class="pose-time" id="poseTimer">0:00.00 / 0:04.68</small>
                         </div>
                     </div>
+                    <div class="session-metrics" id="poseMetricGrid"><article><span>Start</span><strong>1.99 s</strong></article><article><span>Turn</span><strong>1.08 s</strong></article><article><span>End</span><strong>1.61 s</strong></article><article><span>Total</span><strong>4.68 s</strong></article></div>
                 </div>
-                <aside class="floating-plan" aria-label="Sample training recommendation">
-                    <div class="plan-title"><span class="plan-icon">↗</span><span><strong>Next focus identified</strong><small>Built from repeated test results</small></span></div>
-                    <div class="plan-item"><span>1</span><span><strong>Deceleration to lateral exit</strong><small>Agility progression</small></span><small>3 × 4</small></div>
+                <aside class="stage-aside">
+                    <div class="stage-aside-head">
+                        <span class="stage-kicker">Analysis online</span>
+                        <h2>The rep becomes a readable signal.</h2>
+                        <p>Switch drills or scrub the timeline. PoseTek keeps the movement, phase, and outcome in one review surface.</p>
+                    </div>
+                    <div class="telemetry-board" aria-label="Live pose telemetry" aria-live="polite">
+                        <div class="telemetry-cell"><span>Drill</span><strong id="telemetryDrill">Agility</strong></div>
+                        <div class="telemetry-cell"><span id="telemetryResultLabel">Total</span><strong id="telemetryResult">4.68 s</strong></div>
+                        <div class="telemetry-cell"><span>Phase</span><strong id="telemetryPhase">Start</strong></div>
+                        <div class="telemetry-cell"><span>Tracking</span><strong>33 joints</strong></div>
+                    </div>
+                    <div class="stage-note"><strong>From movement evidence to a development decision.</strong><a href="#profile">Open the athlete profile <span aria-hidden="true">→</span></a></div>
                 </aside>
+            </div>
+            <div class="proof-strip reveal" aria-label="PoseTek system proof points">
+                <div><span>01 / Capture</span><strong>Phone-ready, repeatable test protocols</strong></div>
+                <div><span>02 / Interpret</span><strong>Drill-specific phases and metrics</strong></div>
+                <div><span>03 / Explain</span><strong>A profile players can understand</strong></div>
+                <div><span>04 / Improve</span><strong>Training priorities with retest points</strong></div>
             </div>
         </section>
 
@@ -749,25 +916,42 @@
                         <div class="profile-point"><span>3</span><div><strong>Review every rep</strong><small>Video, pose overlays, key frames, and drill-specific metrics make feedback easier to understand.</small></div></div>
                     </div>
                 </div>
-                <div class="session-mock reveal" aria-label="Sample drill session analysis">
-                    <div class="session-head"><span class="mini-mark">P</span><span><strong id="poseDrillTitle">Change of Direction</strong><small id="poseSessionLabel">Consented adult demo · identity removed</small></span><div class="session-tabs"><span>Stats</span><span class="active">Drill results</span><span>Training</span></div></div>
-                    <div class="pose-drill-switcher" role="group" aria-label="Choose a recorded pose demo">
-                        <button class="active" type="button" data-pose-drill="changeOfDirection" aria-pressed="true"><span>01</span>Agility</button>
-                        <button type="button" data-pose-drill="broadJump" aria-pressed="false"><span>02</span>Broad jump</button>
-                    </div>
-                    <div class="session-video">
-                        <div class="field-lines" aria-hidden="true"></div>
-                        <canvas id="landingPoseCanvas" role="img" aria-label="Recorded anonymized MediaPipe pose playback"></canvas>
-                        <span class="video-chip">RECORDED POSE</span>
-                        <span class="pose-readout" aria-live="polite"><strong id="poseSequenceLabel">Agility · recorded rep</strong><small>33 joints · app renderer</small></span>
-                        <span class="pose-phase" id="posePhaseChip">Start · 0.00 s</span>
-                        <div class="pose-controls">
-                            <button class="pose-play" id="posePlayButton" type="button" aria-label="Play pose playback" aria-pressed="false"><span id="posePlayIcon" aria-hidden="true">▶</span></button>
-                            <input class="pose-scrubber" id="poseScrubber" type="range" min="0" max="281" value="0" step="1" aria-label="Pose playback position">
-                            <small class="pose-time" id="poseTimer">0:00.00 / 0:04.68</small>
+                <div class="profile-demo reveal" aria-label="Sample PoseTek athlete profile">
+                    <div class="demo-window">
+                        <div class="demo-topbar"><span class="mini-mark">P</span>Athlete home<span class="live-chip">Profile updated</span></div>
+                        <div class="demo-content">
+                            <div class="athlete-row"><span class="avatar">AJ</span><span><strong>Alex Johnson</strong><small>Midfielder · U17 · Sample profile</small></span><span class="sample-chip">Latest test</span></div>
+                            <div class="demo-main">
+                                <div class="radar-card">
+                                    <span class="card-kicker">Skill map</span>
+                                    <div class="radar-wrap">
+                                        <svg viewBox="0 0 240 240" role="img" aria-label="Interactive sample skill map">
+                                            <polygon class="radar-axis" points="120,25 210,91 176,197 64,197 30,91"></polygon>
+                                            <polygon class="radar-axis" points="120,50 186,98 161,175 79,175 54,98"></polygon>
+                                            <polygon class="radar-axis" points="120,76 162,106 146,153 94,153 78,106"></polygon>
+                                            <line class="radar-spoke" x1="120" y1="120" x2="120" y2="25"></line><line class="radar-spoke" x1="120" y1="120" x2="210" y2="91"></line><line class="radar-spoke" x1="120" y1="120" x2="176" y2="197"></line><line class="radar-spoke" x1="120" y1="120" x2="64" y2="197"></line><line class="radar-spoke" x1="120" y1="120" x2="30" y2="91"></line>
+                                            <polygon class="radar-value" points="120,43 185,99 161,176 82,172 51,98"></polygon>
+                                            <circle class="radar-point" cx="120" cy="43" r="4"></circle><circle class="radar-point" cx="185" cy="99" r="4"></circle><circle class="radar-point" cx="161" cy="176" r="4"></circle><circle class="radar-point" cx="82" cy="172" r="4"></circle><circle class="radar-point" cx="51" cy="98" r="4"></circle>
+                                        </svg>
+                                        <button class="radar-label label-speed" type="button" data-skill="speed" aria-pressed="false">Speed</button>
+                                        <button class="radar-label label-shooting" type="button" data-skill="shooting" aria-pressed="false">Shooting</button>
+                                        <button class="radar-label label-power" type="button" data-skill="power" aria-pressed="false">Power</button>
+                                        <button class="radar-label label-control" type="button" data-skill="control" aria-pressed="false">Control</button>
+                                        <button class="radar-label label-agility active" type="button" data-skill="agility" aria-pressed="true">Agility</button>
+                                    </div>
+                                </div>
+                                <div class="breakdown-card" aria-live="polite">
+                                    <span class="card-kicker">Skill breakdown</span>
+                                    <div class="breakdown-head"><span class="skill-dot" id="skillDot"></span><strong id="skillName">Agility</strong></div>
+                                    <div class="score-line"><strong id="skillScore">68</strong><span id="skillChange">↑ Improving</span></div>
+                                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                                    <div class="metric-list" id="metricList"><div class="metric-row"><span>Total time</span><strong>5.12 s</strong></div><div class="metric-row"><span>Start phase</span><strong>1.82 s</strong></div><div class="metric-row"><span>Turn phase</span><strong>1.48 s</strong></div></div>
+                                    <p class="focus-note" id="focusNote">Focus: faster braking and redirection through the turn.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="session-metrics" id="poseMetricGrid"><article><span>Start</span><strong>1.99 s</strong></article><article><span>Turn</span><strong>1.08 s</strong></article><article><span>End</span><strong>1.61 s</strong></article><article><span>Total</span><strong>4.68 s</strong></article></div>
+                    <aside class="floating-plan" aria-label="Sample training recommendation"><div class="plan-title"><span class="plan-icon">↗</span><span><strong>Next focus identified</strong><small>Built from repeated test results</small></span></div><div class="plan-item"><span>1</span><span><strong>Deceleration to lateral exit</strong><small>Agility progression</small></span><small>3 × 4</small></div></aside>
                 </div>
             </div>
         </section>
@@ -844,7 +1028,7 @@
             speed: { name: 'Speed', score: 81, color: '#4bd7e8', change: '↑ Improving', metrics: [['Total time', '2.41 s'], ['Max velocity', '8.2 m/s'], ['Acceleration', '3.4 m/s²']], note: 'Focus: hold speed mechanics through the end of the lane.' },
             shooting: { name: 'Shooting', score: 74, color: '#ff8c8c', change: '↑ Building', metrics: [['Ball velocity', '24.7 m/s'], ['Launch angle', '14.2°'], ['Plant offset', '18 cm']], note: 'Focus: consistent plant position through ball contact.' },
             power: { name: 'Power', score: 72, color: '#b7f34a', change: '↑ Improving', metrics: [['Broad jump', '2.18 m'], ['Jump height', '48 cm'], ['Landing', 'Controlled']], note: 'Focus: horizontal force without losing landing control.' },
-            control: { name: 'Control', score: 70, color: '#b49bff', change: '→ Developing', metrics: [['Shuttle time', '6.18 s'], ['Out phase', '2.55 s'], ['Ball distance', '0.42 m']], note: 'Focus: keep the ball in a playable radius through the turn.' },
+            control: { name: 'Control', score: 70, color: '#66d6e8', change: '→ Developing', metrics: [['Shuttle time', '6.18 s'], ['Out phase', '2.55 s'], ['Ball distance', '0.42 m']], note: 'Focus: keep the ball in a playable radius through the turn.' },
             agility: { name: 'Agility', score: 68, color: '#ffbd59', change: '↑ Improving', metrics: [['Total time', '5.12 s'], ['Start phase', '1.82 s'], ['Turn phase', '1.48 s']], note: 'Focus: faster braking and redirection through the turn.' }
         };
         const skillLabels = document.querySelectorAll('.radar-label');
@@ -870,7 +1054,16 @@
             skillDot.style.boxShadow = `0 0 0 5px ${data.color}1c`;
             progressFill.style.width = `${data.score}%`;
             progressFill.style.background = `linear-gradient(90deg, ${data.color}, #b7f34a)`;
-            metricList.innerHTML = data.metrics.map(([key, value]) => `<div class="metric-row"><span>${key}</span><strong>${value}</strong></div>`).join('');
+            metricList.replaceChildren(...data.metrics.map(([key, value]) => {
+                const row = document.createElement('div');
+                const label = document.createElement('span');
+                const result = document.createElement('strong');
+                row.className = 'metric-row';
+                label.textContent = key;
+                result.textContent = value;
+                row.append(label, result);
+                return row;
+            }));
             focusNote.textContent = data.note;
         }));
 
