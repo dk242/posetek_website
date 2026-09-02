@@ -1,0 +1,754 @@
+/* Training hub + guided workout player.
+   Scoped under .training-page (the view's own root) so these rules never reach
+   the other portal views. Colors come from pose-portal.css' variables
+   (--lime, --line, --muted, --text, --radius, --green, --amber). */
+
+.training-page .hub-section-title {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* --- The block rail (week selector) --- */
+
+.training-page .hub-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.training-page .week-chip {
+  flex: 0 0 auto;
+  width: 148px;
+  min-height: 88px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .035);
+  color: var(--text);
+}
+
+.training-page .week-chip.current { border-color: rgba(183, 243, 74, .4); }
+
+.training-page .week-chip.selected {
+  border-color: rgba(183, 243, 74, .8);
+  background: rgba(183, 243, 74, .12);
+}
+
+.training-page .chip-week {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.training-page .week-chip.current .chip-week { color: var(--lime); }
+
+.training-page .now-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--lime);
+}
+
+.training-page .chip-theme {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* --- Selected week card --- */
+
+.training-page .week-card .card-heading { align-items: center; }
+
+.training-page .days-left {
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.training-page .week-window {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.training-page .week-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.training-page .week-headline:disabled { cursor: default; }
+.training-page .week-headline h2 { margin: 4px 0 0; font-size: 25px; letter-spacing: -.02em; }
+.training-page .week-headline .material-symbols-outlined { color: var(--muted); font-size: 20px; }
+.training-page .week-focus { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* --- Primary CTA --- */
+
+.training-page .primary-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--lime);
+  color: #041610;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.training-page .primary-cta:disabled { opacity: .4; cursor: not-allowed; }
+
+.training-page .hub-cta.todays-workout {
+  justify-content: space-between;
+  text-align: left;
+  padding: 13px 18px;
+}
+
+.training-page .cta-copy { display: grid; gap: 2px; }
+.training-page .cta-copy strong { font-size: 17px; }
+.training-page .cta-copy small { font-size: 12px; font-weight: 700; opacity: .75; }
+
+.training-page .hub-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.training-page .hub-note,
+.training-page .hub-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.training-page .hub-note .material-symbols-outlined,
+.training-page .hub-error .material-symbols-outlined { font-size: 17px; }
+.training-page .hub-error { color: var(--amber); }
+
+/* --- Targets: domain rings + time trained --- */
+
+.training-page .domain-rings { display: grid; gap: 12px; }
+.training-page .domain-rings.row { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); }
+.training-page .domain-rings.grid { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
+
+.training-page .domain-ring { display: grid; justify-items: center; gap: 5px; }
+
+.training-page .domain-ring .ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+}
+
+/* The conic sweep lives on the pseudo-element so the ring's punched-out centre
+   is genuinely transparent (the card gradient shows through) and the mask never
+   reaches the label, which is a sibling child rather than a masked descendant.
+   `--ring-fill` is set inline from the completion fraction. */
+.training-page .domain-ring .ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ring-fill, rgba(255, 255, 255, .09));
+  -webkit-mask: radial-gradient(circle, transparent 21px, #000 22px);
+  mask: radial-gradient(circle, transparent 21px, #000 22px);
+}
+
+.training-page .domain-ring .ring > span {
+  position: relative;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.training-page .domain-ring .ring.met > span { color: var(--lime); }
+.training-page .domain-ring strong { font-size: 11px; text-align: center; }
+.training-page .domain-ring small { color: var(--muted); font-size: 10px; font-weight: 800; }
+
+.training-page .time-trained {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.training-page .time-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.training-page .time-heading .material-symbols-outlined { color: var(--lime); font-size: 19px; }
+.training-page .time-heading strong { margin-left: auto; font-size: 15px; font-weight: 900; }
+.training-page .time-heading strong small { color: var(--muted); font-size: 11px; font-weight: 700; }
+
+.training-page .meter {
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .08);
+  overflow: hidden;
+}
+
+.training-page .meter > i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--lime);
+}
+
+/* --- Drills expander --- */
+
+.training-page .drills-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.training-page .drills-toggle .eyebrow { margin: 0; }
+.training-page .drills-toggle .done-count { margin-left: auto; font-size: 12px; font-weight: 900; }
+.training-page .drills-toggle .done-count.all { color: var(--lime); }
+.training-page .drills-toggle .chevron { color: var(--muted); transition: transform .2s ease; }
+.training-page .drills-toggle .chevron.open { transform: rotate(180deg); }
+
+.training-page .drill-rows { display: grid; gap: 8px; margin-top: 12px; }
+
+.training-page .drill-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.training-page .drill-row .drill-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+  font-size: 18px;
+}
+
+.training-page .drill-row strong { display: block; font-size: 14px; }
+.training-page .drill-row small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+.training-page .completion-chip {
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.training-page .completion-chip.partial { color: var(--text); }
+
+.training-page .completion-chip.done {
+  border-color: rgba(183, 243, 74, .45);
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+}
+
+/* --- Secondary links --- */
+
+.training-page .hub-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.training-page .hub-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .045);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.training-page .hub-link > .material-symbols-outlined { color: var(--lime); font-size: 19px; }
+.training-page .hub-link .chevron { margin-left: auto; color: var(--muted); font-size: 18px; }
+
+/* --- Overlay --- */
+
+.training-page .hub-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, .6);
+}
+
+.training-page .hub-overlay-card,
+.training-page .hub-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: 88vh;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 22px;
+  background: #0a201c;
+}
+
+.training-page .hub-overlay-card > header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 10px;
+}
+
+.training-page .hub-overlay-card > header h3 { margin: 0; font-size: 17px; }
+
+.training-page .overlay-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.training-page .overlay-body { padding: 0 18px 18px; overflow-y: auto; }
+
+.training-page .hub-dialog { gap: 10px; padding: 20px; max-width: 420px; }
+.training-page .hub-dialog h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 17px; }
+.training-page .hub-dialog p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.training-page .pain-card h3 { color: var(--amber); }
+
+.training-page .overlay-working { display: grid; justify-items: center; gap: 12px; padding: 30px 0; text-align: center; }
+.training-page .overlay-working p { margin: 0; }
+
+/* --- Create workout --- */
+
+.training-page .create-workout { display: grid; gap: 18px; }
+.training-page .create-workout fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 9px; }
+.training-page .create-workout .eyebrow { margin: 0; }
+.training-page .create-workout legend { padding: 0; font-size: 16px; font-weight: 800; }
+
+.training-page .pill-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+.training-page .pill {
+  min-height: 46px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.training-page .pill.selected { border-color: transparent; background: var(--lime); color: #041610; }
+
+.training-page .option-rows { display: grid; gap: 8px; }
+
+.training-page .option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .05);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.training-page .option-row.selected { border-color: rgba(183, 243, 74, .55); background: rgba(183, 243, 74, .12); }
+.training-page .option-row > .material-symbols-outlined { color: var(--muted); }
+.training-page .option-row.selected > .material-symbols-outlined { color: var(--lime); }
+.training-page .option-row strong { display: block; font-size: 15px; }
+.training-page .option-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+/* --- Workout detail popup --- */
+
+.training-page .workout-detail { display: grid; gap: 14px; }
+.training-page .workout-detail .eyebrow { margin: 0; }
+.training-page .detail-intro { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+.training-page .detail-blocks {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.training-page .detail-block { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; }
+
+.training-page .block-order {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.training-page .detail-block strong { font-size: 15px; }
+.training-page .detail-block small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.training-page .detail-block p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.training-page .detail-block .done { color: var(--lime); }
+.training-page .detail-block .skipped { color: var(--muted); }
+
+.training-page .kind-chip {
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.training-page .adjust-section { display: grid; gap: 8px; }
+
+.training-page .adjust-composer { display: flex; align-items: flex-end; gap: 8px; }
+
+.training-page .adjust-composer textarea {
+  flex: 1;
+  min-height: 46px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.training-page .adjust-composer button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lime);
+  color: #041610;
+  cursor: pointer;
+}
+
+.training-page .adjust-composer button:disabled { opacity: .35; cursor: not-allowed; }
+.training-page .adjust-working { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; font-weight: 700; }
+
+.training-page .ended-section { display: grid; gap: 10px; }
+.training-page .ended { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; font-weight: 800; }
+.training-page .ended.done .material-symbols-outlined { color: var(--lime); }
+.training-page .ended.early .material-symbols-outlined { color: var(--amber); }
+
+/* --- Panels (history, plan details, week detail) --- */
+
+.training-page .hub-panel { display: grid; gap: 14px; }
+
+.training-page .panel-header { display: flex; align-items: center; gap: 12px; }
+.training-page .panel-header h2 { margin: 0; font-size: 24px; letter-spacing: -.02em; }
+
+.training-page .panel-back,
+.training-page .player-back {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .05);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.training-page .allocation-rows,
+.training-page .target-rows,
+.training-page .history-rows,
+.training-page .finding-rows { display: grid; gap: 9px; }
+
+.training-page .allocation-row,
+.training-page .target-row,
+.training-page .history-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .04);
+}
+
+.training-page .allocation-row > .material-symbols-outlined,
+.training-page .target-row > .material-symbols-outlined,
+.training-page .history-row > .material-symbols-outlined { color: var(--lime); font-size: 20px; }
+
+.training-page .history-row.early > .material-symbols-outlined { color: var(--amber); }
+.training-page .history-row.active > .material-symbols-outlined { color: var(--text); }
+
+.training-page .allocation-row strong,
+.training-page .target-row strong,
+.training-page .history-row strong { display: block; font-size: 14px; }
+
+.training-page .target-row small,
+.training-page .history-row small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+.training-page .allocation-row .meter { margin-top: 6px; }
+.training-page .allocation-minutes { color: var(--lime); font-size: 13px; font-weight: 900; }
+.training-page .target-count { color: var(--lime); font-size: 20px; font-weight: 900; }
+.training-page .history-week { color: var(--muted); font-size: 12px; font-weight: 800; }
+
+.training-page .finding-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+.training-page .finding-row p { margin: 0; font-size: 13px; line-height: 1.5; }
+
+.training-page .confidence {
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.training-page .confidence.high { background: rgba(183, 243, 74, .12); color: var(--lime); }
+
+.training-page .gap-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+/* --- Workout player --- */
+
+.training-page .workout-player { display: grid; gap: 14px; }
+
+.training-page .player-bar { display: flex; align-items: center; gap: 10px; }
+
+.training-page .player-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 99px;
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+  font-size: 14px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.training-page .player-timer .material-symbols-outlined { font-size: 17px; }
+.training-page .player-position { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 800; }
+
+.training-page .player-strip { display: flex; gap: 5px; }
+
+/* The visible bar is 6px; the button around it is 20px so the segment is
+   actually hittable. */
+.training-page .strip-segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.training-page .strip-segment::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .1);
+}
+
+.training-page .strip-segment.done::before { background: var(--lime); }
+.training-page .strip-segment.partial::before { background: rgba(183, 243, 74, .45); }
+.training-page .strip-segment.skipped::before { background: rgba(255, 255, 255, .18); }
+
+.training-page .strip-segment.current::before {
+  outline: 1px solid rgba(255, 255, 255, .85);
+  outline-offset: 1px;
+}
+
+.training-page .player-page { display: grid; gap: 14px; }
+
+.training-page .block-tags { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.training-page .block-tags .kind-chip { background: rgba(183, 243, 74, .12); color: var(--lime); }
+.training-page .block-domain,
+.training-page .block-minutes { color: var(--muted); font-size: 11px; font-weight: 700; }
+.training-page .block-minutes { margin-left: auto; }
+
+.training-page .block-headline h2 { margin: 8px 0 6px; font-size: 26px; letter-spacing: -.02em; }
+.training-page .block-dose { margin: 0; font-size: 14px; font-weight: 700; }
+.training-page .block-why { margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+.training-page .sets-card .card-heading { align-items: center; }
+
+.training-page .set-ticks { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.training-page .set-tick {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid rgba(255, 255, 255, .22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .07);
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.training-page .set-tick.filled { border-color: transparent; background: var(--lime); color: #041610; }
+.training-page .rest-note { margin: 0; color: var(--muted); font-size: 11px; }
+
+.training-page .rest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.training-page .rest-chip .material-symbols-outlined { font-size: 15px; }
+
+.training-page .cue-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.training-page .cue-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.45; }
+.training-page .cue-list .material-symbols-outlined { color: var(--lime); font-size: 17px; }
+
+.training-page .teaching-lines { display: grid; gap: 12px; }
+.training-page .teaching-line { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+
+.training-page .teaching-line > .material-symbols-outlined {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(183, 243, 74, .12);
+  color: var(--lime);
+  font-size: 16px;
+}
+
+.training-page .teaching-line small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.training-page .teaching-line p { margin: 3px 0 0; font-size: 13px; line-height: 1.55; }
+
+.training-page .skipped-note { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.training-page .skipped-note .text-button { margin-left: auto; }
+
+.training-page .player-controls { display: flex; align-items: center; gap: 10px; }
+
+.training-page .player-chevron {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 52px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.training-page .player-chevron:disabled { color: rgba(255, 255, 255, .25); cursor: not-allowed; }
+
+.training-page .summary-rows { display: grid; gap: 10px; }
+.training-page .summary-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.training-page .summary-row > .material-symbols-outlined { color: var(--muted); font-size: 20px; }
+.training-page .summary-row.done > .material-symbols-outlined { color: var(--lime); }
+.training-page .summary-row.partial > .material-symbols-outlined { color: rgba(183, 243, 74, .6); }
+.training-page .summary-row strong { display: block; font-size: 14px; }
+.training-page .summary-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+
+@media (max-width: 620px) {
+  .training-page .hub-links { grid-template-columns: 1fr; }
+  .training-page .pill-row { grid-template-columns: repeat(2, 1fr); }
+  .training-page .set-tick { width: 44px; height: 44px; }
+  .training-page .week-chip { width: 132px; }
+}
