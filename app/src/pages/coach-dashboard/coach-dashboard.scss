@@ -1,0 +1,647 @@
+// Coach dashboard styles — layered on the .pt-pose portal theme (pose-portal.css
+// supplies the header, buttons, dialogs, and CSS variables). Desktop-first.
+
+.pt-coachdash {
+  .coachdash-shell {
+    width: min(1240px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 34px 0 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .coachdash-nav {
+    display: flex;
+    gap: 10px;
+    margin-left: 8px;
+  }
+
+  .coachdash-signout {
+    margin-left: auto;
+  }
+
+  // MARK: Heading
+
+  .coachdash-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+
+    h1 {
+      margin: 4px 0 6px;
+      font-size: 34px;
+      letter-spacing: -0.02em;
+    }
+
+    &.detail {
+      align-items: center;
+    }
+  }
+
+  .detail-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    h1 { margin: 2px 0 4px; }
+  }
+
+  .coachdash-sub {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .coachdash-create-all {
+    white-space: nowrap;
+  }
+
+  // MARK: Summary tiles
+
+  .coachdash-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .stat-tile {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--card-radius);
+    padding: 18px 20px;
+
+    .stat-label {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 12.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .stat-denominator {
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 600;
+      margin-left: 2px;
+    }
+  }
+
+  // MARK: Tabs
+
+  .coachdash-tabs {
+    align-self: flex-start;
+  }
+
+  // MARK: Roster tables
+
+  .coachdash-table-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--card-radius);
+    overflow-x: auto;
+  }
+
+  .coachdash-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.15s ease;
+
+      &:hover, &:focus-visible {
+        background: rgba(255, 255, 255, 0.045);
+        outline: none;
+      }
+
+      &:last-child td { border-bottom: none; }
+    }
+
+    .numeric {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .dim { color: var(--muted); }
+  }
+
+  .name-col {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+
+    .name-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .name-meta {
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+  }
+
+  // Score cell: printed value + a single-hue magnitude bar (identity lives in
+  // the column header; the bar only carries size).
+  .score-cell {
+    min-width: 92px;
+
+    &.empty { color: var(--muted); }
+
+    .score-value {
+      display: inline-block;
+      width: 34px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .score-track {
+      display: inline-block;
+      vertical-align: middle;
+      width: 52px;
+      height: 5px;
+      margin-left: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+    }
+
+    .score-fill {
+      display: block;
+      height: 100%;
+      border-radius: 3px;
+      background: var(--lime);
+    }
+  }
+
+  // MARK: Chips
+
+  .plan-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.on {
+      background: var(--accent-soft);
+      color: var(--lime);
+    }
+
+    &.off {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--muted);
+    }
+  }
+
+  .focus-chips {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    &.large .focus-chip { font-size: 13px; padding: 6px 13px; }
+  }
+
+  .focus-none { color: var(--muted); }
+
+  .focus-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(75, 215, 232, 0.13);
+    color: var(--cyan);
+    white-space: nowrap;
+
+    &.suggested {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    &.toggle {
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+
+      &.active {
+        background: var(--accent-soft);
+        border-color: transparent;
+        color: var(--lime);
+      }
+    }
+  }
+
+  .job-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .material-symbols-outlined { font-size: 15px; }
+
+    &.busy { background: rgba(255, 189, 89, 0.14); color: var(--amber); }
+    &.failed { background: rgba(255, 122, 122, 0.14); color: var(--danger); }
+    &.done { background: var(--accent-soft); color: var(--lime); }
+  }
+
+  .spinner.tiny {
+    width: 13px;
+    height: 13px;
+    border-width: 2px;
+  }
+
+  // MARK: Athlete detail
+
+  .coachdash-stats-wrap {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--card-radius);
+    padding: 10px 4px;
+  }
+
+  .coachdash-empty-program .empty-card {
+    padding: 60px 24px;
+
+    .primary-cta { margin-top: 16px; }
+  }
+
+  // MARK: Program editor
+
+  .program-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .program-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    h2 { margin: 4px 0 6px; font-size: 24px; }
+  }
+
+  .program-error { color: var(--danger); }
+
+  .week-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .week-pill {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 62px;
+    padding: 9px 13px;
+    border-radius: var(--small-radius);
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); }
+    &:disabled { opacity: 0.4; cursor: default; }
+
+    &.active {
+      background: var(--accent-soft);
+      border-color: var(--lime);
+    }
+
+    .week-pill-now {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    &.active .week-pill-now { color: var(--lime); }
+  }
+
+  .week-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--card-radius);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    > header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+
+      h3 { margin: 0 0 4px; font-size: 19px; }
+    }
+
+    &.retest p { color: var(--muted); max-width: 640px; }
+  }
+
+  .week-note {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+
+    strong { color: var(--lime); font-weight: 700; }
+    &.dim { color: var(--muted); }
+  }
+
+  .allocation-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px 20px;
+    padding: 12px 14px;
+    background: var(--card2);
+    border-radius: var(--row-radius);
+  }
+
+  .allocation {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+
+    .allocation-label {
+      width: 68px;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .allocation-track {
+      flex: 1;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+    }
+
+    .allocation-fill {
+      display: block;
+      height: 100%;
+      border-radius: 3px;
+      background: var(--cyan);
+    }
+
+    .allocation-minutes {
+      width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+  }
+
+  .drill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .drill-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 13px 16px;
+    background: var(--card2);
+    border: 1px solid var(--line);
+    border-radius: var(--row-radius);
+
+    &.empty {
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  }
+
+  .drill-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+
+    strong { font-size: 15px; }
+  }
+
+  .drill-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+
+  .domain-chip {
+    display: inline-flex;
+    padding: 2.5px 9px;
+    border-radius: 999px;
+    background: rgba(75, 215, 232, 0.13);
+    color: var(--cyan);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .drill-note {
+    color: var(--amber);
+    font-size: 12.5px;
+  }
+
+  .drill-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+
+    .icon-button.danger:hover { color: var(--danger); }
+  }
+
+  .saving-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .primary-cta.small {
+    padding: 9px 16px;
+    font-size: 13.5px;
+
+    .material-symbols-outlined { font-size: 17px; }
+  }
+
+  // MARK: Dialogs
+
+  // The base .portal-dialog is width-capped at 500px; size the dialog element
+  // itself and let the card fill it.
+  &.pt-pose .dose-dialog { width: min(440px, calc(100% - 28px)); }
+  .dose-dialog .dialog-card { width: 100%; }
+
+  .dose-guidance {
+    margin: 0;
+    padding: 10px 13px;
+    background: var(--card2);
+    border-radius: var(--small-radius);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .dose-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 14px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: var(--small-radius);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .dose-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  &.pt-pose .drill-picker { width: min(700px, calc(100% - 28px)); }
+
+  .drill-picker .dialog-card.wide {
+    width: 100%;
+    max-height: min(78vh, 760px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  // .dialog-card label stacks column-wise in the base portal styles; the
+  // search field must stay an icon+input row.
+  .drill-picker .dialog-card label.picker-search {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .picker-categories {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+
+  .picker-list {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+    min-height: 180px;
+  }
+
+  .picker-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    background: var(--card2);
+    border: 1px solid var(--line);
+    border-radius: var(--row-radius);
+  }
+
+  .picker-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .picker-execution {
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  // MARK: Narrow screens (the dashboard is desktop-first, but stays usable)
+
+  @media (max-width: 900px) {
+    .coachdash-tiles { grid-template-columns: repeat(2, 1fr); }
+    .coachdash-heading { align-items: flex-start; flex-direction: column; }
+  }
+}

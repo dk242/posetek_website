@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 const HomePage = lazy(() => import("./pages/home/HomePage"));
 const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
 const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
+const CoachDashboardPage = lazy(() => import("./pages/coach-dashboard/CoachDashboardPage"));
 const AthletePortalPage = lazy(() => import("./pages/athlete-portal/AthletePortalPage"));
 const DrillSharePage = lazy(() => import("./pages/drill-share/DrillSharePage"));
 const PrivacyPage = lazy(() => import("./pages/privacy/PrivacyPage"));
@@ -34,6 +35,8 @@ export default function App() {
 
           <Route path="/roster" element={<RosterPage />} />
           <Route path="/coachesview.html" element={<RosterPage />} />
+
+          <Route path="/dashboard" element={<CoachDashboardPage />} />
 
           <Route path="/athlete" element={<AthletePortalPage />} />
           <Route path="/profile.html" element={<AthletePortalPage />} />

@@ -303,6 +303,10 @@ export default function RosterPage() {
           <span className="portal-brand-mark">P</span>
           <span>POSETEK</span>
         </Link>
+        <Link className="quiet-button" to="/dashboard" style={{ marginLeft: "auto" }}>
+          <span className="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </Link>
         <button className="quiet-button" id="signOutButton" type="button" onClick={handleSignOut}>
           <span className="material-symbols-outlined">logout</span>
           <span>Sign Out</span>
