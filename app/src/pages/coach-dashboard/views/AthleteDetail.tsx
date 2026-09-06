@@ -34,6 +34,9 @@ import {
 import type { DoseDraft } from "../lib/planEdit";
 import DoseDialog from "./DoseDialog";
 import DrillPicker from "./DrillPicker";
+import { isV3Plan } from "../../../lib/contracts/types";
+import { blockDoseLine } from "../../../lib/contracts/drillV2";
+import { orderedBlocks, orderedWorkouts, orderedWeeks as orderedV3Weeks } from "../../../lib/contracts/planV3";
 
 interface AthleteDetailProps {
   summary: AthleteSummary;
@@ -85,6 +88,8 @@ export default function AthleteDetail({ summary, job, preview, onBack, onCreateP
         <section className="coachdash-stats-wrap">
           <AthleteStats athlete={summary.athlete} athleteName={fullName(summary.athlete)} reps={summary.reps} />
         </section>
+      ) : plan && isV3Plan(plan) ? (
+        <V3ProgramView plan={plan} />
       ) : plan ? (
         <ProgramEditor key={plan.id} summary={summary} plan={plan} preview={preview} onPlanChanged={onPlanChanged} onPreviewEdit={onPreviewEdit} />
       ) : (
@@ -341,6 +346,71 @@ function ProgramEditor({ summary, plan, preview, onPlanChanged, onPreviewEdit }:
           onSave={handleDoseSave}
         />
       )}
+    </section>
+  );
+}
+
+// MARK: - Version 3 plans (read-only here)
+
+// A v3 plan is weeks of PREDEFINED WORKOUTS, not weeks of prescriptions, and it
+// carries per-workout revisions plus a required `planAdjustments` record on
+// every edit (TRAINING_PROGRAM_V3_CONTRACT.md §5/§6). The coach dashboard's
+// week editor cannot express that, and using it here would silently revert
+// concurrent edits — so v3 plans are shown, not edited. Editing lives in the
+// admin console's workout editor, which is the one authorized write path.
+function V3ProgramView({ plan }: { plan: any }) {
+  return (
+    <section className="program-editor">
+      <header className="program-header">
+        <div>
+          <p className="eyebrow">Training plan · {String(plan.status || "active")} · version 3</p>
+          <h2>{plan.horizonWeeks || (plan.weeks || []).length}-week program</h2>
+          <p className="coachdash-sub">
+            Started {String(plan.startDate || "—")} · {plan.sessionsPerWeek ?? "?"} sessions/week ·{" "}
+            {plan.minutesPerSession ?? "?"} min each · plan revision {plan.planRevision ?? 1}
+          </p>
+        </div>
+      </header>
+
+      <article className="week-card">
+        <p>
+          This athlete is on a version 3 program: each week holds ready-made workouts rather than a
+          list of weekly prescriptions. Workouts are adjusted one at a time — with a recorded reason
+          for the change — in the PoseTek admin console.
+        </p>
+      </article>
+
+      {orderedV3Weeks(plan).map((week: any) => (
+        <article className="week-card" key={week.weekNumber}>
+          <header>
+            <div>
+              <h3>Week {week.weekNumber}{week.theme ? ` — ${week.theme}` : ""}</h3>
+              {week.focus && <p className="coachdash-sub">{week.focus}</p>}
+            </div>
+          </header>
+          {orderedWorkouts(week).map((workout: any) => (
+            <div key={workout.workoutId}>
+              <p className="week-note">
+                <strong>{workout.title || workout.workoutId}</strong> · ~{workout.estimatedMinutes} min
+                {workout.intent ? ` — ${workout.intent}` : ""}
+              </p>
+              <ul className="drill-list">
+                {orderedBlocks(workout).map((block: any) => (
+                  <li key={block.blockId} className="drill-row">
+                    <div className="drill-copy">
+                      <strong>{block.name}</strong>
+                      <span className="drill-meta">
+                        <span className="domain-chip">{domainShortName(String(block.domain || ""))}</span>
+                        {blockDoseLine(block)}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </article>
+      ))}
     </section>
   );
 }

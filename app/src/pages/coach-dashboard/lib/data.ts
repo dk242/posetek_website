@@ -9,6 +9,7 @@ import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/m
 import { DRILLS } from "../../athlete-portal/lib/drills";
 import { submitLlmJob } from "../../athlete-portal/lib/loaders";
 import { planJobParams } from "./logic";
+import { planSchemaVersion } from "../../../lib/contracts/types";
 
 export async function findCoach(uid: string): Promise<any> {
   const direct = await db.collection("coaches").doc(uid).get();
@@ -85,14 +86,30 @@ export async function loadDrillCatalog(): Promise<any[]> {
 
 // Writes back an edited weeks array, stamping coach provenance. Additive
 // fields only — the doc stays shaped like a gateway-written TrainingPlanV1.
+//
+// This is the LEGACY whole-week writer. It must never touch a schemaVersion-3
+// plan: v3 weeks hold predefined workouts with per-workout revisions, and
+// replacing the whole array here would revert a concurrent admin or athlete
+// edit and skip the required `planAdjustments` record
+// (TRAINING_PROGRAM_V3_CONTRACT.md §6/§13, 01A F08/F19). v3 plans are edited in
+// the admin console's workout editor, which is the one authorized write path.
+// The guard lives at the write, in a transaction, so no caller can bypass it.
 export async function savePlanWeeks(playerId: string, planId: string, weeks: any[]): Promise<void> {
-  await db.collection("players").doc(playerId)
-    .collection("trainingPlans").doc(planId)
-    .update({
+  const ref = db.collection("players").doc(playerId).collection("trainingPlans").doc(planId);
+  await db.runTransaction(async transaction => {
+    const doc = await transaction.get(ref);
+    if (!doc.exists) throw new Error("That training plan no longer exists.");
+    if (planSchemaVersion(doc.data()) === 3) {
+      throw new Error(
+        "This athlete is on a version 3 plan. Its workouts are edited one at a time in the PoseTek admin console, which records why each change was made.",
+      );
+    }
+    transaction.update(ref, {
       weeks,
       coachAdjustedAt: firebase.firestore.FieldValue.serverTimestamp(),
       coachAdjustedByUid: auth.currentUser?.uid ?? null,
     });
+  });
 }
 
 // MARK: - Plan generation jobs

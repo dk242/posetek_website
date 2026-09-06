@@ -196,7 +196,12 @@ export function withEditedWeek(plan: any, editedWeek: any): any[] {
 
 // The final horizon week is the server-stamped retest week (all six measured
 // drills, no prescriptions) — the editor treats it as read-only.
+//
+// v1/v2 only: TRAINING_PROGRAM_V3_CONTRACT.md §7 removes generated retesting
+// entirely, so a v3 plan's last week is an ordinary training week and must not
+// be greyed out as a retest.
 export function isRetestWeek(plan: any, weekNumber: number): boolean {
+  if (Number(plan?.schemaVersion) === 3) return false;
   const horizon = Number(plan?.horizonWeeks) || (plan?.weeks || []).length;
   return Number(weekNumber) === horizon;
 }
