@@ -177,10 +177,27 @@ function ProfileCard({ player, coach, onSaved }: { player: PlayerRow; coach: Coa
         ? player.raw.birthDate.toDate().toISOString().slice(0, 10)
         : "";
       if (birthDate !== storedBirth) {
-        patch.birthDate = birthDate ? new Date(`${birthDate}T00:00:00Z`) : null;
+        const parsed = birthDate ? new Date(`${birthDate}T00:00:00Z`) : null;
+        // The rules require a birth date at or before request.time; catching it
+        // here turns a bare permission-denied into a sentence.
+        if (parsed && parsed.valueOf() > Date.now()) {
+          setMessage("A birth date cannot be in the future.");
+          return;
+        }
+        patch.birthDate = parsed;
       }
       const storedAge = typeof player.raw?.age === "number" ? String(player.raw.age) : "";
-      if (age !== storedAge) patch.age = age ? Number(age) : null;
+      if (age !== storedAge) {
+        if (!age && storedAge) {
+          // The profile rule validates a changed `age` as an integer 5–80, with
+          // no clause for removing the key, so clearing one is denied outright.
+          // A birth date takes precedence over a recorded age anyway, so leaving
+          // the stale number in place changes nothing the generator reads.
+          setMessage("A recorded age cannot be cleared. Set a birth date instead — it takes precedence.");
+          return;
+        }
+        patch.age = Number(age);
+      }
       const storedCap = typeof player.raw?.maxDrillDifficulty === "number" ? String(player.raw.maxDrillDifficulty) : "";
       if (cap !== storedCap) patch.maxDrillDifficulty = cap ? Number(cap) : null;
       if (!Object.keys(patch).length) { setMessage("Nothing changed."); return; }
