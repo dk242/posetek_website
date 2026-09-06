@@ -1,0 +1,553 @@
+{
+  "schemaVersion": 1,
+  "contract": "docs/DRILL_CATALOG_V2_CONTRACT.md section 9 (expected-time formula)",
+  "note": "Shared fixture. Copy verbatim into each repo's test suite; never edit one copy alone. Integer arithmetic only.",
+  "constants": {
+    "workDecisecondsPerUnit": {
+      "reps": 80,
+      "contacts": 20,
+      "cues": 50,
+      "passes": 100,
+      "shots": 150,
+      "seconds": 10,
+      "minutes": 600,
+      "meters": 6
+    },
+    "minutesRule": "estimatedMinutes = clamp(ceilDiv(deciseconds, 600), 1, 90)",
+    "transitionSecondsBetweenBlocks": 60,
+    "minBlockMinutes": 1,
+    "maxBlockMinutes": 90
+  },
+  "blocks": [
+    {
+      "id": "reps-basic",
+      "description": "SPD-002 Falling start at catalog minimum: 2 sets x 2 reps, 60 s between sets",
+      "input": {
+        "sets": 2,
+        "reps": 2,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 60,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 920,
+        "estimatedMinutes": 2
+      }
+    },
+    {
+      "id": "reps-max",
+      "description": "SPD-002 at catalog maximum: 4 x 3 reps, 120 s",
+      "input": {
+        "sets": 4,
+        "reps": 3,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 120,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4560,
+        "estimatedMinutes": 8
+      }
+    },
+    {
+      "id": "reps-single-set-per-rep-rest",
+      "description": "COD-007 Color-call cut: 1 set x 8 reps, rest applies between reps (restScope=reps)",
+      "input": {
+        "sets": 1,
+        "reps": 8,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 60,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4840,
+        "estimatedMinutes": 9
+      }
+    },
+    {
+      "id": "reps-per-rep-and-between-sets",
+      "description": "SPD-010 Repeated sprint: 2 sets x 4 reps, 25 s between reps, 210 s between sets",
+      "input": {
+        "sets": 2,
+        "reps": 4,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 25,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": 210,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4240,
+        "estimatedMinutes": 8
+      }
+    },
+    {
+      "id": "reps-per-side",
+      "description": "VJP-006 Single-leg jump and stick: 3 x 4 reps per side, 60 s",
+      "input": {
+        "sets": 3,
+        "reps": 4,
+        "repUnit": "reps",
+        "perSide": true,
+        "restSeconds": 60,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4320,
+        "estimatedMinutes": 8
+      }
+    },
+    {
+      "id": "reps-familiarization",
+      "description": "DRB-008 Timed slalom: 1 set x 4 trials + 2 familiarization reps, 90 s between reps",
+      "input": {
+        "sets": 1,
+        "reps": 4,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 90,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 2
+      },
+      "expected": {
+        "deciseconds": 4980,
+        "estimatedMinutes": 9
+      }
+    },
+    {
+      "id": "reps-zero-rest",
+      "description": "Zero rest: 3 x 10 reps, 0 s",
+      "input": {
+        "sets": 3,
+        "reps": 10,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 2400,
+        "estimatedMinutes": 4
+      }
+    },
+    {
+      "id": "reps-one-set-no-rest-effect",
+      "description": "One set, restScope=sets: rest has no effect (nothing to rest between)",
+      "input": {
+        "sets": 1,
+        "reps": 6,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 120,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 480,
+        "estimatedMinutes": 1
+      }
+    },
+    {
+      "id": "seconds-basic",
+      "description": "DRB-006 Figure-8: 4 x 30 s, 45 s",
+      "input": {
+        "sets": 4,
+        "reps": 30,
+        "repUnit": "seconds",
+        "perSide": false,
+        "restSeconds": 45,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 2550,
+        "estimatedMinutes": 5
+      }
+    },
+    {
+      "id": "seconds-per-side",
+      "description": "STR-002 Split-squat isometric: 3 x 20 s per side, 60 s",
+      "input": {
+        "sets": 3,
+        "reps": 20,
+        "repUnit": "seconds",
+        "perSide": true,
+        "restSeconds": 60,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 3600,
+        "estimatedMinutes": 6
+      }
+    },
+    {
+      "id": "seconds-per-rep-rest",
+      "description": "seconds with restScope=reps: 2 sets x 3 x 10 s efforts, 20 s between efforts, 90 s between sets",
+      "input": {
+        "sets": 2,
+        "reps": 3,
+        "repUnit": "seconds",
+        "perSide": false,
+        "restSeconds": 20,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": 90,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 1760,
+        "estimatedMinutes": 3
+      }
+    },
+    {
+      "id": "minutes-basic",
+      "description": "SSG-003 3v3: 4 x 4 min, 90 s",
+      "input": {
+        "sets": 4,
+        "reps": 4,
+        "repUnit": "minutes",
+        "perSide": false,
+        "restSeconds": 90,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 12300,
+        "estimatedMinutes": 21
+      }
+    },
+    {
+      "id": "minutes-single",
+      "description": "STR-010 movement circuit: 1 x 12 min, no rest",
+      "input": {
+        "sets": 1,
+        "reps": 12,
+        "repUnit": "minutes",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 7200,
+        "estimatedMinutes": 12
+      }
+    },
+    {
+      "id": "meters-basic",
+      "description": "SPD-005 resisted acceleration: 4 x 12 m, 150 s",
+      "input": {
+        "sets": 4,
+        "reps": 12,
+        "repUnit": "meters",
+        "perSide": false,
+        "restSeconds": 150,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4788,
+        "estimatedMinutes": 8
+      }
+    },
+    {
+      "id": "meters-fractional",
+      "description": "meters carry fractional seconds: 4 x 25 m = 60.0 s exactly -> 1 min; 4 x 26 m = 62.4 s -> 2 min",
+      "input": {
+        "sets": 4,
+        "reps": 26,
+        "repUnit": "meters",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 624,
+        "estimatedMinutes": 2
+      }
+    },
+    {
+      "id": "meters-exact-minute",
+      "description": "4 x 25 m = 600 ds exactly -> 1 min",
+      "input": {
+        "sets": 4,
+        "reps": 25,
+        "repUnit": "meters",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 600,
+        "estimatedMinutes": 1
+      }
+    },
+    {
+      "id": "contacts-basic",
+      "description": "VJP-004 Pogo series: 3 x 15 contacts, 60 s",
+      "input": {
+        "sets": 3,
+        "reps": 15,
+        "repUnit": "contacts",
+        "perSide": false,
+        "restSeconds": 60,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 2100,
+        "estimatedMinutes": 4
+      }
+    },
+    {
+      "id": "contacts-min-clamp",
+      "description": "Tiny block clamps to 1 minute: 1 x 4 contacts, 0 s",
+      "input": {
+        "sets": 1,
+        "reps": 4,
+        "repUnit": "contacts",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 80,
+        "estimatedMinutes": 1
+      }
+    },
+    {
+      "id": "cues-basic",
+      "description": "SPD-001 Traffic-light: 3 x 5 cues, 40 s between reps",
+      "input": {
+        "sets": 3,
+        "reps": 5,
+        "repUnit": "cues",
+        "perSide": false,
+        "restSeconds": 40,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 6350,
+        "estimatedMinutes": 11
+      }
+    },
+    {
+      "id": "passes-basic",
+      "description": "PAS-002 Passing gates: 4 x 10 passes per foot, 0 s (natural retrieval)",
+      "input": {
+        "sets": 4,
+        "reps": 10,
+        "repUnit": "passes",
+        "perSide": true,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 8000,
+        "estimatedMinutes": 14
+      }
+    },
+    {
+      "id": "passes-with-rest",
+      "description": "SPD-007 Wicket runs: 1 x 4 passes, 120 s between reps",
+      "input": {
+        "sets": 1,
+        "reps": 4,
+        "repUnit": "passes",
+        "perSide": false,
+        "restSeconds": 120,
+        "restScope": "reps",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4000,
+        "estimatedMinutes": 7
+      }
+    },
+    {
+      "id": "shots-basic",
+      "description": "SHT-004 Four-corner grid: 3 x 8 shots, 60 s",
+      "input": {
+        "sets": 3,
+        "reps": 8,
+        "repUnit": "shots",
+        "perSide": false,
+        "restSeconds": 60,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 4800,
+        "estimatedMinutes": 8
+      }
+    },
+    {
+      "id": "shots-per-side",
+      "description": "SHT-002 Gate shooting: 4 x 8 shots per foot, 45 s",
+      "input": {
+        "sets": 4,
+        "reps": 8,
+        "repUnit": "shots",
+        "perSide": true,
+        "restSeconds": 45,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 12300,
+        "estimatedMinutes": 21
+      }
+    },
+    {
+      "id": "exact-minute-boundary",
+      "description": "Exactly 300 s must be 5 min, not 6: 5 x 60 s, 0 s",
+      "input": {
+        "sets": 5,
+        "reps": 60,
+        "repUnit": "seconds",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 3000,
+        "estimatedMinutes": 5
+      }
+    },
+    {
+      "id": "one-second-over",
+      "description": "301 s rounds up to 6 min: 1 x 301 s",
+      "input": {
+        "sets": 1,
+        "reps": 301,
+        "repUnit": "seconds",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 3010,
+        "estimatedMinutes": 6
+      }
+    },
+    {
+      "id": "max-clamp",
+      "description": "Very long block clamps to 90 min: 1 x 100 min",
+      "input": {
+        "sets": 1,
+        "reps": 100,
+        "repUnit": "minutes",
+        "perSide": false,
+        "restSeconds": 0,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": null,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 60000,
+        "estimatedMinutes": 90
+      }
+    },
+    {
+      "id": "between-sets-override-sets-scope",
+      "description": "restScope=sets with an explicit restBetweenSetsSeconds: the explicit value wins over restSeconds",
+      "input": {
+        "sets": 3,
+        "reps": 5,
+        "repUnit": "reps",
+        "perSide": false,
+        "restSeconds": 30,
+        "restScope": "sets",
+        "restBetweenSetsSeconds": 120,
+        "familiarizationReps": 0
+      },
+      "expected": {
+        "deciseconds": 3600,
+        "estimatedMinutes": 6
+      }
+    }
+  ],
+  "workouts": [
+    {
+      "id": "workout-three-blocks",
+      "description": "Three blocks: transitions add (n-1) minutes",
+      "blockCaseIds": [
+        "reps-basic",
+        "seconds-basic",
+        "shots-basic"
+      ],
+      "expected": {
+        "blockMinutes": [
+          2,
+          5,
+          8
+        ],
+        "transitionMinutes": 2,
+        "estimatedMinutes": 17
+      }
+    },
+    {
+      "id": "workout-single-block",
+      "description": "Single block: no transition",
+      "blockCaseIds": [
+        "minutes-single"
+      ],
+      "expected": {
+        "blockMinutes": [
+          12
+        ],
+        "transitionMinutes": 0,
+        "estimatedMinutes": 12
+      }
+    },
+    {
+      "id": "workout-empty",
+      "description": "Empty draft is 0 minutes",
+      "blockCaseIds": [],
+      "expected": {
+        "blockMinutes": [],
+        "transitionMinutes": 0,
+        "estimatedMinutes": 0
+      }
+    }
+  ]
+}
