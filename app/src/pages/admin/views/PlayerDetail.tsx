@@ -1,0 +1,591 @@
+// One athlete under Monitor accounts: the profile inputs the generator reads,
+// the private coach note, plan generation, and **every workout listed
+// vertically** — "the workouts are listed out vertically that shows the drills
+// in each workout and dose for those drills … so the admin can scroll down to
+// see all of the workouts that have been built for that athlete."
+//
+// Read-only for athlete evidence: an admin inspects logs and edits
+// prescriptions, and never starts, completes or alters work as the athlete
+// (identity §6, 01A Q19).
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { blockDoseLine } from "../../../lib/contracts/drillV2";
+import {
+  currentWeekNumber,
+  nextWorkout,
+  orderedBlocks,
+  orderedWeeks,
+  orderedWorkouts,
+  planHorizonWeeks,
+  stateOf,
+  weekWindow,
+  weekWindowLabel,
+  workoutStates,
+} from "../../../lib/contracts/planV3";
+import { POSITIONS, POSITION_LABELS, domainLabel, isV3Plan, planSchemaVersion } from "../../../lib/contracts/types";
+import type { Position } from "../../../lib/contracts/types";
+import { loadAthleteBundle } from "../../coach-dashboard/lib/data";
+import {
+  COACH_NOTE_MAX_CHARS,
+  activePlan,
+  clearCoachNote,
+  eligibilityFor,
+  loadCoachNote,
+  loadCoachOfPlayer,
+  loadPlanAdjustments,
+  loadPlayer,
+  loadPlayerPlans,
+  loadWorkoutLogs,
+  resolvePlayerAge,
+  saveCoachNote,
+  savePlayerProfile,
+} from "../lib/accounts";
+import type { CoachNote, CoachRow, PlayerRow } from "../lib/accounts";
+import {
+  DEFAULT_INTAKE,
+  HORIZON_WEEKS,
+  MINUTES_PER_SESSION,
+  SESSIONS_PER_WEEK,
+  SETTINGS,
+  planV3JobParams,
+  startPlanGeneration,
+} from "../lib/planJobs";
+import type { PlanIntakeForm, PlanJobState } from "../lib/planJobs";
+
+export default function PlayerDetail() {
+  const { playerId = "" } = useParams();
+  const [player, setPlayer] = useState<PlayerRow | null>(null);
+  const [coach, setCoach] = useState<CoachRow | null>(null);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [note, setNote] = useState<CoachNote | null>(null);
+  const [adjustments, setAdjustments] = useState<any[]>([]);
+  const [reps, setReps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const reload = useCallback(async () => {
+    const found = await loadPlayer(playerId);
+    if (!found) throw new Error("That athlete could not be found.");
+    setPlayer(found);
+    const [foundCoach, foundPlans, foundLogs, foundNote] = await Promise.all([
+      loadCoachOfPlayer(found).catch(() => null),
+      loadPlayerPlans(playerId),
+      loadWorkoutLogs(playerId),
+      loadCoachNote(playerId).catch(() => null),
+    ]);
+    setCoach(foundCoach);
+    setPlans(foundPlans);
+    setLogs(foundLogs);
+    setNote(foundNote);
+    const active = activePlan(foundPlans);
+    setAdjustments(active ? await loadPlanAdjustments(playerId, active.id).catch(() => []) : []);
+  }, [playerId]);
+
+  useEffect(() => {
+    document.title = "Athlete | PoseTek admin";
+    let live = true;
+    reload()
+      .then(() => loadAthleteBundle(playerId).then(bundle => { if (live) setReps(bundle.reps); }).catch(() => undefined))
+      .catch((loadError: any) => { if (live) setError(loadError?.message || "That athlete could not be loaded."); })
+      .finally(() => { if (live) setLoading(false); });
+    return () => { live = false; };
+  }, [playerId, reload]);
+
+  const plan = useMemo(() => activePlan(plans), [plans]);
+  const resolvedAge = useMemo(() => (player ? resolvePlayerAge(player.raw) : null), [player]);
+  const eligibility = useMemo(() => eligibilityFor(player, coach), [player, coach]);
+
+  if (loading) return <div className="portal-loading"><span className="spinner" /><p>Loading the athlete…</p></div>;
+  if (!player) return <p className="form-message" role="alert">{error}</p>;
+
+  return (
+    <>
+      <section className="admin-heading">
+        <Link className="icon-button" to={coach ? `/admin/accounts/coach/${coach.id}` : "/admin/accounts"} aria-label="Back">
+          <span className="material-symbols-outlined">arrow_back</span>
+        </Link>
+        <div>
+          <p className="eyebrow">Athlete{coach ? ` · ${coach.name}` : " · no coach"}</p>
+          <h1>{player.name}</h1>
+          <p>
+            {player.email || "No email on file"} ·{" "}
+            {resolvedAge?.age !== null && resolvedAge ? `${resolvedAge.age} years old` : "age unknown"} ·
+            {" "}drills up to difficulty {eligibility.maxDrillDifficulty} ({eligibility.source})
+          </p>
+        </div>
+        <div className="admin-heading-actions">
+          <Link className="quiet-button" to={`/athlete?player=${player.id}`}>
+            <span className="material-symbols-outlined">open_in_new</span>Their portal
+          </Link>
+        </div>
+      </section>
+
+      {error && <p className="form-message" role="alert">{error}</p>}
+
+      <div className="admin-grid-two">
+        <ProfileCard key={String(player.raw?.updatedAt?.seconds ?? player.id)} player={player} coach={coach} onSaved={reload} />
+        <CoachNoteCard playerId={playerId} note={note} onSaved={reload} />
+      </div>
+
+      <PlanSection
+        playerId={playerId}
+        player={player}
+        plan={plan}
+        plans={plans}
+        logs={logs}
+        reps={reps}
+        age={resolvedAge?.age ?? null}
+        onReload={reload}
+      />
+
+      {plan && isV3Plan(plan) && <AdjustmentHistory adjustments={adjustments} />}
+    </>
+  );
+}
+
+// MARK: - Profile inputs
+
+function ProfileCard({ player, coach, onSaved }: { player: PlayerRow; coach: CoachRow | null; onSaved: () => Promise<void> }) {
+  const resolved = resolvePlayerAge(player.raw);
+  const [position, setPosition] = useState<string>(String(player.raw?.position ?? ""));
+  const [birthDate, setBirthDate] = useState<string>(() => {
+    const value = player.raw?.birthDate;
+    const date = value?.toDate ? value.toDate() : null;
+    return date ? date.toISOString().slice(0, 10) : "";
+  });
+  const [age, setAge] = useState<string>(
+    resolved.source === "playerDocAge" && resolved.age !== null ? String(resolved.age) : "",
+  );
+  const [cap, setCap] = useState<string>(
+    typeof player.raw?.maxDrillDifficulty === "number" ? String(player.raw.maxDrillDifficulty) : "",
+  );
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function save() {
+    setSaving(true);
+    setMessage(null);
+    try {
+      const patch: any = {};
+      const storedPosition = String(player.raw?.position ?? "");
+      if (position !== storedPosition) patch.position = position ? (position as Position) : null;
+      const storedBirth = player.raw?.birthDate?.toDate
+        ? player.raw.birthDate.toDate().toISOString().slice(0, 10)
+        : "";
+      if (birthDate !== storedBirth) {
+        patch.birthDate = birthDate ? new Date(`${birthDate}T00:00:00Z`) : null;
+      }
+      const storedAge = typeof player.raw?.age === "number" ? String(player.raw.age) : "";
+      if (age !== storedAge) patch.age = age ? Number(age) : null;
+      const storedCap = typeof player.raw?.maxDrillDifficulty === "number" ? String(player.raw.maxDrillDifficulty) : "";
+      if (cap !== storedCap) patch.maxDrillDifficulty = cap ? Number(cap) : null;
+      if (!Object.keys(patch).length) { setMessage("Nothing changed."); return; }
+      await savePlayerProfile(player.id, patch);
+      await onSaved();
+      setMessage("Saved.");
+    } catch (error: any) {
+      setMessage(error?.message || "That change could not be saved.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="admin-card">
+      <h3>Profile inputs</h3>
+      <p className="admin-note">
+        What the generator reads about this athlete besides their measured results.
+      </p>
+      <div className="admin-form">
+        <label className="admin-field">
+          <span>Position</span>
+          <select value={position} onChange={event => setPosition(event.target.value)}>
+            <option value="">Not recorded</option>
+            {POSITIONS.map(value => <option key={value} value={value}>{POSITION_LABELS[value]}</option>)}
+          </select>
+        </label>
+        <div className="admin-field-row">
+          <label className="admin-field">
+            <span>Birth date (canonical for age)</span>
+            <input type="date" value={birthDate} onChange={event => setBirthDate(event.target.value)} />
+          </label>
+          <label className="admin-field">
+            <span>Recorded age (only when there is no birth date)</span>
+            <input type="number" min={5} max={80} value={age} onChange={event => setAge(event.target.value)} />
+          </label>
+        </div>
+        <p className="admin-note">
+          Age in use: {resolved.age ?? "unknown"} ({resolved.source}
+          {resolved.stale ? ", recorded over a year ago — refresh it" : ""}). A recorded age is an
+          observation, not a birthday, so it is never incremented automatically.
+        </p>
+        <label className="admin-field">
+          <span>
+            Maximum drill difficulty for this athlete — overrides the team setting
+            {coach?.maxDrillDifficulty ? ` (${coach.name}: up to ${coach.maxDrillDifficulty})` : " (team: all levels)"}
+          </span>
+          <select value={cap} onChange={event => setCap(event.target.value)}>
+            <option value="">Inherit ({eligibilityFor({ ...player, raw: { ...player.raw, maxDrillDifficulty: undefined } }, coach).maxDrillDifficulty})</option>
+            {[1, 2, 3, 4, 5].map(level => <option key={level} value={level}>Up to {level}</option>)}
+          </select>
+        </label>
+        {message && <p className="admin-note">{message}</p>}
+        <div className="admin-form-actions">
+          <button className="primary-cta" type="button" disabled={saving} onClick={save}>
+            {saving ? "Saving…" : "Save profile"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// MARK: - The private coach note
+
+function CoachNoteCard({ playerId, note, onSaved }: { playerId: string; note: CoachNote | null; onSaved: () => Promise<void> }) {
+  const [text, setText] = useState(note?.text ?? "");
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => { setText(note?.text ?? ""); }, [note]);
+
+  async function save() {
+    setSaving(true);
+    setMessage(null);
+    try {
+      const trimmed = text.trim();
+      if (!trimmed) { await clearCoachNote(playerId); }
+      else { await saveCoachNote(playerId, trimmed.slice(0, COACH_NOTE_MAX_CHARS), note?.emphasis ?? []); }
+      await onSaved();
+      setMessage(trimmed ? "Saved." : "Cleared.");
+    } catch (error: any) {
+      setMessage(error?.message || "That note could not be saved.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="admin-card">
+      <h3>Coach feedback</h3>
+      <p className="admin-note">
+        A powerful but bounded lever: it can move one training area by up to ten points, and thirty
+        across the plan. Keep it about training — pain, injury and readiness go through the
+        referral path, not here. The athlete never sees this note, only the plan it shapes.
+      </p>
+      <div className="admin-form">
+        <label className="admin-field">
+          <span>The current note (one per athlete; saving replaces it)</span>
+          <textarea
+            value={text}
+            maxLength={COACH_NOTE_MAX_CHARS}
+            placeholder="This guy really needs to get his speed up — he's slow off the mark and loses 1v1s because of it. Passing is fine."
+            onChange={event => setText(event.target.value)}
+          />
+        </label>
+        <p className="admin-counter">{text.length} / {COACH_NOTE_MAX_CHARS}</p>
+        {note?.updatedAt && (
+          <p className="admin-note">
+            Last written by {note.authorRole ?? "someone"}
+            {note.emphasis?.length ? ` · tagged ${note.emphasis.map(tag => `${tag.direction} ${domainLabel(tag.domain)}`).join(", ")}` : ""}
+          </p>
+        )}
+        {message && <p className="admin-note">{message}</p>}
+        <div className="admin-form-actions">
+          <button className="primary-cta" type="button" disabled={saving} onClick={save}>
+            {saving ? "Saving…" : text.trim() ? "Save note" : "Clear note"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// MARK: - The plan
+
+function PlanSection({ playerId, player, plan, plans, logs, reps, age, onReload }: {
+  playerId: string;
+  player: PlayerRow;
+  plan: any | null;
+  plans: any[];
+  logs: any[];
+  reps: any[];
+  age: number | null;
+  onReload: () => Promise<void>;
+}) {
+  const [intake, setIntake] = useState<PlanIntakeForm>(DEFAULT_INTAKE);
+  const [job, setJob] = useState<PlanJobState | null>(null);
+  const [open, setOpen] = useState(false);
+  const stopRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => () => stopRef.current?.(), []);
+
+  async function generate() {
+    try {
+      const params = planV3JobParams(reps, player.raw, age, intake);
+      stopRef.current = await startPlanGeneration(playerId, params, state => {
+        setJob(state);
+        if (state.status === "complete") void onReload();
+      });
+    } catch (error: any) {
+      setJob({ jobId: null, status: "failed", message: error?.message || "The job could not be submitted." });
+    }
+  }
+
+  const busy = job !== null && ["submitting", "pending", "running"].includes(job.status);
+  const version = plan ? planSchemaVersion(plan) : null;
+
+  return (
+    <>
+      <section className="admin-card">
+        <div className="admin-heading" style={{ marginBottom: 8 }}>
+          <div>
+            <h2>Training program</h2>
+            <p>
+              {plan
+                ? `${planHorizonWeeks(plan)} weeks from ${String(plan.startDate ?? "—")} · ${plan.sessionsPerWeek ?? plan.intake?.daysPerWeek ?? "?"} sessions/week · plan revision ${plan.planRevision ?? 1}`
+                : "No active plan yet."}
+            </p>
+          </div>
+          <div className="admin-heading-actions">
+            <button className="quiet-button" type="button" onClick={() => setOpen(current => !current)}>
+              <span className="material-symbols-outlined">auto_awesome</span>
+              {plan ? "Build a new plan" : "Build a plan"}
+            </button>
+          </div>
+        </div>
+
+        {open && (
+          <div className="admin-form">
+            <div className="admin-field-row">
+              <label className="admin-field">
+                <span>Weeks</span>
+                <select value={intake.horizonWeeks} onChange={event => setIntake({ ...intake, horizonWeeks: Number(event.target.value) })}>
+                  {HORIZON_WEEKS.map(value => <option key={value} value={value}>{value}</option>)}
+                </select>
+              </label>
+              <label className="admin-field">
+                <span>Sessions per week</span>
+                <select value={intake.sessionsPerWeek} onChange={event => setIntake({ ...intake, sessionsPerWeek: Number(event.target.value) })}>
+                  {SESSIONS_PER_WEEK.map(value => <option key={value} value={value}>{value}</option>)}
+                </select>
+              </label>
+              <label className="admin-field">
+                <span>Minutes per session</span>
+                <select value={intake.minutesPerSession} onChange={event => setIntake({ ...intake, minutesPerSession: Number(event.target.value) })}>
+                  {MINUTES_PER_SESSION.map(value => <option key={value} value={value}>{value}</option>)}
+                </select>
+              </label>
+              <label className="admin-field">
+                <span>Training setting</span>
+                <select value={intake.setting} onChange={event => setIntake({ ...intake, setting: event.target.value as PlanIntakeForm["setting"] })}>
+                  {SETTINGS.map(value => <option key={value} value={value}>{value}</option>)}
+                </select>
+              </label>
+            </div>
+            <p className="admin-note">
+              That is {intake.sessionsPerWeek * intake.minutesPerSession} minutes of programming a
+              week. Generation runs on the training engine; a new plan supersedes the active one.
+            </p>
+            <div className="admin-form-actions">
+              <button className="primary-cta" type="button" disabled={busy} onClick={generate}>
+                {busy ? "Building…" : "Generate the plan"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {job && (
+          <p className={job.status === "failed" ? "form-message" : "admin-note"} role={job.status === "failed" ? "alert" : undefined}>
+            {job.status === "submitting" && "Submitting the job…"}
+            {job.status === "pending" && "Waiting for the training engine…"}
+            {job.status === "running" && "Building the plan — this takes a couple of minutes."}
+            {job.status === "complete" && "The plan landed. It is listed below."}
+            {job.status === "failed" && (job.message || "The plan could not be generated.")}
+          </p>
+        )}
+      </section>
+
+      {!plan && (
+        <div className="admin-banner">
+          <span className="material-symbols-outlined">assignment</span>
+          <p>
+            This athlete has no active plan.{plans.length ? ` ${plans.length} older plan${plans.length === 1 ? "" : "s"} on file.` : ""}
+          </p>
+        </div>
+      )}
+
+      {plan && version !== 3 && <LegacyPlanCard plan={plan} />}
+      {plan && version === 3 && <WorkoutList playerId={playerId} plan={plan} logs={logs} />}
+    </>
+  );
+}
+
+function LegacyPlanCard({ plan }: { plan: any }) {
+  const version = planSchemaVersion(plan);
+  return (
+    <section className="admin-card">
+      <div className="admin-banner warn">
+        <span className="material-symbols-outlined">history</span>
+        <p>
+          {version === 0
+            ? "This plan's schema version is not one this console understands, so it is not shown."
+            : "This is an older plan: weeks of prescriptions rather than predefined workouts. The workout editor only edits v3 plans — build a new plan above to get one."}
+        </p>
+      </div>
+      {version === 1 && (
+        <>
+          <h3>Weeks in the older plan</h3>
+          {(plan.weeks || []).map((week: any) => (
+            <div className="admin-week" key={week.weekNumber}>
+              <div className="admin-week-head">
+                <h3>Week {week.weekNumber}{week.theme ? ` — ${week.theme}` : ""}</h3>
+              </div>
+              <ul className="admin-blocks">
+                {(week.drills || []).map((drill: any, index: number) => (
+                  <li className="admin-block" key={`${drill.drillId}-${index}`}>
+                    <span className="admin-block-order">{index + 1}</span>
+                    <span className="admin-block-copy">
+                      <strong>{drill.name}</strong>
+                      <span className="admin-block-dose">
+                        {domainLabel(String(drill.domain || ""))} · {drill.sets}×{drill.reps} {drill.repUnit}
+                        {drill.frequencyPerWeek ? ` · ${drill.frequencyPerWeek}×/week` : ""}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </>
+      )}
+    </section>
+  );
+}
+
+// MARK: - Every workout, vertically
+
+function WorkoutList({ playerId, plan, logs }: { playerId: string; plan: any; logs: any[] }) {
+  const states = useMemo(
+    () => workoutStates([String(plan.planId ?? ""), String(plan.id ?? "")], logs),
+    [plan, logs],
+  );
+  const next = useMemo(() => nextWorkout(plan, logs), [plan, logs]);
+  const thisWeek = currentWeekNumber(plan);
+
+  return (
+    <>
+      {(orderedWeeks(plan)).map(week => {
+        const window = weekWindow(plan, Number(week.weekNumber));
+        return (
+          <section className="admin-week" key={week.weekNumber}>
+            <div className="admin-week-head">
+              <h3>Week {week.weekNumber}{week.theme ? ` — ${week.theme}` : ""}</h3>
+              {window && <span>{weekWindowLabel(window)}</span>}
+              {Number(week.weekNumber) === thisWeek && <span className="admin-chip accent">this week</span>}
+              {week.focus && <span>{week.focus}</span>}
+            </div>
+
+            {(week.targets || []).length > 0 && (
+              <p className="admin-note">
+                Targets:{" "}
+                {(week.targets || []).map((target: any) => `${domainLabel(target.domain)} ×${target.exposures}`).join(" · ")}
+              </p>
+            )}
+
+            {orderedWorkouts(week).map(workout => {
+              const state = stateOf(states, String(workout.workoutId));
+              const isNext = next?.workout?.workoutId === workout.workoutId;
+              return (
+                <article className={`admin-workout${isNext ? " is-next" : ""}`} key={workout.workoutId}>
+                  <header>
+                    <div>
+                      <h4>{workout.title || workout.workoutId}</h4>
+                      <p>{workout.intent}</p>
+                    </div>
+                    <div className="admin-workout-actions">
+                      <span className="admin-chip">~{workout.estimatedMinutes} min of {workout.budgetMinutes}</span>
+                      <span className="admin-chip">rev {workout.revision ?? 1} · {String(workout.editedBy ?? "generator")}</span>
+                      <StatusChip state={state} isNext={isNext} />
+                      <Link
+                        className="primary-cta small"
+                        to={`/admin/accounts/player/${playerId}/plan/${plan.id}/workout/${workout.workoutId}`}
+                      >
+                        <span className="material-symbols-outlined">edit</span>Edit
+                      </Link>
+                    </div>
+                  </header>
+                  <ul className="admin-blocks">
+                    {orderedBlocks(workout).map((block: any) => (
+                      <li className="admin-block" key={block.blockId}>
+                        <span className="admin-block-order">{block.order}</span>
+                        <span className="admin-block-copy">
+                          <strong>{block.name}</strong>
+                          <span className="admin-block-dose">
+                            {domainLabel(String(block.domain || ""))} · {blockDoseLine(block)}
+                            {block.kind && block.kind !== "main" ? ` · ${block.kind}` : ""}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                    {orderedBlocks(workout).length === 0 && (
+                      <li className="admin-block"><span className="admin-block-dose">No drills in this workout.</span></li>
+                    )}
+                  </ul>
+                </article>
+              );
+            })}
+          </section>
+        );
+      })}
+    </>
+  );
+}
+
+function StatusChip({ state, isNext }: { state: { kind: string; endReason?: string }; isNext: boolean }) {
+  if (state.kind === "finished") {
+    return <span className="admin-chip accent">{state.endReason === "completed" ? "done" : String(state.endReason)}</span>;
+  }
+  if (state.kind === "inProgress") return <span className="admin-chip warn">in progress</span>;
+  if (isNext) return <span className="admin-chip accent">next</span>;
+  return <span className="admin-chip">upcoming</span>;
+}
+
+// MARK: - The ground-truth record, read back
+
+function AdjustmentHistory({ adjustments }: { adjustments: any[] }) {
+  if (!adjustments.length) return null;
+  return (
+    <section className="admin-card">
+      <h3>Adjustments made to this plan</h3>
+      <p className="admin-note">
+        Every saved edit and the reason given for it. This is the record a future generator is
+        evaluated against, so it is append-only — nothing here can be edited or deleted.
+      </p>
+      <div className="admin-adjustments">
+        {adjustments.map(adjustment => (
+          <article className="admin-adjustment" key={adjustment.id}>
+            <div className="admin-row-meta">
+              <span className="admin-chip">Week {adjustment.weekNumber} · {adjustment.workoutId}</span>
+              <span>rev {adjustment.baseRevision} → {adjustment.newRevision}</span>
+              <span>{adjustment.editor?.role ?? "editor"} on {adjustment.editor?.surface ?? "?"}</span>
+              {adjustment.diff?.minutesDelta ? (
+                <span>{adjustment.diff.minutesDelta > 0 ? "+" : ""}{adjustment.diff.minutesDelta} min</span>
+              ) : null}
+              {(adjustment.diff?.added || []).length > 0 && <span>+{adjustment.diff.added.length} drills</span>}
+              {(adjustment.diff?.removed || []).length > 0 && <span>−{adjustment.diff.removed.length} drills</span>}
+              {(adjustment.warningsOverridden || []).length > 0 && (
+                <span className="admin-chip warn">{adjustment.warningsOverridden.length} warnings accepted</span>
+              )}
+            </div>
+            <blockquote>{adjustment.rationale}</blockquote>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
