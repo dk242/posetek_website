@@ -7,6 +7,7 @@ const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
 const CoachDashboardPage = lazy(() => import("./pages/coach-dashboard/CoachDashboardPage"));
 const AthletePortalPage = lazy(() => import("./pages/athlete-portal/AthletePortalPage"));
 const DrillSharePage = lazy(() => import("./pages/drill-share/DrillSharePage"));
+const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 const PrivacyPage = lazy(() => import("./pages/privacy/PrivacyPage"));
 const NotFoundPage = lazy(() => import("./pages/not-found/NotFoundPage"));
 
@@ -37,6 +38,10 @@ export default function App() {
           <Route path="/coachesview.html" element={<RosterPage />} />
 
           <Route path="/dashboard" element={<CoachDashboardPage />} />
+
+          {/* The admin console mounts its own nested routes; `/*` is what lets
+              it own /admin/drills, /admin/accounts and everything under them. */}
+          <Route path="/admin/*" element={<AdminPage />} />
 
           <Route path="/athlete" element={<AthletePortalPage />} />
           <Route path="/profile.html" element={<AthletePortalPage />} />

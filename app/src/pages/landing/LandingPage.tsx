@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import firebase, { auth, db } from "../../lib/firebase";
 import { useThemeColor } from "../../lib/use-theme-color";
 import { getSafeReturnToUrl, redirectAfterAuth } from "./landing-helpers";
+import { refreshAdminIdentity, sendAdminVerification, upsertAdminProfile } from "../admin/lib/identity";
 import {
   createCoachDocument,
   createOrganization,
@@ -253,6 +254,34 @@ export default function LandingPage() {
       setLoginLoading(true);
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user: any = userCredential.user;
+
+      // PoseTek admin branch — FIRST, before any coach/player query
+      // (ADMIN_IDENTITY_CONTRACT.md §2.2). An @posetek.net address must never
+      // fall through to the cascade below: its Auth-UID fallback would resolve
+      // a staff account as a player and point every upload at players/{adminUid}.
+      const identity = await refreshAdminIdentity(user);
+      if (identity.adminDomain) {
+        if (!identity.isAdmin) {
+          // A domain match on an UNVERIFIED address is not admin (§1.3): send
+          // the verification (at most one per ten minutes), say so, sign out.
+          let sent = false;
+          try {
+            sent = await sendAdminVerification(user);
+          } catch {
+            sent = false;
+          }
+          await auth.signOut();
+          setLoginError(
+            sent
+              ? "Verify your PoseTek email, then sign in again — we just sent you a link."
+              : "Verify your PoseTek email, then sign in again. A verification link was already sent recently; check your inbox and spam folder.",
+          );
+          return;
+        }
+        await upsertAdminProfile(identity);
+        window.location.href = "/admin";
+        return;
+      }
 
       // Check both coach and player documents for the user's UID
       const coachQuery = await db.collection("coaches").where("userUID", "==", user.uid).limit(1).get();

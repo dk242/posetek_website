@@ -56,6 +56,8 @@ import { useWorkoutStore } from "../lib/workout-store";
 import type { WorkoutStore } from "../lib/workout-store";
 import WorkoutPlayer from "./WorkoutPlayer";
 import { EmptyState, LockedPage, PageHero, PortalLoading } from "./shared";
+import TrainingViewV3 from "./TrainingViewV3";
+import { isV3Plan } from "../../../lib/contracts/types";
 import type { PortalContext } from "./shared";
 import "./training-hub.css";
 
@@ -137,6 +139,12 @@ function TrainingContent({ ctx }: { ctx: PortalContext }) {
           <EmptyState icon="cloud_off" title="Training is unavailable" message={data.message} />
         ) : data.phase === "intake" ? (
           <TrainingIntake ctx={ctx} onReload={reload} registerJobUnsub={registerJobUnsub} />
+        ) : isV3Plan(data.plan) ? (
+          // A version 3 plan holds predefined workouts, not weekly
+          // prescriptions. The v1 hub below would parse it as an empty plan
+          // (TRAINING_PROGRAM_V3_CONTRACT.md §10), so it is rendered by its own
+          // reader instead.
+          <TrainingViewV3 plan={data.plan} logs={Object.values(store.logs)} />
         ) : (
           <TrainingHub ctx={ctx} plan={data.plan} store={store} onReload={reload} registerJobUnsub={registerJobUnsub} />
         )}
