@@ -789,6 +789,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
+    <script src="firebase-identity.js?v=20260906"></script>
 
     <script>
         const firebaseConfig = {
@@ -1284,6 +1286,66 @@
             }
         }
 
+        // Athletes never read teammates' documents: the admission service returns
+        // names plus whitelisted metric fields for the roster the athlete belongs to.
+        function statsFromProjectedReps(reps) {
+            const MS_TO_MPH = 2.23694;
+            let maxJump = 0, maxSprintMs = 0, maxKick = 0;
+            (reps || []).forEach(d => {
+                if (d.repType === 'jump') {
+                    const h = Number(d.jump_height_in ?? d.jump_height_inches ?? 0) ||
+                              (d.jump_height_m ? Number(d.jump_height_m) * 39.3701 : 0) ||
+                              (d.jumpHeight ? Number(d.jumpHeight) * 39.3701 : 0);
+                    if (h > maxJump) maxJump = h;
+                } else if (d.repType === 'sprint' && d.max_velocity != null) {
+                    const v = Number(d.max_velocity) || 0;
+                    if (v > maxSprintMs) maxSprintMs = v;
+                } else if (d.repType === 'side_kick' && d.velocity != null) {
+                    const v = Number(d.velocity) || 0;
+                    if (v > maxKick) maxKick = v;
+                }
+            });
+            return { jump_height: maxJump, strike_velocity: maxKick, max_velocity: maxSprintMs * MS_TO_MPH };
+        }
+
+        async function initAthleteLeaderboard() {
+            loadingState.style.display = '';
+            emptyState.style.display = 'none';
+            try {
+                const result = await firebase.functions().httpsCallable('getTeamLeaderboard')({});
+                const team = (result && result.data) || {};
+                currentUserDocId = team.playerId || null;
+                const players = (team.athletes || []).map(a => ({
+                    docId: a.id,
+                    uid: null,
+                    name: `${a.firstName || ''} ${a.lastName || ''}`.trim(),
+                    firstName: a.firstName || '',
+                    lastName: a.lastName || '',
+                    initials: getInitials(a.firstName, a.lastName),
+                    reps: Array.isArray(a.reps) ? a.reps : []
+                }));
+                if (players.length === 0) {
+                    loadingState.style.display = 'none';
+                    emptyState.style.display = '';
+                    return;
+                }
+                playersData = players.map(p => {
+                    const stats = statsFromProjectedReps(p.reps);
+                    const sessions = new Set(p.reps.map(r => r.sessionNumber).filter(n => Number.isFinite(n))).size;
+                    return { ...p, maxJumpHeightInches: stats.jump_height, maxSprintSpeedMph: stats.max_velocity, maxKickSpeedMph: stats.strike_velocity, totalSessions: sessions, stats };
+                });
+                computeOverallScores(playersData);
+                renderAll(playersData);
+                loadingState.style.display = 'none';
+                await applyFeedbackLocksIfNeeded();
+            } catch (e) {
+                console.error('Error initializing athlete leaderboard:', e);
+                loadingState.style.display = 'none';
+                emptyState.innerHTML = `<h3>No team found</h3><p>${e.message || "You haven't been added to a team yet. Ask your coach to add you."}</p>`;
+                emptyState.style.display = '';
+            }
+        }
+
         async function initLeaderboard(coachId) {
             loadingState.style.display = '';
             emptyState.style.display = 'none';
@@ -1312,77 +1374,22 @@
 
         auth.onAuthStateChanged(async (user) => {
             if (!user) { window.location.href = 'kickai.html'; return; }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const coachParam = urlParams.get('coach');
-            const urlUserType = urlParams.get('userType');
-
-            if (urlUserType === 'coach') {
-                isCoachView = true;
-                currentUserDocId = null;
-                initLeaderboard(user.uid);
-                return;
-            }
-
-            if (urlUserType === 'player') {
-                isCoachView = false;
-                const playerParam = urlParams.get('player');
-                if (playerParam) {
-                    currentUserDocId = playerParam;
-                } else {
-                    let playerSnap = await db.collection('players').where('userUID', '==', user.uid).limit(1).get();
-                    if (playerSnap.empty) playerSnap = await db.collection('players').where('authenticationUID', '==', user.uid).limit(1).get();
-                    currentUserDocId = !playerSnap.empty ? playerSnap.docs[0].id : null;
+            try {
+                const coachDoc = await PoseTekIdentity.findCoach(db, user.uid);
+                if (coachDoc) {
+                    isCoachView = true;
+                    currentUserDocId = null;
+                    await initLeaderboard(coachDoc.id);
+                    return;
                 }
-                if (coachParam) { initLeaderboard(coachParam); }
-                else if (currentUserDocId) {
-                    const coachSnap = await db.collection('coaches').where('members', 'array-contains', currentUserDocId).limit(1).get();
-                    if (!coachSnap.empty) initLeaderboard(coachSnap.docs[0].id);
-                    else {
-                        loadingState.style.display = 'none';
-                        emptyState.innerHTML = `<h3>No team found</h3><p>You haven't been added to a team yet. Ask your coach to add you.</p>`;
-                        emptyState.style.display = '';
-                    }
-                }
-                return;
-            }
-
-            // Fallback detection
-            if (coachParam) {
                 isCoachView = false;
-                let playerSnap = await db.collection('players').where('userUID', '==', user.uid).limit(1).get();
-                if (playerSnap.empty) playerSnap = await db.collection('players').where('authenticationUID', '==', user.uid).limit(1).get();
-                currentUserDocId = !playerSnap.empty ? playerSnap.docs[0].id : null;
-                initLeaderboard(coachParam);
-                return;
+                await initAthleteLeaderboard();
+            } catch (error) {
+                console.error('Leaderboard access failed', error);
+                loadingState.style.display = 'none';
+                emptyState.innerHTML = '<h3>Leaderboard unavailable</h3><p>Please sign in again.</p>';
+                emptyState.style.display = '';
             }
-
-            const coachDoc = await db.collection('coaches').doc(user.uid).get();
-            if (coachDoc.exists) {
-                isCoachView = true;
-                currentUserDocId = null;
-                initLeaderboard(user.uid);
-                return;
-            }
-
-            let playerSnap = await db.collection('players').where('userUID', '==', user.uid).limit(1).get();
-            if (playerSnap.empty) playerSnap = await db.collection('players').where('authenticationUID', '==', user.uid).limit(1).get();
-            if (!playerSnap.empty) {
-                isCoachView = false;
-                currentUserDocId = playerSnap.docs[0].id;
-                const coachSnap = await db.collection('coaches').where('members', 'array-contains', currentUserDocId).limit(1).get();
-                if (!coachSnap.empty) initLeaderboard(coachSnap.docs[0].id);
-                else {
-                    loadingState.style.display = 'none';
-                    emptyState.innerHTML = `<h3>No team found</h3><p>You haven't been added to a team yet. Ask your coach to add you.</p>`;
-                    emptyState.style.display = '';
-                }
-                return;
-            }
-
-            loadingState.style.display = 'none';
-            emptyState.innerHTML = `<h3>Access Denied</h3><p>Your account isn't linked to a player or coach profile.</p>`;
-            emptyState.style.display = '';
         });
 
         // ── Side nav ──

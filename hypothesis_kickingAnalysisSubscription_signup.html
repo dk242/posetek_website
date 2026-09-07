@@ -551,6 +551,8 @@
                     <p class="card-sub" id="authCardSub">Use your email and password. We&apos;ll save your profile for kicking biomechanics analysis.</p>
 
                     <form id="accountForm" novalidate>
+<p role="status">Subscription signup is temporarily unavailable. <a href="kickai.html">Sign in to view existing results.</a></p>
+<fieldset disabled style="border:0;padding:0;margin:0;min-width:0">
                         <div class="form-row form-row-2" id="authNameRow">
                             <div class="form-group">
                                 <label for="authFirstName">First name</label>
@@ -607,7 +609,8 @@
                             Continue
                             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
-                    </form>
+                    </fieldset>
+</form>
                 </div>
             </div>
 
@@ -725,10 +728,7 @@
             return db.collection(COLLECTION).doc(sid);
         }
 
-        let docRef = ensureSessionDocAndUrl();
-        ensureFunnelDocInitialized().catch(function (err) {
-            console.error('Funnel session init error:', err);
-        });
+        let docRef = null;
 
         const CHECK = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
@@ -928,136 +928,7 @@
 
         accountForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            setAccountStatus('');
-
-            const email = document.getElementById('authEmail').value.trim();
-            const pw = authPassword.value;
-            const pwc = authPasswordConfirm.value;
-            const firstName = authFirstName.value.trim();
-            const lastName = authLastName.value.trim();
-            const ageRaw = document.getElementById('fieldAge').value;
-            const position = document.getElementById('fieldPosition').value;
-            const age = parseInt(ageRaw, 10);
-
-            if (!email || !document.getElementById('authEmail').checkValidity()) {
-                setAccountStatus('Please enter a valid email address.', 'error');
-                return;
-            }
-            if (!pw) {
-                setAccountStatus('Please enter your password.', 'error');
-                return;
-            }
-            if (!position) {
-                setAccountStatus('Please select your field position.', 'error');
-                return;
-            }
-            if (!ageRaw || isNaN(age) || age < 1 || age > 99) {
-                setAccountStatus('Please enter a valid age (1–99).', 'error');
-                return;
-            }
-
-            if (authMode === 'create') {
-                if (!firstName || !lastName) {
-                    setAccountStatus('Please enter your first and last name.', 'error');
-                    return;
-                }
-                if (pw.length < 6) {
-                    setAccountStatus('Password must be at least 6 characters.', 'error');
-                    return;
-                }
-                if (pw !== pwc) {
-                    setAccountStatus('Passwords do not match.', 'error');
-                    return;
-                }
-            }
-
-            accountSubmit.disabled = true;
-            accountSubmit.textContent = authMode === 'login' ? 'Signing in…' : 'Creating account…';
-
-            try {
-                let uid;
-
-                if (authMode === 'login') {
-                    const cred = await auth.signInWithEmailAndPassword(email, pw);
-                    uid = cred.user.uid;
-                } else {
-                    try {
-                        const cred = await auth.createUserWithEmailAndPassword(email, pw);
-                        uid = cred.user.uid;
-                    } catch (err) {
-                        if (err.code === 'auth/email-already-in-use') {
-                            const cred = await auth.signInWithEmailAndPassword(email, pw);
-                            uid = cred.user.uid;
-                        } else {
-                            throw err;
-                        }
-                    }
-                }
-
-                await mergeKickingAnalysisUserLight(uid, email);
-
-                if (authMode === 'create') {
-                    await createOrMergePlayerOnSignup(uid, email, firstName, lastName);
-                } else {
-                    await syncPlayerOnLogin(uid, email);
-                }
-
-                await db.collection('players').doc(uid).set({
-                    age: age,
-                    position: position,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-
-                docRef = ensureSessionDocAndUrl();
-                const utm = collectUtmFromSearch();
-                const snap = await docRef.get();
-
-                const funnelPayload = {
-                    page: 'hypothesis_kickingAnalysisSubscription_signup',
-                    firebaseUid: uid,
-                    email: email,
-                    age: age,
-                    position: position,
-                    utm: utm,
-                    lastStep: 1,
-                    funnelStep: 'account_and_profile_complete',
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                const sourceTag = getOptionalSourceFromSearch();
-                if (sourceTag) funnelPayload.source = sourceTag;
-
-                if (authMode === 'create') {
-                    funnelPayload.firstName = firstName;
-                    funnelPayload.lastName = lastName;
-                }
-
-                if (!snap.exists) {
-                    funnelPayload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                }
-
-                await docRef.set(funnelPayload, { merge: true });
-
-                try {
-                    await recordPaymentUnavailableStep();
-                } catch (err) {
-                    console.error('Firestore payment step error:', err);
-                }
-
-                goToStep(2, 'forward');
-            } catch (err) {
-                console.error('Account error:', err);
-                let msg = 'Something went wrong. Please try again.';
-                if (err.code === 'auth/wrong-password') msg = 'Wrong password for that email.';
-                else if (err.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
-                else if (err.code === 'auth/user-not-found' && authMode === 'login') {
-                    msg = 'No account with this email. Use “Create account” or check your email.';
-                } else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try again in a few minutes.';
-                else if (err.code === 'auth/user-disabled') msg = 'This account has been disabled.';
-                setAccountStatus(msg, 'error');
-            } finally {
-                resetAccountSubmitButton();
-            }
+            setAccountStatus('Subscription signup is temporarily unavailable. Existing accounts can sign in from the main PoseTek page.', 'error');
         });
 
         document.getElementById('backToStep2').addEventListener('click', function () {

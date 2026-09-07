@@ -220,7 +220,9 @@
 <div id="detail"><div class="detail-inner" id="detailInner"></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
@@ -231,6 +233,45 @@ firebase.initializeApp({
   appId: "1:839600313930:web:13b1e94c2c540561e3f8b3"
 });
 const db = firebase.firestore();
+const auth = firebase.auth();
+const storage = firebase.storage();
+
+/* ------------------------------------------------------------------ access */
+// Failure bundles are athlete recordings. Firestore/Storage rules admit only a
+// verified @posetek.net staff account; this page never resolves media without
+// that session and never trusts a URL stored in a (formerly client-writable) doc.
+
+function isStaffUser(user) {
+  return Boolean(user && user.emailVerified && /^[a-z0-9._%+-]+@posetek\.net$/.test(String(user.email || "").toLowerCase()));
+}
+
+function renderSignIn(message) {
+  document.getElementById("caseList").innerHTML =
+    '<form id="staffSignIn" class="empty" style="display:grid;gap:8px;max-width:340px;margin:24px auto">' +
+    '<strong>Staff sign-in required</strong>' +
+    (message ? '<span style="color:var(--text-muted)">' + escapeHtml(message) + '</span>' : '') +
+    '<input id="staffEmail" type="email" placeholder="you@posetek.net" autocomplete="username" required>' +
+    '<input id="staffPassword" type="password" placeholder="Password" autocomplete="current-password" required>' +
+    '<button type="submit">Sign in</button></form>';
+  document.getElementById("staffSignIn").addEventListener("submit", async e => {
+    e.preventDefault();
+    try {
+      await auth.signInWithEmailAndPassword(document.getElementById("staffEmail").value.trim(), document.getElementById("staffPassword").value);
+    } catch (err) {
+      renderSignIn(err.message || "Sign-in failed.");
+    }
+  });
+}
+
+auth.onAuthStateChanged(user => {
+  if (!user) { renderSignIn(); return; }
+  if (!isStaffUser(user)) {
+    auth.signOut();
+    renderSignIn("A verified @posetek.net account is required.");
+    return;
+  }
+  fetchCases();
+});
 
 /* ------------------------------------------------------------------ data */
 
@@ -270,17 +311,49 @@ function normalize(doc) {
     uploadState: d.artifactUploadState || "?",
     userNote: d.userNote || null,
     storage: {
+      // Paths are the source of truth; URLs are resolved through the staff
+      // session when a case is opened (legacy docs may still carry tokened URLs).
+      videoPath: safePath(storage.videoPath),
+      calibrationImagePath: safePath(storage.calibrationImagePath),
+      reportPath: safePath(storage.reportPath),
+      logPath: safePath(storage.logPath),
       videoURL: safeURL(storage.videoURL),
       calibrationImageURL: safeURL(storage.calibrationImageURL),
       reportURL: safeURL(storage.reportURL),
       logURL: safeURL(storage.logURL),
       repArtifactFolder: storage.repArtifactFolder || null,
       repArtifacts: (Array.isArray(storage.repArtifacts) ? storage.repArtifacts : [])
-        .map(a => a && a.path ? { path: String(a.path), url: safeURL(a.url) } : null)
+        .map(a => a && safePath(a.path) ? { path: safePath(a.path), url: safeURL(a.url) } : null)
         .filter(Boolean),
       sessionRootArtifacts: Array.isArray(storage.sessionRootArtifacts) ? storage.sessionRootArtifacts : []
-    }
+    },
+    resolved: false
   };
+}
+
+// Storage paths a failure bundle may reference: its own failure_cases prefix or
+// the athlete's own recording prefix. Anything else in a doc is ignored.
+function safePath(p) {
+  const s = typeof p === "string" ? p : "";
+  return /^[A-Za-z0-9_.-]+(\/[A-Za-z0-9_.-]+)+$/.test(s) && !s.split("/").some(seg => seg === "." || seg === "..") ? s : null;
+}
+
+async function resolveURL(path) {
+  if (!path) return null;
+  try { return safeURL(await storage.ref(path).getDownloadURL()); } catch (_) { return null; }
+}
+
+async function resolveCaseURLs(c) {
+  if (c.resolved) return;
+  const s = c.storage;
+  [s.videoURL, s.calibrationImageURL, s.reportURL, s.logURL] = await Promise.all([
+    s.videoURL || resolveURL(s.videoPath),
+    s.calibrationImageURL || resolveURL(s.calibrationImagePath),
+    s.reportURL || resolveURL(s.reportPath),
+    s.logURL || resolveURL(s.logPath)
+  ]);
+  await Promise.all(s.repArtifacts.map(async a => { if (!a.url) a.url = await resolveURL(a.path); }));
+  c.resolved = true;
 }
 
 async function fetchCases() {
@@ -450,11 +523,12 @@ const MEDIAPIPE_EDGES = [
 let overlayState = null; // { video, canvas, poseFrames, comPoints, fps, showPose, showCom }
 let overlayGen = 0; // bumped per detail open/close so stale async setup bails out
 
-function openDetail(id) {
+async function openDetail(id) {
   const c = allCases.find(x => x.id === id);
   if (!c) return;
   overlayGen++;
   overlayState = null;
+  await resolveCaseURLs(c);
   const meta = KIND_META[c.kind] || { label: c.kind, cls: "pose" };
   const inner = document.getElementById("detailInner");
 
@@ -733,8 +807,9 @@ function escapeHtml(s) {
 }
 function escapeAttr(s) { return escapeHtml(s); }
 
-// Docs are attacker-writable while Firestore rules are open — only ever hand
-// href/src/fetch a Firebase Storage download URL, never a doc-supplied scheme.
+// Only ever hand href/src/fetch a Firebase Storage download URL — resolved from
+// a path through the staff session, or a legacy tokened URL — never a
+// doc-supplied scheme.
 function safeURL(u) {
   try {
     const p = new URL(String(u));
@@ -747,8 +822,6 @@ function safeURL(u) {
   document.getElementById(id).addEventListener("change", applyFilters));
 document.getElementById("btnRefresh").addEventListener("click", fetchCases);
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
-
-fetchCases();
 </script>
 </body>
 </html>
