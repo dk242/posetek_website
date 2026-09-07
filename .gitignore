@@ -3,3 +3,5 @@
 .firebase/
 firebase-debug.log*
 node_modules/
+/dist/
+.DS_Store

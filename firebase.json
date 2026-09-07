@@ -4,13 +4,20 @@
     "runtime": "nodejs22"
   },
   "hosting": {
-    "public": ".",
+    "public": "dist",
+    "predeploy": ["npm --prefix app ci", "npm --prefix app run build"],
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
       "backfill-session-summaries.html",
       "images/logo-export.html"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ],
     "headers": [
       {
@@ -28,6 +35,15 @@
           {
             "key": "Cache-Control",
             "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
           }
         ]
       }
