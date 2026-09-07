@@ -85,6 +85,39 @@ class FunctionsReleaseTests(unittest.TestCase):
         for share in release.SHARES:
             self.assertEqual(next(op for op in plan["operations"] if op["name"] == share)["action"], "update")
 
+    def test_tool_owned_labels_do_not_count_as_runtime_changes(self):
+        before = {"labels": {"deployment-tool": "cli-firebase", "deployment-callable": "true", "firebase-functions-hash": "abc"}, "timeout": "60s"}
+        after = {"labels": {"deployment-tool": "cli-gcloud", "firebase-functions-hash": "abc", "posetek-club-source": "x"}, "timeout": "60s"}
+        self.assertEqual(release.stable(before, allow_source_label=True), release.stable(after, allow_source_label=True))
+        after["timeout"] = "120s"
+        self.assertNotEqual(release.stable(before, allow_source_label=True), release.stable(after, allow_source_label=True))
+
+    def test_already_released_functions_are_verified_not_redeployed(self):
+        records = self.baseline["functions"]
+        share_hash = self.plan["sources"]["sharing"]["manifestHash"][:20]
+        functions_hash = self.plan["sources"]["functions"]["manifestHash"][:20]
+        invoker = {"bindings": [{"role": release.INVOKER, "members": ["allUsers"]}]}
+        records["getClubContext"] = {**copy.deepcopy(records["createAthleteResultsShare"]),
+            "name": f"projects/{release.PROJECT}/locations/{release.REGION}/functions/getClubContext", "entryPoint": "getClubContext",
+            "labels": {"deployment-tool": "cli-gcloud", "posetek-club-source": functions_hash}}
+        self.baseline["iam"]["getClubContext"] = invoker
+        records["createAthleteResultsShare"]["labels"] = {"deployment-tool": "cli-gcloud", "posetek-club-source": share_hash}
+        records["createAthleteResultsShare"]["secretEnvironmentVariables"] = [{"key": release.SECRET, "secret": release.SECRET, "version": "1"}]
+        self.baseline["iam"]["createAthleteResultsShare"] = invoker
+        # Same label but the signing secret is missing: must still be updated, not skipped.
+        records["getAthleteResultsShare"]["labels"] = {"deployment-tool": "cli-gcloud", "posetek-club-source": share_hash}
+        self.baseline["iam"]["getAthleteResultsShare"] = invoker
+        baseline_path = self.root / "baseline-verified.json"; release.private_write(baseline_path, self.baseline)
+        output = self.root / "prepared-verified"
+        with contextlib.redirect_stdout(io.StringIO()):
+            release.prepare(self.source, self.sharing, self.manifest, baseline_path, output, "1")
+        actions = {op["name"]: op["action"] for op in release.read(output / "plan.json")["operations"]}
+        self.assertEqual(actions["getClubContext"], "verified")
+        self.assertEqual(actions["createAthleteResultsShare"], "verified")
+        self.assertEqual(actions["getAthleteResultsShare"], "update")
+        self.assertEqual(actions["getAthleteSharedRepArtifacts"], "update")
+        self.assertEqual(sum(action == "create" for action in actions.values()), 15)
+
     def test_missing_invoker_is_remediated_once_then_required(self):
         granted = {"bindings": [{"role": release.INVOKER, "members": ["allUsers"]}]}
         with patch.object(release, "iam", side_effect=[{"etag": "ACAB"}, granted]), patch.object(release, "gcloud") as gcloud:

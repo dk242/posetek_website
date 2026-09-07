@@ -90,6 +90,17 @@ def needs_invoker_resume(record, policy):
     return "posetek-club-source" in record.get("labels", {}) and not has_public_invoker(policy)
 
 
+def has_share_secret(record, secret_version):
+    return any(s.get("key") == SECRET and s.get("version") == secret_version for s in record.get("secretEnvironmentVariables", []))
+
+
+def already_released(name, record, policy, manifest_hash, secret_version):
+    # A prior run of this release already put exactly this source on the function:
+    # verify it by readback instead of paying for another identical deployment.
+    return (record.get("labels", {}).get("posetek-club-source") == manifest_hash[:20] and has_public_invoker(policy)
+            and (name not in SHARES or has_share_secret(record, secret_version)))
+
+
 def ensure_public_invoker(name):
     """Apply gcloud's own documented remediation once, then require the binding.
 
@@ -105,7 +116,9 @@ def ensure_public_invoker(name):
 def stable(record, *, allow_source_label=False, allow_share_secret=False):
     value = {key: copy.deepcopy(item) for key, item in record.items() if key not in TRANSIENT}
     if allow_source_label:
-        for key in ["posetek-club-source", "deployment-callable"]: value.get("labels", {}).pop(key, None)
+        # Tool-owned labels: gcloud rewrites deployment-tool on every deploy and does not
+        # preserve the Firebase CLI's deployment-callable marker on updates.
+        for key in ["posetek-club-source", "deployment-callable", "deployment-tool"]: value.get("labels", {}).pop(key, None)
     if allow_share_secret:
         value["secretEnvironmentVariables"] = [item for item in value.get("secretEnvironmentVariables", []) if item.get("key") != SECRET]
         if not value["secretEnvironmentVariables"]: value.pop("secretEnvironmentVariables")
@@ -186,6 +199,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
         resume = bool(existing) and needs_invoker_resume(existing, baseline["iam"].get(name, {}))
         source_kind = "sharing" if name in SHARES else "functions"
         selected_source = sources[source_kind]
+        verified = bool(existing) and already_released(name, existing, baseline["iam"].get(name, {}), selected_source["manifestHash"], secret_version)
         runtime = existing or donor
         timeout = "120s" if name == "importClubLogo" else runtime.get("timeout", "60s")
         command = ["gcloud", "functions", "deploy", name, f"--project={PROJECT}", f"--region={REGION}", "--no-gen2", "--runtime=nodejs22",
@@ -209,7 +223,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
             # Keep the settings the earlier attempt applied; only the invoker binding is outstanding.
             command.append("--allow-unauthenticated")
         if name in SHARES: command.append(f"--update-secrets={SECRET}=projects/{PROJECT}/secrets/{SECRET}:{secret_version}")
-        operations.append({"name": name, "action": "resume" if resume else ("update" if existing else "create"), "argv": command, "timeout": timeout, "sourceKind": source_kind, "sourceManifestHash": selected_source["manifestHash"], "environmentFile": env_metadata})
+        operations.append({"name": name, "action": "verified" if verified else ("resume" if resume else ("update" if existing else "create")), "argv": command, "timeout": timeout, "sourceKind": source_kind, "sourceManifestHash": selected_source["manifestHash"], "environmentFile": env_metadata})
     plan = {"project": PROJECT, "region": REGION, "baselineHash": digest(baseline), "sourceManifestHash": manifest_hash, "sources": sources,
             "sharingBaselineZipSha256": sharing_manifest["baseSourceZipSha256"], "secretVersion": secret_version, "operations": operations,
             "preservedFunctions": sorted(set(records) - set(ENDPOINTS)), "createdAt": now(),
@@ -218,7 +232,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
     private_write(output / "plan.json", plan)
     private_write(output / "baseline.json", baseline)
     print(json.dumps({"status": "prepared", "planHash": plan["planHash"], "sourceManifestHash": manifest_hash,
-                      "newFunctions": sum(op['action'] == 'create' for op in operations), "resumedFunctions": sum(op['action'] == 'resume' for op in operations), "updatedFunctions": sum(op['action'] == 'update' for op in operations), "preservedFunctions": plan['preservedFunctions']}))
+                      "newFunctions": sum(op['action'] == 'create' for op in operations), "resumedFunctions": sum(op['action'] == 'resume' for op in operations), "verifiedFunctions": sum(op['action'] == 'verified' for op in operations), "updatedFunctions": sum(op['action'] == 'update' for op in operations), "preservedFunctions": plan['preservedFunctions']}))
 
 
 def verify_plan(plan, baseline, evidence):
@@ -265,17 +279,20 @@ def deploy(plan_path, evidence_path, journal_path):
         for operation in plan["operations"]:
             name = operation["name"]
             journal.update(status="deploying", current=name); private_write(journal_path, journal)
-            result = subprocess.run(operation["argv"], capture_output=True, text=True)
-            private_write(Path(journal_path).parent / (Path(journal_path).stem + "-" + name + "-cli.json"),
-                          {"returncode": result.returncode, "stdout": result.stdout, "stderr": result.stderr})
-            if result.returncode: raise RuntimeError(f"Deployment failed for {name}; inspect private CLI journal before any retry")
+            cli_journal = Path(journal_path).parent / (Path(journal_path).stem + "-" + name + "-cli.json")
+            if operation["action"] == "verified":
+                private_write(cli_journal, {"skipped": "already released by this plan's source; verified by readback only"})
+            else:
+                result = subprocess.run(operation["argv"], capture_output=True, text=True)
+                private_write(cli_journal, {"returncode": result.returncode, "stdout": result.stdout, "stderr": result.stderr})
+                if result.returncode: raise RuntimeError(f"Deployment failed for {name}; inspect private CLI journal before any retry")
             current = gcloud(["functions", "describe", name, f"--project={PROJECT}", f"--region={REGION}", "--format=json"])
             validate_existing(name, current)
             if current.get("labels", {}).get("posetek-club-source") != operation["sourceManifestHash"][:20]: raise RuntimeError(f"Source label readback mismatch: {name}")
             before = baseline["functions"].get(name)
             if before and stable(before, allow_source_label=True, allow_share_secret=name in SHARES) != stable(current, allow_source_label=True, allow_share_secret=name in SHARES): raise RuntimeError(f"Unintended runtime setting changed: {name}")
-            if operation["action"] == "update" and iam(name) != baseline["iam"][name]: raise RuntimeError(f"IAM policy changed: {name}")
-            if operation["action"] in {"create", "resume"}: ensure_public_invoker(name)
+            if operation["action"] in {"update", "verified"} and iam(name) != baseline["iam"][name]: raise RuntimeError(f"IAM policy changed: {name}")
+            if operation["action"] in {"create", "resume", "verified"}: ensure_public_invoker(name)
             if name in SHARES and not any(s.get("key") == SECRET and s.get("version") == plan["secretVersion"] for s in current.get("secretEnvironmentVariables", [])): raise RuntimeError(f"Signing-secret binding mismatch: {name}")
             journal["completed"].append({"name": name, "action": operation["action"], "versionId": current.get("versionId"), "updateTime": current.get("updateTime"), "runtimeHash": digest(stable(current)), "iamHash": digest(iam(name))})
             private_write(journal_path, journal)
