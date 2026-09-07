@@ -1,52 +1,56 @@
-// Port of kickai.html — the product landing + sign-in page (the auth target of
-// the whole site). Behavior parity with the legacy page: same markup/classes,
-// same Firebase reads/writes, same error messages, and identical ?returnTo=
-// handling (see landing-helpers.ts). Post-auth navigation uses full
-// window.location assignments to the same relative .html URLs the legacy page
-// used; the SPA serves alias routes for the ported ones.
+// Port of kickai.html — the PoseTek sign-in page (the auth target of the whole
+// site; React routes /signin and /kickai.html). Behavior parity with the legacy
+// page: same markup/classes and copy, the same PoseTekIdentity lookups on sign-in,
+// the same admission callables on signup, the same error/success messages, and
+// identical ?returnTo= handling (landing-helpers.ts).
+//
+// Navigation: the role destinations (coachesview.html / profile.html) are ported,
+// so they become client-side navigations to /roster and /athlete with the legacy
+// query strings. A safe ?returnTo= is followed with a full navigation because it
+// may name an unported legacy page that only exists as a static file.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import firebase, { auth, db } from "../../lib/firebase";
+import { findCoach, findPlayer } from "../../lib/identity";
 import { useThemeColor } from "../../lib/use-theme-color";
-import { getSafeReturnToUrl, redirectAfterAuth } from "./landing-helpers";
 import { refreshAdminIdentity, sendAdminVerification, upsertAdminProfile } from "../admin/lib/identity";
+import { injectClarity } from "./clarity";
+import {
+  coachHomeRoute,
+  coachOrgInputError,
+  coachOrgStep2Copy,
+  getSafeReturnToUrl,
+  playerHomeRoute,
+  playerIdFromRedeemResult,
+  playerSignupRoute,
+  validateIndependentSignup,
+  validateOrgSignup,
+  validatePlayerCodeSignup,
+} from "./landing-helpers";
+import type { CoachOrgAction, CoachOrgChoice, SignupTab } from "./landing-helpers";
 import {
   createCoachDocument,
   createOrganization,
-  createPlayerDocument,
-  findOrganizationByCode,
-  findPlayerByCode,
+  discardFailedSignup,
+  joinOrganization,
+  redeemPlayerSignupCode,
 } from "./signup-data";
 import "./landing.scss";
 
-type SignupTab = "playerCode" | "organization" | "independent";
-type CoachOrgAction = "create" | "join";
-interface CoachOrgChoice {
-  action: CoachOrgAction;
-  value: string;
-}
-
-// Legacy showModal/hideModal toggled scrolling on document.body.
-function lockScroll() {
-  document.body.style.overflow = "hidden";
-}
-function unlockScroll() {
-  document.body.style.overflow = "auto";
-}
-
 export default function LandingPage() {
-  useThemeColor(null); // legacy kickai.html had no theme-color meta
-  // Auth state (drives the Login/Logout nav button, like legacy onAuthStateChanged)
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  useThemeColor("#04130e"); // kickai.html: <meta name="theme-color" content="#04130e">
+  const navigate = useNavigate();
 
-  // Modal visibility
-  const [loginOpen, setLoginOpen] = useState(false);
+  // Overlay modals (the login panel is inline now — legacy showModal(loginModal)
+  // only scrolls it into view and focuses the email field).
   const [signupOpen, setSignupOpen] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [coachOrgOpen, setCoachOrgOpen] = useState(false);
+  const loginPanelRef = useRef<HTMLElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   // Signup tabs
   const [activeTab, setActiveTab] = useState<SignupTab>("playerCode");
@@ -101,86 +105,55 @@ export default function LandingPage() {
   const [coachOrgError, setCoachOrgError] = useState("");
   const coachOrgResolver = useRef<((value: CoachOrgChoice | null) => void) | null>(null);
   const coachOrgInputRef = useRef<HTMLInputElement>(null);
+
   // Post-signup redirect timer: legacy full page loads implicitly cancelled it;
   // in the SPA it must not fire after the user navigates away from this page.
   const redirectTimerRef = useRef<number | undefined>(undefined);
-
   useEffect(() => () => window.clearTimeout(redirectTimerRef.current), []);
 
-  // Microsoft Clarity — injected from this page only (legacy had it inline in
-  // kickai.html's <head>). Guarded so React StrictMode's double effect run (and
-  // revisiting the page) cannot inject it twice.
+  // Microsoft Clarity is still embedded in kickai.html's <head>; inject it from
+  // this page only. Title as legacy <title>.
   useEffect(() => {
-    document.title = "PoseTek - Soccer Performance Analytics";
-    const w = window as any;
-    if (w.clarity || document.querySelector('script[src^="https://www.clarity.ms/tag/"]')) return;
-    w.clarity =
-      w.clarity ||
-      function () {
-        // eslint-disable-next-line prefer-rest-params
-        (w.clarity.q = w.clarity.q || []).push(arguments);
-      };
-    const t = document.createElement("script");
-    t.async = true;
-    t.src = "https://www.clarity.ms/tag/w8lex8gzl7";
-    const y = document.getElementsByTagName("script")[0];
-    if (y && y.parentNode) y.parentNode.insertBefore(t, y);
-    else document.head.appendChild(t);
+    document.title = "Sign In | PoseTek";
+    injectClarity();
   }, []);
 
-  // Restore body scroll if the page unmounts with a modal open.
-  useEffect(() => {
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  // Check auth state to update UI (and auto-open login when a safe returnTo is present)
+  // Check auth state to update UI (legacy: a signed-out visitor carrying a safe
+  // returnTo gets the login panel brought into view)
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user: any) => {
-      setCurrentUser(user);
-      if (!user && getSafeReturnToUrl()) {
-        lockScroll();
-        setLoginOpen(true);
-      }
+      if (!user && getSafeReturnToUrl()) showLoginPanel();
     });
     return unsubscribe;
   }, []);
 
-  // Close login/signup modals with Escape key (legacy document keydown handler)
+  // Close every open overlay with Escape (legacy: all `.modal-overlay.active`).
+  // The promise-based modals resolve null here — legacy only hid them, which
+  // left the awaiting signup handler (and its spinner) stuck forever.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (loginOpen) {
-          unlockScroll();
-          setLoginOpen(false);
-        }
-        if (signupOpen) {
-          unlockScroll();
-          setSignupOpen(false);
-        }
-      }
+      if (e.key !== "Escape") return;
+      if (signupOpen) setSignupOpen(false);
+      if (forgotOpen) finishForgotModal(null);
+      if (coachOrgOpen) finishCoachOrgModal(null);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [loginOpen, signupOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signupOpen, forgotOpen, coachOrgOpen]);
 
-  function openLoginModal() {
-    lockScroll();
-    setLoginOpen(true);
+  // legacy showModal(loginModal)
+  function showLoginPanel() {
+    loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => emailInputRef.current?.focus(), 220);
   }
-  function closeLoginModal() {
-    unlockScroll();
-    setLoginOpen(false);
-  }
+
   function openSignupModal() {
-    lockScroll();
     setSignupOpen(true);
     // Reset to first tab when opening modal (legacy clicked the first .tab)
     setActiveTab("playerCode");
   }
   function closeSignupModal() {
-    unlockScroll();
     setSignupOpen(false);
   }
 
@@ -189,7 +162,6 @@ export default function LandingPage() {
     return new Promise<string | null>((resolve) => {
       forgotResolver.current = resolve;
       setForgotEmail(prefillEmail || "");
-      lockScroll();
       setForgotOpen(true);
       setTimeout(() => {
         if (!prefillEmail) forgotInputRef.current?.focus();
@@ -197,7 +169,6 @@ export default function LandingPage() {
     });
   }
   function finishForgotModal(value: string | null) {
-    unlockScroll();
     setForgotOpen(false);
     const resolve = forgotResolver.current;
     forgotResolver.current = null;
@@ -216,12 +187,10 @@ export default function LandingPage() {
       setCoachOrgAction(null);
       setCoachOrgInput("");
       setCoachOrgError("");
-      lockScroll();
       setCoachOrgOpen(true);
     });
   }
   function finishCoachOrgModal(value: CoachOrgChoice | null) {
-    unlockScroll();
     setCoachOrgOpen(false);
     const resolve = coachOrgResolver.current;
     coachOrgResolver.current = null;
@@ -237,12 +206,17 @@ export default function LandingPage() {
   function handleCoachOrgConfirm() {
     const val = coachOrgInput.trim();
     if (!val) {
-      setCoachOrgError(
-        coachOrgAction === "create" ? "Organization name is required." : "Organization code is required.",
-      );
+      setCoachOrgError(coachOrgInputError(coachOrgAction));
       return;
     }
     finishCoachOrgModal({ action: coachOrgAction as CoachOrgAction, value: val });
+  }
+
+  // legacy redirectAfterAuth(fallback): a safe returnTo wins over the role home
+  function redirectAfterAuth(fallbackRoute: string) {
+    const returnTo = getSafeReturnToUrl();
+    if (returnTo) window.location.href = returnTo;
+    else navigate(fallbackRoute);
   }
 
   // Login handler (legacy loginForm submit)
@@ -283,37 +257,15 @@ export default function LandingPage() {
         return;
       }
 
-      // Check both coach and player documents for the user's UID
-      const coachQuery = await db.collection("coaches").where("userUID", "==", user.uid).limit(1).get();
-
-      let playerQuery = await db.collection("players").where("authenticationUID", "==", user.uid).limit(1).get();
-      if (playerQuery.empty) {
-        playerQuery = await db.collection("players").where("userUID", "==", user.uid).limit(1).get();
-      }
-      if (playerQuery.empty && user.email) {
-        playerQuery = await db.collection("players").where("signupEmail", "==", user.email).limit(1).get();
-      }
-
-      if (coachQuery.empty && playerQuery.empty) {
-        throw new Error("Account not found in system");
-      }
-
-      // Determine user type and redirect accordingly
-      if (!coachQuery.empty) {
-        const coachDoc = coachQuery.docs[0];
-
-        // Update last login
-        await db.collection("coaches").doc(coachDoc.id).update({
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        redirectAfterAuth("coachesview.html?userType=coach");
+      const coachDoc = await findCoach(db, user.uid);
+      if (coachDoc) {
+        await coachDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+        redirectAfterAuth(coachHomeRoute());
       } else {
-        // Player logic
-        const playerDoc = playerQuery.docs[0];
-        await db.collection("players").doc(playerDoc.id).update({
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        redirectAfterAuth("profile.html?player=" + playerDoc.id + "&userType=player");
+        const playerDoc = await findPlayer(db, user.uid);
+        if (!playerDoc) throw new Error("Account not found in system");
+        await playerDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+        redirectAfterAuth(playerHomeRoute(playerDoc.id));
       }
     } catch (error: any) {
       setLoginError(error.message);
@@ -363,66 +315,47 @@ export default function LandingPage() {
     const password = signupPassword;
     const confirmPasswordVal = confirmPassword;
     const userTypeVal = userType;
-    const orgCodeVal = orgCode;
+    const orgCodeVal = orgCode.trim();
+    let user: any = null;
 
     try {
       setOrgSignupLoading(true);
       setOrgSignupError("");
       setOrgSignupSuccess("");
 
-      if (!firstNameVal || !lastNameVal) throw new Error("Please enter your name");
-      if (password !== confirmPasswordVal) throw new Error("Passwords don't match");
+      const problem = validateOrgSignup({
+        firstName: firstNameVal,
+        lastName: lastNameVal,
+        password,
+        confirmPassword: confirmPasswordVal,
+        userType: userTypeVal,
+        orgCode: orgCodeVal,
+      });
+      if (problem) throw new Error(problem);
 
-      // Create user in Firebase Auth
+      let coachSetup: CoachOrgChoice | null = null;
+      if (userTypeVal === "coach") {
+        coachSetup = await showCoachOrgModal();
+        if (!coachSetup) throw new Error("Organization setup cancelled");
+      }
+
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const user: any = userCredential.user;
+      user = userCredential.user;
       await user.sendEmailVerification();
 
-      let orgRef: any = null;
-
       if (userTypeVal === "player") {
-        if (!orgCodeVal) throw new Error("Organization code is required for players");
-
-        // Find organization by code
-        const org = await findOrganizationByCode(orgCodeVal);
-        if (!org) throw new Error("Organization not found - check your code");
-        orgRef = org.ref;
-
-        // Create player document
-        await createPlayerDocument(user.uid, email, firstNameVal, lastNameVal, null, orgRef);
-
-        // Add player to organization's players list
-        await orgRef.update({
-          players: firebase.firestore.FieldValue.arrayUnion(user.uid),
-        });
-
-        // Redirect to profile
-        window.location.href = "profile.html?userType=player";
-      } else if (userTypeVal === "coach") {
-        const coachSetup = await showCoachOrgModal();
-        if (!coachSetup) throw new Error("Organization setup cancelled");
-
-        if (coachSetup.action === "create") {
-          orgRef = await createOrganization(coachSetup.value, user.uid);
-        } else {
-          const org = await findOrganizationByCode(coachSetup.value);
-          if (!org) throw new Error("Organization not found — check your code");
-          orgRef = org.ref;
-        }
-
-        // Create coach document
-        await createCoachDocument(user.uid, email, firstNameVal, lastNameVal, orgRef);
-
-        // Add coach to organization's coaches list
-        await orgRef.update({
-          coaches: firebase.firestore.FieldValue.arrayUnion(user.uid),
-        });
-
-        // Redirect to coach dashboard
-        window.location.href = "coachesview.html?userType=coach";
+        await joinOrganization(orgCodeVal, "player", firstNameVal, lastNameVal);
+        navigate(playerSignupRoute(null)); // legacy: profile.html?userType=player
+      } else {
+        // validateOrgSignup only lets "coach" past here, and the modal was confirmed above.
+        const setup = coachSetup as CoachOrgChoice;
+        if (setup.action === "create") await createOrganization(setup.value, firstNameVal, lastNameVal);
+        else await joinOrganization(setup.value, "coach", firstNameVal, lastNameVal);
+        navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
       }
     } catch (error: any) {
       console.error("Signup error:", error);
+      await discardFailedSignup(user);
       setOrgSignupError(error.message);
     } finally {
       setOrgSignupLoading(false);
@@ -435,45 +368,30 @@ export default function LandingPage() {
     const email = playerEmail;
     const password = playerPassword;
     const confirmPasswordVal = playerConfirmPassword;
+    let user: any = null;
 
     try {
       setPlayerCodeLoading(true);
       setPlayerCodeError("");
       setPlayerCodeSuccess("");
 
-      console.log("[handlePlayerCodeSignup] Code entered (raw):", code);
-      if (password !== confirmPasswordVal) throw new Error("Passwords don't match");
+      const problem = validatePlayerCodeSignup({ code, password, confirmPassword: confirmPasswordVal });
+      if (problem) throw new Error(problem);
 
-      const player = await findPlayerByCode(code);
-      console.log("[handlePlayerCodeSignup] Player lookup result:", player);
-      if (!player) throw new Error("Invalid player code");
-
-      console.log("[handlePlayerCodeSignup] registered field value:", player.registered, "| type:", typeof player.registered);
-      if (player.registered === true) throw new Error("Player already signed up");
-
-      console.log("[handlePlayerCodeSignup] Creating Firebase Auth user...");
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const user: any = userCredential.user;
-      console.log("[handlePlayerCodeSignup] Auth user created, uid:", user.uid);
+      user = userCredential.user;
       await user.sendEmailVerification();
 
-      console.log("[handlePlayerCodeSignup] Updating player doc id:", player.id);
-      await db.collection("players").doc(player.id).update({
-        authenticationUID: user.uid,
-        userUID: user.uid,
-        registered: true,
-        email: email,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-      console.log("[handlePlayerCodeSignup] Player doc updated successfully");
+      const result = await redeemPlayerSignupCode(code);
+      const playerId = playerIdFromRedeemResult(result);
 
       setPlayerCodeSuccess("Account created successfully!");
-
       redirectTimerRef.current = window.setTimeout(() => {
-        window.location.href = "profile.html?userType=player";
+        navigate(playerSignupRoute(playerId)); // legacy: profile.html?userType=player[&player=…]
       }, 1500);
     } catch (error: any) {
       console.error("Signup error:", error);
+      await discardFailedSignup(user);
       setPlayerCodeError(error.message);
     } finally {
       setPlayerCodeLoading(false);
@@ -493,8 +411,13 @@ export default function LandingPage() {
       setIndependentError("");
       setIndependentSuccess("");
 
-      if (!firstNameVal || !lastNameVal) throw new Error("Please enter your name");
-      if (password !== confirmPasswordVal) throw new Error("Passwords don't match");
+      const problem = validateIndependentSignup({
+        firstName: firstNameVal,
+        lastName: lastNameVal,
+        password,
+        confirmPassword: confirmPasswordVal,
+      });
+      if (problem) throw new Error(problem);
 
       // Create user in Firebase Auth
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -502,7 +425,7 @@ export default function LandingPage() {
       await user.sendEmailVerification();
 
       await createCoachDocument(user.uid, email, firstNameVal, lastNameVal);
-      window.location.href = "coachesview.html?userType=coach";
+      navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
     } catch (error: any) {
       console.error("Signup error:", error);
       setIndependentError(error.message);
@@ -511,129 +434,156 @@ export default function LandingPage() {
     }
   }
 
+  const step2 = coachOrgStep2Copy(coachOrgAction);
+  // legacy showModal()/hideModal() toggled body.style.overflow for the overlays
+  const modalOpen = signupOpen || forgotOpen || coachOrgOpen;
+
   return (
-    <div className="pt-landing">
-      <header>
-        <nav>
-          <Link to="/" className="logo" style={{ textDecoration: "none" }}>
-            PoseTek
-          </Link>
-          <div className="nav-buttons">
-            <button
-              className="nav-btn"
-              id="authBtn"
-              onClick={() => {
-                if (currentUser) {
-                  // Deliberate fix vs legacy: kickai.html kept a second always-on
-                  // click handler that flashed the login modal during sign-out.
-                  auth.signOut().then(() => {
-                    window.location.reload();
-                  });
-                } else {
-                  openLoginModal();
-                }
-              }}
-            >
-              {currentUser ? "Logout" : "Login"}
-            </button>
-          </div>
-        </nav>
+    <div className={`pt-landing${modalOpen ? " modal-open" : ""}`}>
+      <header className="site-chrome">
+        <Link to="/" className="brand-lockup" aria-label="PoseTek home">
+          <span className="brand-mark" aria-hidden="true">
+            P
+          </span>
+          <span>POSETEK</span>
+        </Link>
       </header>
 
       <main>
-        <section className="hero">
-          <div className="hero-image"></div>
-          <div className="hero-content">
-            <h1>Precision Training for Athletes</h1>
-            <p className="subtitle">Elevate your game with AI-powered biomechanical analysis</p>
-            <a href="#" className="cta-button" id="getStartedBtn" onClick={() => openSignupModal()}>
-              Get Started
-            </a>
-          </div>
-        </section>
-      </main>
+        <div className="auth-shell">
+          <section className="auth-context" aria-labelledby="auth-page-title">
+            <p className="eyebrow">Athlete performance system · 2026</p>
+            <h1 id="auth-page-title">Your performance lives here.</h1>
+            <p className="auth-intro">
+              Sign in to review test results, movement video, and the training work that follows each session.
+            </p>
+            <ul className="access-list" aria-label="PoseTek account access">
+              <li>
+                <strong>Coaches</strong> Manage athletes
+              </li>
+              <li>
+                <strong>Athletes</strong> Review results
+              </li>
+              <li>
+                <strong>Teams</strong> Track progress
+              </li>
+            </ul>
+          </section>
 
-      {/* Login Modal */}
-      <div className={`modal-overlay${loginOpen ? " active" : ""}`} id="loginModal">
-        <div className="auth-modal">
-          <div className="modal-content-wrapper">
-            <div className="modal-header">
-              <h3 className="modal-title">Login to PoseTek</h3>
-              <button className="close-btn" id="closeModal" onClick={closeLoginModal}>
-                &times;
-              </button>
-            </div>
-            <div className="verification-banner" id="verificationBanner">
-              <p>Your email is not verified</p>
-              <a
-                id="resendVerification"
-                onClick={(e) => {
-                  e.preventDefault();
-                  void handleResendVerification();
-                }}
-              >
-                Resend verification email
-              </a>
-            </div>
-            <form
-              id="loginForm"
-              onSubmit={(e) => {
-                e.preventDefault();
-                void handleLogin();
-              }}
-            >
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="Enter your email"
-                  required
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                />
+          <section id="loginModal" className="login-panel" aria-labelledby="login-title" ref={loginPanelRef}>
+            <div className="login-card">
+              <p className="login-kicker">Secure account access</p>
+              <div className="modal-header">
+                <h2 className="modal-title" id="login-title">
+                  Welcome back
+                </h2>
+                <p className="login-support">PoseTek will open the correct coach or athlete view after sign-in.</p>
+                {/* legacy: hidden by CSS; its click handler (hideModal(loginModal)) is a no-op */}
+                <button className="close-btn" id="closeModal" type="button" tabIndex={-1} aria-hidden="true">
+                  &times;
+                </button>
               </div>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="Enter your password"
-                  required
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-              </div>
-              <div className="checkbox-group">
-                <input type="checkbox" id="rememberMe" />
-                <label htmlFor="rememberMe">Remember me</label>
-              </div>
-              <div className="error-message" id="loginError" style={{ display: loginError ? "block" : "none" }}>
-                {loginError}
-              </div>
-              <div className="success-message" id="loginSuccess" style={{ display: loginSuccess ? "block" : "none" }}>
-                {loginSuccess}
-              </div>
-              <button type="submit" className="submit-btn" id="loginSubmit" disabled={loginLoading}>
-                <span style={{ opacity: loginLoading ? 0.5 : 1 }}>Login</span>
-                <span className="spinner" id="loginSpinner" style={{ display: loginLoading ? "block" : "none" }}></span>
-              </button>
-              <div className="auth-links">
+              <div className="verification-banner" id="verificationBanner" role="status" aria-live="polite">
+                <p>Your email is not verified</p>
                 <a
                   href="#"
-                  id="forgotPassword"
+                  id="resendVerification"
                   onClick={(e) => {
                     e.preventDefault();
-                    void handleForgotPassword();
+                    void handleResendVerification();
                   }}
                 >
-                  Forgot password?
+                  Resend verification email
                 </a>
               </div>
-            </form>
-          </div>
+              <form
+                id="loginForm"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void handleLogin();
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
+                    required
+                    ref={emailInputRef}
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                </div>
+                <div className="login-form-row">
+                  <div className="checkbox-group">
+                    <input type="checkbox" id="rememberMe" />
+                    <label htmlFor="rememberMe">Remember me</label>
+                  </div>
+                  <a
+                    href="#"
+                    className="text-link"
+                    id="forgotPassword"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      void handleForgotPassword();
+                    }}
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="error-message" id="loginError" role="alert" style={{ display: loginError ? "block" : "none" }}>
+                  {loginError}
+                </div>
+                <div
+                  className="success-message"
+                  id="loginSuccess"
+                  role="status"
+                  aria-live="polite"
+                  style={{ display: loginSuccess ? "block" : "none" }}
+                >
+                  {loginSuccess}
+                </div>
+                <button type="submit" className="submit-btn" id="loginSubmit" disabled={loginLoading}>
+                  <span style={{ opacity: loginLoading ? 0.5 : 1 }}>Sign In</span>
+                  <span
+                    className="spinner"
+                    id="loginSpinner"
+                    aria-hidden="true"
+                    style={{ display: loginLoading ? "block" : "none" }}
+                  ></span>
+                </button>
+              </form>
+              <div className="signup-prompt">
+                <p>New to PoseTek?</p>
+                <button type="button" className="secondary-action" id="getStartedBtn" onClick={openSignupModal}>
+                  Create an Account
+                </button>
+              </div>
+              <p className="access-note">
+                Your account permissions determine which athlete and team data you can access.
+              </p>
+            </div>
+          </section>
         </div>
-      </div>
+      </main>
 
       {/* Signup Modal */}
       <div className={`modal-overlay${signupOpen ? " active" : ""}`} id="signupModal">
@@ -641,33 +591,42 @@ export default function LandingPage() {
           <div className="modal-content-wrapper">
             <div className="modal-header">
               <h3 className="modal-title">Create Account</h3>
-              <button className="close-btn" id="closeSignupModal" onClick={closeSignupModal}>
+              <button
+                className="close-btn"
+                id="closeSignupModal"
+                type="button"
+                aria-label="Close account creation"
+                onClick={closeSignupModal}
+              >
                 &times;
               </button>
             </div>
 
             <div className="tab-container">
-              <div
+              <button
                 className={`tab${activeTab === "playerCode" ? " active" : ""}`}
+                type="button"
                 data-tab="playerCode"
                 onClick={() => setActiveTab("playerCode")}
               >
                 Player
-              </div>
-              <div
+              </button>
+              <button
                 className={`tab${activeTab === "organization" ? " active" : ""}`}
+                type="button"
                 data-tab="organization"
                 onClick={() => setActiveTab("organization")}
               >
                 Organization
-              </div>
-              <div
+              </button>
+              <button
                 className={`tab${activeTab === "independent" ? " active" : ""}`}
+                type="button"
                 data-tab="independent"
                 onClick={() => setActiveTab("independent")}
               >
                 Coach
-              </div>
+              </button>
             </div>
 
             {/* Player Tab */}
@@ -684,7 +643,10 @@ export default function LandingPage() {
                   <input
                     type="text"
                     id="playerCode"
+                    name="player-code"
                     placeholder="Enter login code"
+                    autoComplete="off"
+                    spellCheck={false}
                     required
                     value={playerCode}
                     onChange={(e) => setPlayerCode(e.target.value)}
@@ -695,7 +657,11 @@ export default function LandingPage() {
                   <input
                     type="email"
                     id="playerEmail"
-                    placeholder="Enter your email"
+                    name="player-email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
                     required
                     value={playerEmail}
                     onChange={(e) => setPlayerEmail(e.target.value)}
@@ -706,7 +672,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="playerPassword"
-                    placeholder="Create password"
+                    name="player-password"
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
                     required
                     minLength={6}
                     value={playerPassword}
@@ -718,7 +686,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="playerConfirmPassword"
-                    placeholder="Confirm password"
+                    name="player-confirm-password"
+                    placeholder="Enter the password again"
+                    autoComplete="new-password"
                     required
                     value={playerConfirmPassword}
                     onChange={(e) => setPlayerConfirmPassword(e.target.value)}
@@ -727,6 +697,7 @@ export default function LandingPage() {
                 <div
                   className="error-message"
                   id="playerCodeError"
+                  role="alert"
                   style={{ display: playerCodeError ? "block" : "none" }}
                 >
                   {playerCodeError}
@@ -734,6 +705,8 @@ export default function LandingPage() {
                 <div
                   className="success-message"
                   id="playerCodeSuccess"
+                  role="status"
+                  aria-live="polite"
                   style={{ display: playerCodeSuccess ? "block" : "none" }}
                 >
                   {playerCodeSuccess}
@@ -764,7 +737,9 @@ export default function LandingPage() {
                     <input
                       type="text"
                       id="firstName"
+                      name="first-name"
                       placeholder="First name"
+                      autoComplete="given-name"
                       required
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
@@ -775,7 +750,9 @@ export default function LandingPage() {
                     <input
                       type="text"
                       id="lastName"
+                      name="last-name"
                       placeholder="Last name"
+                      autoComplete="family-name"
                       required
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
@@ -787,7 +764,11 @@ export default function LandingPage() {
                   <input
                     type="email"
                     id="signupEmail"
-                    placeholder="Enter your email"
+                    name="signup-email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
                     required
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
@@ -798,7 +779,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="signupPassword"
-                    placeholder="Create a password"
+                    name="signup-password"
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
                     required
                     minLength={6}
                     value={signupPassword}
@@ -810,7 +793,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="confirmPassword"
-                    placeholder="Confirm your password"
+                    name="confirm-password"
+                    placeholder="Enter the password again"
+                    autoComplete="new-password"
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -829,17 +814,27 @@ export default function LandingPage() {
                   <input
                     type="text"
                     id="orgCode"
+                    name="organization-code"
                     placeholder="Enter organization code"
+                    autoComplete="off"
+                    spellCheck={false}
                     value={orgCode}
                     onChange={(e) => setOrgCode(e.target.value)}
                   />
                 </div>
-                <div className="error-message" id="orgSignupError" style={{ display: orgSignupError ? "block" : "none" }}>
+                <div
+                  className="error-message"
+                  id="orgSignupError"
+                  role="alert"
+                  style={{ display: orgSignupError ? "block" : "none" }}
+                >
                   {orgSignupError}
                 </div>
                 <div
                   className="success-message"
                   id="orgSignupSuccess"
+                  role="status"
+                  aria-live="polite"
                   style={{ display: orgSignupSuccess ? "block" : "none" }}
                 >
                   {orgSignupSuccess}
@@ -870,7 +865,9 @@ export default function LandingPage() {
                     <input
                       type="text"
                       id="indFirstName"
+                      name="coach-first-name"
                       placeholder="First name"
+                      autoComplete="given-name"
                       required
                       value={indFirstName}
                       onChange={(e) => setIndFirstName(e.target.value)}
@@ -881,7 +878,9 @@ export default function LandingPage() {
                     <input
                       type="text"
                       id="indLastName"
+                      name="coach-last-name"
                       placeholder="Last name"
+                      autoComplete="family-name"
                       required
                       value={indLastName}
                       onChange={(e) => setIndLastName(e.target.value)}
@@ -893,7 +892,11 @@ export default function LandingPage() {
                   <input
                     type="email"
                     id="indEmail"
-                    placeholder="Enter your email"
+                    name="coach-email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
                     required
                     value={indEmail}
                     onChange={(e) => setIndEmail(e.target.value)}
@@ -904,7 +907,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="indPassword"
-                    placeholder="Create password"
+                    name="coach-password"
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
                     required
                     minLength={6}
                     value={indPassword}
@@ -916,7 +921,9 @@ export default function LandingPage() {
                   <input
                     type="password"
                     id="indConfirmPassword"
-                    placeholder="Confirm password"
+                    name="coach-confirm-password"
+                    placeholder="Enter the password again"
+                    autoComplete="new-password"
                     required
                     value={indConfirmPassword}
                     onChange={(e) => setIndConfirmPassword(e.target.value)}
@@ -925,6 +932,7 @@ export default function LandingPage() {
                 <div
                   className="error-message"
                   id="independentError"
+                  role="alert"
                   style={{ display: independentError ? "block" : "none" }}
                 >
                   {independentError}
@@ -932,6 +940,8 @@ export default function LandingPage() {
                 <div
                   className="success-message"
                   id="independentSuccess"
+                  role="status"
+                  aria-live="polite"
                   style={{ display: independentSuccess ? "block" : "none" }}
                 >
                   {independentSuccess}
@@ -954,7 +964,7 @@ export default function LandingPage() {
                 onClick={(e) => {
                   e.preventDefault();
                   closeSignupModal();
-                  openLoginModal();
+                  showLoginPanel();
                 }}
               >
                 Already have an account? Login
@@ -966,24 +976,31 @@ export default function LandingPage() {
 
       {/* Forgot Password Modal */}
       <div className={`modal-overlay${forgotOpen ? " active" : ""}`} id="forgotPasswordModal">
-        <div className="auth-modal" style={{ maxWidth: "420px" }}>
+        <div className="auth-modal">
           <div className="modal-content-wrapper">
             <div className="modal-header">
               <h3 className="modal-title">Reset Password</h3>
-              <button className="close-btn" id="closeForgotModal" onClick={() => finishForgotModal(null)}>
+              <button
+                className="close-btn"
+                id="closeForgotModal"
+                type="button"
+                aria-label="Close password reset"
+                onClick={() => finishForgotModal(null)}
+              >
                 &times;
               </button>
             </div>
-            <p style={{ color: "rgba(255,255,255,0.7)", marginBottom: "1.5rem", fontSize: "0.95rem" }}>
-              Enter your email and we'll send you a reset link.
-            </p>
+            <p className="mini-modal-copy">Enter your email and we’ll send you a reset link.</p>
             <div className="form-group">
               <label htmlFor="forgotEmailInput">Email Address</label>
               <input
                 type="email"
                 id="forgotEmailInput"
-                placeholder="Enter your email"
+                name="reset-email"
+                placeholder="name@example.com"
                 autoComplete="email"
+                inputMode="email"
+                spellCheck={false}
                 ref={forgotInputRef}
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
@@ -1003,19 +1020,23 @@ export default function LandingPage() {
 
       {/* Coach Organization Setup Modal */}
       <div className={`modal-overlay${coachOrgOpen ? " active" : ""}`} id="coachOrgModal">
-        <div className="auth-modal" style={{ maxWidth: "420px" }}>
+        <div className="auth-modal">
           <div className="modal-content-wrapper">
             {/* Step 1: Choose action */}
             <div id="coachOrgStep1" style={{ display: coachOrgStep === 1 ? "block" : "none" }}>
               <div className="modal-header">
                 <h3 className="modal-title">Organization Setup</h3>
-                <button className="close-btn" id="closeCoachOrgModal" onClick={() => finishCoachOrgModal(null)}>
+                <button
+                  className="close-btn"
+                  id="closeCoachOrgModal"
+                  type="button"
+                  aria-label="Close organization setup"
+                  onClick={() => finishCoachOrgModal(null)}
+                >
                   &times;
                 </button>
               </div>
-              <p style={{ color: "rgba(255,255,255,0.7)", marginBottom: "1.5rem", fontSize: "0.95rem" }}>
-                As a coach, how would you like to get started?
-              </p>
+              <p className="mini-modal-copy">As a coach, how would you like to get started?</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <button className="org-choice-btn" id="coachCreateOrgBtn" onClick={() => goToCoachOrgStep2("create")}>
                   <span className="org-choice-icon">＋</span>
@@ -1037,22 +1058,29 @@ export default function LandingPage() {
             <div id="coachOrgStep2" style={{ display: coachOrgStep === 2 ? "block" : "none" }}>
               <div className="modal-header">
                 <h3 className="modal-title" id="coachOrgStep2Title">
-                  {coachOrgAction === "join" ? "Join Organization" : "Organization Name"}
+                  {step2.title}
                 </h3>
-                <button className="close-btn" id="closeCoachOrgModal2" onClick={() => finishCoachOrgModal(null)}>
+                <button
+                  className="close-btn"
+                  id="closeCoachOrgModal2"
+                  type="button"
+                  aria-label="Close organization setup"
+                  onClick={() => finishCoachOrgModal(null)}
+                >
                   &times;
                 </button>
               </div>
               <div className="form-group">
                 <label id="coachOrgInputLabel" htmlFor="coachOrgInput">
-                  {coachOrgAction === "join" ? "Organization Code" : "Organization Name"}
+                  {step2.label}
                 </label>
                 <input
                   type="text"
                   id="coachOrgInput"
-                  placeholder={
-                    coachOrgAction === "join" ? "Enter the code" : coachOrgAction === "create" ? "e.g. Riverside FC" : ""
-                  }
+                  name="coach-organization"
+                  placeholder={step2.placeholder}
+                  autoComplete="off"
+                  spellCheck={false}
                   ref={coachOrgInputRef}
                   value={coachOrgInput}
                   onChange={(e) => setCoachOrgInput(e.target.value)}
@@ -1062,13 +1090,7 @@ export default function LandingPage() {
                 {coachOrgError}
               </div>
               <div className="mini-modal-buttons">
-                <button
-                  className="mini-cancel-btn"
-                  id="coachOrgBackBtn"
-                  onClick={() => {
-                    setCoachOrgStep(1);
-                  }}
-                >
+                <button className="mini-cancel-btn" id="coachOrgBackBtn" onClick={() => setCoachOrgStep(1)}>
                   ← Back
                 </button>
                 <button className="submit-btn" id="coachOrgConfirmBtn" style={{ flex: 1 }} onClick={handleCoachOrgConfirm}>
@@ -1080,20 +1102,9 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <footer
-        style={{
-          textAlign: "center",
-          padding: "1.5rem",
-          fontSize: "0.82rem",
-          color: "rgba(255,255,255,0.4)",
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          marginTop: "2rem",
-        }}
-      >
-        © 2026 PoseTek &nbsp;·&nbsp;{" "}
-        <Link to="/privacy" style={{ color: "#4c8c6a", textDecoration: "none" }}>
-          Privacy Policy
-        </Link>
+      <footer className="site-footer">
+        <span>© 2026 PoseTek</span>
+        <Link to="/privacy">Privacy Policy</Link>
       </footer>
     </div>
   );

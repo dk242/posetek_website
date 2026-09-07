@@ -1,5 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { generateCode, getSafeReturnToUrl } from "./landing-helpers";
+import {
+  coachHomeRoute,
+  coachOrgInputError,
+  coachOrgStep2Copy,
+  createOrganizationPayload,
+  generateCode,
+  getSafeReturnToUrl,
+  joinOrganizationPayload,
+  playerHomeRoute,
+  playerIdFromRedeemResult,
+  playerSignupRoute,
+  redeemPlayerSignupCodePayload,
+  validateIndependentSignup,
+  validateNameAndPassword,
+  validateOrgSignup,
+  validatePlayerCodeSignup,
+} from "./landing-helpers";
 
 const ORIGIN = "https://posetek.example";
 const BASE = `${ORIGIN}/kickai.html`;
@@ -24,10 +40,144 @@ describe("generateCode", () => {
     const coach = generateCode("COACH", 4);
     expect(coach.startsWith("COACH")).toBe(true);
     expect(coach).toHaveLength(9);
+  });
+});
 
-    const plr = generateCode("PLR", 4);
-    expect(plr.startsWith("PLR")).toBe(true);
-    expect(plr).toHaveLength(7);
+describe("validateNameAndPassword / validateIndependentSignup", () => {
+  const ok = { firstName: "Ada", lastName: "Lovelace", password: "secret1", confirmPassword: "secret1" };
+
+  it("passes a complete, matching form", () => {
+    expect(validateNameAndPassword(ok)).toBeNull();
+    expect(validateIndependentSignup(ok)).toBeNull();
+  });
+
+  it("asks for the name first when either half is blank", () => {
+    expect(validateNameAndPassword({ ...ok, firstName: "" })).toBe("Please enter your name");
+    expect(validateNameAndPassword({ ...ok, lastName: "" })).toBe("Please enter your name");
+    // name wins over a password mismatch (legacy throw order)
+    expect(validateNameAndPassword({ ...ok, firstName: "", confirmPassword: "x" })).toBe("Please enter your name");
+  });
+
+  it("reports a password mismatch with the legacy copy", () => {
+    expect(validateNameAndPassword({ ...ok, confirmPassword: "secret2" })).toBe("Passwords don't match");
+    expect(validateIndependentSignup({ ...ok, confirmPassword: "secret2" })).toBe("Passwords don't match");
+  });
+});
+
+describe("validateOrgSignup", () => {
+  const base = { firstName: "Ada", lastName: "Lovelace", password: "secret1", confirmPassword: "secret1" };
+
+  it("requires an organization code for players", () => {
+    expect(validateOrgSignup({ ...base, userType: "player", orgCode: "" })).toBe(
+      "Organization code is required for players",
+    );
+    expect(validateOrgSignup({ ...base, userType: "player", orgCode: "ORGABC123" })).toBeNull();
+  });
+
+  it("lets a coach through without a code (the organization modal follows)", () => {
+    expect(validateOrgSignup({ ...base, userType: "coach", orgCode: "" })).toBeNull();
+  });
+
+  it("rejects an unselected account type", () => {
+    expect(validateOrgSignup({ ...base, userType: "", orgCode: "" })).toBe("Choose player or coach");
+    expect(validateOrgSignup({ ...base, userType: "admin", orgCode: "X" })).toBe("Choose player or coach");
+  });
+
+  it("checks name and password before the role", () => {
+    expect(validateOrgSignup({ ...base, lastName: "", userType: "", orgCode: "" })).toBe("Please enter your name");
+    expect(validateOrgSignup({ ...base, confirmPassword: "nope", userType: "player", orgCode: "" })).toBe(
+      "Passwords don't match",
+    );
+  });
+});
+
+describe("validatePlayerCodeSignup", () => {
+  it("requires the code before comparing passwords", () => {
+    expect(validatePlayerCodeSignup({ code: "", password: "a", confirmPassword: "b" })).toBe("Enter your player code");
+  });
+
+  it("reports a password mismatch", () => {
+    expect(validatePlayerCodeSignup({ code: "PLR1234", password: "a", confirmPassword: "b" })).toBe(
+      "Passwords don't match",
+    );
+  });
+
+  it("passes a valid form", () => {
+    expect(validatePlayerCodeSignup({ code: "PLR1234", password: "a", confirmPassword: "a" })).toBeNull();
+  });
+});
+
+describe("coach organization modal copy", () => {
+  it("uses the create/join error copy, defaulting to the code message", () => {
+    expect(coachOrgInputError("create")).toBe("Organization name is required.");
+    expect(coachOrgInputError("join")).toBe("Organization code is required.");
+    expect(coachOrgInputError(null)).toBe("Organization code is required.");
+  });
+
+  it("swaps title, label and placeholder per action", () => {
+    expect(coachOrgStep2Copy("create")).toEqual({
+      title: "Organization Name",
+      label: "Organization Name",
+      placeholder: "e.g. Riverside FC",
+    });
+    expect(coachOrgStep2Copy("join")).toEqual({
+      title: "Join Organization",
+      label: "Organization Code",
+      placeholder: "Enter the code",
+    });
+    expect(coachOrgStep2Copy(null)).toEqual({ title: "Organization Name", label: "Organization Name", placeholder: "" });
+  });
+});
+
+describe("post-auth destinations", () => {
+  it("sends coaches to the roster with the legacy userType", () => {
+    expect(coachHomeRoute()).toBe("/roster?userType=coach");
+  });
+
+  it("sends a signed-in player to their profile with the encoded id first", () => {
+    expect(playerHomeRoute("abc123")).toBe("/athlete?player=abc123&userType=player");
+    expect(playerHomeRoute("a b/c")).toBe("/athlete?player=a%20b%2Fc&userType=player");
+  });
+
+  it("builds the signup destination with userType first and an optional player id", () => {
+    expect(playerSignupRoute(null)).toBe("/athlete?userType=player");
+    expect(playerSignupRoute(undefined)).toBe("/athlete?userType=player");
+    expect(playerSignupRoute("")).toBe("/athlete?userType=player");
+    expect(playerSignupRoute("p 1")).toBe("/athlete?userType=player&player=p%201");
+  });
+});
+
+describe("admission callable payloads", () => {
+  it("redeemPlayerSignupCode sends only the code", () => {
+    expect(redeemPlayerSignupCodePayload("PLR1234")).toEqual({ code: "PLR1234" });
+    expect(Object.keys(redeemPlayerSignupCodePayload("x"))).toEqual(["code"]);
+  });
+
+  it("joinOrganization sends code, role and both names", () => {
+    expect(joinOrganizationPayload("ORGABC", "player", "Ada", "Lovelace")).toEqual({
+      code: "ORGABC",
+      role: "player",
+      firstName: "Ada",
+      lastName: "Lovelace",
+    });
+    expect(joinOrganizationPayload("ORGABC", "coach", "Ada", "Lovelace").role).toBe("coach");
+  });
+
+  it("createOrganization sends the name and both names", () => {
+    expect(createOrganizationPayload("Riverside FC", "Ada", "Lovelace")).toEqual({
+      name: "Riverside FC",
+      firstName: "Ada",
+      lastName: "Lovelace",
+    });
+  });
+
+  it("reads playerId out of a callable result, null otherwise", () => {
+    expect(playerIdFromRedeemResult({ data: { playerId: "p1" } })).toBe("p1");
+    expect(playerIdFromRedeemResult({ data: {} })).toBeNull();
+    expect(playerIdFromRedeemResult({ data: { playerId: "" } })).toBeNull();
+    expect(playerIdFromRedeemResult({})).toBeNull();
+    expect(playerIdFromRedeemResult(null)).toBeNull();
+    expect(playerIdFromRedeemResult(undefined)).toBeNull();
   });
 });
 
