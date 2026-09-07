@@ -2147,8 +2147,8 @@
                         <path d="M20 33l8 8 17-19"></path>
                     </svg>
                     <div>
-                        <div class="hero-payment-title">You're all set</div>
-                        <div class="hero-payment-sub">Your spot is reserved. We'll email you when beta access opens.</div>
+                        <div class="hero-payment-title">Checkout return received</div>
+                        <div class="hero-payment-sub">If your payment completed, a confirmation email will follow.</div>
                     </div>
                 </div>
             </div>
@@ -2467,6 +2467,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs",
@@ -2527,12 +2528,13 @@
             if (stickyRem) stickyRem.textContent = displayed;
         }
 
+        // Waitlist submissions carry parent and child names, so the page never
+        // reads them; the remaining-spot figure is an aggregate from the server.
         async function loadSpotCount() {
             try {
-                const snap = await db.collection('subscriptionWaitlist').get();
-                const count = snap.size || 0;
-                const actualRemaining = Math.max(0, TOTAL_SPOTS - count);
-                updateSpotDisplay(actualRemaining);
+                const result = await firebase.functions().httpsCallable('getPublicSpotCount')({ collection: 'subscriptionWaitlist' });
+                const remaining = Number(result && result.data && result.data.remaining);
+                updateSpotDisplay(Number.isFinite(remaining) ? remaining : TOTAL_SPOTS);
             } catch (err) {
                 console.warn('Spot count load failed:', err);
                 updateSpotDisplay(TOTAL_SPOTS);
@@ -2609,35 +2611,11 @@
 
         async function markCompletedPaymentReturn() {
             const params = new URLSearchParams(window.location.search);
-            const completedPayment =
-                isTruthyParam(params.get('completed_payment')) ||
-                isTruthyParam(params.get('payment_completed'));
-            if (!completedPayment) return;
+            if (!isTruthyParam(params.get('completed_payment')) && !isTruthyParam(params.get('payment_completed'))) return;
+            // Only the verified Stripe webhook may confirm payment in Firestore.
             showPaymentCompleteHero();
-
-            const waitlistDocId =
-                params.get('client_reference_id') ||
-                params.get('waitlistDocId') ||
-                getStoredWaitlistDocId();
-
-            if (!waitlistDocId) {
-                setStatus('Payment received. We are confirming your spot now.', 'success');
-                return;
-            }
-
-            try {
-                await db.collection('subscriptionWaitlist').doc(waitlistDocId).set({
-                    paymentCompleted: true,
-                    paymentCompletedReturnAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    paymentCompletedReturnUrl: window.location.href,
-                    paymentReturnSource: 'stripe_success_redirect'
-                }, { merge: true });
-                clearStoredWaitlistDocId();
-                loadSpotCount();
-            } catch (err) {
-                console.error('Payment return update failed:', err);
-                setStatus('Payment received. We are confirming your spot now.', 'success');
-            }
+            setStatus('If your payment completed, a confirmation email will follow.', 'success');
+            clearStoredWaitlistDocId();
         }
 
         const form = document.getElementById('wlForm');

@@ -789,6 +789,8 @@
                     <p class="card-sub" id="authCardSub">We'll use your account to store your video and deliver your analysis.</p>
 
                     <form id="accountForm" novalidate>
+<p role="status">Paid-analysis signup and uploads are temporarily unavailable. <a href="kickai.html">Sign in to view existing results.</a></p>
+<fieldset disabled style="border:0;padding:0;margin:0;min-width:0">
                         <div class="form-row form-row-2" id="authNameRow">
                             <div class="form-group">
                                 <label for="authFirstName">First name</label>
@@ -822,7 +824,8 @@
                             Continue to Payment
                             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
-                    </form>
+                    </fieldset>
+</form>
                 </div>
             </div>
 
@@ -898,6 +901,8 @@
                     <p class="card-sub">We use your profile to calibrate the analysis for your body. Drop in any side-view video — new recording or an existing file.</p>
 
                     <form id="profileUploadForm" novalidate>
+<p role="status">Paid-analysis uploads are temporarily unavailable. <a href="kickai.html">Sign in to view existing results.</a></p>
+<fieldset disabled style="border:0;padding:0;margin:0;min-width:0">
 
                         <p class="field-section">Your profile</p>
 
@@ -1023,7 +1028,8 @@
                             </div>
                             <div class="upload-progress-text" id="progressText">Uploading…</div>
                         </div>
-                    </form>
+                    </fieldset>
+</form>
 
                     <!-- Success -->
                     <div class="upload-success" id="uploadSuccess">
@@ -1309,65 +1315,7 @@
 
         accountForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            setAccountStatus('');
-
-            const email = document.getElementById('authEmail').value.trim();
-            const pw    = authPassword.value;
-            const pwc   = authPasswordConfirm.value;
-            const firstName = authFirstName.value.trim();
-            const lastName  = authLastName.value.trim();
-
-            if (!email || !document.getElementById('authEmail').checkValidity()) return setAccountStatus('Please enter a valid email address.', 'error');
-            if (!pw) return setAccountStatus('Please enter your password.', 'error');
-
-            if (authMode === 'create') {
-                if (!firstName || !lastName) return setAccountStatus('Please enter your first and last name.', 'error');
-                if (pw.length < 6) return setAccountStatus('Password must be at least 6 characters.', 'error');
-                if (pw !== pwc) return setAccountStatus('Passwords do not match.', 'error');
-            }
-
-            accountSubmit.disabled = true;
-            accountSubmit.textContent = authMode === 'login' ? 'Signing in…' : 'Creating account…';
-
-            try {
-                let uid;
-                let initUploadsIfNew = false;
-
-                if (authMode === 'login') {
-                    const cred = await auth.signInWithEmailAndPassword(email, pw);
-                    uid = cred.user.uid;
-                } else {
-                    try {
-                        const cred = await auth.createUserWithEmailAndPassword(email, pw);
-                        uid = cred.user.uid;
-                        initUploadsIfNew = true;
-                    } catch (err) {
-                        if (err.code === 'auth/email-already-in-use') {
-                            const cred = await auth.signInWithEmailAndPassword(email, pw);
-                            uid = cred.user.uid;
-                        } else throw err;
-                    }
-                }
-
-                await syncKickingAnalysisUserDoc(uid, email, { initUploadsIfNew });
-                if (authMode === 'create') {
-                    await createOrMergePlayerOnSignup(uid, email, firstName, lastName);
-                } else {
-                    await syncPlayerOnLogin(uid, email);
-                }
-                goToStep(2, 'forward');
-
-            } catch (err) {
-                console.error('Account error:', err);
-                let msg = 'Something went wrong. Please try again.';
-                if (err.code === 'auth/wrong-password') msg = 'Wrong password for that email.';
-                else if (err.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
-                else if (err.code === 'auth/user-not-found' && authMode === 'login') msg = 'No account with this email. Use “Create account” or check your email.';
-                else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try again in a few minutes.';
-                else if (err.code === 'auth/user-disabled') msg = 'This account has been disabled.';
-                setAccountStatus(msg, 'error');
-                resetAccountSubmitButton();
-            }
+            setAccountStatus('Paid-analysis signup and uploads are temporarily unavailable. Existing results remain available from the main PoseTek sign-in page.', 'error');
         });
 
         /* ════════════════════════════════════
@@ -1380,42 +1328,9 @@
             goToStep(1, 'backward');
         });
 
-        /* Handle Stripe return (?payment=success) */
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentQuery = urlParams.get('payment');
-        console.log('[kickingAnalysis_upload] URL ?payment=', JSON.stringify(paymentQuery), paymentQuery === 'success' ? '→ matches success' : '→ does not match "success"');
-        if (paymentQuery === 'success') {
-            console.log('[kickingAnalysis_upload] payment=success branch: waiting for auth to apply Firestore increment');
-            window.history.replaceState({}, '', window.location.pathname);
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    await db.collection('kickingAnalysisUsers').doc(user.uid).update({
-                        analysisStatus: 'paid',
-                        paidAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        availableAnalysisUploads: firebase.firestore.FieldValue.increment(1)
-                    });
-                    await db.collection('players').doc(user.uid).set({
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                    console.log('[kickingAnalysis_upload] Firestore increment ran: availableAnalysisUploads +1 for uid', user.uid);
-                } else {
-                    console.log('[kickingAnalysis_upload] payment=success but no Firebase user — Firestore increment skipped');
-                }
-                /* Reset upload UI so another kick can be submitted after repurchase */
-                resetStep3UploadUi();
-                /* Skip directly to step 3 */
-                panels[1].classList.remove('active'); panels[1].style.display = 'none';
-                panels[2].style.display = 'none';
-                panels[3].classList.add('active');
-                currentStep = 3;
-                stepItems.forEach(item => {
-                    const s = parseInt(item.dataset.step);
-                    item.classList.remove('active', 'completed');
-                    if (s < 3) { item.classList.add('completed'); circles[s].innerHTML = CHECK; }
-                    else item.classList.add('active');
-                });
-            });
+        // A checkout return URL never grants paid uploads or changes payment status.
+        if (new URLSearchParams(window.location.search).get('payment') === 'success') {
+            setAccountStatus('If your payment completed, a confirmation email will follow. Paid-analysis uploads are temporarily unavailable.', 'error');
         }
 
         /* ════════════════════════════════════
@@ -1482,156 +1397,12 @@
         });
 
         document.getElementById('purchaseAnotherKickBtn').addEventListener('click', () => {
-            goToStep(2, 'backward');
+            setProfileStatus('Paid-analysis purchases and uploads are temporarily unavailable.', 'error');
         });
 
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            setProfileStatus('');
-
-            const age    = document.getElementById('fieldAge').value;
-            const hFt    = document.getElementById('fieldHeightFt').value;
-            const hIn    = document.getElementById('fieldHeightIn').value;
-            const wRaw   = document.getElementById('fieldWeight').value;
-            const gender = document.getElementById('fieldGender').value;
-            const foot   = document.getElementById('fieldDominantFoot').value;
-            const shotEl = profileForm.querySelector('input[name="shotType"]:checked');
-            const weightKg = parseFloat(wRaw);
-
-            if (!age || !hFt || !hIn || !gender || !foot) return setProfileStatus('Please complete all profile fields.', 'error');
-            if (wRaw === '' || Number.isNaN(weightKg) || weightKg <= 0) return setProfileStatus('Please enter a valid weight (kg).', 'error');
-            if (!shotEl)      return setProfileStatus('Please select your shot type.', 'error');
-            if (!selectedFile) return setProfileStatus('Please add your kick video before submitting.', 'error');
-
-            const user = auth.currentUser;
-            if (!user) {
-                setProfileStatus('Session expired — please refresh and sign in again.', 'error');
-                return;
-            }
-
-            profileSubmit.disabled = true;
-            profileSubmit.textContent = 'Uploading…';
-            uploadProgress.classList.add('visible');
-
-            try {
-                let ext = (selectedFile.name.split('.').pop() || 'mp4').toLowerCase();
-                if (!/^[a-z0-9]+$/.test(ext)) ext = 'mp4';
-                const repIndex    = await getNextKickRepIndex(user.uid);
-                const repPrefix   = `kicking-analysis/${user.uid}/rep${repIndex}`;
-                const videoPath   = `${repPrefix}/side_kick_240.${ext}`;
-                const jsonPath    = `${repPrefix}/side_kick_240.json`;
-                const uploadRef   = storage.ref().child(videoPath);
-                const task        = uploadRef.put(selectedFile);
-
-                task.on('state_changed',
-                    (snap) => {
-                        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-                        progressFill.style.width = pct + '%';
-                        progressText.textContent = `Uploading… ${pct}%`;
-                    },
-                    (err) => {
-                        console.error('Upload error:', err);
-                        setProfileStatus('Upload failed. Please try again.', 'error');
-                        profileSubmit.disabled = false;
-                        profileSubmit.textContent = 'Submit for Analysis';
-                    },
-                    async () => {
-                        try {
-                        const videoUrl = await task.snapshot.ref.getDownloadURL();
-                        const heightCm = heightFeetInchesToCm(hFt, hIn);
-                        const heightDisplay = `${hFt}'${hIn}"`;
-
-                        const submissionMeta = {
-                            schemaVersion: 1,
-                            repIndex,
-                            authenticationUID: user.uid,
-                            email: user.email || null,
-                            age: parseInt(age, 10),
-                            height: {
-                                feet: parseInt(hFt, 10),
-                                inches: parseInt(hIn, 10),
-                                display: heightDisplay,
-                                centimeters: heightCm
-                            },
-                            weight: weightKg,
-                            weightUnit: 'kg',
-                            gender,
-                            dominantFoot: foot,
-                            shotType: shotEl.value,
-                            video: {
-                                originalFileName: selectedFile.name,
-                                sizeBytes: selectedFile.size,
-                                mimeType: selectedFile.type || null,
-                                extension: ext,
-                                storagePath: videoPath
-                            },
-                            jsonStoragePath: jsonPath,
-                            clientSubmittedAt: new Date().toISOString()
-                        };
-
-                        const jsonBlob = new Blob([JSON.stringify(submissionMeta)], { type: 'application/json' });
-                        const jsonRef = storage.ref().child(jsonPath);
-                        await new Promise((resolve, reject) => {
-                            const jt = jsonRef.put(jsonBlob, { contentType: 'application/json' });
-                            jt.on('state_changed', null, reject, resolve);
-                        });
-
-                        const kaRef = db.collection('kickingAnalysisUsers').doc(user.uid);
-                        await db.runTransaction(async (t) => {
-                            const snap = await t.get(kaRef);
-                            const cur = snap.exists ? (snap.data().availableAnalysisUploads ?? 0) : 0;
-                            const nextUploads = Math.max(0, cur - 1);
-                            t.set(kaRef, {
-                                age: parseInt(age, 10),
-                                height: heightDisplay,
-                                weight: weightKg,
-                                gender,
-                                dominantFoot: foot,
-                                shotType: shotEl.value,
-                                analysisStatus: 'uploaded',
-                                videoUrl,
-                                uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                availableAnalysisUploads: nextUploads
-                            }, { merge: true });
-                        });
-
-                        await db.collection('players').doc(user.uid).set({
-                            authenticationUID: user.uid,
-                            userUID: user.uid,
-                            email: user.email || '',
-                            signupEmail: user.email || '',
-                            height: heightCm,
-                            weight: weightKg,
-                            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            kickingAnalysisVideoSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true });
-
-                        progressText.textContent = 'Upload complete!';
-                        setTimeout(() => {
-                            profileForm.style.display = 'none';
-                            uploadSuccess.classList.add('visible');
-                            stepItems.forEach(item => {
-                                item.classList.remove('active');
-                                item.classList.add('completed');
-                            });
-                            circles[3].innerHTML = CHECK;
-                        }, 700);
-                        } catch (err) {
-                            console.error('Post-upload error:', err);
-                            setProfileStatus('Video uploaded but saving metadata failed. Please try again or contact support.', 'error');
-                            profileSubmit.disabled = false;
-                            profileSubmit.textContent = 'Submit for Analysis';
-                            uploadProgress.classList.remove('visible');
-                        }
-                    }
-                );
-            } catch (err) {
-                console.error('Upload error:', err);
-                setProfileStatus('Upload failed. Please try again.', 'error');
-                profileSubmit.disabled = false;
-                profileSubmit.textContent = 'Submit for Analysis';
-            }
+            setProfileStatus('Paid-analysis uploads are temporarily unavailable.', 'error');
         });
     </script>
 </body>

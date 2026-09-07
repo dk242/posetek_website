@@ -1259,6 +1259,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
+    <script src="firebase-identity.js?v=20260906"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
 
     <script>
@@ -1453,21 +1455,6 @@
             return result;
         }
 
-        // Create a new organization in Firestore
-        async function createOrganization(name, coachId) {
-            const orgRef = db.collection('organizations').doc();
-            const orgData = {
-                name: name,
-                coaches: [coachId],
-                players: [],
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                code: generateCode('ORG', 6),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            await orgRef.set(orgData);
-            return orgRef;
-        }
-
         // Create coach document in Firestore
         async function createCoachDocument(coachId, email, firstName, lastName, orgRef = null) {
             const coachData = {
@@ -1488,95 +1475,6 @@
 
             await db.collection('coaches').doc(coachId).set(coachData);
             return coachData;
-        }
-
-        // Create player document in Firestore
-        async function createPlayerDocument(playerId, email, firstName, lastName, coachRef = null, orgRef = null, isTemporary = false) {
-            const playerData = {
-                firstName: firstName,
-                lastName: lastName,
-                userUID: playerId,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                isTemporary: isTemporary
-            };
-
-            if (email) {
-                playerData.email = email;
-            }
-
-            if (coachRef) {
-                playerData.coach = coachRef;
-                playerData.playerCode = generateCode('PLR', 4);
-            }
-
-            if (orgRef) {
-                playerData.organization = orgRef;
-            }
-
-            await db.collection('players').doc(playerId).set(playerData);
-            return playerData;
-        }
-
-        // Find organization by code
-        async function findOrganizationByCode(code) {
-            const snapshot = await db.collection('organizations')
-                .where('code', '==', code.toUpperCase())
-                .limit(1)
-                .get();
-            
-            if (!snapshot.empty) {
-                const doc = snapshot.docs[0];
-                return {
-                    id: doc.id,
-                    ref: doc.ref,
-                    ...doc.data()
-                };
-            }
-            return null;
-        }
-
-        // Find player by code
-        async function findPlayerByCode(code) {
-            const codeRaw = code.trim();
-            const codeUpper = codeRaw.toUpperCase();
-            console.log('[findPlayerByCode] Input (raw):', JSON.stringify(codeRaw), '| uppercased:', JSON.stringify(codeUpper));
-
-            // DEBUG: dump ALL player docs and log their signupCode values
-            const allSnap = await db.collection('players').get();
-            console.log('[DEBUG] Total player docs in collection:', allSnap.size);
-            allSnap.forEach(d => {
-                const data = d.data();
-                console.log('[DEBUG] doc id:', d.id, '| signupCode:', JSON.stringify(data.signupCode), '| registered:', data.registered);
-            });
-
-            // Try exact match first, then case-insensitive fallback
-            let snapshot = await db.collection('players')
-                .where('signupCode', '==', codeRaw)
-                .limit(1)
-                .get();
-            console.log('[findPlayerByCode] Exact match query (no toUpperCase) returned', snapshot.size, 'doc(s)');
-
-            if (snapshot.empty) {
-                snapshot = await db.collection('players')
-                    .where('signupCode', '==', codeUpper)
-                    .limit(1)
-                    .get();
-                console.log('[findPlayerByCode] Uppercased match query returned', snapshot.size, 'doc(s)');
-            }
-
-            if (!snapshot.empty) {
-                const doc = snapshot.docs[0];
-                const data = doc.data();
-                console.log('[findPlayerByCode] Found doc id:', doc.id, '| data:', data);
-                return {
-                    id: doc.id,
-                    ref: doc.ref,
-                    ...data
-                };
-            }
-            console.warn('[findPlayerByCode] No matching player doc found for either casing');
-            return null;
         }
 
         // Event Listeners
@@ -1658,51 +1556,15 @@
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                // Check both coach and player documents for the user's UID
-                const coachQuery = await db.collection('coaches')
-                    .where('userUID', '==', user.uid)
-                    .limit(1)
-                    .get();
-                
-                let playerQuery = await db.collection('players')
-                    .where('authenticationUID', '==', user.uid)
-                    .limit(1)
-                    .get();
-                if (playerQuery.empty) {
-                    playerQuery = await db.collection('players')
-                        .where('userUID', '==', user.uid)
-                        .limit(1)
-                        .get();
-                }
-                if (playerQuery.empty && user.email) {
-                    playerQuery = await db.collection('players')
-                        .where('signupEmail', '==', user.email)
-                        .limit(1)
-                        .get();
-                }
-                
-                if (coachQuery.empty && playerQuery.empty) {
-                    throw new Error("Account not found in system");
-                }
-                
-                // Determine user type and redirect accordingly
-                if (!coachQuery.empty) {
-                    const coachDoc = coachQuery.docs[0];
-                    const coachData = coachDoc.data();
-                    
-                    // Update last login
-                    await db.collection('coaches').doc(coachDoc.id).update({
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                const coachDoc = await PoseTekIdentity.findCoach(db, user.uid);
+                if (coachDoc) {
+                    await coachDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
                     redirectAfterAuth('coachesview.html?userType=coach');
-
                 } else {
-                    // Player logic
-                    const playerDoc = playerQuery.docs[0];
-                    await db.collection('players').doc(playerDoc.id).update({
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    redirectAfterAuth('profile.html?player=' + playerDoc.id + '&userType=player');
+                    const playerDoc = await PoseTekIdentity.findPlayer(db, user.uid);
+                    if (!playerDoc) throw new Error("Account not found in system");
+                    await playerDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+                    redirectAfterAuth('profile.html?player=' + encodeURIComponent(playerDoc.id) + '&userType=player');
                 }
             } catch (error) {
                 loginError.textContent = error.message;
@@ -1751,7 +1613,16 @@
             }
         });
 
-        // Organization signup handler
+        // Organization admission and player-code redemption run through the trusted
+        // admission service (functions/admission.js). Codes are never discovered or
+        // redeemed by a client write, and only post-lockdown codes are accepted.
+        const admissionFunctions = firebase.functions();
+
+        async function discardFailedSignup(user) {
+            if (!user) return;
+            try { await user.delete(); } catch (_) { /* leave sign-in state to the next attempt */ }
+        }
+
         async function handleOrgSignup() {
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
@@ -1759,73 +1630,49 @@
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const userType = document.getElementById('userType').value;
-            const orgCode = document.getElementById('orgCode').value;
+            const orgCode = document.getElementById('orgCode').value.trim();
 
             const errorElement = document.getElementById('orgSignupError');
             const successElement = document.getElementById('orgSignupSuccess');
             const submitBtn = document.getElementById('orgSignupSubmit');
             const spinner = document.getElementById('orgSignupSpinner');
+            let user = null;
 
             try {
                 showLoading(submitBtn, spinner);
                 errorElement.style.display = 'none';
                 successElement.style.display = 'none';
-                
+
                 if (!firstName || !lastName) throw new Error("Please enter your name");
                 if (password !== confirmPassword) throw new Error("Passwords don't match");
-                
-                // Create user in Firebase Auth
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                await user.sendEmailVerification();
-                
-                let orgRef = null;
-                
+
+                let coachSetup = null;
                 if (userType === 'player') {
                     if (!orgCode) throw new Error("Organization code is required for players");
-                    
-                    // Find organization by code
-                    const org = await findOrganizationByCode(orgCode);
-                    if (!org) throw new Error("Organization not found - check your code");
-                    orgRef = org.ref;
-                    
-                    // Create player document
-                    await createPlayerDocument(user.uid, email, firstName, lastName, null, orgRef);
-                    
-                    // Add player to organization's players list
-                    await orgRef.update({
-                        players: firebase.firestore.FieldValue.arrayUnion(user.uid)
-                    });
-                    
-                    // Redirect to profile
-                    window.location.href = 'profile.html?userType=player';
-                    
                 } else if (userType === 'coach') {
-                    const coachSetup = await showCoachOrgModal();
+                    coachSetup = await showCoachOrgModal();
                     if (!coachSetup) throw new Error("Organization setup cancelled");
+                } else {
+                    throw new Error("Choose player or coach");
+                }
 
-                    if (coachSetup.action === 'create') {
-                        orgRef = await createOrganization(coachSetup.value, user.uid);
-                    } else {
-                        const org = await findOrganizationByCode(coachSetup.value);
-                        if (!org) throw new Error("Organization not found — check your code");
-                        orgRef = org.ref;
-                    }
-                    
-                    // Create coach document
-                    await createCoachDocument(user.uid, email, firstName, lastName, orgRef);
-                    
-                    // Add coach to organization's coaches list
-                    await orgRef.update({
-                        coaches: firebase.firestore.FieldValue.arrayUnion(user.uid)
-                    });
-                    
-                    // Redirect to coach dashboard
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                user = userCredential.user;
+                await user.sendEmailVerification();
+
+                if (userType === 'player') {
+                    await admissionFunctions.httpsCallable('joinOrganization')({ code: orgCode, role: 'player', firstName, lastName });
+                    window.location.href = 'profile.html?userType=player';
+                } else if (coachSetup.action === 'create') {
+                    await admissionFunctions.httpsCallable('createOrganization')({ name: coachSetup.value, firstName, lastName });
+                    window.location.href = 'coachesview.html?userType=coach';
+                } else {
+                    await admissionFunctions.httpsCallable('joinOrganization')({ code: coachSetup.value, role: 'coach', firstName, lastName });
                     window.location.href = 'coachesview.html?userType=coach';
                 }
-                
             } catch (error) {
                 console.error("Signup error:", error);
+                await discardFailedSignup(user);
                 errorElement.textContent = error.message;
                 errorElement.style.display = 'block';
             } finally {
@@ -1833,7 +1680,6 @@
             }
         }
 
-        // Player code signup handler
         async function handlePlayerCodeSignup() {
             const code = document.getElementById('playerCode').value.trim();
             const email = document.getElementById('playerEmail').value;
@@ -1844,47 +1690,31 @@
             const successElement = document.getElementById('playerCodeSuccess');
             const submitBtn = document.getElementById('playerCodeSubmit');
             const spinner = document.getElementById('playerCodeSpinner');
+            let user = null;
 
             try {
                 showLoading(submitBtn, spinner);
                 errorElement.style.display = 'none';
                 successElement.style.display = 'none';
-                
-                console.log('[handlePlayerCodeSignup] Code entered (raw):', code);
+
+                if (!code) throw new Error("Enter your player code");
                 if (password !== confirmPassword) throw new Error("Passwords don't match");
-                
-                const player = await findPlayerByCode(code);
-                console.log('[handlePlayerCodeSignup] Player lookup result:', player);
-                if (!player) throw new Error("Invalid player code");
-                
-                console.log('[handlePlayerCodeSignup] registered field value:', player.registered, '| type:', typeof player.registered);
-                if (player.registered === true) throw new Error("Player already signed up");
-                
-                console.log('[handlePlayerCodeSignup] Creating Firebase Auth user...');
+
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log('[handlePlayerCodeSignup] Auth user created, uid:', user.uid);
+                user = userCredential.user;
                 await user.sendEmailVerification();
-                
-                console.log('[handlePlayerCodeSignup] Updating player doc id:', player.id);
-                await db.collection('players').doc(player.id).update({
-                    authenticationUID: user.uid,
-                    userUID: user.uid,
-                    registered: true,
-                    email: email,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                console.log('[handlePlayerCodeSignup] Player doc updated successfully');
-                
+
+                const result = await admissionFunctions.httpsCallable('redeemPlayerSignupCode')({ code });
+                const playerId = result && result.data ? result.data.playerId : null;
+
                 successElement.textContent = "Account created successfully!";
                 successElement.style.display = 'block';
-                
                 setTimeout(() => {
-                    window.location.href = 'profile.html?userType=player';
+                    window.location.href = 'profile.html?userType=player' + (playerId ? '&player=' + encodeURIComponent(playerId) : '');
                 }, 1500);
-                
             } catch (error) {
                 console.error("Signup error:", error);
+                await discardFailedSignup(user);
                 errorElement.textContent = error.message;
                 errorElement.style.display = 'block';
             } finally {
