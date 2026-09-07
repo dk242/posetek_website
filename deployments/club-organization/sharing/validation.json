@@ -1,0 +1,26 @@
+{
+  "status": "offline-passed-live-pending",
+  "command": "node --test deployments/club-organization/sharing/scoped-sharing.test.cjs",
+  "passed": 12,
+  "failed": 0,
+  "sourceManifestSha256": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+  "testSha256": "2a2f35c2730db6cb8dcda2e797e53f90399efde250a4dfcc6c24a0dec3b56cec",
+  "coverage": [
+    "Unmigrated legacy create/read/artifacts",
+    "Old unsigned links rejected on organizationId presence including null and empty",
+    "Stale legacy coach and wrong team rejected",
+    "Manager and assigned coach signed issue/read/artifacts",
+    "Assignment revocation",
+    "Forged V2 signature cannot fall back",
+    "Foreign V2 Storage path rejected before Storage access",
+    "Missing signing key isolates club failure",
+    "Legacy storagePath target-owner guard including gs and backslashes",
+    "Nested planted profile read/write guard",
+    "Legacy nonclub alternate path compatibility"
+  ],
+  "pending": [
+    "Real Firebase SDK canonical and scoped authorization checks",
+    "Secret provision and runtime IAM verification",
+    "Deployed callable protocol and artifact-signing checks"
+  ]
+}

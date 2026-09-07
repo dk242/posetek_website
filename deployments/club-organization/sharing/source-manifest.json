@@ -1,0 +1,66 @@
+{
+  "status": "offline-tests-passed-sdk-secret-iam-deployment-pending",
+  "sourceLayout": "Functions source directory",
+  "baseSourceZipSha256": "dbafa77dd15e8258c1aca4ab3f0ff41797e8f76c70a7e3fc1041a9422ba3951e",
+  "baseFiles": {
+    ".runtimeconfig.json": {
+      "sha256": "5a516fc06a04d088f5327cb214c34742e486eaf4177d6de992e2c7a6f30bfe72",
+      "bytes": 112
+    },
+    "index.js": {
+      "sha256": "e34ce6707de6ea0edc834b52c9f2ccd9d6c8db56762979e285211b0a149911ba",
+      "bytes": 29857
+    },
+    "package-lock.json": {
+      "sha256": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+      "bytes": 261037
+    },
+    "package.json": {
+      "sha256": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+      "bytes": 498
+    }
+  },
+  "changedFiles": [
+    "athlete-shares.js",
+    "athlete-storage-paths.js",
+    "club-access.js",
+    "club-sharing-handlers.js",
+    "index.js"
+  ],
+  "files": {
+    ".runtimeconfig.json": {
+      "sha256": "5a516fc06a04d088f5327cb214c34742e486eaf4177d6de992e2c7a6f30bfe72",
+      "bytes": 112
+    },
+    "athlete-shares.js": {
+      "sha256": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+      "bytes": 7446
+    },
+    "athlete-storage-paths.js": {
+      "sha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+      "bytes": 2380
+    },
+    "club-access.js": {
+      "sha256": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+      "bytes": 1300
+    },
+    "club-sharing-handlers.js": {
+      "sha256": "c5dcf20ee0800120b5f6392e1695abc9b16426b10c129e45bd1251031752cd0e",
+      "bytes": 12032
+    },
+    "index.js": {
+      "sha256": "3632260ae9e45a1f04e93dbf1af1ef63443260b6180f32d946782a49f9b96e51",
+      "bytes": 31352
+    },
+    "package-lock.json": {
+      "sha256": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+      "bytes": 261037
+    },
+    "package.json": {
+      "sha256": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+      "bytes": 498
+    }
+  },
+  "filesManifestSha256": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+  "scope": "Live legacy sharing remains for unmigrated players; only club shares use V2 signature/authority and safe artifact paths. Private runtime config is copied only from exact private baseline, never committed. Legacy nested profile and Storage target owners are checked for organizationId presence before any legacy access."
+}
