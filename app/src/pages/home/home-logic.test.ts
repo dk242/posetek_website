@@ -1,63 +1,61 @@
 import { describe, expect, it } from "vitest";
 import {
-  findNextSection,
-  findPreviousSection,
-  nextSlideIndex,
-  scrollIndicatorVisibility,
+  DEFAULT_SKILL,
+  HEADER_SCROLL_THRESHOLD,
+  SKILL_DATA,
+  SKILL_ORDER,
+  isHeaderScrolled,
+  menuButtonLabel,
+  progressFillBackground,
+  progressFillWidth,
+  skillDotShadow,
 } from "./home-logic";
 
-describe("nextSlideIndex", () => {
-  it("advances by one", () => {
-    expect(nextSlideIndex(0, 5)).toBe(1);
-    expect(nextSlideIndex(3, 5)).toBe(4);
-  });
-
-  it("wraps back to the first slide", () => {
-    expect(nextSlideIndex(4, 5)).toBe(0);
+describe("isHeaderScrolled", () => {
+  it("adds .scrolled strictly past 12px", () => {
+    expect(HEADER_SCROLL_THRESHOLD).toBe(12);
+    expect(isHeaderScrolled(0)).toBe(false);
+    expect(isHeaderScrolled(12)).toBe(false);
+    expect(isHeaderScrolled(13)).toBe(true);
   });
 });
 
-describe("scrollIndicatorVisibility", () => {
-  // heroHeight 1000 → pastHero threshold is scrollY > 450
-  it("hides both buttons before passing 45% of the hero", () => {
-    expect(scrollIndicatorVisibility(0, 1000, 3000)).toEqual({ up: false, down: false });
-    expect(scrollIndicatorVisibility(450, 1000, 3000)).toEqual({ up: false, down: false }); // strict >
-  });
-
-  it("shows both buttons past the hero with room left to scroll", () => {
-    expect(scrollIndicatorVisibility(451, 1000, 3000)).toEqual({ up: true, down: true });
-  });
-
-  it("hides the down button within 80px of the bottom", () => {
-    expect(scrollIndicatorVisibility(2920, 1000, 3000)).toEqual({ up: true, down: false }); // strict <
-    expect(scrollIndicatorVisibility(2919, 1000, 3000)).toEqual({ up: true, down: true });
+describe("menuButtonLabel", () => {
+  it("mirrors the legacy aria-label strings", () => {
+    expect(menuButtonLabel(false)).toBe("Open navigation");
+    expect(menuButtonLabel(true)).toBe("Close navigation");
   });
 });
 
-describe("findPreviousSection", () => {
-  const offsets = [0, 800, 1600, 2400];
-
-  it("returns the last section whose top is above scrollY - 80", () => {
-    expect(findPreviousSection(offsets, 1700)).toBe(2); // 1600 < 1620
-    expect(findPreviousSection(offsets, 1650)).toBe(1); // 1600 !< 1570, 800 < 1570
+describe("skill map data", () => {
+  it("lists the radar labels in legacy DOM order with Agility active", () => {
+    expect(SKILL_ORDER).toEqual(["speed", "shooting", "power", "control", "agility"]);
+    expect(DEFAULT_SKILL).toBe("agility");
   });
 
-  it("returns -1 when already at the top", () => {
-    expect(findPreviousSection(offsets, 0)).toBe(-1);
-    expect(findPreviousSection(offsets, 80)).toBe(-1); // 0 !< 0 (strict <)
+  it("matches the legacy initial breakdown card", () => {
+    expect(SKILL_DATA.agility).toEqual({
+      name: "Agility",
+      score: 68,
+      color: "#ffbd59",
+      change: "↑ Improving",
+      metrics: [["Total time", "5.12 s"], ["Start phase", "1.82 s"], ["Turn phase", "1.48 s"]],
+      note: "Focus: faster braking and redirection through the turn.",
+    });
+  });
+
+  it("keeps three metrics per skill", () => {
+    SKILL_ORDER.forEach(key => expect(SKILL_DATA[key].metrics).toHaveLength(3));
   });
 });
 
-describe("findNextSection", () => {
-  const offsets = [0, 800, 1600, 2400];
-
-  it("returns the first section whose top is below scrollY + 80", () => {
-    expect(findNextSection(offsets, 0)).toBe(1); // 800 > 80
-    expect(findNextSection(offsets, 750)).toBe(2); // 800 !> 830, 1600 > 830
+describe("inline style helpers", () => {
+  it("appends the 0x1c alpha to the dot shadow color", () => {
+    expect(skillDotShadow("#ffbd59")).toBe("0 0 0 5px #ffbd591c");
   });
 
-  it("returns -1 when no section lies further down", () => {
-    expect(findNextSection(offsets, 2400)).toBe(-1);
-    expect(findNextSection(offsets, 2320)).toBe(-1); // 2400 !> 2400 (strict >)
+  it("formats the progress fill width and gradient", () => {
+    expect(progressFillWidth(68)).toBe("68%");
+    expect(progressFillBackground("#4bd7e8")).toBe("linear-gradient(90deg, #4bd7e8, #b7f34a)");
   });
 });
