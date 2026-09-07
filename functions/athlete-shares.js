@@ -7,6 +7,7 @@
 // a share for an athlete on that coach's roster.
 
 const { playerSegment } = require("./athlete-storage-paths");
+const { clubStaffCanAccessPlayer, isClubAdmin } = require("./club-access");
 
 const ATHLETE_SHARE_COLLECTION = "athleteResultSharesV2";
 const ATHLETE_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -39,6 +40,8 @@ function createAthleteShares({ db, crypto, Timestamp, HttpsError, signingKey }) 
       share.createdByUid, share.createdByCoachDocId,
       share.createdAt?.toMillis?.(), share.expiresAt?.toMillis?.(),
       share.allowedDrills,
+      // Existing shares omitted this field; preserve their original signature.
+      ...(share.createdByRole ? [share.createdByRole] : []),
     ]);
     return crypto.createHmac("sha256", key()).update(payload).digest("hex");
   }
@@ -60,6 +63,7 @@ function createAthleteShares({ db, crypto, Timestamp, HttpsError, signingKey }) 
     const coach = coachDoc.data() || {};
     if (coach.userUID !== uid) return false;
     const player = playerDoc.data() || {};
+    if (Object.hasOwn(player, "organizationId")) return false; // Club authorization must read canonical membership.
     const members = Array.isArray(coach.members) ? coach.members : [];
     const linkedCoachIds = [player.coachUID, player.coachId, player.coachDocId].filter(Boolean);
     return members.includes(playerDoc.id) || linkedCoachIds.includes(uid) || linkedCoachIds.includes(coachDoc.id);
@@ -84,6 +88,9 @@ function createAthleteShares({ db, crypto, Timestamp, HttpsError, signingKey }) 
     }
     const playerDoc = await db.collection("players").doc(share.playerDocId).get();
     if (!playerDoc.exists || playerDoc.data()?.activeResultsShareV2Hash !== hash) throw athleteShareError();
+    // A club assignment revocation also revokes outstanding links issued by that staff member.
+    if (Object.hasOwn(playerDoc.data(), "organizationId") && share.createdByRole !== "admin"
+      && !await clubStaffCanAccessPlayer(db, share.createdByUid, playerDoc.data())) throw athleteShareError();
     return { hash, shareDoc, share, playerDoc };
   }
 
@@ -92,12 +99,15 @@ function createAthleteShares({ db, crypto, Timestamp, HttpsError, signingKey }) 
    * previous link for that player. The raw bearer token is returned once and is
    * never stored; Firestore contains only its SHA-256 hash.
    */
-  async function createAthleteResultsShare({ uid, playerDocId }) {
+  async function createAthleteResultsShare({ uid, email, emailVerified, playerDocId }) {
     if (!uid) throw new HttpsError("unauthenticated", "Sign in as a coach to create an athlete results link.");
     const player = String(playerDocId || "").trim();
     if (!playerSegment(player)) throw new HttpsError("invalid-argument", "playerDocId is required.");
     const [coachDoc, playerDoc] = await Promise.all([coachDocumentForUid(uid), db.collection("players").doc(player).get()]);
-    if (!coachDoc || !playerDoc.exists || !coachCanViewPlayer(coachDoc, uid, playerDoc)) {
+    const permitted = playerDoc.exists && (isClubAdmin({ uid, email, emailVerified }) || (Object.hasOwn(playerDoc.data(), "organizationId")
+      ? await clubStaffCanAccessPlayer(db, uid, playerDoc.data())
+      : coachDoc && coachCanViewPlayer(coachDoc, uid, playerDoc)));
+    if (!permitted) {
       throw new HttpsError("permission-denied", "This athlete is not on your roster.");
     }
     const rawToken = crypto.randomBytes(32).toString("base64url");
@@ -108,7 +118,8 @@ function createAthleteShares({ db, crypto, Timestamp, HttpsError, signingKey }) 
     const previousHash = typeof playerData.activeResultsShareV2Hash === "string" ? playerData.activeResultsShareV2Hash : null;
     const share = {
       issuanceVersion: 2, playerDocId: player, allowedDrills: [...ATHLETE_SHARE_DRILLS],
-      createdByUid: uid, createdByCoachDocId: coachDoc.id, createdAt: now, expiresAt, revoked: false,
+      createdByRole: isClubAdmin({ uid, email, emailVerified }) ? "admin" : "coach",
+      createdByUid: uid, createdByCoachDocId: coachDoc?.id || uid, createdAt: now, expiresAt, revoked: false,
     };
     share.issuanceSignature = athleteShareSignature(tokenHash, share);
     const batch = db.batch();

@@ -6,6 +6,7 @@
 // fields the boards rank on. Nothing else about a teammate leaves the server.
 
 const { playerSegment } = require("./athlete-storage-paths");
+const { isClubAdmin, clubMember, memberCanAccessPlayer } = require("./club-access");
 
 const CANONICAL_UID_FIELDS = ["authenticationUID", "userUID"];
 const MAX_ROSTER = 200;
@@ -60,29 +61,46 @@ function createTeamLeaderboard({ db, HttpsError }) {
   }
 
   /** Whitelisted standings input for the roster the caller is on. */
-  async function getTeamLeaderboard({ uid }) {
+  async function getTeamLeaderboard({ uid, email, emailVerified, teamId }) {
     if (typeof uid !== "string" || !playerSegment(uid)) throw new HttpsError("unauthenticated", "Sign in to continue.");
+    if (teamId !== undefined && !playerSegment(teamId)) throw new HttpsError("invalid-argument", "Choose a valid team.");
     const player = await ownedPlayer(uid);
-    if (!player) throw new HttpsError("permission-denied", "Your login is not linked to an athlete profile yet.");
-    const coach = await rosterFor(player);
-    if (!coach) throw new HttpsError("failed-precondition", "You haven't been added to a team yet. Ask your coach to add you.");
-    const members = Array.isArray(coach.data()?.members) ? coach.data().members : [];
-    const ids = [...new Set([...members, player.id])].filter(playerSegment).slice(0, MAX_ROSTER);
+    const bound = player?.data() || {};
+    const selectedTeam = teamId || (Object.hasOwn(bound, "organizationId") ? bound.teamId : null);
+    let ids;
+    let clubOrganizationId = null;
+    let coachId = null;
+    if (selectedTeam) {
+      if (!playerSegment(selectedTeam)) throw new HttpsError("failed-precondition", "Ask your club manager to repair your team assignment.");
+      const team = await db.collection("teams").doc(selectedTeam).get();
+      if (!team.exists || !playerSegment(team.data().organizationId)) throw new HttpsError("not-found", "That team could not be found.");
+      clubOrganizationId = team.data().organizationId;
+      const ownTeam = player && bound.organizationId === clubOrganizationId && bound.teamId === selectedTeam;
+      const staff = await clubMember(db, clubOrganizationId, uid);
+      if (!ownTeam && !isClubAdmin({ uid, email, emailVerified }) && !memberCanAccessPlayer(staff, uid, { teamId: selectedTeam })) throw new HttpsError("permission-denied", "You do not have access to that team.");
+      // Query canonical player assignments, never stale coach/team roster arrays.
+      const roster = await db.collection("players").where("organizationId", "==", clubOrganizationId).where("teamId", "==", selectedTeam).limit(MAX_ROSTER).get();
+      ids = roster.docs.map((doc) => doc.id);
+    } else {
+      if (!player) throw new HttpsError("permission-denied", "Your login is not linked to an athlete profile yet.");
+      if (Object.hasOwn(bound, "organizationId")) throw new HttpsError("failed-precondition", "Ask your club manager to assign you to a team.");
+      const coach = await rosterFor(player);
+      if (!coach) throw new HttpsError("failed-precondition", "You haven't been added to a team yet. Ask your coach to add you.");
+      coachId = coach.id;
+      const members = Array.isArray(coach.data()?.members) ? coach.data().members : [];
+      ids = [...new Set([...members, player.id])].filter(playerSegment).slice(0, MAX_ROSTER);
+    }
     const athletes = await Promise.all(ids.map(async (id) => {
-      const [profile, reps] = await Promise.all([
-        db.collection("players").doc(id).get(),
-        db.collection("players").doc(id).collection("reps").get(),
-      ]);
+      const profile = await db.collection("players").doc(id).get();
       if (!profile.exists) return null;
       const data = profile.data() || {};
-      return {
-        id,
-        firstName: String(data.firstName || "").slice(0, 100),
-        lastName: String(data.lastName || "").slice(0, 100),
-        reps: reps.docs.map(projectedRep),
-      };
+      // Recheck assignment before accessing reps; cross-team or newly migrated
+      // records in legacy projections cannot leak into a stale roster.
+      if (clubOrganizationId ? data.organizationId !== clubOrganizationId || data.teamId !== selectedTeam : Object.hasOwn(data, "organizationId")) return null;
+      const reps = await db.collection("players").doc(id).collection("reps").get();
+      return { id, firstName: String(data.firstName || "").slice(0, 100), lastName: String(data.lastName || "").slice(0, 100), reps: reps.docs.map(projectedRep) };
     }));
-    return { playerId: player.id, coachId: coach.id, athletes: athletes.filter(Boolean) };
+    return { playerId: player?.id || null, coachId, ...(selectedTeam ? { teamId: selectedTeam, organizationId: clubOrganizationId } : {}), athletes: athletes.filter(Boolean) };
   }
 
   return { getTeamLeaderboard };

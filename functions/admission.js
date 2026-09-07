@@ -147,7 +147,7 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
 
   async function findOrganizationByCode(code) {
     const organization = await firstMatch("organizations", "code", [code.toUpperCase()]);
-    if (!organization || organization.data()?.codeVersion !== INVITATION_VERSION) throw invalidInvitation();
+    if (!organization || organization.data()?.codeVersion !== INVITATION_VERSION || organization.data()?.schemaVersion === 2) throw invalidInvitation();
     return organization;
   }
 
@@ -162,10 +162,30 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
     return profile;
   }
 
+  async function legacyIdentity(transaction, uid) {
+    const [playersByAuth, playersByUser, directPlayer, coachesByUser, directCoach, clubs] = await Promise.all([
+      transaction.get(db.collection("players").where("authenticationUID", "==", uid).limit(2)),
+      transaction.get(db.collection("players").where("userUID", "==", uid).limit(2)),
+      transaction.get(db.collection("players").doc(uid)),
+      transaction.get(db.collection("coaches").where("userUID", "==", uid).limit(2)),
+      transaction.get(db.collection("coaches").doc(uid)),
+      transaction.get(db.collection("organizations").where("memberUIDs", "array-contains", uid).limit(1)),
+    ]);
+    const players = [...new Map([...playersByAuth.docs, ...playersByUser.docs, ...(directPlayer.exists ? [directPlayer] : [])].map((doc) => [doc.id, doc])).values()];
+    const coaches = [...coachesByUser.docs, ...(directCoach.exists ? [directCoach] : [])];
+    if ([...players, ...coaches].some((doc) => Object.hasOwn(doc.data() || {}, "organizationId")) || clubs.docs.some((doc) => doc.data().schemaVersion === 2)) {
+      throw new HttpsError("failed-precondition", "Manage this account through its club.");
+    }
+    if (players.length > 1) throw new HttpsError("failed-precondition", "This login has multiple athlete profiles. Ask PoseTek to reconcile it.");
+    return { player: players[0] || null, coach: directCoach };
+  }
+
   async function ensureCoach(transaction, uid, email, firstName, lastName, organization) {
+    const identity = await legacyIdentity(transaction, uid);
     const ref = db.collection("coaches").doc(uid);
-    const snapshot = await transaction.get(ref);
+    const snapshot = identity.coach;
     if (snapshot.exists) {
+      if (Object.hasOwn(snapshot.data() || {}, "organizationId")) throw new HttpsError("failed-precondition", "Manage this account through its club.");
       if (snapshot.data()?.userUID !== uid) throw new HttpsError("permission-denied", "This coach profile belongs to another account.");
       transaction.update(ref, { ...organization, updatedAt: FieldValue.serverTimestamp() });
     } else {
@@ -175,9 +195,11 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
   }
 
   async function ensurePlayer(transaction, uid, email, firstName, lastName, organization) {
-    const ref = db.collection("players").doc(uid);
-    const snapshot = await transaction.get(ref);
-    if (snapshot.exists) {
+    const identity = await legacyIdentity(transaction, uid);
+    const ref = identity.player?.ref || db.collection("players").doc(uid);
+    const snapshot = identity.player;
+    if (snapshot?.exists) {
+      if (Object.hasOwn(snapshot.data() || {}, "organizationId")) throw new HttpsError("failed-precondition", "Manage this athlete through their club.");
       if (!ownedBy(snapshot.data() || {}, uid)) throw new HttpsError("permission-denied", "This athlete profile belongs to another account.");
       transaction.update(ref, { ...organization, updatedAt: FieldValue.serverTimestamp() });
     } else {
@@ -204,7 +226,9 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
     const membership = { organization: organization.ref, organizationCode: normalized.toUpperCase() };
     await db.runTransaction(async (transaction) => {
       const organizationSnapshot = await transaction.get(organization.ref);
-      if (!organizationSnapshot.exists) throw invalidInvitation();
+      if (!organizationSnapshot.exists || organizationSnapshot.data()?.schemaVersion === 2
+        || organizationSnapshot.data()?.codeVersion !== INVITATION_VERSION
+        || organizationSnapshot.data()?.code !== normalized.toUpperCase()) throw invalidInvitation();
       if (role === "player") await ensurePlayer(transaction, uid, email, first, last, membership);
       else await ensureCoach(transaction, uid, email, first, last, membership);
       transaction.update(organization.ref, {
@@ -242,17 +266,20 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
     await enforceRateLimit(uid, "attachPlayerByCode");
     const coach = await findOwnedCoach(uid);
     if (!coach) throw new HttpsError("permission-denied", "A coach profile is required.");
+    if (Object.hasOwn(coach.data() || {}, "organizationId")) throw new HttpsError("failed-precondition", "Manage player assignments through your club.");
     const candidate = await findPlayerByCode(normalized);
     if (!candidate || !playerSegment(candidate.id)) throw invalidInvitation();
     const playerId = await db.runTransaction(async (transaction) => {
       const [playerSnapshot, coachSnapshot] = await Promise.all([transaction.get(candidate.ref), transaction.get(coach.ref)]);
       const player = playerSnapshot.exists ? playerSnapshot.data() : null;
       if (!player || player.signupCodeVersion !== INVITATION_VERSION || !codeMatches(player, normalized)) throw invalidInvitation();
+      if (Object.hasOwn(player, "organizationId")) throw new HttpsError("failed-precondition", "This athlete belongs to a club; ask its manager to adjust team assignments.");
       const links = [player.coachUID, player.coachId, player.coachDocId].filter(Boolean);
       if (links.length && !links.includes(uid) && !links.includes(coach.id)) {
         throw new HttpsError("failed-precondition", "That player is already on another coach's roster.");
       }
       const coachData = coachSnapshot.data() || {};
+      if (Object.hasOwn(coachData, "organizationId")) throw new HttpsError("failed-precondition", "Manage player assignments through your club.");
       if (coachData.userUID !== uid) throw new HttpsError("permission-denied", "A coach profile is required.");
       const members = Array.isArray(coachData.members) ? coachData.members : [];
       transaction.update(candidate.ref, { coachUID: uid, coachDocId: coach.id, updatedAt: FieldValue.serverTimestamp() });
