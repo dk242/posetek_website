@@ -59,6 +59,47 @@ class FunctionsReleaseTests(unittest.TestCase):
             self.assertEqual("--allow-unauthenticated" in op["argv"], not share)
             self.assertEqual(op["timeout"], "120s" if op["name"] == "importClubLogo" else "60s")
 
+    def test_commands_preserve_firebase_owned_labels_without_manually_setting_them(self):
+        for operation in self.plan["operations"]:
+            flags = [arg for arg in operation["argv"] if arg.startswith("--update-labels=")]
+            self.assertEqual(flags, ["--update-labels=posetek-club-source=" + operation["sourceManifestHash"][:20]])
+            self.assertFalse(any(arg.startswith(("--clear-labels", "--remove-labels")) for arg in operation["argv"]))
+
+    def test_prior_partial_rollout_function_is_resumed_with_invoker_only(self):
+        records = self.baseline["functions"]
+        records["getClubContext"] = {**copy.deepcopy(records["createAthleteResultsShare"]),
+            "name": f"projects/{release.PROJECT}/locations/{release.REGION}/functions/getClubContext", "entryPoint": "getClubContext",
+            "labels": {"deployment-tool": "cli-gcloud", "posetek-club-source": "6e82a893398bc014c61b"}}
+        self.baseline["iam"]["getClubContext"] = {"etag": "ACAB"}
+        baseline_path = self.root / "baseline-resume.json"; release.private_write(baseline_path, self.baseline)
+        output = self.root / "prepared-resume"
+        with contextlib.redirect_stdout(io.StringIO()):
+            release.prepare(self.source, self.sharing, self.manifest, baseline_path, output, "1")
+        plan = release.read(output / "plan.json")
+        operation = next(op for op in plan["operations"] if op["name"] == "getClubContext")
+        self.assertEqual(operation["action"], "resume")
+        self.assertIn("--allow-unauthenticated", operation["argv"])
+        self.assertIsNone(operation["environmentFile"])
+        self.assertFalse(any(arg.startswith("--env-vars-file=") for arg in operation["argv"]))
+        self.assertEqual(sum(op["action"] == "create" for op in plan["operations"]), 15)
+        for share in release.SHARES:
+            self.assertEqual(next(op for op in plan["operations"] if op["name"] == share)["action"], "update")
+
+    def test_missing_invoker_is_remediated_once_then_required(self):
+        granted = {"bindings": [{"role": release.INVOKER, "members": ["allUsers"]}]}
+        with patch.object(release, "iam", side_effect=[{"etag": "ACAB"}, granted]), patch.object(release, "gcloud") as gcloud:
+            release.ensure_public_invoker("getClubContext")
+        gcloud.assert_called_once()
+        argv = gcloud.call_args.args[0]
+        self.assertEqual(argv[:3], ["functions", "add-iam-policy-binding", "getClubContext"])
+        self.assertIn("--member=allUsers", argv); self.assertIn("--role=" + release.INVOKER, argv)
+        with patch.object(release, "iam", return_value=granted), patch.object(release, "gcloud") as gcloud:
+            release.ensure_public_invoker("getClubContext")
+        gcloud.assert_not_called()
+        with patch.object(release, "iam", return_value={"etag": "ACAB"}), patch.object(release, "gcloud"):
+            with self.assertRaisesRegex(RuntimeError, "invoker IAM is missing"):
+                release.ensure_public_invoker("getClubContext")
+
     def test_missing_sdk_evidence_blocks_deploy_preflight(self):
         self.evidence["checks"]["club-sdk-canonical-and-scoped"] = False
         with self.assertRaisesRegex(ValueError, "validation remains incomplete"):

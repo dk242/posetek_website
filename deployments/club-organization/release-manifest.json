@@ -315,7 +315,7 @@
   },
   "verification": {
     "deploymentGateTests": {
-      "passed": 11,
+      "passed": 14,
       "failed": 0,
       "command": "PYTHONDONTWRITEBYTECODE=1 python3 deployments/club-organization/test_functions_release.py"
     },
@@ -336,9 +336,21 @@
     "actualDeploymentPerformed": false
   },
   "toolingSha256": {
-    "functions-release.py": "6e838c83840935107c78889da04f450057c1f05300daf69a8919b3945105f24f",
-    "test_functions_release.py": "380a573054ed689a5bb040b15e79e0e0de8d3e1cc9fb176f1d85046857962449",
+    "functions-release.py": "a7ebe743d4509de30af98ecd86c39ed05ad255630b4e433d3d5d8cb3209c27ae",
+    "test_functions_release.py": "0bdc9ebea6b86b6c347a4e85b12fc5b512cd540e9006904cb92756906d17d4c3",
     "sharing/prepare.py": "df2862b966e20ca07f3b527324f5d76ae1a31de78f300eebf2ed25a9582bba0e",
     "sharing/scoped-sharing.test.cjs": "2a2f35c2730db6cb8dcda2e797e53f90399efde250a4dfcc6c24a0dec3b56cec"
+  },
+  "deploymentToolCorrection": {
+    "issue": "gcloud rejects manually specified deployment-callable label because deployment-prefixed keys are reserved",
+    "fix": "Set only posetek-club-source; existing Firebase-owned labels are preserved automatically",
+    "verifiedNoFunctionsChangedOnRejectedAttempt": true,
+    "regressionTestsPassed": 12
+  },
+  "partialRolloutResume": {
+    "issue": "The corrected attempt created getClubContext (2026-09-07T22:03Z) but gcloud could not apply its allUsers invoker binding; the deployer halted with zero confirmed functions and eighteen never created",
+    "fix": "prepare marks a posetek-club-source function whose baseline policy lacks the invoker binding as a resume operation (settings kept, --allow-unauthenticated reapplied); deploy applies gcloud's documented add-iam-policy-binding remediation once for create/resume operations and still requires the binding on readback",
+    "requiresFreshSnapshotPlanAndEvidence": true,
+    "regressionTestsPassed": 14
   }
 }

@@ -77,6 +77,31 @@ def iam(name):
     return gcloud(["functions", "get-iam-policy", name, f"--project={PROJECT}", f"--region={REGION}", "--format=json"])
 
 
+INVOKER = "roles/cloudfunctions.invoker"
+
+
+def has_public_invoker(policy):
+    return any(b.get("role") == INVOKER and "allUsers" in b.get("members", []) for b in policy.get("bindings", []))
+
+
+def needs_invoker_resume(record, policy):
+    # A callable an earlier attempt of this release created whose public invoker
+    # binding never landed (gcloud reports "Setting IAM policy failed" after creation).
+    return "posetek-club-source" in record.get("labels", {}) and not has_public_invoker(policy)
+
+
+def ensure_public_invoker(name):
+    """Apply gcloud's own documented remediation once, then require the binding.
+
+    Firebase callables authenticate inside the handler; without the allUsers
+    invoker binding every request is rejected before the handler runs.
+    """
+    if has_public_invoker(iam(name)): return
+    gcloud(["functions", "add-iam-policy-binding", name, f"--project={PROJECT}", f"--region={REGION}",
+            "--member=allUsers", f"--role={INVOKER}", "--format=json"])
+    if not has_public_invoker(iam(name)): raise RuntimeError(f"Callable invoker IAM is missing: {name}")
+
+
 def stable(record, *, allow_source_label=False, allow_share_secret=False):
     value = {key: copy.deepcopy(item) for key, item in record.items() if key not in TRANSIENT}
     if allow_source_label:
@@ -158,6 +183,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
     operations = []
     for name in ENDPOINTS:
         existing = records.get(name)
+        resume = bool(existing) and needs_invoker_resume(existing, baseline["iam"].get(name, {}))
         source_kind = "sharing" if name in SHARES else "functions"
         selected_source = sources[source_kind]
         runtime = existing or donor
@@ -166,7 +192,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
                    f"--entry-point={name}", "--trigger-http", f"--source={selected_source['source']}", "--ignore-file=.gcloudignore",
                    f"--service-account={runtime['serviceAccountEmail']}", f"--memory={runtime.get('availableMemoryMb', 256)}MB",
                    f"--timeout={timeout}", "--ingress-settings=all", "--security-level=secure-always",
-                   f"--update-labels=deployment-callable=true,posetek-club-source={selected_source['manifestHash'][:20]}", "--quiet", "--format=json"]
+                   f"--update-labels=posetek-club-source={selected_source['manifestHash'][:20]}", "--quiet", "--format=json"]
         if runtime.get("ingressSettings", "ALLOW_ALL") != "ALLOW_ALL" or runtime.get("httpsTrigger", {}).get("securityLevel", "SECURE_ALWAYS") != "SECURE_ALWAYS":
             raise ValueError(f"Review nonstandard ingress/security settings before deployment: {name}")
         for key, flag in [("minInstances", "--min-instances"), ("maxInstances", "--max-instances")]:
@@ -179,8 +205,11 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
             env_path = output / f"env-{name}.json"; private_write(env_path, env)
             command += ["--allow-unauthenticated", f"--env-vars-file={env_path.resolve()}"]
             env_metadata = {"path": str(env_path.resolve()), "sha256": hashlib.sha256(env_path.read_bytes()).hexdigest()}
+        elif resume:
+            # Keep the settings the earlier attempt applied; only the invoker binding is outstanding.
+            command.append("--allow-unauthenticated")
         if name in SHARES: command.append(f"--update-secrets={SECRET}=projects/{PROJECT}/secrets/{SECRET}:{secret_version}")
-        operations.append({"name": name, "action": "update" if existing else "create", "argv": command, "timeout": timeout, "sourceKind": source_kind, "sourceManifestHash": selected_source["manifestHash"], "environmentFile": env_metadata})
+        operations.append({"name": name, "action": "resume" if resume else ("update" if existing else "create"), "argv": command, "timeout": timeout, "sourceKind": source_kind, "sourceManifestHash": selected_source["manifestHash"], "environmentFile": env_metadata})
     plan = {"project": PROJECT, "region": REGION, "baselineHash": digest(baseline), "sourceManifestHash": manifest_hash, "sources": sources,
             "sharingBaselineZipSha256": sharing_manifest["baseSourceZipSha256"], "secretVersion": secret_version, "operations": operations,
             "preservedFunctions": sorted(set(records) - set(ENDPOINTS)), "createdAt": now(),
@@ -189,7 +218,7 @@ def prepare(source, sharing_source, sharing_manifest_path, baseline_path, output
     private_write(output / "plan.json", plan)
     private_write(output / "baseline.json", baseline)
     print(json.dumps({"status": "prepared", "planHash": plan["planHash"], "sourceManifestHash": manifest_hash,
-                      "newFunctions": sum(op['action'] == 'create' for op in operations), "updatedFunctions": sum(op['action'] == 'update' for op in operations), "preservedFunctions": plan['preservedFunctions']}))
+                      "newFunctions": sum(op['action'] == 'create' for op in operations), "resumedFunctions": sum(op['action'] == 'resume' for op in operations), "updatedFunctions": sum(op['action'] == 'update' for op in operations), "preservedFunctions": plan['preservedFunctions']}))
 
 
 def verify_plan(plan, baseline, evidence):
@@ -245,8 +274,8 @@ def deploy(plan_path, evidence_path, journal_path):
             if current.get("labels", {}).get("posetek-club-source") != operation["sourceManifestHash"][:20]: raise RuntimeError(f"Source label readback mismatch: {name}")
             before = baseline["functions"].get(name)
             if before and stable(before, allow_source_label=True, allow_share_secret=name in SHARES) != stable(current, allow_source_label=True, allow_share_secret=name in SHARES): raise RuntimeError(f"Unintended runtime setting changed: {name}")
-            if before and iam(name) != baseline["iam"][name]: raise RuntimeError(f"IAM policy changed: {name}")
-            if not before and not any(b.get("role") == "roles/cloudfunctions.invoker" and "allUsers" in b.get("members", []) for b in iam(name).get("bindings", [])): raise RuntimeError(f"Callable invoker IAM is missing: {name}")
+            if operation["action"] == "update" and iam(name) != baseline["iam"][name]: raise RuntimeError(f"IAM policy changed: {name}")
+            if operation["action"] in {"create", "resume"}: ensure_public_invoker(name)
             if name in SHARES and not any(s.get("key") == SECRET and s.get("version") == plan["secretVersion"] for s in current.get("secretEnvironmentVariables", [])): raise RuntimeError(f"Signing-secret binding mismatch: {name}")
             journal["completed"].append({"name": name, "action": operation["action"], "versionId": current.get("versionId"), "updateTime": current.get("updateTime"), "runtimeHash": digest(stable(current)), "iamHash": digest(iam(name))})
             private_write(journal_path, journal)
