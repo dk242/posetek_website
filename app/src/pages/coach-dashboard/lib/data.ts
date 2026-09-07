@@ -4,6 +4,9 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { getClubContext, loadClubPlayers } from "../../../lib/organization-data";
+import { selectedTeam } from "../../../lib/organization";
+import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
 import firebase, { auth, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
@@ -23,21 +26,29 @@ export interface CoachContext {
   players: any[];
 }
 
-export async function loadCoachContext(user: any): Promise<CoachContext> {
+export async function loadCoachContext(user: any, requestedTeamId: string | null = null): Promise<CoachContext> {
+  const club = await getClubContext();
+  if (club.role === "coach" && club.organization) {
+    const team = selectedTeam(club.teams, requestedTeamId);
+    if (!team) throw new Error("Choose a team from your organization before opening the dashboard.");
+    return { coachDoc: await findCoach(user.uid), orgLabel: `${club.organization.name} · ${team.name}`, players: await loadClubPlayers(team) };
+  }
+  if (club.role === "manager" || club.role === "admin") throw new Error("Open your organization to review its teams and athlete results.");
   const coachDoc = await findCoach(user.uid);
   if (!coachDoc) throw new Error("No coach profile is linked to this sign-in.");
   const coach = coachDoc.data() || {};
+  if (Object.hasOwn(coach, "organizationId")) throw new Error("Your club access is inactive or unavailable. Ask your organization manager to review it.");
   let orgLabel = "Independent coach";
-  if (coach.org?.get) {
+  if ((coach.organization || coach.org)?.get) {
     try {
-      const org = await coach.org.get();
+      const org = await (coach.organization || coach.org).get();
       orgLabel = org.exists ? org.data().name || "Coach dashboard" : "Independent coach";
     } catch {
       orgLabel = "Coach dashboard";
     }
   }
   const ids = [...new Set(Array.isArray(coach.members) ? coach.members : [])];
-  const docs = await Promise.all(ids.map((id: any) => db.collection("players").doc(id).get()));
+  const docs = await readAccessibleLegacyRoster(ids as string[], id => db.collection("players").doc(id).get());
   const players = docs.filter(doc => doc.exists).map(doc => ({ id: doc.id, ...doc.data() }));
   return { coachDoc, orgLabel, players };
 }

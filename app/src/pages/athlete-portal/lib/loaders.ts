@@ -4,6 +4,9 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { loadClubMembership } from "../../../lib/organization-data";
+import { canAccessClubPlayer } from "../../../lib/organization";
+import { refreshAdminIdentity } from "../../admin/lib/identity";
 import firebase, { auth, cloud, db, storage } from "../../../lib/firebase";
 import { findCoach as findCoachByUid, findPlayer, ownsPlayer } from "../../../lib/identity";
 import type { Drill } from "./drills";
@@ -11,7 +14,7 @@ import { DRILLS } from "./drills";
 import { accepted, artifactFolder, fullName, mergeUnique, normalizeRep, num, repNumber, sessionNumber } from "./metrics";
 import { boardsFromPlayers, number } from "./mobile";
 
-export type Access = "athlete" | "coach" | "shared" | "preview";
+export type Access = "athlete" | "coach" | "manager" | "admin" | "shared" | "preview";
 
 export interface PortalData {
   access: Access;
@@ -37,12 +40,22 @@ export async function loadAuthenticated(user: any, requestedPlayer: string | nul
     : await findOwnPlayer(user.uid);
   if (!playerDoc?.exists) throw new Error("This athlete profile could not be found.");
   const own = ownsPlayer(playerDoc, user.uid);
-  const coach = await findCoach(user.uid);
-  const coachData = coach?.data?.() || {};
-  const linked = [playerDoc.data().coachUID, playerDoc.data().coachId, playerDoc.data().coachDocId];
-  const coachAllowed = Boolean(coach && ((coachData.members || []).includes(playerDoc.id) || linked.includes(coach.id) || linked.includes(user.uid)));
-  if (!own && !coachAllowed) throw new Error("You do not have permission to view this athlete.");
-  const access: Access = coachAllowed ? "coach" : "athlete";
+  const identity = await refreshAdminIdentity(user);
+  const player = playerDoc.data() || {};
+  let access: Access = own ? "athlete" : "shared";
+  if (identity.isAdmin) access = "admin";
+  else if (!own && typeof player.organizationId === "string" && player.organizationId) {
+    const membership = await loadClubMembership(user.uid, player.organizationId);
+    if (!canAccessClubPlayer(membership, player)) throw new Error("You do not have permission to view this athlete.");
+    access = membership!.role;
+  } else if (!own) {
+    const coach = await findCoach(user.uid);
+    const coachData = coach?.data?.() || {};
+    const linked = [player.coachUID, player.coachId, player.coachDocId];
+    const allowed = Boolean(coach && ((coachData.members || []).includes(playerDoc.id) || linked.includes(coach.id) || linked.includes(user.uid)));
+    if (!allowed) throw new Error("You do not have permission to view this athlete.");
+    access = "coach";
+  }
   const athlete = { id: playerDoc.id, ...playerDoc.data() };
   const snapshot = await playerDoc.ref.collection("reps").get();
   const all = snapshot.docs.map(normalizeRep);
@@ -186,6 +199,12 @@ export function waitForJob(
 // Coaches read their own roster directly; athletes receive a whitelisted
 // projection from the admission service and never touch teammates' documents.
 export async function loadTeamStandings(playerId: string): Promise<Record<string, { id: string; name: string; value: number }[]>> {
+  const profile = await db.collection("players").doc(playerId).get();
+  if (profile.data()?.organizationId) {
+    const result = await cloud.httpsCallable("getTeamLeaderboard")({ teamId: profile.data()!.teamId });
+    const payload = result.data as any;
+    return boardsFromPlayers((payload.athletes || []).map((athlete: any) => ({ id: athlete.id, name: fullName(athlete), reps: athlete.reps || [] })));
+  }
   const coachDoc: any = await findCoach(auth.currentUser!.uid);
   if (!coachDoc) throw new Error("A coach account is required for team standings.");
   const ids: string[] = [...new Set<string>([...(coachDoc.data().members || []), playerId])];

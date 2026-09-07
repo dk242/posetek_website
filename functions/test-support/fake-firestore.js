@@ -121,6 +121,7 @@ class Batch {
 
 class Transaction extends Batch {
   async get(target) {
+    if (this.operations.length) throw new Error("Firestore transactions require all reads before writes");
     if (target instanceof DocumentReference) return new Snapshot(target, this.db.read(target.path));
     return target.get();
   }
@@ -131,6 +132,7 @@ class FakeFirestore {
     this.docs = new Map();
     this.queries = [];
     this.generated = 0;
+    this.transactionTail = Promise.resolve();
     for (const [path, data] of Object.entries(seed)) this.docs.set(path, clone(data));
   }
   read(path) { const data = this.docs.get(path); return data === undefined ? undefined : clone(data); }
@@ -145,10 +147,22 @@ class FakeFirestore {
   doc(path) { return new DocumentReference(this, path); }
   batch() { return new Batch(this); }
   async runTransaction(handler) {
-    const transaction = new Transaction(this);
-    const result = await handler(transaction);
-    await transaction.commit();
-    return result;
+    // Serial transactions model atomic competing claims, with rollback on a
+    // failed create/precondition. Native emulator tests cover SDK integration.
+    const previous = this.transactionTail;
+    let release;
+    this.transactionTail = new Promise((resolve) => { release = resolve; });
+    await previous;
+    const before = new Map([...this.docs].map(([path, data]) => [path, clone(data)]));
+    try {
+      const transaction = new Transaction(this);
+      const result = await handler(transaction);
+      await transaction.commit();
+      return result;
+    } catch (error) {
+      this.docs = before;
+      throw error;
+    } finally { release(); }
   }
   snapshot(path) { return this.read(path); }
 }

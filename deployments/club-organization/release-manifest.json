@@ -1,0 +1,361 @@
+{
+  "status": "prepared-offline-tested-not-deployed",
+  "project": "kickai-69dd0",
+  "region": "us-central1",
+  "generation": 1,
+  "runtime": "nodejs22",
+  "observedDate": "2026-09-07",
+  "repositoryCommit": "a97c2f39d51dc2227df12282ebd506ada9551e2c",
+  "sourceManifestHash": "2389264aa5fde51c87ea29d8c507a0b2676216d6b10eb5db0f4e62b620a665c3",
+  "sources": {
+    "functions": {
+      "manifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "files": {
+        "index.js": {
+          "sha256": "d2522ada5b1fc624c09255194e2c60aed7464eb65c72a65d9870c1999f221511",
+          "bytes": 32908
+        },
+        "admission.js": {
+          "sha256": "c398b14fe2c1b5ae71999ffb54a81b255ce6fc7340f2229a49b764c741c356cf",
+          "bytes": 15502
+        },
+        "athlete-shares.js": {
+          "sha256": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+          "bytes": 7446
+        },
+        "athlete-storage-paths.js": {
+          "sha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+          "bytes": 2380
+        },
+        "club-access.js": {
+          "sha256": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+          "bytes": 1300
+        },
+        "club-branding.js": {
+          "sha256": "57c76d7d805556de3293a82ac97124f8f5b18d64c187382e7651a7f6b412b949",
+          "bytes": 9787
+        },
+        "clubs.js": {
+          "sha256": "08e73a358f5f5ff2b250b021787c78aaf9c9c3d57a03dc3e95c473c15a3c3487",
+          "bytes": 24653
+        },
+        "team-leaderboard.js": {
+          "sha256": "3900ff759a7e4221b184e396c970370abd904dd8cb97bcb6ff8ad46154d6b1ac",
+          "bytes": 6444
+        },
+        "package.json": {
+          "sha256": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+          "bytes": 498
+        },
+        "package-lock.json": {
+          "sha256": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+          "bytes": 261037
+        }
+      }
+    },
+    "sharing": {
+      "manifestHash": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+      "files": {
+        ".runtimeconfig.json": {
+          "sha256": "5a516fc06a04d088f5327cb214c34742e486eaf4177d6de992e2c7a6f30bfe72",
+          "bytes": 112
+        },
+        "athlete-shares.js": {
+          "sha256": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+          "bytes": 7446
+        },
+        "athlete-storage-paths.js": {
+          "sha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+          "bytes": 2380
+        },
+        "club-access.js": {
+          "sha256": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+          "bytes": 1300
+        },
+        "club-sharing-handlers.js": {
+          "sha256": "c5dcf20ee0800120b5f6392e1695abc9b16426b10c129e45bd1251031752cd0e",
+          "bytes": 12032
+        },
+        "index.js": {
+          "sha256": "3632260ae9e45a1f04e93dbf1af1ef63443260b6180f32d946782a49f9b96e51",
+          "bytes": 31352
+        },
+        "package-lock.json": {
+          "sha256": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+          "bytes": 261037
+        },
+        "package.json": {
+          "sha256": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+          "bytes": 498
+        }
+      }
+    }
+  },
+  "endpoints": [
+    {
+      "name": "getClubContext",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "createClubOrganization",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "saveClubTeam",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "createClubStaffInvitation",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "redeemClubStaffInvitation",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "setClubStaffTeams",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "revokeClubStaffInvitation",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "setClubPlayerTeam",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "createClubPlayer",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "issueClubPlayerInvitation",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "importClubLogo",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "120s"
+    },
+    {
+      "name": "redeemPlayerSignupCode",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "joinOrganization",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "createOrganization",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "attachPlayerByCode",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "getTeamLeaderboard",
+      "action": "create",
+      "sourceKind": "functions",
+      "sourceManifestHash": "6e82a893398bc014c61bf910efd2fac408a4389e264fa4c6cd74a102df5b5a17",
+      "timeout": "60s"
+    },
+    {
+      "name": "createAthleteResultsShare",
+      "action": "update",
+      "sourceKind": "sharing",
+      "sourceManifestHash": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+      "timeout": "60s"
+    },
+    {
+      "name": "getAthleteResultsShare",
+      "action": "update",
+      "sourceKind": "sharing",
+      "sourceManifestHash": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+      "timeout": "60s"
+    },
+    {
+      "name": "getAthleteSharedRepArtifacts",
+      "action": "update",
+      "sourceKind": "sharing",
+      "sourceManifestHash": "9fd6b17242e20696b8564c4eb1bb2bea253d9dd80d5983edff6c3aeb4c92851a",
+      "timeout": "60s"
+    }
+  ],
+  "preservedFunctions": [
+    "aiCoachStreamProxy"
+  ],
+  "servingBaseline": {
+    "aiCoachStreamProxy": {
+      "versionId": "2",
+      "updateTime": "2026-08-16T19:41:11.126Z",
+      "runtime": "nodejs22",
+      "memoryMb": 256,
+      "timeout": "300s",
+      "serviceAccount": "kickai-69dd0@appspot.gserviceaccount.com",
+      "ingress": "ALLOW_ALL",
+      "firebaseSourceHash": "ddd1a75bf0fc8cf99e723cba53838194d11d50bb",
+      "sourceUploadIdentifierSha256": "5cbacffe5e5eddd433215eb4dab8968e08bc3301ef55dfd3378be1f59d688f1f",
+      "invokerBindings": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/cloudfunctions.invoker"
+        }
+      ]
+    },
+    "createAthleteResultsShare": {
+      "versionId": "7",
+      "updateTime": "2026-08-15T22:58:43.400Z",
+      "runtime": "nodejs22",
+      "memoryMb": 256,
+      "timeout": "60s",
+      "serviceAccount": "kickai-69dd0@appspot.gserviceaccount.com",
+      "ingress": "ALLOW_ALL",
+      "firebaseSourceHash": "ae256c715c5ede39c571f7de983df808700dc15e",
+      "sourceUploadIdentifierSha256": "6eb78dd07db0513b64aab747fba89f4274c5d5696b7134005de0e9a17038412c",
+      "invokerBindings": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/cloudfunctions.invoker"
+        }
+      ]
+    },
+    "getAthleteSharedRepArtifacts": {
+      "versionId": "7",
+      "updateTime": "2026-08-15T22:58:46.885Z",
+      "runtime": "nodejs22",
+      "memoryMb": 256,
+      "timeout": "60s",
+      "serviceAccount": "kickai-69dd0@appspot.gserviceaccount.com",
+      "ingress": "ALLOW_ALL",
+      "firebaseSourceHash": "ae256c715c5ede39c571f7de983df808700dc15e",
+      "sourceUploadIdentifierSha256": "6eb78dd07db0513b64aab747fba89f4274c5d5696b7134005de0e9a17038412c",
+      "invokerBindings": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/cloudfunctions.invoker"
+        }
+      ]
+    },
+    "getAthleteResultsShare": {
+      "versionId": "8",
+      "updateTime": "2026-08-15T22:58:43.895Z",
+      "runtime": "nodejs22",
+      "memoryMb": 256,
+      "timeout": "60s",
+      "serviceAccount": "kickai-69dd0@appspot.gserviceaccount.com",
+      "ingress": "ALLOW_ALL",
+      "firebaseSourceHash": "ae256c715c5ede39c571f7de983df808700dc15e",
+      "sourceUploadIdentifierSha256": "6eb78dd07db0513b64aab747fba89f4274c5d5696b7134005de0e9a17038412c",
+      "invokerBindings": [
+        {
+          "members": [
+            "allUsers"
+          ],
+          "role": "roles/cloudfunctions.invoker"
+        }
+      ]
+    }
+  },
+  "rollbackSharingZipSha256": "dbafa77dd15e8258c1aca4ab3f0ff41797e8f76c70a7e3fc1041a9422ba3951e",
+  "signingSecret": {
+    "name": "ATHLETE_SHARE_SIGNING_KEY",
+    "observedState": "NOT_FOUND",
+    "provisionedByThisTask": false
+  },
+  "verification": {
+    "deploymentGateTests": {
+      "passed": 16,
+      "failed": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 deployments/club-organization/test_functions_release.py"
+    },
+    "scopedSharingTests": {
+      "passed": 12,
+      "failed": 0,
+      "command": "node --test deployments/club-organization/sharing/scoped-sharing.test.cjs"
+    },
+    "requiredBeforeDeploy": [
+      "club-sdk-canonical-and-scoped",
+      "handler-tests",
+      "web-build",
+      "gateway-club-candidate",
+      "scoped-sharing-offline",
+      "secret-and-runtime-iam",
+      "rollback-source-archives"
+    ],
+    "actualDeploymentPerformed": false
+  },
+  "toolingSha256": {
+    "functions-release.py": "3e01aefa7e63dfccc8cffde95fe06720516edac00f82424f3427fd574649bcb8",
+    "test_functions_release.py": "d1792f315635633fe7b32fd69339127bb4f706fcf3270c3f80c59e9f1a40272e",
+    "sharing/prepare.py": "df2862b966e20ca07f3b527324f5d76ae1a31de78f300eebf2ed25a9582bba0e",
+    "sharing/scoped-sharing.test.cjs": "2a2f35c2730db6cb8dcda2e797e53f90399efde250a4dfcc6c24a0dec3b56cec"
+  },
+  "deploymentToolCorrection": {
+    "issue": "gcloud rejects manually specified deployment-callable label because deployment-prefixed keys are reserved",
+    "fix": "Set only posetek-club-source; existing Firebase-owned labels are preserved automatically",
+    "verifiedNoFunctionsChangedOnRejectedAttempt": true,
+    "regressionTestsPassed": 12
+  },
+  "partialRolloutResume": {
+    "issue": "The corrected attempt created getClubContext (2026-09-07T22:03Z) but gcloud could not apply its allUsers invoker binding; the deployer halted with zero confirmed functions and eighteen never created",
+    "fix": "prepare marks a posetek-club-source function whose baseline policy lacks the invoker binding as a resume operation (settings kept, --allow-unauthenticated reapplied); deploy applies gcloud's documented add-iam-policy-binding remediation once for create/resume operations and still requires the binding on readback",
+    "requiresFreshSnapshotPlanAndEvidence": true,
+    "regressionTestsPassed": 14
+  },
+  "toolOwnedLabelCorrection": {
+    "issue": "The resumed rollout updated createAthleteResultsShare successfully but halted on readback because gcloud rewrites the deployment-tool label on every deploy",
+    "fix": "Runtime comparison ignores deployment-tool alongside deployment-callable; functions already carrying this plan's posetek-club-source label with invoker (and secret, for sharing endpoints) become verified operations that are read back without redeployment",
+    "regressionTestsPassed": 16
+  }
+}

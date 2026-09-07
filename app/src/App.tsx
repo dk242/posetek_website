@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const HomePage = lazy(() => import("./pages/home/HomePage"));
 const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
+const OrganizationPage = lazy(() => import("./pages/organization/OrganizationPage"));
+const StaffInvitePage = lazy(() => import("./pages/staff-invite/StaffInvitePage"));
 const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
 const CoachDashboardPage = lazy(() => import("./pages/coach-dashboard/CoachDashboardPage"));
 const AthletePortalPage = lazy(() => import("./pages/athlete-portal/AthletePortalPage"));
@@ -33,6 +35,9 @@ export default function App() {
 
           <Route path="/signin" element={<LandingPage />} />
           <Route path="/kickai.html" element={<LandingPage />} />
+
+          <Route path="/organization" element={<OrganizationPage />} />
+          <Route path="/join" element={<StaffInvitePage />} />
 
           <Route path="/roster" element={<RosterPage />} />
           <Route path="/coachesview.html" element={<RosterPage />} />

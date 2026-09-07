@@ -28,7 +28,7 @@ function LeaderboardsContent({ ctx }: { ctx: PortalContext }) {
   useEffect(() => {
     if (ctx.access === "preview") return;
     let cancelled = false;
-    const standings = ctx.access === "coach" ? loadTeamStandings(ctx.playerId!) : loadAthleteStandings();
+    const standings = ["coach", "manager", "admin"].includes(ctx.access) ? loadTeamStandings(ctx.playerId!) : loadAthleteStandings();
     standings
       .then(result => { if (!cancelled) setBoards(result); })
       .catch(error => {

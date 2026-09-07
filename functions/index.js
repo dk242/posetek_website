@@ -10,6 +10,10 @@ const db = admin.firestore();
 const { createAdmission } = require("./admission");
 const { createTeamLeaderboard } = require("./team-leaderboard");
 const { createAthleteShares } = require("./athlete-shares");
+const { createClubs } = require("./clubs");
+const { createClubBranding } = require("./club-branding");
+const clubBranding = createClubBranding({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+const clubs = createClubs({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 
 // Signed, server-issued result shares (see athlete-shares.js). Legacy
 // documents were client-writable; their tokens and pointers are never accepted.
@@ -203,7 +207,7 @@ async function sharedFreeRecordRows(playerDocId) {
 
 /** Creates one accountless athlete-results link; see athlete-shares.js. */
 exports.createAthleteResultsShare = athleteShareFunctions.https.onCall((data, context) =>
-  athleteShares.createAthleteResultsShare({ uid: context.auth?.uid, playerDocId: data?.playerDocId })
+  athleteShares.createAthleteResultsShare({ ...requireCaller(context), playerDocId: data?.playerDocId })
 );
 
 /** Returns whitelisted metrics for a valid accountless share link. */
@@ -327,8 +331,21 @@ function requireCaller(context) {
   if (context.auth.token?.firebase?.sign_in_provider === "anonymous") {
     throw new functions.https.HttpsError("permission-denied", "A registered account is required.");
   }
-  return { uid: context.auth.uid, email: context.auth.token?.email || null };
+  return { uid: context.auth.uid, email: context.auth.token?.email || null, emailVerified: context.auth.token?.email_verified === true, isAnonymous: false };
 }
+
+// Explicit exports keep Firebase deployment discovery stable across releases.
+exports.importClubLogo = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => clubBranding.importClubLogo(data, requireCaller(context)));
+exports.getClubContext = functions.https.onCall((data, context) => clubs.getClubContext(data, requireCaller(context)));
+exports.createClubOrganization = functions.https.onCall((data, context) => clubs.createClubOrganization(data, requireCaller(context)));
+exports.saveClubTeam = functions.https.onCall((data, context) => clubs.saveClubTeam(data, requireCaller(context)));
+exports.createClubStaffInvitation = functions.https.onCall((data, context) => clubs.createClubStaffInvitation(data, requireCaller(context)));
+exports.redeemClubStaffInvitation = functions.https.onCall((data, context) => clubs.redeemClubStaffInvitation(data, requireCaller(context)));
+exports.setClubStaffTeams = functions.https.onCall((data, context) => clubs.setClubStaffTeams(data, requireCaller(context)));
+exports.revokeClubStaffInvitation = functions.https.onCall((data, context) => clubs.revokeClubStaffInvitation(data, requireCaller(context)));
+exports.setClubPlayerTeam = functions.https.onCall((data, context) => clubs.setClubPlayerTeam(data, requireCaller(context)));
+exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => clubs.issueClubPlayerInvitation(data, requireCaller(context)));
+exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
 
 exports.redeemPlayerSignupCode = functions.https.onCall((data, context) =>
   admission.redeemPlayerSignupCode({ ...requireCaller(context), code: data?.code })
@@ -345,7 +362,7 @@ exports.attachPlayerByCode = functions.https.onCall((data, context) =>
 
 /** Whitelisted team standings for the athlete's own roster (team-leaderboard.js). */
 exports.getTeamLeaderboard = functions.https.onCall((data, context) =>
-  teamLeaderboard.getTeamLeaderboard({ uid: requireCaller(context).uid })
+  teamLeaderboard.getTeamLeaderboard({ ...requireCaller(context), teamId: data?.teamId })
 );
 
 /**

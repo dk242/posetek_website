@@ -78,7 +78,7 @@ export default function MonitorAccounts() {
       <section className="admin-heading">
         <div>
           <p className="eyebrow">Monitor accounts</p>
-          <h1>Organizations, coaches and athletes</h1>
+          <h1>Organizations, coaches and athletes</h1><Link className="quiet-button" to="/admin/organizations">Manage organizations and staff invitations</Link>
           <p>Open a coach to see their roster, then an athlete to see and edit their program.</p>
         </div>
       </section>

@@ -56,6 +56,7 @@ import { useWorkoutStore } from "../lib/workout-store";
 import type { WorkoutStore } from "../lib/workout-store";
 import WorkoutPlayer from "./WorkoutPlayer";
 import { EmptyState, LockedPage, PageHero, PortalLoading } from "./shared";
+import StaffTrainingView from "./StaffTrainingView";
 import TrainingViewV3 from "./TrainingViewV3";
 import { isV3Plan } from "../../../lib/contracts/types";
 import type { PortalContext } from "./shared";
@@ -71,6 +72,7 @@ export default function TrainingView({ ctx }: { ctx: PortalContext }) {
   if (ctx.access === "shared") {
     return <LockedPage title="Training" copy="Training plans and workout history are private athlete records." />;
   }
+  if (ctx.access === "manager" || ctx.access === "admin") return <StaffTrainingView playerId={ctx.playerId!} />;
   return <TrainingContent ctx={ctx} />;
 }
 

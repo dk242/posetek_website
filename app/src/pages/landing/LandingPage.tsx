@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import firebase, { auth, db } from "../../lib/firebase";
+import { getClubContext } from "../../lib/organization-data";
 import { findCoach, findPlayer } from "../../lib/identity";
 import { useThemeColor } from "../../lib/use-theme-color";
 import { refreshAdminIdentity, sendAdminVerification, upsertAdminProfile } from "../admin/lib/identity";
@@ -257,6 +258,12 @@ export default function LandingPage() {
         return;
       }
 
+      const club = await getClubContext();
+      if (club.role === "manager" || club.role === "coach") {
+        navigate("/organization");
+        return;
+      }
+
       const coachDoc = await findCoach(db, user.uid);
       if (coachDoc) {
         await coachDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
@@ -477,7 +484,8 @@ export default function LandingPage() {
                 <h2 className="modal-title" id="login-title">
                   Welcome back
                 </h2>
-                <p className="login-support">PoseTek will open the correct coach or athlete view after sign-in.</p>
+                <p className="login-support"><Link to="/join">Have a coach or manager invitation? Claim your account.</Link></p>
+                <p className="login-support">PoseTek opens your organization, coach or athlete view after sign-in.</p>
                 {/* legacy: hidden by CSS; its click handler (hideModal(loginModal)) is a no-op */}
                 <button className="close-btn" id="closeModal" type="button" tabIndex={-1} aria-hidden="true">
                   &times;

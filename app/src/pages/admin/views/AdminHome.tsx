@@ -16,11 +16,12 @@ export default function AdminHome() {
         <div>
           <p className="eyebrow">PoseTek admin</p>
           <h1>What are you working on?</h1>
-          <p>The same two areas as the app, with room to do the careful work on a big screen.</p>
+          <p>Manage clubs and staff, review athlete accounts, and maintain the drill library.</p>
         </div>
       </section>
 
       <div className="admin-home-options">
+        <Link className="admin-home-option" to="/admin/organizations"><span className="material-symbols-outlined">groups</span><h2>Organizations</h2><p>Create clubs and teams, invite coaches and managers, and manage access to athlete rosters.</p></Link>
         <Link className="admin-home-option" to="/admin/drills">
           <span className="material-symbols-outlined">library_books</span>
           <h2>Drill library</h2>
