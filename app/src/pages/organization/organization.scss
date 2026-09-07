@@ -1,0 +1,42 @@
+.pt-club {
+  color: #eaf3ee;
+  .club-shell { max-width: 1140px; margin: 0 auto; padding: 32px 24px 80px; }
+  .club-title { display: flex; align-items: center; gap: 18px; }
+  .club-logo { width: 72px; height: 72px; object-fit: contain; border-radius: 12px; background: #f5f8f6; padding: 6px; }
+  .club-heading, .club-section-title { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  h1 { font-size: clamp(30px, 4vw, 44px); margin: 4px 0 12px; }
+  h2 { font-size: 22px; margin: 0 0 18px; }
+  h3 { font-size: 18px; }
+  p, span { line-height: 1.55; }
+  p { color: #a9bbb2; }
+  .club-card { background: #0c2119; border: 1px solid #264137; border-radius: 18px; padding: 24px; margin-top: 22px; }
+  label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #c8d8cf; }
+  input, select { width: 100%; background: #06160f; color: #f0f7f3; border: 1px solid #355246; padding: 12px; border-radius: 9px; font: inherit; min-height: 44px; }
+  input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px solid #81e7b1; outline-offset: 3px; }
+  button { cursor: pointer; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .club-inline, .club-fields { display: flex; flex-wrap: wrap; align-items: end; gap: 14px; margin: 20px 0 0; }
+  .club-inline > label, .club-fields > label { flex: 1 1 180px; }
+  .club-team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 12px; }
+  .club-team { text-align: left; background: #102b20; border: 1px solid #355246; color: #f0f7f3; border-radius: 12px; padding: 20px; display: grid; gap: 8px; font: inherit; }
+  .club-team.selected { border-color: #72d5a3; box-shadow: inset 0 0 0 1px #72d5a3; }
+  .club-team span, .club-staff span, .club-player span { display: block; font-size: 13px; color: #afc3b7; }
+  .club-staff, .club-player { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 0; border-bottom: 1px solid #264137; }
+  .club-player a { color: #f1f8f3; text-decoration: none; }
+  .club-player a:hover strong { text-decoration: underline; }
+  .club-move { width: min(220px, 42%); }
+  .club-team-checks { border: 1px solid #355246; border-radius: 10px; padding: 15px; margin: 20px 0; }
+  .club-team-checks label { display: inline-flex; flex-direction: row; align-items: center; margin: 8px 20px 8px 0; }
+  .club-team-checks input { width: 20px; min-height: 20px; height: 20px; }
+  .club-edit { background: #102b20; padding: 20px; border-radius: 12px; margin-top: 20px; }
+  .club-edit .primary-cta { margin-top: 18px; }
+  .club-message { padding: 14px 18px; border-radius: 10px; background: #183e2b; }
+  .club-message.error { background: #482a27; color: #ffded8; }
+  .club-code code { display: block; font-size: 22px; overflow-wrap: anywhere; color: #a4f4cb; padding: 16px 0; user-select: all; }
+  .club-code .quiet-button { margin-right: 12px; }
+  .club-signup { max-width: 540px; margin: 0 auto; }
+  .club-signup label { margin: 16px 0; }
+  .club-signup .primary-cta { margin-top: 10px; }
+  .club-inline-link { color: #99e8ba; }
+  @media (max-width: 640px) { .club-shell { padding: 24px 14px 60px; } .club-card { padding: 18px; } .club-heading, .club-section-title { align-items: start; flex-direction: column; } .club-staff { align-items: start; flex-wrap: wrap; } }
+}

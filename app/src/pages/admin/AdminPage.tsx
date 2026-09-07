@@ -16,6 +16,7 @@ import { useAdminSession } from "./lib/session";
 import "../../styles/pose-portal.css";
 import "./admin.scss";
 
+const OrganizationPage = lazy(() => import("../organization/OrganizationPage"));
 const AdminHome = lazy(() => import("./views/AdminHome"));
 const DrillLibrary = lazy(() => import("./views/DrillLibrary"));
 const DrillDetail = lazy(() => import("./views/DrillDetail"));
@@ -77,6 +78,7 @@ export default function AdminPage() {
           <Route path="drills/new" element={<DrillForm mode="create" />} />
           <Route path="drills/:drillId" element={<DrillDetail />} />
           <Route path="drills/:drillId/edit" element={<DrillForm mode="edit" />} />
+          <Route path="organizations" element={<OrganizationPage admin />} />
           <Route path="accounts" element={<MonitorAccounts />} />
           <Route path="accounts/coach/:coachId" element={<CoachDetail />} />
           <Route path="accounts/player/:playerId" element={<PlayerDetail />} />
@@ -114,6 +116,7 @@ export default function AdminPage() {
               <span className="material-symbols-outlined">library_books</span>
               <span>Drill library</span>
             </NavLink>
+            <NavLink className={navClass} to="/admin/organizations"><span className="material-symbols-outlined">groups</span><span>Organizations</span></NavLink>
             <NavLink className={navClass} to="/admin/accounts">
               <span className="material-symbols-outlined">supervisor_account</span>
               <span>Monitor accounts</span>

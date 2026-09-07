@@ -43,6 +43,12 @@ function setUrl(view: string, drill: string) {
   window.history.replaceState({}, "", url);
 }
 
+function allowedViews(access: Access | null): string[] {
+  if (access === "shared") return ["home", "drills"];
+  if (access === "manager" || access === "admin") return ["home", "drills", "profile", "training", "leaderboards"];
+  return Object.keys(VIEW_LABELS);
+}
+
 export default function AthletePortalPage() {
   const navigate = useNavigate();
   // Legacy captured URLSearchParams once at script start.
@@ -109,7 +115,7 @@ export default function AthletePortalPage() {
   const finishLoad = (data: PortalData) => {
     document.title = `${fullName(data.athlete)} | PoseTek`;
     const requested = params.has("drill") ? "drills" : params.get("view") || "home";
-    const allowed = data.access === "shared" ? ["home", "drills"] : Object.keys(VIEW_LABELS);
+    const allowed = allowedViews(data.access);
     const nextView = allowed.includes(requested) ? requested : "home";
     const drillParam = params.get("drill");
     const nextDrill = DRILLS.some(d => d.key === drillParam)
@@ -168,7 +174,7 @@ export default function AthletePortalPage() {
   // active drawer item rebuilt (and re-fetched) the view; the epoch key mirrors
   // that by remounting the secondary views on every selection.
   const chooseView = (requested: string) => {
-    const allowed = access === "shared" ? ["home", "drills"] : Object.keys(VIEW_LABELS);
+    const allowed = allowedViews(access);
     const nextView = allowed.includes(requested) ? requested : "home";
     const nextDrill = nextView === "drills" && !drill ? "shooting" : drill;
     setViewEpoch(epoch => epoch + 1);
@@ -239,8 +245,8 @@ export default function AthletePortalPage() {
         </a>
         <div className="portal-current-view" id="currentViewLabel">{VIEW_LABELS[view] || "Athlete Home"}</div>
         <div className="portal-header-actions">
-          <Link className="quiet-button" id="rosterLink" to="/roster?userType=coach" hidden={access !== "coach"}>
-            <span className="material-symbols-outlined">groups</span><span>Roster</span>
+          <Link className="quiet-button" id="rosterLink" to={access === "admin" ? "/admin/organizations" : access === "manager" ? "/organization" : athlete?.teamId ? `/roster?team=${encodeURIComponent(athlete.teamId)}` : "/roster?userType=coach"} hidden={!access || !["coach", "manager", "admin"].includes(access)}>
+            <span className="material-symbols-outlined">groups</span><span>{access === "manager" || access === "admin" ? "Organization" : "Roster"}</span>
           </Link>
           <button
             className="quiet-button share-button"
@@ -279,7 +285,7 @@ export default function AthletePortalPage() {
               <span className="athlete-avatar">{avatarInitials(fullName(athlete))}</span>
               <div>
                 <strong>{fullName(athlete)}</strong>
-                <small>{access === "shared" ? "Shared results access" : access === "coach" ? "Coach view" : "Athlete portal"}</small>
+                <small>{access === "shared" ? "Shared results access" : access === "coach" ? "Coach view" : access === "manager" ? "Organization manager view" : access === "admin" ? "PoseTek admin view" : "Athlete portal"}</small>
               </div>
             </>
           ) : (
@@ -296,7 +302,7 @@ export default function AthletePortalPage() {
               type="button"
               data-view={item.view}
               className={item.view === view ? "active" : ""}
-              hidden={access === "shared" && !["home", "drills"].includes(item.view)}
+              hidden={!allowedViews(access).includes(item.view)}
               onClick={() => chooseView(item.view)}
             >
               <span className="material-symbols-outlined">{item.icon}</span>

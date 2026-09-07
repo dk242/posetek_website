@@ -47,7 +47,7 @@ export default function CoachDashboardPage() {
 
   const boot_ = useCallback(async (user: any) => {
     setBoot({ kind: "loading", note: "Loading your roster…" });
-    const context = await loadCoachContext(user);
+    const context = await loadCoachContext(user, new URLSearchParams(window.location.search).get("team"));
     setOrgLabel(context.orgLabel);
     setPlayers(context.players);
     setBoot({ kind: "loading", note: "Crunching athlete data…" });
@@ -146,10 +146,12 @@ export default function CoachDashboardPage() {
 
   const selectAthlete = useCallback((id: string | null) => {
     const params: Record<string, string> = {};
+    const team = searchParams.get("team");
+    if (team) params.team = team;
     if (preview) params.preview = "1";
     if (id) params.athlete = id;
     setSearchParams(params, { replace: false });
-  }, [setSearchParams, preview]);
+  }, [setSearchParams, preview, searchParams]);
 
   const selected = selectedId ? summaries.find(summary => summary.athlete.id === selectedId) : null;
 
@@ -165,7 +167,7 @@ export default function CoachDashboardPage() {
     body = (
       <div className="error-card">
         <span className="material-symbols-outlined">error</span>
-        <h3>Dashboard unavailable</h3>
+        <h3>Dashboard unavailable</h3><Link className="quiet-button" to="/organization">Open organization</Link>
         <p>{boot.message}</p>
       </div>
     );

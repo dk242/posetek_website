@@ -4,6 +4,10 @@
 // same preview mode (?preview=1), same copy and class names.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { clubCall, getClubContext, loadClubPlayers } from "../../lib/organization-data";
+import type { ClubContext } from "../../lib/organization-data";
+import { readAccessibleLegacyRoster } from "../../lib/legacy-roster";
+import { selectedTeam } from "../../lib/organization";
 import firebase, { auth, cloud, db } from "../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../lib/identity";
 import {
@@ -58,6 +62,9 @@ export default function RosterPage() {
   const [addBusy, setAddBusy] = useState(false);
   const [pendingPlayer, setPendingPlayer] = useState<PendingRosterPlayer | null>(null);
 
+  const [club, setClub] = useState<ClubContext | null>(null);
+  const [clubTeamId, setClubTeamId] = useState("");
+  const clubRef = useRef<{ context: ClubContext; teamId: string } | null>(null);
   const coachDocRef = useRef<any>(null);
   // The pending link is read inside async handlers, so keep a ref in step with
   // the rendered state (legacy used one closure variable for both).
@@ -79,26 +86,38 @@ export default function RosterPage() {
     setFormMessage({ text, success });
   }, []);
 
-  const loadRoster = useCallback(async () => {
+  const loadRoster = useCallback(async (requestedTeamId?: string) => {
     setGridMode({ kind: "loading" });
     const user = auth.currentUser;
     if (!user) return;
+    const context = await getClubContext();
+    if (context.role === "manager" || context.role === "admin") { navigate("/organization", { replace: true }); return; }
+    if (context.role === "coach" && context.organization) {
+      const chosen = selectedTeam(context.teams, requestedTeamId ?? new URLSearchParams(window.location.search).get("team"));
+      if (!chosen) { navigate("/organization", { replace: true }); return; }
+      clubRef.current = { context, teamId: chosen.id }; setClub(context); setClubTeamId(chosen.id);
+      coachDocRef.current = await findCoach(user.uid);
+      setOrgLabel(`${context.organization.name} · ${chosen.name}`);
+      setPlayers(sortByName(await loadClubPlayers(chosen))); setRendered(true); setGridMode({ kind: "list" }); return;
+    }
+    clubRef.current = null; setClub(null);
     const coachDoc = await findCoach(user.uid);
     // Assign before the throw (legacy order): a failed refresh must clear the
     // stale coach doc so add/create can't write against it afterwards.
     coachDocRef.current = coachDoc;
     if (!coachDoc) throw new Error("No coach profile is linked to this sign-in.");
     const coach = coachDoc.data() || {};
-    if (coach.org?.get) {
+    if (Object.hasOwn(coach, "organizationId")) throw new Error("Your club access is inactive or unavailable. Ask your organization manager to review it.");
+    if ((coach.organization || coach.org)?.get) {
       try {
-        const org = await coach.org.get();
+        const org = await (coach.organization || coach.org).get();
         setOrgLabel(org.exists ? org.data().name || "Coach dashboard" : "Independent coach");
       } catch {
         setOrgLabel("Coach dashboard");
       }
     } else setOrgLabel("Independent coach");
     const ids = [...new Set(Array.isArray(coach.members) ? coach.members : [])];
-    const docs = await Promise.all(ids.map((id: any) => db.collection("players").doc(id).get()));
+    const docs = await readAccessibleLegacyRoster(ids as string[], id => db.collection("players").doc(id).get());
     const loaded = sortByName(
       docs.filter(doc => doc.exists).map(doc => ({ id: doc.id, ...doc.data() })),
     );
@@ -174,6 +193,18 @@ export default function RosterPage() {
     }
     const firstName = firstNameRef.current?.value.trim() ?? "";
     const lastName = lastNameRef.current?.value.trim() ?? "";
+    if (clubRef.current) {
+      if (!firstName || !lastName) return setMessage("Enter both a first and last name.");
+      setCreateBusy(true); setMessage("");
+      try {
+        await clubCall("createClubPlayer", { organizationId: clubRef.current.context.organization!.id, teamId: clubRef.current.teamId, firstName, lastName });
+        if (firstNameRef.current) firstNameRef.current.value = "";
+        if (lastNameRef.current) lastNameRef.current.value = "";
+        dialogRef.current?.close(); await loadRoster(clubRef.current.teamId);
+      } catch (failure: any) { setMessage(failure.message || "The player could not be created."); }
+      finally { setCreateBusy(false); }
+      return;
+    }
     const pendingBefore = pendingRef.current;
     if (pendingBefore && (pendingBefore.uid !== user.uid || pendingBefore.coachId !== coachDoc.id)) {
       return setMessage("Return to the coach account that created the pending player to finish its roster link.");
@@ -231,6 +262,7 @@ export default function RosterPage() {
   // Roster attachment by code runs in the admission service: the coach never
   // queries other athletes' profiles, and only post-lockdown codes are accepted.
   async function addExisting() {
+    if (clubRef.current) return setMessage("Ask your organization manager to move an existing club player into this team.");
     const user = auth.currentUser;
     const code = codeRef.current?.value.trim().toUpperCase() ?? "";
     if (!code) return setMessage("Enter the player's code.");
@@ -323,7 +355,7 @@ export default function RosterPage() {
           <span className="portal-brand-mark">P</span>
           <span>POSETEK</span>
         </Link>
-        <Link className="quiet-button" to="/dashboard" style={{ marginLeft: "auto" }}>
+        <Link className="quiet-button" to={club ? `/dashboard?team=${encodeURIComponent(clubTeamId)}` : "/dashboard"} style={{ marginLeft: "auto" }}>
           <span className="material-symbols-outlined">dashboard</span>
           <span>Dashboard</span>
         </Link>
@@ -337,7 +369,7 @@ export default function RosterPage() {
         <section className="roster-heading">
           <div>
             <p className="eyebrow" id="organizationName">{orgLabel}</p>
-            <h1>Roster</h1>
+            <h1>Roster</h1>{club && <Link className="quiet-button" to="/organization">Organization and teams</Link>}
             <p id="rosterSummary">{rendered ? summaryText(players) : "Loading athletes…"}</p>
           </div>
           <button
@@ -351,6 +383,7 @@ export default function RosterPage() {
           </button>
         </section>
 
+        {club && <label style={{ display: "grid", gap: 8, marginBottom: 20 }}>Team<select aria-label="Selected team" value={clubTeamId} onChange={event => { const id = event.target.value; navigate(`/roster?team=${encodeURIComponent(id)}`); void loadRoster(id).catch(showError); }}>{club.teams.map(team => <option key={team.id} value={team.id}>{team.name}</option>)}</select></label>}
         <label className="search-field" id="searchWrap" hidden={!rendered || players.length <= 6}>
           <span className="material-symbols-outlined">search</span>
           <input
