@@ -2,6 +2,11 @@
   command = "npm --prefix app ci && npm --prefix app run build"
   publish = "dist"
 
+# Vite 8 and TypeScript 6 need a current Node; the site's default runtime was
+# older, which failed every build since the React port with "exit code 2".
+[build.environment]
+  NODE_VERSION = "22"
+
 # Hashed SPA bundles are immutable; everything else stays fresh so legacy
 # pages and the SPA shell update on every deploy. The /assets rule comes LAST:
 # when multiple header rules match, the later rule's value wins for the same
