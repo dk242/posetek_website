@@ -550,27 +550,33 @@
       setupLeaderboards(context, { changeOfDirection: team, sprint: team.map((p, i) => ({ ...p, value: 20.1 - i })), jump: team.map((p, i) => ({ ...p, value: 24.8 - i * 1.4 })), shooting: team.map((p, i) => ({ ...p, value: 67.2 - i * 2.2 })), dribbling: team.map((p, i) => ({ ...p, value: 5.01 + i * .2 })) });
       return;
     }
-    loadTeamStandings(context).then(boards => setupLeaderboards(context, boards)).catch(error => {
+    const standings = context.state.access === "coach" ? loadTeamStandings(context) : loadAthleteStandings(context);
+    standings.then(boards => setupLeaderboards(context, boards)).catch(error => {
       console.error("[leaderboards]", error); document.getElementById("leaderboardContent").innerHTML = empty("groups", "No team leaderboard available", "This athlete must be connected to a coach roster before team standings can be shown.");
     });
   }
 
+  // Coaches read their own roster directly; athletes receive a whitelisted
+  // projection from the admission service and never touch teammates' documents.
   async function loadTeamStandings(context) {
-    let coachDoc = await context.db.collection("coaches").doc(context.auth.currentUser.uid).get();
-    if (!coachDoc.exists) {
-      const own = await context.db.collection("coaches").where("userUID", "==", context.auth.currentUser.uid).limit(1).get();
-      if (!own.empty) coachDoc = own.docs[0];
-    }
-    if (!coachDoc.exists) {
-      const query = await context.db.collection("coaches").where("members", "array-contains", context.state.playerId).limit(1).get();
-      if (query.empty) throw new Error("No connected team");
-      coachDoc = query.docs[0];
-    }
+    const coachDoc = await PoseTekIdentity.findCoach(context.db, context.auth.currentUser.uid);
+    if (!coachDoc) throw new Error("A coach account is required for team standings.");
     const ids = [...new Set([...(coachDoc.data().members || []), context.state.playerId])];
     const players = await Promise.all(ids.map(async id => {
       const [player, reps] = await Promise.all([context.db.collection("players").doc(id).get(), context.db.collection("players").doc(id).collection("reps").get()]);
       return { id, name: context.fullName(player.data() || {}), reps: reps.docs.map(doc => doc.data()) };
     }));
+    return standingsFromPlayers(players);
+  }
+
+  async function loadAthleteStandings(context) {
+    const result = await firebase.functions().httpsCallable("getTeamLeaderboard")({});
+    const team = (result && result.data) || {};
+    const players = (team.athletes || []).map(athlete => ({ id: athlete.id, name: context.fullName({ firstName: athlete.firstName, lastName: athlete.lastName }), reps: Array.isArray(athlete.reps) ? athlete.reps : [] }));
+    return standingsFromPlayers(players);
+  }
+
+  function standingsFromPlayers(players) {
     return Object.fromEntries(LEADERBOARD_CATEGORIES.map(category => [category.key, players.map(player => {
       const values = player.reps.filter(rep => {
         const type = rep.repType || rep.drillType;

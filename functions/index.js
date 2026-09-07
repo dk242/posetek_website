@@ -2,14 +2,29 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const stripe = require("stripe");
 const crypto = require("crypto");
+const { playerSegment, storageFolderCandidates } = require("./athlete-storage-paths");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-const ATHLETE_SHARE_COLLECTION = "athleteResultShares";
-const ATHLETE_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const { createAdmission } = require("./admission");
+const { createTeamLeaderboard } = require("./team-leaderboard");
+const { createAthleteShares } = require("./athlete-shares");
+
+// Signed, server-issued result shares (see athlete-shares.js). Legacy
+// documents were client-writable; their tokens and pointers are never accepted.
+const athleteShareFunctions = functions.runWith({ secrets: ["ATHLETE_SHARE_SIGNING_KEY"] });
+const athleteShares = createAthleteShares({
+  db, crypto, Timestamp: admin.firestore.Timestamp, HttpsError: functions.https.HttpsError,
+  signingKey: () => process.env.ATHLETE_SHARE_SIGNING_KEY,
+});
+const { athleteShareError, verifiedAthleteShare } = athleteShares;
+const admission = createAdmission({
+  db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError,
+  randomInt: (max) => crypto.randomInt(max),
+});
+const teamLeaderboard = createTeamLeaderboard({ db, HttpsError: functions.https.HttpsError });
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
-const ATHLETE_SHARE_DRILLS = new Set(["shooting", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling", "freeRecord"]);
 const ATHLETE_SHARE_REP_TYPES = {
   shooting: new Set(["side_kick", "deadballShot", "shooting"]),
   sprint: new Set(["sprint"]),
@@ -37,16 +52,6 @@ const ATHLETE_SHARE_ARTIFACTS = {
   freeRecord: ["pose.json", "metadata.json", "ball_detections.json"],
 };
 
-const ATHLETE_STORAGE_DRILL = {
-  shooting: "deadballShot",
-  sprint: "sprint",
-  jump: "jump",
-  broadJump: "broadJump",
-  changeOfDirection: "changeOfDirection",
-  dribbling: "dribbling",
-  freeRecord: "freeRecord",
-};
-
 const AI_COACH_GATEWAY_URL =
   "https://agent-gateway-keycy7dkua-uw.a.run.app/v1/chat/stream";
 const AI_COACH_WEB_ORIGINS = new Set([
@@ -67,78 +72,6 @@ function allowedAiCoachWebOrigin(origin) {
   } catch (_) {
     return false;
   }
-}
-
-function athleteShareTokenHash(token) {
-  return crypto.createHash("sha256").update(token).digest("hex");
-}
-
-function validAthleteShareToken(token) {
-  return typeof token === "string" && /^[A-Za-z0-9_-]{40,100}$/.test(token);
-}
-
-function athleteShareError() {
-  return new functions.https.HttpsError(
-    "permission-denied",
-    "This results link is invalid or has expired. Ask the coach for a new link."
-  );
-}
-
-async function coachDocumentForUid(uid) {
-  const direct = await db.collection("coaches").doc(uid).get();
-  if (direct.exists) return direct;
-  const query = await db
-    .collection("coaches")
-    .where("userUID", "==", uid)
-    .limit(1)
-    .get();
-  return query.empty ? null : query.docs[0];
-}
-
-function coachCanViewPlayer(coachDoc, uid, playerDoc) {
-  const coach = coachDoc.data() || {};
-  const player = playerDoc.data() || {};
-  const members = Array.isArray(coach.members) ? coach.members : [];
-  const linkedCoachIds = [
-    player.coachUID,
-    player.coachId,
-    player.coachDocId,
-  ].filter(Boolean);
-  return (
-    members.includes(playerDoc.id) ||
-    linkedCoachIds.includes(uid) ||
-    linkedCoachIds.includes(coachDoc.id)
-  );
-}
-
-async function verifiedAthleteShare(token, requestedDrill) {
-  if (!validAthleteShareToken(token) || !ATHLETE_SHARE_DRILLS.has(requestedDrill)) {
-    throw athleteShareError();
-  }
-  const hash = athleteShareTokenHash(token);
-  const shareDoc = await db.collection(ATHLETE_SHARE_COLLECTION).doc(hash).get();
-  if (!shareDoc.exists) throw athleteShareError();
-  const share = shareDoc.data() || {};
-  const expiresAtMs = share.expiresAt?.toMillis?.() || 0;
-  const allowedDrills = Array.isArray(share.allowedDrills)
-    ? share.allowedDrills
-    : [];
-  if (
-    share.revoked === true ||
-    expiresAtMs <= Date.now() ||
-    !allowedDrills.includes(requestedDrill) ||
-    !share.playerDocId
-  ) {
-    throw athleteShareError();
-  }
-  const playerDoc = await db.collection("players").doc(share.playerDocId).get();
-  if (
-    !playerDoc.exists ||
-    playerDoc.data()?.activeResultsShareHash !== hash
-  ) {
-    throw athleteShareError();
-  }
-  return { hash, shareDoc, share, playerDoc };
 }
 
 function finiteNumber(value) {
@@ -223,28 +156,6 @@ function sanitizedAthleteRep(doc, drill) {
   };
 }
 
-function storageFolderCandidates(playerDocId, drill, rep) {
-  const folders = [];
-  const storagePath =
-    typeof rep.storagePath === "string"
-      ? rep.storagePath.replace(/\\/g, "/")
-      : "";
-  if (storagePath && !/^https?:/i.test(storagePath)) {
-    let clean = storagePath
-      .replace(/^gs:\/\/[^/]+\//i, "")
-      .split("?")[0]
-      .replace(/^\/+|\/+$/g, "");
-    const parts = clean.split("/");
-    if (/\.(mov|mp4)$/i.test(parts[parts.length - 1] || "")) parts.pop();
-    clean = parts.join("/");
-    if (clean) folders.push(clean);
-  }
-  const sessionNumber = integerNumber(rep.sessionNumber) || 1;
-  const repNumber = integerNumber(rep.repNumber) || 1;
-  folders.push(`${playerDocId}/${ATHLETE_STORAGE_DRILL[drill] || drill}/session${sessionNumber}/kick${repNumber}`);
-  return [...new Set(folders.filter(Boolean))];
-}
-
 async function sharedFreeRecordRows(playerDocId) {
   const prefix = `${playerDocId}/freeRecord/`;
   const [files] = await admin.storage().bucket().getFiles({ prefix });
@@ -290,87 +201,13 @@ async function sharedFreeRecordRows(playerDocId) {
     );
 }
 
-/**
- * Creates one accountless athlete-results link. A replacement link revokes the
- * previous link for that player. The raw bearer token is returned once and is
- * never stored; Firestore contains only its SHA-256 hash.
- */
-exports.createAthleteResultsShare = functions.https.onCall(
-  async (data, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Sign in as a coach to create an athlete results link."
-      );
-    }
-    const playerDocId = String(data?.playerDocId || "").trim();
-    if (!playerDocId) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "playerDocId is required."
-      );
-    }
-
-    const [coachDoc, playerDoc] = await Promise.all([
-      coachDocumentForUid(context.auth.uid),
-      db.collection("players").doc(playerDocId).get(),
-    ]);
-    if (
-      !coachDoc ||
-      !playerDoc.exists ||
-      !coachCanViewPlayer(coachDoc, context.auth.uid, playerDoc)
-    ) {
-      throw new functions.https.HttpsError(
-        "permission-denied",
-        "This athlete is not on your roster."
-      );
-    }
-
-    const rawToken = crypto.randomBytes(32).toString("base64url");
-    const tokenHash = athleteShareTokenHash(rawToken);
-    const now = admin.firestore.Timestamp.now();
-    const expiresAt = admin.firestore.Timestamp.fromMillis(
-      Date.now() + ATHLETE_SHARE_TTL_MS
-    );
-    const playerData = playerDoc.data() || {};
-    const previousHash =
-      typeof playerData.activeResultsShareHash === "string"
-        ? playerData.activeResultsShareHash
-        : null;
-
-    const batch = db.batch();
-    batch.set(db.collection(ATHLETE_SHARE_COLLECTION).doc(tokenHash), {
-      playerDocId,
-      allowedDrills: [...ATHLETE_SHARE_DRILLS],
-      createdByUid: context.auth.uid,
-      createdByCoachDocId: coachDoc.id,
-      createdAt: now,
-      expiresAt,
-      revoked: false,
-    });
-    batch.set(
-      playerDoc.ref,
-      {
-        activeResultsShareHash: tokenHash,
-        activeResultsShareExpiresAt: expiresAt,
-      },
-      { merge: true }
-    );
-    if (previousHash && previousHash !== tokenHash) {
-      batch.set(
-        db.collection(ATHLETE_SHARE_COLLECTION).doc(previousHash),
-        { revoked: true, revokedAt: now },
-        { merge: true }
-      );
-    }
-    await batch.commit();
-
-    return { token: rawToken, expiresAtMillis: expiresAt.toMillis() };
-  }
+/** Creates one accountless athlete-results link; see athlete-shares.js. */
+exports.createAthleteResultsShare = athleteShareFunctions.https.onCall((data, context) =>
+  athleteShares.createAthleteResultsShare({ uid: context.auth?.uid, playerDocId: data?.playerDocId })
 );
 
 /** Returns whitelisted metrics for a valid accountless share link. */
-exports.getAthleteResultsShare = functions.https.onCall(async (data) => {
+exports.getAthleteResultsShare = athleteShareFunctions.https.onCall(async (data) => {
   const drill = String(data?.drill || "");
   const { share, playerDoc } = await verifiedAthleteShare(data?.token, drill);
   const playerRef = db.collection("players").doc(share.playerDocId);
@@ -406,7 +243,7 @@ exports.getAthleteResultsShare = functions.https.onCall(async (data) => {
 });
 
 /** Returns 15-minute signed URLs for one permitted rep's JSON artifacts. */
-exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
+exports.getAthleteSharedRepArtifacts = athleteShareFunctions.https.onCall(async (data) => {
   const drill = String(data?.drill || "");
   const repId = String(data?.repId || "").trim();
   if (!repId || repId.includes("/")) throw athleteShareError();
@@ -432,7 +269,11 @@ exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
     if (!repDoc.exists) throw athleteShareError();
     const rep = repDoc.data() || {};
     if (!repMatchesDrill(rep, drill)) throw athleteShareError();
-    folders = storageFolderCandidates(share.playerDocId, drill, rep);
+    try {
+      folders = storageFolderCandidates(share.playerDocId, drill, rep, bucket.name);
+    } catch (_) {
+      throw athleteShareError();
+    }
   }
   let selectedFolder = null;
   for (const folder of folders) {
@@ -474,6 +315,52 @@ exports.getAthleteSharedRepArtifacts = functions.https.onCall(async (data) => {
     artifactUrls: Object.fromEntries(entries.filter(Boolean)),
     mediaUrl,
   };
+});
+
+/**
+ * Trusted admission (see admission.js). Firestore rules deny the legacy client
+ * writes these replace: invitation redemption, organization membership and
+ * roster attachment now run only here, against the verified caller UID.
+ */
+function requireCaller(context) {
+  if (!context.auth?.uid) throw new functions.https.HttpsError("unauthenticated", "Sign in to continue.");
+  if (context.auth.token?.firebase?.sign_in_provider === "anonymous") {
+    throw new functions.https.HttpsError("permission-denied", "A registered account is required.");
+  }
+  return { uid: context.auth.uid, email: context.auth.token?.email || null };
+}
+
+exports.redeemPlayerSignupCode = functions.https.onCall((data, context) =>
+  admission.redeemPlayerSignupCode({ ...requireCaller(context), code: data?.code })
+);
+exports.joinOrganization = functions.https.onCall((data, context) =>
+  admission.joinOrganization({ ...requireCaller(context), role: data?.role, code: data?.code, firstName: data?.firstName, lastName: data?.lastName })
+);
+exports.createOrganization = functions.https.onCall((data, context) =>
+  admission.createOrganization({ ...requireCaller(context), firstName: data?.firstName, lastName: data?.lastName, name: data?.name })
+);
+exports.attachPlayerByCode = functions.https.onCall((data, context) =>
+  admission.attachPlayerByCode({ ...requireCaller(context), code: data?.code })
+);
+
+/** Whitelisted team standings for the athlete's own roster (team-leaderboard.js). */
+exports.getTeamLeaderboard = functions.https.onCall((data, context) =>
+  teamLeaderboard.getTeamLeaderboard({ uid: requireCaller(context).uid })
+);
+
+/**
+ * Public marketing pages may not read waitlist submissions (they carry parent
+ * and child names); the remaining-spot figure is an aggregate computed here.
+ */
+const PUBLIC_SPOT_TOTALS = { subscriptionWaitlist: 50 };
+exports.getPublicSpotCount = functions.https.onCall(async (data) => {
+  const collection = String(data?.collection || "");
+  if (!Object.hasOwn(PUBLIC_SPOT_TOTALS, collection)) {
+    throw new functions.https.HttpsError("invalid-argument", "Unknown reservation list.");
+  }
+  const total = PUBLIC_SPOT_TOTALS[collection];
+  const aggregate = await db.collection(collection).count().get();
+  return { total, remaining: Math.max(0, total - (aggregate.data().count || 0)) };
 });
 
 /**

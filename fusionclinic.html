@@ -1848,44 +1848,13 @@
          * ───────────────────────────────────────────── */
         async function markCompletedPaymentReturn() {
             const params = new URLSearchParams(window.location.search);
-            const completed = isTruthyParam(params.get('completed_payment')) || isTruthyParam(params.get('payment_completed'));
-            if (!completed) return;
-            state.isPaid = true;
-
-            const signupDocId = params.get('client_reference_id') || params.get('signupId') || getStoredSignupId();
-
-            const slotSection = document.getElementById('slotSection');
-            const formPanel = document.getElementById('formPanel');
-            const successEl = document.getElementById('bookingSuccess');
-            if (slotSection) slotSection.style.display = 'none';
-            if (formPanel) formPanel.style.display = 'none';
-            if (successEl) successEl.classList.add('is-visible');
-
-            if (!signupDocId) return;
-
-            try {
-                const signupRef = db.collection(SIGNUPS_COLLECTION).doc(signupDocId);
-                await signupRef.set({
-                    paymentCompleted: true,
-                    paymentCompletedReturnAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    paymentCompletedReturnUrl: window.location.href,
-                    paymentReturnSource: 'stripe_success_redirect',
-                    clinicStatus: 'paid'
-                }, { merge: true });
-
-                const signupSnap = await signupRef.get();
-                const data = signupSnap.exists ? (signupSnap.data() || {}) : {};
-                if (data.slotId) {
-                    await db.collection(SLOTS_COLLECTION).doc(data.slotId).set({
-                        status: 'taken',
-                        paidAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                }
-
-                clearStoredSignupId();
-            } catch (err) {
-                console.error('Payment return update failed:', err);
-            }
+            if (!isTruthyParam(params.get('completed_payment')) && !isTruthyParam(params.get('payment_completed'))) return;
+            // A checkout return URL is not proof of payment: only the verified
+            // Stripe webhook may confirm a reservation in Firestore.
+            const status = document.getElementById('slotStatus');
+            if (status) status.textContent = 'If your payment completed, a confirmation email will follow.';
+            setStatus('If your payment completed, a confirmation email will follow.', 'success');
+            clearStoredSignupId();
         }
 
         /* ─────────────────────────────────────────────

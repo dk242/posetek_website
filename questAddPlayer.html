@@ -628,6 +628,8 @@
             <div class="form-stage-wrap">
                 <div class="form-stage" id="formStage">
                     <form id="addPlayerForm" novalidate>
+<p role="status">Adding players is temporarily unavailable. Your existing roster is still available. <a href="kickai.html">Sign in to view existing results.</a></p>
+<fieldset disabled style="border:0;padding:0;margin:0;min-width:0">
                         <div class="field-grid">
                             <div class="form-group col-6">
                                 <label class="sheet-form-label" for="firstName">First name<span class="required-mark">*</span></label>
@@ -665,7 +667,8 @@
                                 <span class="spinner" id="createSpinner"></span>
                             </button>
                         </div>
-                    </form>
+                    </fieldset>
+</form>
 
                     <div class="success-celebration" id="successCelebration" aria-live="polite">
                         <div class="check-wrap">
@@ -826,132 +829,8 @@
 
         addPlayerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            formError.style.display = 'none';
-
-            const user = auth.currentUser;
-            if (!user) {
-                showModal(loginOverlay);
-                return;
-            }
-
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const age = parseInt(document.getElementById('age').value, 10);
-            const hf = document.getElementById('heightFeet').value;
-            const hi = document.getElementById('heightInches').value;
-            const weightVal = document.getElementById('weight').value;
-
-            if (!firstName || !lastName) {
-                formError.textContent = 'Please enter first and last name.';
-                formError.style.display = 'block';
-                return;
-            }
-            if (!Number.isFinite(age) || age < 1 || age > 120) {
-                formError.textContent = 'Please enter a valid age.';
-                formError.style.display = 'block';
-                return;
-            }
-
-            const feet = hf === '' ? null : parseInt(hf, 10);
-            const inches = hi === '' ? null : parseInt(hi, 10);
-            if (feet !== null && (feet < 0 || feet > 8)) {
-                formError.textContent = 'Feet must be between 0 and 8.';
-                formError.style.display = 'block';
-                return;
-            }
-            if (inches !== null && (inches < 0 || inches > 11)) {
-                formError.textContent = 'Inches must be between 0 and 11.';
-                formError.style.display = 'block';
-                return;
-            }
-
-            let weight = null;
-            if (weightVal !== '') {
-                weight = parseFloat(weightVal);
-                if (!Number.isFinite(weight) || weight < 0) {
-                    formError.textContent = 'Please enter a valid weight.';
-                    formError.style.display = 'block';
-                    return;
-                }
-            }
-
-            showLoading(createBtn, createSpinner);
-
-            try {
-                const coachInfo = await fetchCoachForUser(user.uid);
-                if (!coachInfo) {
-                    throw new Error('Coach session expired. Please sign in again.');
-                }
-
-                const coachData = coachInfo.data;
-                const coachId = coachInfo.id;
-                const playerCode = generateCode('PLR', 4);
-
-                const playerRef = db.collection('players').doc();
-                const playerData = {
-                    firstName,
-                    lastName,
-                    age,
-                    code: playerCode,
-                    coachUID: user.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                if (feet !== null || inches !== null) {
-                    playerData.height = {
-                        feet: feet !== null ? feet : 0,
-                        inches: inches !== null ? inches : 0
-                    };
-                }
-
-                if (weight !== null) {
-                    playerData.weight = weight;
-                }
-
-                if (coachData.org) {
-                    playerData.org = coachData.org;
-                }
-
-                const batch = db.batch();
-                batch.set(playerRef, playerData);
-
-                const coachRef = db.collection('coaches').doc(coachId);
-                batch.update(coachRef, {
-                    members: firebase.firestore.FieldValue.arrayUnion(playerRef.id),
-                    numberMembers: firebase.firestore.FieldValue.increment(1)
-                });
-
-                if (coachData.org) {
-                    batch.update(coachData.org, {
-                        players: firebase.firestore.FieldValue.arrayUnion(playerRef.id)
-                    });
-                }
-
-                await batch.commit();
-
-                successMessage.textContent = `Your profile has been created, ${firstName} ${lastName}`;
-                successCelebration.classList.remove('is-fading-out');
-                addPlayerForm.classList.add('is-hidden');
-                successCelebration.classList.add('is-visible');
-
-                setTimeout(() => {
-                    successCelebration.classList.add('is-fading-out');
-                }, 2000);
-
-                setTimeout(() => {
-                    successCelebration.classList.remove('is-visible', 'is-fading-out');
-                    addPlayerForm.classList.remove('is-hidden');
-                    addPlayerForm.reset();
-                    successMessage.textContent = 'Your profile has been created';
-                }, 2600);
-            } catch (err) {
-                console.error(err);
-                formError.textContent = err.message || 'Could not create profile.';
-                formError.style.display = 'block';
-            } finally {
-                hideLoading(createBtn, createSpinner);
-            }
+            formError.textContent = 'Adding players is temporarily unavailable. Your existing roster is still available.';
+            formError.style.display = 'block';
         });
     </script>
 </body>

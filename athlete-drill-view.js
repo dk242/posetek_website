@@ -333,31 +333,13 @@
   }
 
   async function resolveViewer(user) {
-    let coachDoc = await db.collection("coaches").doc(user.uid).get();
-    if (!coachDoc.exists) coachDoc = await firstQuery("coaches", "userUID", user.uid);
-    if (coachDoc && coachDoc.exists) {
+    const coachDoc = await PoseTekIdentity.findCoach(db, user.uid);
+    if (coachDoc) {
       return { role: "coach", uid: user.uid, docId: coachDoc.id, data: coachDoc.data() || {} };
     }
-
-    const candidates = [];
-    if (user.email) {
-      candidates.push(["signupEmail", user.email]);
-      const lower = user.email.toLowerCase();
-      if (lower !== user.email) candidates.push(["signupEmail", lower]);
-    }
-    candidates.push(["authenticationUID", user.uid], ["userUID", user.uid]);
-
-    let playerDoc = null;
-    for (const [field, value] of candidates) {
-      playerDoc = await firstQuery("players", field, value);
-      if (playerDoc) break;
-    }
+    const playerDoc = await PoseTekIdentity.findPlayer(db, user.uid);
     if (!playerDoc) {
-      const direct = await db.collection("players").doc(user.uid).get();
-      if (direct.exists) playerDoc = direct;
-    }
-    if (!playerDoc || !playerDoc.exists) {
-      throw new Error("Your login is valid, but it is not linked to an athlete profile yet. Ask your coach to connect this Auth ID to the player profile.");
+      throw new Error("Your login is valid, but it is not linked to an athlete profile yet. Ask your coach to connect your account.");
     }
     return { role: "player", uid: user.uid, docId: playerDoc.id, data: playerDoc.data() || {} };
   }
