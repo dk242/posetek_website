@@ -312,7 +312,7 @@
     if (!root) return;
     try {
       let snapshot;
-      const base = context.db.collection("players").doc(context.state.playerId).collection("aiConversations").where("capability", "==", "pose_chat");
+      const base = context.db.collection("players").doc(context.state.playerId).collection("aiConversations").where("capability", "==", "pose_chat").where("createdByUid", "==", context.auth.currentUser.uid);
       try { snapshot = await base.orderBy("lastMessageAt", "desc").limit(20).get(); }
       catch (_) { snapshot = await base.limit(20).get(); }
       const conversations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => (timestamp(b.lastMessageAt)?.valueOf() || 0) - (timestamp(a.lastMessageAt)?.valueOf() || 0));
@@ -411,7 +411,29 @@
     return Math.min(Math.max(Math.floor((Date.now() - start.valueOf()) / 604800000) + 1, 1), number(plan.horizonWeeks) || (plan.weeks || []).length || 1);
   }
 
+  // V3 contains predefined workouts. Keep this reader separate from the legacy
+  // builder and v1 log writer; neither can safely execute a v3 prescription.
+  function v3DoseLine(block) {
+    const parts = [`${number(block.sets) || 0} sets × ${number(block.reps) || 0} ${String(block.repUnit || "reps")}${block.perSide ? " per side" : ""}`];
+    const rest = number(block.restSeconds) || 0;
+    const betweenSets = block.restBetweenSetsSeconds == null ? rest : number(block.restBetweenSetsSeconds) || 0;
+    if (block.restScope === "reps") parts.push(`${rest}s between reps`);
+    if ((number(block.sets) || 0) > 1) parts.push(`${betweenSets}s between sets`);
+    if ((number(block.familiarizationReps) || 0) > 0) parts.push(`${number(block.familiarizationReps)} familiarization reps${block.perSide ? " per side" : ""}`);
+    return parts.join(" · ");
+  }
+
+  function renderTrainingPlanV3(context, plan) {
+    const root = document.getElementById("trainingContent");
+    const weeks = [...(plan.weeks || [])].sort((a, b) => number(a.weekNumber) - number(b.weekNumber));
+    const horizon = number(plan.horizonWeeks) || weeks.length;
+    root.innerHTML = `<section class="training-summary portal-card"><div><p class="eyebrow">${horizon}-week training plan</p><h2>Your predefined workouts</h2><p>${context.escape(plan.assessment?.summary || "View your workouts and prescribed doses below.")}</p><p class="muted-copy">${number(plan.sessionsPerWeek) || number(plan.intake?.sessionsPerWeek) || 0} sessions per week · ${number(plan.minutesPerSession) || number(plan.intake?.minutesPerSession) || 0} minutes per session</p></div></section>
+      <section class="portal-card full-plan"><div class="plan-weeks">${weeks.map((week, index) => `<details ${index === 0 ? "open" : ""}><summary><span>Week ${number(week.weekNumber) || 1}</span><strong>${context.escape(week.theme || "Training week")}</strong><span class="material-symbols-outlined">expand_more</span></summary><div><p>${context.escape(week.focus || "")}</p>${[...(week.workouts || [])].sort((a, b) => number(a.order) - number(b.order)).map(workout => `<article class="workout-card" data-program-workout="${context.escape(workout.workoutId || "")}"><header><div><span>${number(workout.estimatedMinutes) || 0} min</span><strong>${context.escape(workout.title || "Workout")}</strong></div></header><p>${context.escape(workout.intent || "")}</p><div class="workout-blocks">${[...(workout.blocks || [])].sort((a, b) => number(a.order) - number(b.order)).map(block => `<article class="workout-block"><span class="block-kind">${context.escape(block.kind || "main")}</span><div><strong>${context.escape(block.name || block.drillId || "Training block")}</strong><small>${context.escape(String(block.domain || "Training"))} · ${number(block.estimatedMinutes) || 0} min</small><small>${context.escape(v3DoseLine(block))}</small></div></article>`).join("")}</div></article>`).join("") || `<p class="muted-copy">No workouts listed for this week.</p>`}</div></details>`).join("") || `<p class="muted-copy">No weeks listed in this plan.</p>`}</div></section>
+      ${(plan.disclaimers || []).length ? `<section class="portal-card"><h3>Before you train</h3><ul>${plan.disclaimers.map(line => `<li>${context.escape(line)}</li>`).join("")}</ul></section>` : ""}`;
+  }
+
   function renderTrainingPlan(context, plan, workouts, logs) {
+    if (plan.schemaVersion === 3) { renderTrainingPlanV3(context, plan); return; }
     const root = document.getElementById("trainingContent"), weekNumber = currentWeek(plan);
     const weeks = [...(plan.weeks || [])].sort((a, b) => number(a.weekNumber) - number(b.weekNumber));
     const week = weeks.find(item => number(item.weekNumber) === weekNumber) || weeks[0] || {};
@@ -471,7 +493,7 @@
   function renderTrainingIntake(context) {
     const root = document.getElementById("trainingContent");
     const goals = [["speedAgility", "Speed & agility"], ["dribbling", "Dribbling"], ["passing", "Passing"], ["firstTouch", "First touch"], ["shooting", "Shooting"], ["strengthPower", "Strength & power"]];
-    root.innerHTML = `<section class="portal-card training-intake"><div class="intake-intro"><span class="material-symbols-outlined">auto_awesome</span><h2>Build your training plan</h2><p>Answer a few questions. PoseTek combines your goals with the athlete's measured results to create a 4–12 week program.</p></div><form id="trainingIntakeForm"><fieldset><legend>Choose up to two goals</legend><div class="goal-options">${goals.map(([value, label]) => `<label><input type="checkbox" name="goals" value="${value}"><span>${label}</span></label>`).join("")}</div></fieldset><label>Training days per week<input type="range" name="days" min="1" max="6" value="3"><output id="daysOutput">3 days</output></label><label>Training setting<select name="setting"><option value="solo">Solo</option><option value="partner">With a partner</option><option value="halfAndHalf">Half solo, half partner</option><option value="team">Team</option></select></label><label>Program length<select name="weeks"><option value="4">4 weeks</option><option value="6" selected>6 weeks</option><option value="8">8 weeks</option><option value="12">12 weeks</option></select></label><label>Anything else you want to improve?<textarea name="freeText" maxlength="500" placeholder="Optional"></textarea></label><label class="pain-check"><input type="checkbox" name="pain"><span>I currently have pain that affects training</span></label><button class="primary-cta" type="submit">Generate my plan</button><p id="planGenerationStatus"></p></form></section>`;
+    root.innerHTML = `<section class="portal-card training-intake"><div class="intake-intro"><span class="material-symbols-outlined">auto_awesome</span><h2>Build your training plan</h2><p>Answer a few questions. PoseTek combines your goals with the athlete's measured results to create a 4–12 week program.</p></div><form id="trainingIntakeForm"><fieldset><legend>Choose up to two goals</legend><div class="goal-options">${goals.map(([value, label]) => `<label><input type="checkbox" name="goals" value="${value}"><span>${label}</span></label>`).join("")}</div></fieldset><label>Training days per week<input type="range" name="days" min="1" max="6" value="3"><output id="daysOutput">3 days</output></label><label>Training setting<select name="setting"><option value="solo">Solo</option><option value="partner">With a partner</option><option value="halfAndHalf">Half solo, half partner</option></select></label><label>Program length<select name="weeks"><option value="4">4 weeks</option><option value="6" selected>6 weeks</option><option value="8">8 weeks</option><option value="12">12 weeks</option></select></label><label>Anything else you want to improve?<textarea name="freeText" maxlength="500" placeholder="Optional"></textarea></label><label class="pain-check"><input type="checkbox" name="pain"><span>I currently have pain that affects training</span></label><button class="primary-cta" type="submit">Generate my plan</button><p id="planGenerationStatus"></p></form></section>`;
     const form = document.getElementById("trainingIntakeForm"), days = form.days;
     days.addEventListener("input", () => document.getElementById("daysOutput").textContent = `${days.value} days`);
     form.addEventListener("change", event => {
@@ -487,8 +509,8 @@
       status.textContent = "Reviewing results and building your plan week by week…";
       try {
         const profile = window.PoseTekAthleteStats.buildProfile(context.allStatsReps());
-        const intake = { goals: chosen, freeTextGoals: form.freeText.value.trim() || null, daysPerWeek: Number(form.days.value), minutesPerSession: 60, setting: form.setting.value, equipment: ["ball", "cones", "markers", "goal", "timer", "wall"], level: profile.overall >= 100 ? "performance" : profile.overall >= 75 ? "club" : "foundation", horizonWeeks: Number(form.weeks.value), painFlag: false };
-        const job = await submitLlmJob(context, "generate_training_plan", { statsProfile: statsSnapshot(profile), intake, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+        const intake = { goals: chosen, freeTextGoals: form.freeText.value.trim() || null, sessionsPerWeek: Number(form.days.value), minutesPerSession: 60, setting: form.setting.value, equipment: ["ball", "cones", "markers", "goal", "timer", "wall"], level: profile.overall >= 100 ? "performance" : profile.overall >= 75 ? "club" : "foundation", horizonWeeks: Number(form.weeks.value), painFlag: false };
+        const job = await submitLlmJob(context, "generate_training_plan", { planVersion: 3, statsProfile: statsSnapshot(profile), intake, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC" });
         await waitForJob(context, job.id, status); context.notify("Training plan ready"); renderTraining(context);
       } catch (error) { status.textContent = error.message || "Could not generate the plan."; }
     });
