@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import firebase, { auth, cloud, db, storage } from "../../../lib/firebase";
+import { findCoach as findCoachByUid, findPlayer, ownsPlayer } from "../../../lib/identity";
 import type { Drill } from "./drills";
 import { DRILLS } from "./drills";
 import { accepted, artifactFolder, fullName, mergeUnique, normalizeRep, num, repNumber, sessionNumber } from "./metrics";
@@ -21,21 +22,13 @@ export interface PortalData {
 
 const emptyReps = (): Record<string, any[]> => Object.fromEntries(DRILLS.map(d => [d.key, []]));
 
+// UID-first identity resolution shared with every legacy page (firebase-identity.js).
 async function findCoach(uid: string): Promise<any> {
-  const direct = await db.collection("coaches").doc(uid).get();
-  if (direct.exists) return direct;
-  const query = await db.collection("coaches").where("userUID", "==", uid).limit(1).get();
-  return query.empty ? null : query.docs[0];
+  return findCoachByUid(db, uid);
 }
 
 async function findOwnPlayer(uid: string): Promise<any> {
-  const direct = await db.collection("players").doc(uid).get();
-  if (direct.exists) return direct;
-  for (const field of ["userUID", "uid", "authUID"]) {
-    const query = await db.collection("players").where(field, "==", uid).limit(1).get();
-    if (!query.empty) return query.docs[0];
-  }
-  return null;
+  return findPlayer(db, uid);
 }
 
 export async function loadAuthenticated(user: any, requestedPlayer: string | null): Promise<PortalData> {
@@ -43,7 +36,7 @@ export async function loadAuthenticated(user: any, requestedPlayer: string | nul
     ? await db.collection("players").doc(requestedPlayer).get()
     : await findOwnPlayer(user.uid);
   if (!playerDoc?.exists) throw new Error("This athlete profile could not be found.");
-  const own = playerDoc.id === user.uid || [playerDoc.data().userUID, playerDoc.data().uid, playerDoc.data().authUID].includes(user.uid);
+  const own = ownsPlayer(playerDoc, user.uid);
   const coach = await findCoach(user.uid);
   const coachData = coach?.data?.() || {};
   const linked = [playerDoc.data().coachUID, playerDoc.data().coachId, playerDoc.data().coachDocId];
@@ -190,17 +183,11 @@ export function waitForJob(
   });
 }
 
+// Coaches read their own roster directly; athletes receive a whitelisted
+// projection from the admission service and never touch teammates' documents.
 export async function loadTeamStandings(playerId: string): Promise<Record<string, { id: string; name: string; value: number }[]>> {
-  let coachDoc: any = await db.collection("coaches").doc(auth.currentUser!.uid).get();
-  if (!coachDoc.exists) {
-    const own = await db.collection("coaches").where("userUID", "==", auth.currentUser!.uid).limit(1).get();
-    if (!own.empty) coachDoc = own.docs[0];
-  }
-  if (!coachDoc.exists) {
-    const query = await db.collection("coaches").where("members", "array-contains", playerId).limit(1).get();
-    if (query.empty) throw new Error("No connected team");
-    coachDoc = query.docs[0];
-  }
+  const coachDoc: any = await findCoach(auth.currentUser!.uid);
+  if (!coachDoc) throw new Error("A coach account is required for team standings.");
   const ids: string[] = [...new Set<string>([...(coachDoc.data().members || []), playerId])];
   const players = await Promise.all(ids.map(async id => {
     const [player, reps] = await Promise.all([
@@ -208,6 +195,17 @@ export async function loadTeamStandings(playerId: string): Promise<Record<string
       db.collection("players").doc(id).collection("reps").get(),
     ]);
     return { id, name: fullName(player.data() || {}), reps: reps.docs.map(doc => doc.data()) };
+  }));
+  return boardsFromPlayers(players);
+}
+
+export async function loadAthleteStandings(): Promise<Record<string, { id: string; name: string; value: number }[]>> {
+  const result = await cloud.httpsCallable("getTeamLeaderboard")({});
+  const team: any = (result && result.data) || {};
+  const players = (team.athletes || []).map((athlete: any) => ({
+    id: athlete.id,
+    name: fullName({ firstName: athlete.firstName, lastName: athlete.lastName }),
+    reps: Array.isArray(athlete.reps) ? athlete.reps : [],
   }));
   return boardsFromPlayers(players);
 }

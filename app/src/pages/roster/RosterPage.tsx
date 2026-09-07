@@ -4,7 +4,8 @@
 // same preview mode (?preview=1), same copy and class names.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import firebase, { auth, db } from "../../lib/firebase";
+import firebase, { auth, cloud, db } from "../../lib/firebase";
+import { findCoach as findCoachByUid } from "../../lib/identity";
 import {
   filterPlayers,
   fullName,
@@ -16,13 +17,20 @@ import {
 } from "./rosterLogic";
 import "../../styles/pose-portal.css";
 
-// Legacy findCoach(uid): direct doc id first, then userUID lookup.
+// UID-first coach resolution shared with every legacy page (firebase-identity.js).
 async function findCoach(uid: string) {
-  const direct = await db.collection("coaches").doc(uid).get();
-  if (direct.exists) return direct;
-  const query = await db.collection("coaches").where("userUID", "==", uid).limit(1).get();
-  return query.empty ? null : query.docs[0];
+  return findCoachByUid(db, uid);
 }
+
+// A player created whose roster link has not been saved yet (legacy
+// `pendingRosterPlayer`): the create button becomes "Retry Roster Link".
+interface PendingRosterPlayer {
+  id: string;
+  uid: string;
+  coachId: string;
+}
+
+const PENDING_LINK_MESSAGE = "A created player needs its roster link saved. Tap Retry Roster Link.";
 
 // Legacy preview roster (unsorted, rendered in this order).
 const PREVIEW_PLAYERS: any[] = [
@@ -48,8 +56,16 @@ export default function RosterPage() {
   const [formMessage, setFormMessage] = useState({ text: "", success: false });
   const [createBusy, setCreateBusy] = useState(false);
   const [addBusy, setAddBusy] = useState(false);
+  const [pendingPlayer, setPendingPlayer] = useState<PendingRosterPlayer | null>(null);
 
   const coachDocRef = useRef<any>(null);
+  // The pending link is read inside async handlers, so keep a ref in step with
+  // the rendered state (legacy used one closure variable for both).
+  const pendingRef = useRef<PendingRosterPlayer | null>(null);
+  const setPending = (value: PendingRosterPlayer | null) => {
+    pendingRef.current = value;
+    setPendingPlayer(value);
+  };
   // Sign-out also fires onAuthStateChanged(null); legacy sent both redirects to
   // the same bare URL (kickai.html). Guard so we land on plain /signin, not
   // /signin?returnTo=… captured mid-sign-out.
@@ -128,13 +144,13 @@ export default function RosterPage() {
   }
 
   function openDialog() {
-    setMessage("");
+    setMessage(pendingRef.current ? PENDING_LINK_MESSAGE : "");
     dialogRef.current?.showModal();
   }
 
   function switchTab(tab: "new" | "existing") {
     setAddTab(tab);
-    setMessage("");
+    setMessage(pendingRef.current ? PENDING_LINK_MESSAGE : "");
   }
 
   function handleSearch(value: string) {
@@ -151,78 +167,82 @@ export default function RosterPage() {
   }
 
   async function createPlayer() {
+    const user = auth.currentUser;
+    const coachDoc = coachDocRef.current;
+    if (!user || !coachDoc || coachDoc.data().userUID !== user.uid) {
+      return setMessage("Please sign in again with your coach account.");
+    }
     const firstName = firstNameRef.current?.value.trim() ?? "";
     const lastName = lastNameRef.current?.value.trim() ?? "";
-    if (!firstName || !lastName) return setMessage("Enter both a first and last name.");
+    const pendingBefore = pendingRef.current;
+    if (pendingBefore && (pendingBefore.uid !== user.uid || pendingBefore.coachId !== coachDoc.id)) {
+      return setMessage("Return to the coach account that created the pending player to finish its roster link.");
+    }
+    if (!pendingBefore && (!firstName || !lastName)) return setMessage("Enter both a first and last name.");
     setCreateBusy(true);
-    setMessage("Creating player…", true);
+    setMessage(pendingBefore ? "Retrying roster link…" : "Creating player…", true);
     try {
-      const coachDoc = coachDocRef.current;
-      const coach = coachDoc.data() || {};
-      const playerRef = db.collection("players").doc();
-      const code = makeCode();
-      const playerData: Record<string, any> = {
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        code,
-        signupCode: code,
-        registered: false,
-        coachUID: coachDoc.id,
-        coachDocId: coachDoc.id,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      };
-      if (coach.org) playerData.org = coach.org;
-      const batch = db.batch();
-      batch.set(playerRef, playerData);
-      batch.update(coachDoc.ref, {
-        members: firebase.firestore.FieldValue.arrayUnion(playerRef.id),
-        numberMembers: firebase.firestore.FieldValue.increment(1),
+      if (!pendingRef.current) {
+        const playerRef = db.collection("players").doc();
+        await playerRef.set({
+          firstName,
+          lastName,
+          coachUID: user.uid,
+          coachDocId: coachDoc.id,
+          registered: false,
+          signupCode: makeCode(),
+          signupCodeVersion: 2,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        setPending({ id: playerRef.id, uid: user.uid, coachId: coachDoc.id });
+      }
+      const pending = pendingRef.current!;
+      if (auth.currentUser?.uid !== user.uid) {
+        throw new Error("The signed-in account changed. Sign back in to finish the roster link.");
+      }
+      // The player exists before membership changes. A transaction makes a
+      // repeated link idempotent, including a retry after a lost acknowledgement.
+      await db.runTransaction(async transaction => {
+        const snapshot = await transaction.get(coachDoc.ref);
+        const coach: any = snapshot.data() || {};
+        if (!snapshot.exists || coach.userUID !== user.uid) throw new Error("The coach profile could not be verified.");
+        const members: string[] = Array.isArray(coach.members) ? coach.members : [];
+        if (!members.includes(pending.id)) {
+          transaction.update(coachDoc.ref, { members: [...members, pending.id], numberMembers: members.length + 1 });
+        }
       });
-      if (coach.org) batch.update(coach.org, { players: firebase.firestore.FieldValue.arrayUnion(playerRef.id) });
-      await batch.commit();
+      setPending(null);
+      if (firstNameRef.current) firstNameRef.current.value = "";
+      if (lastNameRef.current) lastNameRef.current.value = "";
       dialogRef.current?.close();
       await loadRoster();
     } catch (error: any) {
-      setMessage(error.message || "The player could not be created.");
+      setMessage(
+        pendingRef.current
+          ? "Player created, but the roster link could not be saved. Keep this page open and tap Retry Roster Link."
+          : error.message || "The player could not be created.",
+      );
     } finally {
       setCreateBusy(false);
     }
   }
 
+  // Roster attachment by code runs in the admission service: the coach never
+  // queries other athletes' profiles, and only post-lockdown codes are accepted.
   async function addExisting() {
+    const user = auth.currentUser;
     const code = codeRef.current?.value.trim().toUpperCase() ?? "";
     if (!code) return setMessage("Enter the player's code.");
+    const coachDoc = coachDocRef.current;
+    if (!user || !coachDoc || coachDoc.data().userUID !== user.uid) {
+      return setMessage("Please sign in again with your coach account.");
+    }
     setAddBusy(true);
-    setMessage("Finding player…", true);
+    setMessage("Adding player…", true);
     try {
-      let query = await db.collection("players").where("code", "==", code).limit(1).get();
-      if (query.empty) query = await db.collection("players").where("signupCode", "==", code).limit(1).get();
-      if (query.empty) throw new Error("No player matches that code.");
-      const player = query.docs[0];
-      const coachDoc = coachDocRef.current;
-      const coach = coachDoc.data() || {};
-      if ((coach.members || []).includes(player.id)) throw new Error("That player is already on your roster.");
-      const batch = db.batch();
-      batch.update(coachDoc.ref, {
-        members: firebase.firestore.FieldValue.arrayUnion(player.id),
-        numberMembers: firebase.firestore.FieldValue.increment(1),
-      });
-      batch.set(
-        player.ref,
-        {
-          coachUID: coachDoc.id,
-          coachDocId: coachDoc.id,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
-      if (coach.org) {
-        batch.update(coach.org, { players: firebase.firestore.FieldValue.arrayUnion(player.id) });
-        batch.set(player.ref, { org: coach.org }, { merge: true });
-      }
-      await batch.commit();
+      await cloud.httpsCallable("attachPlayerByCode")({ code });
+      if (codeRef.current) codeRef.current.value = "";
       dialogRef.current?.close();
       await loadRoster();
     } catch (error: any) {
@@ -384,11 +404,11 @@ export default function RosterPage() {
           <section data-add-panel="new" hidden={addTab !== "new"}>
             <label>
               First name
-              <input id="newFirstName" maxLength={80} autoComplete="off" ref={firstNameRef} />
+              <input id="newFirstName" maxLength={80} autoComplete="off" ref={firstNameRef} disabled={Boolean(pendingPlayer)} />
             </label>
             <label>
               Last name
-              <input id="newLastName" maxLength={80} autoComplete="off" ref={lastNameRef} />
+              <input id="newLastName" maxLength={80} autoComplete="off" ref={lastNameRef} disabled={Boolean(pendingPlayer)} />
             </label>
             <button
               className="primary-cta"
@@ -397,7 +417,7 @@ export default function RosterPage() {
               disabled={createBusy}
               onClick={createPlayer}
             >
-              Create Player
+              {pendingPlayer ? "Retry Roster Link" : "Create Player"}
             </button>
           </section>
           <section data-add-panel="existing" hidden={addTab !== "existing"}>

@@ -74,7 +74,7 @@ function AiCoachContent({ ctx }: { ctx: PortalContext }) {
   const loadConversations = async () => {
     try {
       let snapshot;
-      const base = db.collection("players").doc(ctx.playerId!).collection("aiConversations").where("capability", "==", "pose_chat");
+      const base = db.collection("players").doc(ctx.playerId!).collection("aiConversations").where("capability", "==", "pose_chat").where("createdByUid", "==", auth.currentUser!.uid);
       try {
         snapshot = await base.orderBy("lastMessageAt", "desc").limit(20).get();
       } catch {

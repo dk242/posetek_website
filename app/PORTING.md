@@ -17,6 +17,10 @@ class names, same Firebase reads/writes, same URL/query-param handling.
   It uses the **compat API** (`firebase/compat/*`), so legacy code like
   `db.collection("players").doc(id).get()` ports unchanged. Do not switch to the
   modular API in this phase.
+- `src/lib/identity.ts` — ported `firebase-identity.js` (`PoseTekIdentity`): the ONLY way a
+  page may resolve the signed-in user to a `coaches` / `players` document (`findCoach(db, uid)`,
+  `findPlayer(db, uid)`, `ownsPlayer(doc, uid)`). Never re-implement the lookup cascade in a
+  page; the Firestore rules are written against exactly these probes.
 - `src/lib/benchmarks.ts` — ported `PoseTekBenchmarks` (done).
 - `src/components/athlete-stats/AthleteStats.tsx` — shared `<AthleteStats>` component +
   `buildProfile()` (contract in the file header).

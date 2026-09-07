@@ -5,17 +5,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import firebase, { auth, db } from "../../../lib/firebase";
+import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
 import { DRILLS } from "../../athlete-portal/lib/drills";
 import { submitLlmJob } from "../../athlete-portal/lib/loaders";
 import { planJobParams } from "./logic";
 import { planSchemaVersion } from "../../../lib/contracts/types";
 
+// UID-first coach resolution shared with the roster page (firebase-identity.js).
 export async function findCoach(uid: string): Promise<any> {
-  const direct = await db.collection("coaches").doc(uid).get();
-  if (direct.exists) return direct;
-  const query = await db.collection("coaches").where("userUID", "==", uid).limit(1).get();
-  return query.empty ? null : query.docs[0];
+  return findCoachByUid(db, uid);
 }
 
 export interface CoachContext {

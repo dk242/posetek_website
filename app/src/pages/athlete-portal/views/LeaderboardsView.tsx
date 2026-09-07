@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { fullName } from "../lib/metrics";
 import { LEADERBOARD_CATEGORIES, boardSummary, initials, rankRows } from "../lib/mobile";
 import type { StandingRow } from "../lib/mobile";
-import { loadTeamStandings } from "../lib/loaders";
+import { loadAthleteStandings, loadTeamStandings } from "../lib/loaders";
 import { previewBoards } from "../lib/preview";
 import { EmptyState, LockedPage, PageHero, PortalLoading } from "./shared";
 import type { PortalContext } from "./shared";
@@ -28,7 +28,8 @@ function LeaderboardsContent({ ctx }: { ctx: PortalContext }) {
   useEffect(() => {
     if (ctx.access === "preview") return;
     let cancelled = false;
-    loadTeamStandings(ctx.playerId!)
+    const standings = ctx.access === "coach" ? loadTeamStandings(ctx.playerId!) : loadAthleteStandings();
+    standings
       .then(result => { if (!cancelled) setBoards(result); })
       .catch(error => {
         console.error("[leaderboards]", error);

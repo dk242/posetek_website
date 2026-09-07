@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { cloud, db, storage } from "../../lib/firebase";
+import { findCoach, findPlayer } from "../../lib/identity";
 import { configs, type DrillConfig, type PageDrillConfig } from "./drill-config";
 import { folderCandidates, normalizeAuthRep, previewArtifacts, type Rep } from "./drill-lib";
 
@@ -19,38 +20,15 @@ export interface PlayerInfo {
   data: Record<string, any>;
 }
 
-async function firstQuery(collectionName: string, field: string, value: unknown) {
-  if (!value) return null;
-  const snapshot = await db.collection(collectionName).where(field, "==", value).limit(1).get();
-  return snapshot.empty ? null : snapshot.docs[0];
-}
-
+// UID-first identity resolution shared with every legacy page (firebase-identity.js).
 export async function resolveViewer(user: { uid: string; email?: string | null }): Promise<ViewerInfo> {
-  let coachDoc: any = await db.collection("coaches").doc(user.uid).get();
-  if (!coachDoc.exists) coachDoc = await firstQuery("coaches", "userUID", user.uid);
-  if (coachDoc && coachDoc.exists) {
+  const coachDoc = await findCoach(db, user.uid);
+  if (coachDoc) {
     return { role: "coach", uid: user.uid, docId: coachDoc.id, data: coachDoc.data() || {} };
   }
-
-  const candidates: [string, string][] = [];
-  if (user.email) {
-    candidates.push(["signupEmail", user.email]);
-    const lower = user.email.toLowerCase();
-    if (lower !== user.email) candidates.push(["signupEmail", lower]);
-  }
-  candidates.push(["authenticationUID", user.uid], ["userUID", user.uid]);
-
-  let playerDoc: any = null;
-  for (const [field, value] of candidates) {
-    playerDoc = await firstQuery("players", field, value);
-    if (playerDoc) break;
-  }
+  const playerDoc = await findPlayer(db, user.uid);
   if (!playerDoc) {
-    const direct = await db.collection("players").doc(user.uid).get();
-    if (direct.exists) playerDoc = direct;
-  }
-  if (!playerDoc || !playerDoc.exists) {
-    throw new Error("Your login is valid, but it is not linked to an athlete profile yet. Ask your coach to connect this Auth ID to the player profile.");
+    throw new Error("Your login is valid, but it is not linked to an athlete profile yet. Ask your coach to connect your account.");
   }
   return { role: "player", uid: user.uid, docId: playerDoc.id, data: playerDoc.data() || {} };
 }

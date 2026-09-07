@@ -1050,7 +1050,7 @@ function TrainingIntake({ ctx, onReload, registerJobUnsub }: IntakeProps) {
       const intake: any = {
         goals: chosen,
         freeTextGoals: freeText.trim() || null,
-        daysPerWeek: Number(days),
+        sessionsPerWeek: Number(days),
         minutesPerSession: 60,
         setting,
         equipment: ["ball", "cones", "markers", "goal", "timer", "wall"],
@@ -1066,9 +1066,10 @@ function TrainingIntake({ ctx, onReload, registerJobUnsub }: IntakeProps) {
       if (age.trim() && Number.isInteger(parsedAge) && parsedAge >= 5 && parsedAge <= 80) intake.age = parsedAge;
 
       const job = await submitLlmJob(ctx.playerId!, "generate_training_plan", {
+        planVersion: 3,
         statsProfile: statsSnapshot(profile),
         intake,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
       });
       await waitForJob(job.id, setStatus, registerJobUnsub);
       ctx.notify("Training plan ready");
@@ -1114,7 +1115,6 @@ function TrainingIntake({ ctx, onReload, registerJobUnsub }: IntakeProps) {
             <option value="solo">Solo</option>
             <option value="partner">With a partner</option>
             <option value="halfAndHalf">Half solo, half partner</option>
-            <option value="team">Team</option>
           </select>
         </label>
         <label>
