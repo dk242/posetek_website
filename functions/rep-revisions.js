@@ -40,7 +40,7 @@ const SHUTTLE_FRAME_FIELDS = ["startFrame", "apexFrame", "endFrame", "phase1EndF
 // (identity, ordering, timestamps, storage pointers) is never touched.
 const FIELD_RULES = Object.freeze({
   changeOfDirection: { numbers: SHUTTLE_NUMBER_FIELDS, frames: SHUTTLE_FRAME_FIELDS, strings: { gateStartSide: ["left", "right"] } },
-  dribbling: { numbers: SHUTTLE_NUMBER_FIELDS, frames: SHUTTLE_FRAME_FIELDS, strings: { gateStartSide: ["left", "right"] } },
+  dribbling: { numbers: SHUTTLE_NUMBER_FIELDS, frames: SHUTTLE_FRAME_FIELDS, strings: { gateStartSide: ["left", "right"], dribble_foot: ["left", "right"] } },
   sprint: {
     numbers: ["max_velocity", "maxVelocity", "average_velocity", "averageVelocity", "max_acceleration", "maxAcceleration", "time_to_max_velocity", "timeToMaxVelocity", "totalTime", "distance"],
     frames: ["startFrame", "endFrame"],

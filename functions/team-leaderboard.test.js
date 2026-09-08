@@ -61,3 +61,10 @@ test("projection never forwards non-numeric metric values or unknown fields", ()
   const rep = projectedRep({ id: "x", data: () => ({ repType: 12, velocity: "25", max_velocity: Infinity, totalTime: 3.5, storagePath: "p/x", drillType: "sprint" }) });
   assert.deepEqual(rep, { id: "x", drillType: "sprint", totalTime: 3.5 });
 });
+
+test("projection includes recorded foot and course distance for mobile comparisons", () => {
+  const rep = projectedRep({ id: "dribble", data: () => ({ repType: "dribbling", dribble_foot: "left", markerDistance: 9.144, totalTime: 4.5, gateStartSide: "right", privateNote: "hidden" }) });
+  assert.deepEqual(rep, { id: "dribble", repType: "dribbling", dribble_foot: "left", markerDistance: 9.144, totalTime: 4.5 });
+  const cleared = projectedRep({ id: "cleared", data: () => ({ repType: "dribbling", dribble_foot: null, markerDistance: "9.144" }) });
+  assert.deepEqual(cleared, { id: "cleared", repType: "dribbling" });
+});

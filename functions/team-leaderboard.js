@@ -14,11 +14,11 @@ const NUMERIC_FIELDS = [
   "sessionNumber", "repNumber", "absoluteRepNumber",
   "jumpHeight", "jump_height_in", "jump_height_inches", "jump_height_m", "broadJumpDistance",
   "max_velocity", "maxVelocity", "velocity",
-  "totalTime", "totalDistance", "phase1Time", "phase2Time", "phase3Time", "avgBallDistance",
+  "totalTime", "totalDistance", "markerDistance", "phase1Time", "phase2Time", "phase3Time", "avgBallDistance",
   "max_acceleration", "maxAcceleration", "average_velocity", "averageVelocity",
   "time_to_max_velocity", "timeToMaxVelocity", "launch_angle", "launchAngle",
 ];
-const STRING_FIELDS = ["repType", "drillType", "strike_foot"];
+const STRING_FIELDS = ["repType", "drillType", "strike_foot", "dribble_foot"];
 
 function projectedRep(doc) {
   const data = doc.data() || {};

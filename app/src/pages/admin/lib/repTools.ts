@@ -449,6 +449,7 @@ export function formatFieldValue(key: string, value: number | string | null | un
 
 export interface FrameFieldSpec { key: string; label: string; hint?: string }
 export interface NumberFieldSpec { key: string; label: string; unit?: string }
+export interface StringFieldSpec { key: string; label: string; options: { value: string; label: string }[] }
 
 export interface DrillToolSpec {
   key: DrillKey;
@@ -456,6 +457,8 @@ export interface DrillToolSpec {
   frameFields: FrameFieldSpec[];
   /** Numeric result fields shown in the before/after table (and editable directly for non-shuttle drills). */
   numberFields: NumberFieldSpec[];
+  /** Recorded-rep labels; null explicitly removes an assignment. */
+  stringFields?: StringFieldSpec[];
   /** True for the two shuttle drills whose metrics this module re-derives. */
   rederive: boolean;
   ball: boolean;
@@ -483,12 +486,87 @@ const SHUTTLE_NUMBER_FIELDS: NumberFieldSpec[] = [
   { key: "markerDistance", label: "Marker distance", unit: "m" },
 ];
 
+const FOOT_OPTIONS = [{ value: "left", label: "Left foot" }, { value: "right", label: "Right foot" }];
+
+/** A cleared rep field stays cleared even if older metadata still has a value. */
+export function stringFieldValues(spec: DrillToolSpec | null, rep: Record<string, any>, metadata: Record<string, any>): Record<string, string | null> {
+  return Object.fromEntries((spec?.stringFields ?? []).map(field => {
+    const value = rep[field.key] === undefined ? metadata[field.key] : rep[field.key];
+    return [field.key, typeof value === "string" ? value : null];
+  }));
+}
+
+export function isLabelOnlyEdit(spec: DrillToolSpec | null, diff: FieldChange[], measurementsEdited: boolean): boolean {
+  if (measurementsEdited) return false;
+  const changed = diff.filter(row => row.changed);
+  return changed.length > 0 && changed.every(row => spec?.stringFields?.some(field => field.key === row.key));
+}
+
+export interface MeasurementInputs {
+  frames: Record<string, number | null>;
+  numbers: Record<string, string>;
+  comMarks: Mark[];
+  ballMarks: Mark[];
+  comSource: string;
+  ballSource: string;
+  sideOverride: string;
+}
+
+/** Re-entering a value or undoing an edit does not opt an old rep into reprocessing. */
+export function measurementInputsChanged(initial: MeasurementInputs, current: MeasurementInputs): boolean {
+  const sameNumbers = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+    [...new Set([...Object.keys(a), ...Object.keys(b)])].every(key => num(a[key]) === num(b[key]));
+  const sameMarks = (a: Mark[], b: Mark[]) => a.length === b.length
+    && a.every((mark, index) => mark.frame === b[index].frame && mark.x === b[index].x && mark.y === b[index].y);
+  return !sameNumbers(initial.frames, current.frames)
+    || !sameNumbers(initial.numbers, current.numbers)
+    || !sameMarks(initial.comMarks, current.comMarks)
+    || !sameMarks(initial.ballMarks, current.ballMarks)
+    || initial.comSource !== current.comSource
+    || initial.ballSource !== current.ballSource
+    || initial.sideOverride !== current.sideOverride;
+}
+
+/** Changing just the foot must not reprocess an older rep with incomplete artifacts. */
+export function revisionPreviewFields(input: {
+  spec: DrillToolSpec | null;
+  original: Record<string, any>;
+  frames: Record<string, number | null>;
+  numbers: Record<string, string>;
+  strings: Record<string, string | null>;
+  derivation: ShuttleDerivation | null;
+  side: StartingSide | null;
+  measurementsEdited: boolean;
+}): Record<string, number | string | null> {
+  const { spec, original, frames, numbers, strings, derivation, side, measurementsEdited } = input;
+  const next: Record<string, number | string | null> = { ...strings };
+  const stringChanged = diffFields(original, strings, (spec?.stringFields ?? []).map(field => field.key)).some(row => row.changed);
+  if (stringChanged && !measurementsEdited) {
+    for (const field of [...(spec?.frameFields ?? []), ...(spec?.numberFields ?? [])]) next[field.key] = original[field.key] ?? null;
+    return next;
+  }
+  for (const field of spec?.frameFields ?? []) next[field.key] = frames[field.key] ?? null;
+  if (derivation) {
+    // Include retained distances as well as re-derived values in the preview.
+    Object.assign(next, derivation.metrics);
+    next.markerDistance = num(original.markerDistance);
+    if (side && side !== original.gateStartSide) next.gateStartSide = side;
+  } else {
+    for (const field of spec?.numberFields ?? []) {
+      const raw = numbers[field.key] ?? "";
+      next[field.key] = raw.trim() === "" ? null : num(raw);
+    }
+  }
+  return next;
+}
+
 export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
   changeOfDirection: { key: "changeOfDirection", frameFields: SHUTTLE_FRAME_FIELDS, numberFields: SHUTTLE_NUMBER_FIELDS, rederive: true, ball: false },
   dribbling: {
     key: "dribbling",
     frameFields: SHUTTLE_FRAME_FIELDS,
     numberFields: [...SHUTTLE_NUMBER_FIELDS, { key: "avgBallDistance", label: "Avg ball distance", unit: "m" }],
+    stringFields: [{ key: "dribble_foot", label: "Dribbling foot", options: FOOT_OPTIONS }],
     rederive: true,
     ball: true,
   },
@@ -524,6 +602,7 @@ export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
     key: "shooting",
     frameFields: [{ key: "contact_frame", label: "Contact" }, { key: "transition_frame", label: "Transition" }],
     numberFields: [{ key: "velocity", label: "Ball velocity", unit: "m/s" }, { key: "launch_angle", label: "Launch angle", unit: "°" }],
+    stringFields: [{ key: "strike_foot", label: "Shooting foot", options: FOOT_OPTIONS }],
     rederive: false,
     ball: true,
   },
@@ -541,7 +620,7 @@ export interface RevisionPayload {
   drill: string;
   fields: Record<string, number | string | null>;
   metadata: Record<string, any>;
-  annotations: Record<string, any>;
+  annotations: Record<string, any> | null;
   note: string;
 }
 
@@ -551,7 +630,7 @@ export function buildRevisionPayload(input: {
   drill: string;
   fields: Record<string, number | string | null | undefined>;
   metadataExtras: Record<string, any>;
-  annotations: Record<string, any>;
+  annotations: Record<string, any> | null;
   note: string;
 }): RevisionPayload {
   const fields: Record<string, number | string | null> = {};

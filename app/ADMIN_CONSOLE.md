@@ -255,6 +255,24 @@ over the original. Built under Monitor accounts.
    `{repFolder}/admin_revisions/{revisionId}/`. **Restore** (`adminRestoreRepRevision`) puts both
    back; a revision restores once.
 
+### Recorded-rep foot labels
+
+The **Values** card exposes **Dribbling foot** (`dribble_foot`) and **Shooting foot**
+(`strike_foot`), each with Left foot, Right foot, and Unassigned. Unassigned writes an
+explicit `null`. The rep document seeds the selector, including an explicit clear;
+metadata is a fallback only when the document has no field. The chosen foot appears
+in the before/after table and goes through the existing revision callable to both
+the rep and `metadata.json`. Starting side remains a separate gate-position setting.
+
+A foot-only edit preserves the stored measurements, processing flags, and annotation
+file, including older reps whose available artifacts cannot reproduce their timing.
+Measurement edits preserve a foot that was not changed. The shuttle preview also
+preserves distances when no new athlete or ball track is supplied.
+
+`getTeamLeaderboard` includes `dribble_foot` and numeric `markerDistance` in its
+existing metric projection, alongside `strike_foot`, so the mobile athlete leaderboard
+can compare both feet and match dribbling against change of direction course lengths.
+
 ### Why a callable
 
 The live Firestore ruleset (`e84fb428…`) and Storage ruleset (`9f5bcd27…`) deny every client,
@@ -269,14 +287,20 @@ keeps the Firebase download token the phone's upload minted (or mints one): the 
 
 ### Verification
 
-- `npm --prefix app test` — 494 passing, including `src/pages/admin/lib/repTools.test.ts`
+- `npm --prefix app test` — 503 passing, including `src/pages/admin/lib/repTools.test.ts`
   (gate resolution, meters sign convention, interpolation, the apex / end / 90% detectors, the
-  all-or-nothing timing rule, dribbling ball distance, the payload).
-- `node --test functions/*.test.js` — 57 passing, including `functions/rep-revisions.test.js`
+  all-or-nothing timing rule, dribbling ball distance, the payload, and both foot selectors'
+  initialization, replacement, clear, and measurement preservation).
+- `node --test functions/*.test.js` — 64 passing, including `functions/rep-revisions.test.js`
   (admin gate, in-place overwrite with identity fields kept, allow-list refusals, storage-path
-  escape refused, rollback when the artifact write fails, restore once).
+  escape refused, rollback when the artifact write fails, restore once, foot field validation
+  and persistence to both rep and metadata) and `functions/team-leaderboard.test.js` (foot/course projection).
 - `npm --prefix app run build` — clean.
-- **Not yet deployed**: `adminReviseRep` and `adminRestoreRepRevision` must be deployed to
-  `kickai-69dd0/us-central1` before the push/restore buttons work in production. The page loads,
-  scrubs and previews without them. **Not yet exercised in a browser** against a real rep with a
-  saved video — do that on Safari first (the phone's HEVC `.mov` files may not decode elsewhere).
+- **Pending release**: deploy the latest `adminReviseRep` and `getTeamLeaderboard` to
+  `kickai-69dd0/us-central1` before releasing the website foot selectors and mobile comparisons.
+  Preserve the existing deferred deployment queue for the earlier `adminRestoreRepRevision`
+  and download-token fixes; this change did not deploy or push anything.
+- **Browser validation pending**: the Browser runtime failed during initialization with
+  `Importing module "node:process" is not allowed in node_repl`; its troubleshooting API
+  was unavailable before setup. A real admin rep save/reload/clear/restore pass remains
+  unrun, preferably on Safari for a saved HEVC `.mov` rep.

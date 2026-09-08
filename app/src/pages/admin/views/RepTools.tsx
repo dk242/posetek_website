@@ -38,10 +38,14 @@ import {
   inferStartingSide,
   int,
   interpolateTrack,
+  measurementInputsChanged,
   num,
+  isLabelOnlyEdit,
   resolveClipTiming,
   resolveGate,
+  revisionPreviewFields,
   shuttleFramesFrom,
+  stringFieldValues,
   toolSpecFor,
   trackToSignedMeters,
 } from "../lib/repTools";
@@ -266,6 +270,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
     }
     return initial;
   });
+  const [strings, setStrings] = useState(() => stringFieldValues(spec, rep, metadata));
 
   // MARK: annotation
   const [stride, setStride] = useState(3);
@@ -278,6 +283,8 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
   const [showPose, setShowPose] = useState(true);
   const [showTracks, setShowTracks] = useState(true);
   const [sideOverride, setSideOverride] = useState<StartingSide | "auto">("auto");
+  const initialMeasurements = useRef({ frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride });
+  const measurementsEdited = measurementInputsChanged(initialMeasurements.current, { frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride });
 
   const rangeStart = rangeMode === "events" ? (frames.startFrame ?? 0) : 0;
   const rangeEnd = rangeMode === "events" ? (frames.endFrame ?? lastFrame) : lastFrame;
@@ -314,30 +321,19 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
     return deriveShuttleMetrics({ frames: shuttle, fps, original, comMeters, ballMeters, dribbling });
   }, [rederive, frames, fps, original, comMeters, ballMeters, dribbling]);
 
-  const after = useMemo(() => {
-    const next: Record<string, number | string | null> = {};
-    for (const field of spec?.frameFields ?? []) next[field.key] = frames[field.key] ?? null;
-    if (derivation) {
-      for (const key of derivation.derived) next[key] = derivation.metrics[key];
-      next.markerDistance = num(original.markerDistance);
-      if (side && side !== original.gateStartSide) next.gateStartSide = side;
-    } else {
-      for (const field of spec?.numberFields ?? []) {
-        const raw = numbers[field.key];
-        next[field.key] = raw.trim() === "" ? null : num(raw);
-      }
-    }
-    return next;
-  }, [spec, frames, derivation, original, side, numbers]);
+  const after = useMemo(() => revisionPreviewFields({ spec, original, frames, numbers, strings, derivation, side, measurementsEdited }),
+    [spec, original, frames, numbers, strings, derivation, side, measurementsEdited]);
 
   const diffKeys = useMemo(() => [
     ...(spec?.frameFields ?? []).map(field => field.key),
     ...(spec?.numberFields ?? []).map(field => field.key),
-    ...(derivation && side && side !== original.gateStartSide ? ["gateStartSide"] : []),
-  ], [spec, derivation, side, original.gateStartSide]);
+    ...(spec?.stringFields ?? []).map(field => field.key),
+    ...(Object.hasOwn(after, "gateStartSide") ? ["gateStartSide"] : []),
+  ], [spec, after]);
   const diff = useMemo(() => diffFields(original, after, diffKeys), [original, after, diffKeys]);
   const changedCount = diff.filter(row => row.changed).length;
-  const labelFor = (key: string) => spec?.frameFields.find(f => f.key === key)?.label ?? spec?.numberFields.find(f => f.key === key)?.label ?? key;
+  const labelFor = (key: string) => spec?.frameFields.find(f => f.key === key)?.label ?? spec?.numberFields.find(f => f.key === key)?.label ?? spec?.stringFields?.find(f => f.key === key)?.label ?? key;
+  const labelOnlyChange = isLabelOnlyEdit(spec, diff, measurementsEdited);
 
   // MARK: push
   const [note, setNote] = useState("");
@@ -361,12 +357,12 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
       }
       // For shuttle drills the derived metrics are written whether or not they
       // changed, so the document and metadata.json agree completely.
-      if (derivation) {
+      if (derivation && !labelOnlyChange) {
         for (const key of derivation.derived) fields[key] = derivation.metrics[key];
         for (const key of SHUTTLE_FRAME_KEYS) fields[key] = frames[key] ?? null;
       }
       const metadataExtras: Record<string, any> = {};
-      if (clearFlags && resultsValid !== null) {
+      if (clearFlags && resultsValid !== null && !labelOnlyChange) {
         metadataExtras.failedSteps = resultsValid ? [] : ["cod.metrics"];
         metadataExtras.processingStatus = resultsValid ? "complete" : "partial";
         metadataExtras.resultsValid = resultsValid;
@@ -391,7 +387,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
         frames: { ...frames },
         derivationNotes: derivation?.notes ?? [],
       };
-      const payload = buildRevisionPayload({ playerId, repId, drill: drillKey, fields, metadataExtras, annotations, note });
+      const payload = buildRevisionPayload({ playerId, repId, drill: drillKey, fields, metadataExtras, annotations: labelOnlyChange ? null : annotations, note });
       const result = await pushRepRevision(payload);
       setPushed(result.revisionId);
       setConfirming(false);
@@ -824,12 +820,22 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
             </section>
           )}
 
-          {spec && !rederive && (
+          {spec && (!rederive || Boolean(spec.stringFields?.length)) && (
             <section className="admin-card">
               <h3>Values</h3>
-              <p className="admin-note">This drill is not re-derived on the web; type the corrected values directly. Units are the stored units (meters, m/s, seconds).</p>
+              {!rederive && <p className="admin-note">This drill is not re-derived on the web; type the corrected values directly. Units are the stored units (meters, m/s, seconds).</p>}
               <div className="admin-form">
-                {spec.numberFields.map(field => (
+                {(spec.stringFields ?? []).map(field => (
+                  <label className="admin-field" key={field.key}>
+                    <span>{field.label}</span>
+                    <select value={strings[field.key] ?? ""} onChange={event => setStrings(current => ({ ...current, [field.key]: event.target.value || null }))}>
+                      <option value="">Unassigned</option>
+                      {strings[field.key] && !field.options.some(option => option.value === strings[field.key]) && <option value={strings[field.key]!}>{strings[field.key]} (current)</option>}
+                      {field.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+                    </select>
+                  </label>
+                ))}
+                {!rederive && spec.numberFields.map(field => (
                   <label className="admin-field" key={field.key}>
                     <span>{field.label}{field.unit ? ` (${field.unit})` : ""}</span>
                     <input type="number" step="any" value={numbers[field.key] ?? ""} placeholder="—" onChange={event => setNumbers(current => ({ ...current, [field.key]: event.target.value }))} />
@@ -842,7 +848,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
           {spec && (
             <section className="admin-card rt-preview">
               <h3>Re-processed rep</h3>
-              {derivation && derivation.notes.length > 0 && (
+              {derivation && !labelOnlyChange && derivation.notes.length > 0 && (
                 <ul className="admin-issues">
                   {derivation.notes.map((text, index) => <li className="admin-issue warning" key={index}>{text}</li>)}
                 </ul>
@@ -859,7 +865,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                   ))}
                 </tbody>
               </table>
-              {resultsValid !== null && (
+              {resultsValid !== null && !labelOnlyChange && (
                 <label className="rt-check">
                   <input type="checkbox" checked={clearFlags} onChange={event => setClearFlags(event.target.checked)} />
                   <span>{resultsValid ? "Clear the processing failure flags (failedSteps, partial status) since the rep now has a total time." : "Mark the rep partial: it still has no total time."}</span>
