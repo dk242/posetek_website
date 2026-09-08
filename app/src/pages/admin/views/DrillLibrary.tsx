@@ -142,6 +142,7 @@ export default function DrillLibrary() {
               </div>
               <div className="admin-row-actions">
                 {drill.requiresPartner && <span className="admin-chip">Partner</span>}
+                {drill.positionSpecific && <span className="admin-chip">{drill.positionSpecific} only</span>}
                 {presentSlots(drill.media).length > 0 && (
                   <span className="admin-chip">
                     <span className="material-symbols-outlined" aria-hidden="true">movie</span>

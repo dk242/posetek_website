@@ -38,7 +38,7 @@ export default function DrillPickerPane({ drills, athlete, exposures, onAdd }: P
       .filter(drill => {
         if (!eligibleOnly) return true;
         const fit = fitFor(drill, athlete);
-        return fit.ageOk && fit.difficultyOk && fit.partnerOk;
+        return fit.ageOk && fit.difficultyOk && fit.partnerOk && fit.positionOk;
       })
       .sort((a, b) => domainSortIndex(a.domain) - domainSortIndex(b.domain) || a.name.localeCompare(b.name))
       .slice(0, 200);
@@ -101,6 +101,7 @@ export default function DrillPickerPane({ drills, athlete, exposures, onAdd }: P
                   {!fit.ageOk && <span className="admin-chip warn">age</span>}
                   {!fit.difficultyOk && <span className="admin-chip warn">too hard</span>}
                   {!fit.partnerOk && <span className="admin-chip warn">needs a partner</span>}
+                  {!fit.positionOk && <span className="admin-chip warn">{drill.positionSpecific} only</span>}
                   {!fit.equipmentOk && <span className="admin-chip warn">equipment</span>}
                 </span>
               </div>

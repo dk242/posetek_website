@@ -213,6 +213,8 @@ export interface DrillV2 {
   difficultyLevel: number;
   equipment: string[];
   requiresPartner: boolean;
+  /** Catalog §1: null (the default) is any position; a Position restricts prescription to it. */
+  positionSpecific?: Position | null;
   howTo: { setup: string; steps: string[] };
   dose: CatalogDose;
   maxFrequencyPerWeek: number;

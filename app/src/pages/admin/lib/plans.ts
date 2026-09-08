@@ -25,7 +25,7 @@ import {
   weekTransitionMinutes,
   weekWindow,
 } from "../../../lib/contracts/planV3";
-import { ageBand, resolveEligibility } from "../../../lib/contracts/types";
+import { ageBand, isPosition, resolveEligibility } from "../../../lib/contracts/types";
 import type { TechnicalEligibility, WorkoutSnapshot } from "../../../lib/contracts/types";
 import { resolvePlayerAge } from "./accounts";
 import {
@@ -275,6 +275,7 @@ export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResul
         maxDrillDifficulty: eligibility.maxDrillDifficulty,
         setting: input.setting,
         equipment: input.equipment,
+        position: isPosition(player.position) ? player.position : null,
       },
       week,
       extraExposures: input.frequency.extraExposures,

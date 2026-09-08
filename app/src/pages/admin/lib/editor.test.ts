@@ -38,6 +38,7 @@ function drill(overrides: Record<string, any> = {}): CatalogDrill {
     difficultyLevel: overrides.difficultyLevel ?? 2,
     equipment: overrides.equipment ?? ["ball", "cones"],
     requiresPartner: overrides.requiresPartner ?? false,
+    positionSpecific: overrides.positionSpecific ?? null,
     howTo: { setup: "", steps: ["Weave."] },
     dose: overrides.dose ?? { setsMin: 2, setsMax: 4, repsMin: 6, repsMax: 10, repUnit: "reps", restSecondsMin: 30, restSecondsMax: 60 },
     maxFrequencyPerWeek: overrides.maxFrequencyPerWeek ?? 2,
@@ -221,6 +222,19 @@ describe("validateDraft", () => {
     const codes = warningsOf(issues).map(issue => issue.code);
     expect(codes).toEqual(expect.arrayContaining(["age", "difficulty", "partner", "equipment"]));
     expect(errorsOf(issues).filter(issue => ["age", "difficulty", "partner", "equipment"].includes(issue.code))).toEqual([]);
+  });
+
+  it("warns, never errors, when a position-specific drill goes to an athlete of another or no position", () => {
+    const keeper = drill({ drillId: "SHT-501", domain: "shooting", positionSpecific: "GK" });
+    const draft = addBlock(draftFromWorkout("plan1", 1, workoutDoc([]), 1), keeper);
+    const base = { drills: new Map([["SHT-501", keeper]]), week: { weekNumber: 1, workouts: [] } };
+    const unrecorded = validateDraft(draft, context({ ...base, athlete: ATHLETE }));
+    expect(warningsOf(unrecorded).map(issue => issue.code)).toContain("position");
+    expect(errorsOf(unrecorded).filter(issue => issue.code === "position")).toEqual([]);
+    const striker = validateDraft(draft, context({ ...base, athlete: { ...ATHLETE, position: "ST" } }));
+    expect(warningsOf(striker).find(issue => issue.code === "position")?.message).toMatch(/recorded as ST/);
+    const goalkeeper = validateDraft(draft, context({ ...base, athlete: { ...ATHLETE, position: "GK" } }));
+    expect(goalkeeper.filter(issue => issue.code === "position")).toEqual([]);
   });
 
   it("refuses a dose outside the catalog's own ranges", () => {

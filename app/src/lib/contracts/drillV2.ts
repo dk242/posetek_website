@@ -12,7 +12,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isContinuousUnit, isDomain } from "./types";
+import { isContinuousUnit, isDomain, isPosition } from "./types";
 import type { CatalogDose, CatalogMedia, DrillStatus } from "./types";
 
 // Declared field by field rather than as `Omit<DrillV2, …>`: DrillV2 carries a
@@ -32,6 +32,8 @@ export interface CatalogDrill {
   difficultyLevel: number;
   equipment: string[];
   requiresPartner: boolean;
+  /** null = any position (catalog §1); otherwise one of the eight positions. */
+  positionSpecific: string | null;
   howTo: { setup: string; steps: string[] };
   dose: CatalogDose;
   maxFrequencyPerWeek: number;
@@ -159,6 +161,9 @@ export function normalizeCatalogDrill(id: string, raw: any): CatalogDrill {
     ? raw?.requiresPartner === true
     : stringList(raw?.equipment).includes("partner") || intOr(raw?.playersMin, 1) >= 2;
 
+  // Catalog §1: null/absent is any position; only a known position is kept.
+  const positionSpecific = isPosition(raw?.positionSpecific) ? raw.positionSpecific : null;
+
   const howTo = v2 && raw?.howTo && typeof raw.howTo === "object"
     ? { setup: String(raw.howTo.setup ?? ""), steps: stringList(raw.howTo.steps) }
     : { setup: String(raw?.setup ?? ""), steps: stepsFromExecution(raw?.execution) };
@@ -187,6 +192,7 @@ export function normalizeCatalogDrill(id: string, raw: any): CatalogDrill {
     difficultyLevel,
     equipment,
     requiresPartner,
+    positionSpecific,
     howTo,
     dose,
     maxFrequencyPerWeek,
@@ -210,6 +216,8 @@ export interface AthleteFit {
   ageOk: boolean;
   difficultyOk: boolean;
   partnerOk: boolean;
+  /** False for a position-specific drill unless the athlete is recorded in that position. */
+  positionOk: boolean;
   equipmentOk: boolean;
   publishedOk: boolean;
 }
@@ -220,6 +228,8 @@ export interface AthleteContext {
   /** intake.setting: solo | partner | halfAndHalf */
   setting: string;
   equipment: string[];
+  /** players/{id}.position (profile inputs §1), or null/absent when the athlete has none on file. */
+  position?: string | null;
 }
 
 export function fitFor(drill: CatalogDrill, athlete: AthleteContext): AthleteFit {
@@ -228,6 +238,9 @@ export function fitFor(drill: CatalogDrill, athlete: AthleteContext): AthleteFit
     ageOk: age === null || (age >= drill.minAge && age <= drill.maxAge),
     difficultyOk: drill.difficultyLevel <= athlete.maxDrillDifficulty,
     partnerOk: !drill.requiresPartner || athlete.setting === "partner" || athlete.setting === "halfAndHalf",
+    // An athlete with no position on file is not a match: the pool narrows
+    // rather than a goalkeeper drill reaching an outfield player.
+    positionOk: drill.positionSpecific === null || drill.positionSpecific === (athlete.position ?? null),
     equipmentOk: !athlete.equipment.length || drill.equipment.every(item => athlete.equipment.includes(item)),
     publishedOk: drill.status === "published",
   };

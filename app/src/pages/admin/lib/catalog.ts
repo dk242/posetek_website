@@ -13,7 +13,7 @@ import firebase, { auth, db, storage } from "../../../lib/firebase";
 import { normalizeCatalogDrill } from "../../../lib/contracts/drillV2";
 import type { CatalogDrill } from "../../../lib/contracts/drillV2";
 import { DOMAIN_CODES, MEDIA_SLOTS } from "../../../lib/contracts/types";
-import type { Domain, MediaSlot } from "../../../lib/contracts/types";
+import type { Domain, MediaSlot, Position } from "../../../lib/contracts/types";
 import { ADMIN_CLIENT_VERSION } from "./identity";
 
 const CATALOG = "drillCatalog";
@@ -55,6 +55,8 @@ export interface DrillWrite {
   difficultyLevel: number;
   equipment: string[];
   requiresPartner: boolean;
+  /** null = any position. Always written, so a merging update can clear it. */
+  positionSpecific: Position | null;
   howTo: { setup: string; steps: string[] };
   dose: Record<string, unknown>;
   maxFrequencyPerWeek: number;
@@ -81,6 +83,9 @@ function drillPayload(drillId: string, write: DrillWrite, catalogVersion: string
     difficultyLevel: write.difficultyLevel,
     equipment: write.equipment,
     requiresPartner: write.requiresPartner,
+    // Explicit null, never omitted: `update` merges, so only a written null
+    // takes a drill back to "any position".
+    positionSpecific: write.positionSpecific ?? null,
     howTo: { setup: write.howTo.setup, steps: write.howTo.steps },
     dose: write.dose,
     maxFrequencyPerWeek: write.maxFrequencyPerWeek,
