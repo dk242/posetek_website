@@ -9,12 +9,14 @@
 
 import { Suspense, lazy } from "react";
 import type { ReactNode } from "react";
-import { Link, NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { sendAdminVerification } from "./lib/identity";
 import { useAdminSession } from "./lib/session";
 import "../../styles/pose-portal.css";
 import "./admin.scss";
+import "./admin-surfaces.scss";
+import AdminHeader from "./views/AdminHeader";
 
 const OrganizationPage = lazy(() => import("../organization/OrganizationPage"));
 const AdminHome = lazy(() => import("./views/AdminHome"));
@@ -110,45 +112,12 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="pt-pose portal-body pt-admin">
-      <header className="portal-header admin-header">
-        <Link className="portal-brand" to="/admin" aria-label="PoseTek admin">
-          <span className="portal-brand-mark">P</span>
-          <span>POSETEK</span>
-          <span className="admin-badge">Admin</span>
-        </Link>
-        {session.kind === "ready" && (
-          <nav className="admin-nav" aria-label="Admin sections">
-            <NavLink className={navClass} to="/admin/drills">
-              <span className="material-symbols-outlined">library_books</span>
-              <span>Drill library</span>
-            </NavLink>
-            <NavLink className={navClass} to="/admin/organizations"><span className="material-symbols-outlined">groups</span><span>Organizations</span></NavLink>
-            <NavLink className={navClass} to="/admin/accounts">
-              <span className="material-symbols-outlined">supervisor_account</span>
-              <span>Monitor accounts</span>
-            </NavLink>
-            <NavLink className={navClass} to="/admin/programs">
-              <span className="material-symbols-outlined">auto_awesome</span>
-              <span>Generate programs</span>
-            </NavLink>
-          </nav>
-        )}
-        <div className="admin-header-right">
-          {session.kind === "ready" && <span className="admin-who">{session.identity.email}</span>}
-          <button className="quiet-button" type="button" onClick={signOut}>
-            <span className="material-symbols-outlined">logout</span>
-            <span>Sign out</span>
-          </button>
-        </div>
-      </header>
+    <div className={`pt-pose portal-body pt-admin${session.kind === "ready" ? " admin-ready" : ""}`}>
+      <AdminHeader ready={session.kind === "ready"}
+        email={session.kind === "ready" ? session.identity.email : undefined} onSignOut={() => void signOut()} />
       <main className="admin-shell">{body}</main>
     </div>
   );
-}
-
-function navClass({ isActive }: { isActive: boolean }): string {
-  return `quiet-button admin-nav-link${isActive ? " active" : ""}`;
 }
 
 function GateCard({ icon, title, body, action }: { icon: string; title: string; body: string; action?: ReactNode }) {

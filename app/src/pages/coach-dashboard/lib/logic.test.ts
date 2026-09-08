@@ -175,7 +175,7 @@ describe("buildStatsSnapshot", () => {
     // Unmeasured axes have no score key at all (omitted, not null).
     const striking = snapshot.axes.find((axis: { axis: string }) => axis.axis === "striking");
     expect(striking.score).toBeUndefined();
-    expect(striking.missingDrills).toEqual(["deadballShot"]);
+    expect(striking.missingDrills).toEqual(["kick"]);
 
     expect(snapshot.drills.length).toBe(2);
     for (const drill of snapshot.drills) {

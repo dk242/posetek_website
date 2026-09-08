@@ -18,6 +18,7 @@
 import firebase, { auth, db } from "../../../lib/firebase";
 import { resolveEligibility } from "../../../lib/contracts/types";
 import type { Position, TechnicalEligibility } from "../../../lib/contracts/types";
+import { playerSignup } from "./signup";
 
 export interface OrganizationRow {
   id: string;
@@ -57,6 +58,7 @@ export interface PlayerRow {
   organizationId: string | null;
   teamId: string | null;
   registered: boolean;
+  signupCode: string | null;
   raw: any;
 }
 
@@ -165,7 +167,7 @@ export function playerRow(id: string, data: any): PlayerRow {
     coachId: refId(data?.coach) ?? (data?.coachUID ? String(data.coachUID) : null),
     organizationId: (typeof data?.organizationId === "string" && data.organizationId) || refId(data?.organization),
     teamId: typeof data?.teamId === "string" && data.teamId ? data.teamId : null,
-    registered: data?.registered === true || Boolean(data?.userUID) || Boolean(data?.authenticationUID),
+    ...playerSignup(data),
     raw: data || {},
   };
 }

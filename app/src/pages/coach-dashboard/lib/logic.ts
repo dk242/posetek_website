@@ -241,7 +241,9 @@ export function resolveAge(athlete: any, now: Date = new Date()): number | null 
 
 // Web drill key -> the app's StatsDrill vocabulary the gateway/prompts see.
 const DRILL_KEY_TO_APP: Record<string, string> = {
-  shooting: "deadballShot",
+  // Stats snapshots use the gateway's drill identifier. `deadballShot` is
+  // a legacy recording/storage name; ballSpeed and shotAccuracy belong to kick.
+  shooting: "kick",
   sprint: "sprint",
   jump: "jump",
   broadJump: "broadJump",

@@ -19,6 +19,7 @@ import {
   loadTeams,
 } from "../lib/accounts";
 import type { CoachRow, OrganizationRow, PlayerRow, TeamRow } from "../lib/accounts";
+import PlayerRowLink, { AccountAvatar } from "./PlayerRosterRow";
 
 // Stable empties, so the memos below do not recompute on every keystroke.
 const NO_COACHES: CoachRow[] = [];
@@ -136,7 +137,7 @@ export default function MonitorAccounts() {
           {orgs.map(org => (
             <section className="admin-card admin-org" key={org.id}>
               <header className="admin-org-head">
-                {org.logoUrl && <img className="admin-org-logo" src={org.logoUrl} alt="" />}
+                {org.logoUrl ? <img className="admin-org-logo" src={org.logoUrl} alt={`${org.name} logo`} /> : <AccountAvatar name={org.name} />}
                 <h3>
                   {org.name}
                   {org.code && <span className="admin-chip">{org.code}</span>}
@@ -212,29 +213,6 @@ function TeamRowView({ team, index }: { team: TeamRow; index: PlayerRow[] }) {
   );
 }
 
-function PlayerRowLink({ player, compact = false }: { player: PlayerRow; compact?: boolean }) {
-  return (
-    <div className={`admin-row admin-player-row${compact ? " compact" : ""}`}>
-      <Link className="admin-row-copy admin-row-link" to={`/admin/accounts/player/${encodeURIComponent(player.id)}`}>
-        <strong>{player.name}</strong>
-        <span className="admin-row-meta">
-          <span>{player.email || "no email on file"}</span>
-          {!player.coachId && !player.teamId && <span className="admin-chip warn">no coach</span>}
-          {!player.registered && <span className="admin-chip">awaiting signup</span>}
-        </span>
-      </Link>
-      <div className="admin-row-actions">
-        <Link className="quiet-button small" to={`/admin/accounts/player/${encodeURIComponent(player.id)}/results`}>
-          <span className="material-symbols-outlined">analytics</span>Results
-        </Link>
-        <Link className="icon-button" to={`/admin/accounts/player/${encodeURIComponent(player.id)}`} aria-label={`Open ${player.name}`}>
-          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 // MARK: - Coaches
 
 function CoachList({ coaches }: { coaches: CoachRow[] }) {
@@ -243,6 +221,7 @@ function CoachList({ coaches }: { coaches: CoachRow[] }) {
     <div className="admin-rows">
       {coaches.map(coach => (
         <Link key={coach.id} className="admin-row" to={`/admin/accounts/coach/${coach.id}`}>
+          <AccountAvatar name={coach.name} />
           <div className="admin-row-copy">
             <strong>{coach.name}</strong>
             <span className="admin-row-meta">
