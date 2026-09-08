@@ -5,7 +5,7 @@ import type { OrganizationRow, PlayerRow } from "../lib/accounts";
 import { resultsPath } from "../lib/results";
 import type { RepArtifactBundle } from "../lib/repToolsData";
 import { resolveClipTiming } from "../lib/repTools";
-import { eligibleEvidence, feedbackFromResult, LIMBS, manualArtifactsChanged, PHASES, phaseFrame, poseJoint, reliableFoot, reorderedFocus, sourceEvidence } from "../lib/analysisReview";
+import { comparisonTime, eligibleEvidence, feedbackFromResult, LIMBS, manualArtifactsChanged, PHASES, phaseFrame, poseJoint, reliableFoot, reorderedFocus, selectComparisonPair, sourceEvidence, validSavedComparisons } from "../lib/analysisReview";
 import type { Phase, ReviewFeedback, ReviewFocus, ReviewNotes, TechniqueAnnotation } from "../lib/analysisReview";
 import { exportAnalysisReviews, generateAnalysis, loadAnalysisReps, loadAnnotationArtifacts, loadComparisons, loadReviewTarget, organizationAthletes, saveAnalysisReview } from "../lib/analysisReviewData";
 import type { ObservedSource, ReviewTarget } from "../lib/analysisReviewData";
@@ -25,8 +25,8 @@ export default function AnalysisWorkspace() {
   const [comparisons, setComparisons] = useState<any[]>([]);
   const [mode, setMode] = useState<"single" | "comparison">("single");
   const [repId, setRepId] = useState(search.get("rep") || "");
-  const [leftId, setLeftId] = useState("");
-  const [rightId, setRightId] = useState("");
+  const [pairSelection, setPairSelection] = useState({ playerId: "", leftId: "", rightId: "" });
+  const { leftId, rightId } = pairSelection.playerId === playerId ? pairSelection : { leftId: "", rightId: "" };
   const [target, setTarget] = useState<ReviewTarget | null>(null);
   const [reload, setReload] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -49,12 +49,12 @@ export default function AnalysisWorkspace() {
       if (!live) return;
       setReps(kicks); setComparisons(pairs);
       setRepId(current => kicks.some(rep => rep.id === current) ? current : kicks[0]?.id || "");
-      setLeftId(current => kicks.some(rep => rep.id === current && reliableFoot(rep) === "left") ? current : kicks.find(rep => reliableFoot(rep) === "left")?.id || "");
-      setRightId(current => kicks.some(rep => rep.id === current && reliableFoot(rep) === "right") ? current : kicks.find(rep => reliableFoot(rep) === "right")?.id || "");
+      setPairSelection(current => ({ playerId, ...selectComparisonPair(kicks, pairs, current.playerId === playerId ? current : undefined) }));
     }).catch(error => { if (live) setError(error.message); });
     return () => { live = false; };
   }, [playerId, reload]);
-  const pair = comparisons.find(row => row.leftRepId === leftId && row.rightRepId === rightId);
+  const savedComparisons = validSavedComparisons(reps, comparisons);
+  const pair = savedComparisons.find(row => row.leftRepId === leftId && row.rightRepId === rightId);
   const targetId = mode === "single" ? repId : pair?.comparisonId || "";
   useEffect(() => {
     let live = true;
@@ -93,7 +93,14 @@ export default function AnalysisWorkspace() {
       <label className="admin-field"><span>Organization</span><select value={organizationId} disabled={busy} onChange={event => change(() => { setOrganizationId(event.target.value); setPlayerId(""); setRepId(""); })}><option value="">Choose organization</option>{organizations.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
       <label className="admin-field"><span>Athlete</span><select value={playerId} disabled={busy} onChange={event => change(() => setPlayerId(event.target.value))}><option value="">Choose athlete</option>{playerId && !players.some(row => row.id === playerId) && <option value={playerId}>Linked athlete</option>}{players.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
       <label className="admin-field"><span>Analysis</span><select value={mode} disabled={busy} onChange={event => change(() => setMode(event.target.value as "single" | "comparison"))}><option value="single">Single kick</option><option value="comparison">Left versus right</option></select></label>
-      {mode === "single" ? <RepSelect label="Recorded kick" value={repId} reps={reps} disabled={busy} onChange={value => change(() => setRepId(value))} /> : <><RepSelect label="Left-foot kick" value={leftId} reps={reps.filter(rep => reliableFoot(rep) === "left")} disabled={busy} onChange={value => change(() => setLeftId(value))} /><RepSelect label="Right-foot kick" value={rightId} reps={reps.filter(rep => reliableFoot(rep) === "right")} disabled={busy} onChange={value => change(() => setRightId(value))} /></>}
+      {mode === "single" ? <RepSelect label="Recorded kick" value={repId} reps={reps} disabled={busy} onChange={value => change(() => setRepId(value))} /> : <>
+        {savedComparisons.length > 0 && <label className="admin-field"><span>Saved comparison</span><select value={pair?.comparisonId || ""} disabled={busy} onChange={event => change(() => {
+          const selected = savedComparisons.find(row => row.comparisonId === event.target.value);
+          setPairSelection({ playerId, leftId: selected?.leftRepId || "", rightId: selected?.rightRepId || "" });
+        })}><option value="">Choose kicks manually</option>{savedComparisons.map(row => <option key={row.comparisonId} value={row.comparisonId}>{comparisonTime(row) ? new Date(comparisonTime(row)).toLocaleString() : "Saved analysis"} · {repLabel(reps.find(rep => rep.id === row.leftRepId))} / {repLabel(reps.find(rep => rep.id === row.rightRepId))}</option>)}</select></label>}
+        <RepSelect label="Left-foot kick" value={leftId} reps={reps.filter(rep => reliableFoot(rep) === "left")} disabled={busy} onChange={value => change(() => setPairSelection({ playerId, leftId: value, rightId }))} />
+        <RepSelect label="Right-foot kick" value={rightId} reps={reps.filter(rep => reliableFoot(rep) === "right")} disabled={busy} onChange={value => change(() => setPairSelection({ playerId, leftId, rightId: value }))} />
+      </>}
       <div className="admin-form-actions"><button type="button" className="primary-cta" disabled={busy || !ready} onClick={generate}>{busy ? "Working…" : target?.result ? "Generate new analysis" : "Generate analysis"}</button>{playerId && <button type="button" className="quiet-button" disabled={busy} onClick={() => exportDataset(false)}>Export athlete reviews</button>}{players.length > 0 && <button type="button" className="quiet-button" disabled={busy || players.length > 100} onClick={() => exportDataset(true)}>Export organization reviews</button>}</div>
       {mode === "comparison" && playerId && (!leftId || !rightId) && <p className="admin-note">A comparison needs a labeled left-foot kick and a labeled right-foot kick. Assign missing foot labels in <Link to={resultsPath(playerId, "shooting")}>rep tools</Link>.</p>}
     </section>

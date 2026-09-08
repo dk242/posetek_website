@@ -1,0 +1,3676 @@
+{
+  "schemaVersion": 1,
+  "feature": "saved-kick-comparison-picker",
+  "runtimeSourceCommit": "f05ec43e2da0df8724eb2fc7a7f68afda7f58bde",
+  "promotion": {
+    "operation": "restoreSiteDeploy",
+    "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+    "previousProductionDeployId": "6aa061cc30bf0203f6cfb3d9",
+    "productionDeployId": "6aa0731ea06d42b6faafcd78",
+    "publishedAt": "2026-09-08T20:46:43.731Z",
+    "siteReadbackVerified": true,
+    "rebuiltDuringDeployment": false
+  },
+  "build": {
+    "manifestSHA256": "f9de3aa138cc7250333e6f2d3a3cd3cb57eb5ac382508f756a7ede49a8151bfc",
+    "files": [
+      {
+        "path": "SideKickView.html",
+        "bytes": 324745,
+        "sha256": "97948524b2ca493370013192e7cfdbcb262a56bc37dccdeaaa50a4584c7fef91"
+      },
+      {
+        "path": "StaticJumpPage.html",
+        "bytes": 308710,
+        "sha256": "52255686370481cd9b519ab92b35d4ce4949a8c941e75b68127ed0d5bdbb8f2d"
+      },
+      {
+        "path": "assets/AdminHome-D1HBEBz3.js",
+        "bytes": 2468,
+        "sha256": "4150ac0f5ff50ae460edab4991bc0e12f4728e00150c938ebf2817fb3b7a9b67"
+      },
+      {
+        "path": "assets/AdminPage-B4YhVyoa.css",
+        "bytes": 18682,
+        "sha256": "c51c5b4cc7136ce131ac203e7c99308515dd900cef62d07650bfca16488c99cd"
+      },
+      {
+        "path": "assets/AdminPage-BK5LlkOw.js",
+        "bytes": 9223,
+        "sha256": "ea3b0d66dd4f43361bb143b97b56fac86917af53e7bbb082b503e1cc8cff05b8"
+      },
+      {
+        "path": "assets/AdminResults-Buxcu3NM.js",
+        "bytes": 2234,
+        "sha256": "670ad201bb931f0f29b7ad6bc88918691beb033a7eed44f1023acf25711fb660"
+      },
+      {
+        "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+        "bytes": 4493,
+        "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c"
+      },
+      {
+        "path": "assets/AnalysisWorkspace-ZFS2v5hD.js",
+        "bytes": 31172,
+        "sha256": "1177eaedd50fe409adc791fdea0778a237ae45fc9497b33ac56f1c40131ee337"
+      },
+      {
+        "path": "assets/AthletePortalPage-Cfucw1d2.js",
+        "bytes": 86676,
+        "sha256": "5e2274b845bb1488aaf1ede9b2ff1ee16a0e4e0b86fada50cd0ab28c104d690f"
+      },
+      {
+        "path": "assets/AthletePortalPage-DFR_Ya8Z.css",
+        "bytes": 17753,
+        "sha256": "af8158d1db3d505f783a7c410c19c447509c3afb3fcb60dcb0273fc2f564f7f0"
+      },
+      {
+        "path": "assets/AthleteStats-CkCHqB47.js",
+        "bytes": 13978,
+        "sha256": "f247af74376e6c8e87e38334b82e246eb45a02a5345aae685d8f353e8490dff6"
+      },
+      {
+        "path": "assets/AthleteStats-DignmqrO.css",
+        "bytes": 11969,
+        "sha256": "b230f4385eda2f9496e9b953e4d793257082172b3985b16dd33096829fc8f5ca"
+      },
+      {
+        "path": "assets/CoachDashboardPage-B1Hblokk.js",
+        "bytes": 36978,
+        "sha256": "2e993c075e887d5770391ebd74c306a657cba157ff47c9c45175bce98490fc65"
+      },
+      {
+        "path": "assets/CoachDashboardPage-Bc_e8vUl.css",
+        "bytes": 10496,
+        "sha256": "6cb5a1ecca9204d20b19f76f1e58385bcc27638720e1cd8da2f9abed3e6a04a1"
+      },
+      {
+        "path": "assets/CoachDetail-PwArWDot.js",
+        "bytes": 4068,
+        "sha256": "41d2701d75fe5b09397fd90bcc3e4ff8c6faa0912b7ae3a2773cf42ac53af01d"
+      },
+      {
+        "path": "assets/DrillDashboard-B2XDLWFr.js",
+        "bytes": 4634,
+        "sha256": "a51d609bad5c09950a6bcc4d9eb73fccfcf13ff38d01af1332557bf56703e1dc"
+      },
+      {
+        "path": "assets/DrillDetail-Dk1B-_RM.js",
+        "bytes": 5685,
+        "sha256": "1fa0ec93fa06e940794a1c56b5964cc3c596ed79da08a36e6fede0e49bd78dd8"
+      },
+      {
+        "path": "assets/DrillForm-B3u3l0mK.js",
+        "bytes": 17540,
+        "sha256": "1119f24abf98026dd10a30c0aaa274b3de67ca804f5a50e8c2b9708618139243"
+      },
+      {
+        "path": "assets/DrillLibrary-CF8z84y5.js",
+        "bytes": 5011,
+        "sha256": "66f52ccf2d50860cfc9a7b167930d9a104283fff072a78cbba9fba978a722a7d"
+      },
+      {
+        "path": "assets/DrillSharePage-B3_5jxrB.js",
+        "bytes": 38684,
+        "sha256": "08cf7ee1c93693f61f58273c5bd83873f41219d07e1ccde0b739fbff3b55e508"
+      },
+      {
+        "path": "assets/DrillSharePage-CWTdmL-S.css",
+        "bytes": 16477,
+        "sha256": "d719cfdaede974a6c617b4ef5bf64f8a8fb314a6ecd6ad6b660fe5fb8d87dc59"
+      },
+      {
+        "path": "assets/GeneratePrograms-Bevl5Nx1.js",
+        "bytes": 14652,
+        "sha256": "663d25a4d86b95a593b551509bb711dccab31670053945dd1d13482b36c03530"
+      },
+      {
+        "path": "assets/HomePage-DiXuKW__.js",
+        "bytes": 231569,
+        "sha256": "375bd7af09956418cb97ac61b9be31aab2942c34d70264cbee6395b02c942384"
+      },
+      {
+        "path": "assets/HomePage-tqMCfxV1.css",
+        "bytes": 36229,
+        "sha256": "bc5a35c48f8a014ca6c28766f56cceb51a703fea779944ef4427a18a6b1020ab"
+      },
+      {
+        "path": "assets/LandingPage-CbYilQKk.css",
+        "bytes": 31806,
+        "sha256": "e3c38243ada3a6a814ec0a8b5d1726bb5465ae4997735afb9b4cefcd2f4cc034"
+      },
+      {
+        "path": "assets/LandingPage-L24BCxr-.js",
+        "bytes": 25245,
+        "sha256": "c8237d7b83d33c76897d25f7dab0e7f607f04d7719b097f359a2f3e8a6fe13cd"
+      },
+      {
+        "path": "assets/MonitorAccounts-CI2yoXLo.js",
+        "bytes": 7518,
+        "sha256": "4683ad860722b34c678cf0673abfd08f06497d092a17511512b354b04301f111"
+      },
+      {
+        "path": "assets/NotFoundPage-BCWl6O5B.js",
+        "bytes": 1345,
+        "sha256": "14c52a792f72c93b909175d0ca849dd05956daea13b20b9898c48ba53edc7db9"
+      },
+      {
+        "path": "assets/NotFoundPage-BHP3j_wX.css",
+        "bytes": 1095,
+        "sha256": "e2d4d1d20be9192caedbb7f71c1ad0277abc4636fa277a6c477ad9b1c771ff32"
+      },
+      {
+        "path": "assets/OrganizationPage-BAiVTKpj.js",
+        "bytes": 15419,
+        "sha256": "fe80668e90ea1e02bcab901902c18b557a1522cf3add096fd612383ebe235fdb"
+      },
+      {
+        "path": "assets/PlayerDetail-BplgY4fD.js",
+        "bytes": 18068,
+        "sha256": "ed59b1f5e95e08fc17c7e2946db6d07ff8962f77fc2576a51f2b04a2a7cdfb6e"
+      },
+      {
+        "path": "assets/PrivacyPage-BG9Mkra9.js",
+        "bytes": 8583,
+        "sha256": "2424d298019af583066d810e6866573bab91208562120a76d7dca63d83ed3945"
+      },
+      {
+        "path": "assets/PrivacyPage-cb2bhuEG.css",
+        "bytes": 3463,
+        "sha256": "4beedd81e2b2a57f86057f7120d2d0defc49b75313874f55a820b5528bae131e"
+      },
+      {
+        "path": "assets/RepTools-lG494POm.js",
+        "bytes": 36183,
+        "sha256": "071d7d8ee3952896e4918cf7ac182142d112cd4075aae4456618576d30a792de"
+      },
+      {
+        "path": "assets/RosterPage-BIR5E2ge.js",
+        "bytes": 12402,
+        "sha256": "4ef8205b8da2439e33b4dc5439a436139a6558f3502043dd01a7a079bdbca097"
+      },
+      {
+        "path": "assets/StaffInvitePage-BBeReXpF.js",
+        "bytes": 4695,
+        "sha256": "ca026e00c9d7591b1437fe280e9cf199fb233881385eac53574f2162b319d27d"
+      },
+      {
+        "path": "assets/WorkoutEditor-pg-k59Lj.js",
+        "bytes": 39683,
+        "sha256": "13d02339bd8627384da824ade9fcda5cf8ed1f46ff7f59dccf6086dc9557a7b6"
+      },
+      {
+        "path": "assets/accounts-DnlFs2lh.js",
+        "bytes": 6625,
+        "sha256": "af00014132cbb99e7ff8ccedbf2bc657e7c8d7b358aec9d94262fce49eb7adcb"
+      },
+      {
+        "path": "assets/auto-D22YVyyl.js",
+        "bytes": 202222,
+        "sha256": "807c3daafed64071b7a51e9af520494742efb40e52f01c7e46e4916512d27c3a"
+      },
+      {
+        "path": "assets/catalog-By4rojNU.js",
+        "bytes": 5072,
+        "sha256": "86c84d067662479e29c636ee043c4d362d24192c2f275badc5ed238f14de5d3d"
+      },
+      {
+        "path": "assets/data-DE4Xe6zM.js",
+        "bytes": 9046,
+        "sha256": "e63669a96c006f92cda93c8ea5fb9d22ab4019322a989a57e061eab03a532763"
+      },
+      {
+        "path": "assets/drillV2-cco2rYEZ.js",
+        "bytes": 4540,
+        "sha256": "0da1ab72c8b9dc003712c38a775f7c3f6ef968c63610c7fc76d9588918528167"
+      },
+      {
+        "path": "assets/firebase-CUzwZjKV.js",
+        "bytes": 764743,
+        "sha256": "7107b3f5e1de6b7217b4eb30c9e6fed5b0723f1509ce2c887a0b622027fe6379"
+      },
+      {
+        "path": "assets/identity-Bw64WvVM.js",
+        "bytes": 947,
+        "sha256": "2f26e7693fa5076e98f2884618e31c3f6909176d29c0557e64cb27b90996aa3e"
+      },
+      {
+        "path": "assets/identity-DcnDfMZb.js",
+        "bytes": 1357,
+        "sha256": "fddfd46613128cff42d2192741df148fe30e894fb74486dcc9347fc0f52abded"
+      },
+      {
+        "path": "assets/index-BYYQm6QU.js",
+        "bytes": 233333,
+        "sha256": "33d469ec396b960a05e02ccb5f397cf616a431e01a7bcedb7dbdb90317a74571"
+      },
+      {
+        "path": "assets/index-CkzNDReN.css",
+        "bytes": 798,
+        "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612"
+      },
+      {
+        "path": "assets/legacy-roster-BopdUrEo.js",
+        "bytes": 328,
+        "sha256": "7d20d7a5b806a2d05be62afedd5517b037aadcf49c82a3d35c5f91075878eee2"
+      },
+      {
+        "path": "assets/loaders-UJlz4CZi.js",
+        "bytes": 17192,
+        "sha256": "d764d6be44416d494495e1c51d9324ba9f8e6cf9dfff2edfbfdce19f9d0762b4"
+      },
+      {
+        "path": "assets/organization-CSazI_mQ.css",
+        "bytes": 3339,
+        "sha256": "db340edad8e16ac0a52a58b9e987214ac1bace6475e71b1f5336af6b7999910f"
+      },
+      {
+        "path": "assets/organization-data-Oz5sFxbs.js",
+        "bytes": 1535,
+        "sha256": "13ad4d0baf50ebb5ae8e8f69a6701661b9f6d42a52ebb6c213590fab7eccb09e"
+      },
+      {
+        "path": "assets/planJobs-C_taizoe.js",
+        "bytes": 1471,
+        "sha256": "a4b766e95ca1777c6a662f3a3d5c676173b4008bd20af1e0706a21ef58536f7b"
+      },
+      {
+        "path": "assets/planV3-mUnD1z1Z.js",
+        "bytes": 6500,
+        "sha256": "ea89f26fe71d34c77a4e576fe58d509866a13c484df1a966fb1b9ec72da521c1"
+      },
+      {
+        "path": "assets/pose-portal-BL__fjGJ.css",
+        "bytes": 34005,
+        "sha256": "392cd73b2d67e9da6cc251882ca0334c122bfd07429f8eac6b50ad5596a53c87"
+      },
+      {
+        "path": "assets/repToolsData-Dd0pFkqG.js",
+        "bytes": 18090,
+        "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca"
+      },
+      {
+        "path": "assets/results-Dfo07sSh.js",
+        "bytes": 772,
+        "sha256": "e839017b61160968293a1b5d8246c11cb91a112b5beefe003143c3d083947267"
+      },
+      {
+        "path": "assets/rolldown-runtime-hePW80VL.js",
+        "bytes": 716,
+        "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021"
+      },
+      {
+        "path": "assets/training-JeY8eeNt.js",
+        "bytes": 9733,
+        "sha256": "5f0de8cc11fb7091ca7de151970c63efb0eabb47a103f3fec50d9fae08bb340b"
+      },
+      {
+        "path": "assets/types-CTuiavJH.js",
+        "bytes": 2252,
+        "sha256": "6a56c81b30c6be6dd36e013a0052cc4f234e99fd3ab3ce85aee7e0f347965ee1"
+      },
+      {
+        "path": "assets/use-body-background-T9ExUiKQ.js",
+        "bytes": 278,
+        "sha256": "ccb7b3332505b7f59b4d64c728f48a0476a2bc88b06d100189d6731c04f95cf7"
+      },
+      {
+        "path": "assets/use-theme-color-vKglh2tP.js",
+        "bytes": 409,
+        "sha256": "355ab84052f7c9fb29e737e18d661f0f7f2ad618fd09bd0f1fd372bc67561d09"
+      },
+      {
+        "path": "athlete-benchmarks.js",
+        "bytes": 2551,
+        "sha256": "12665314f1daa04b14f68a470c19efd91f378cb38081dfecaffc361ae3e63fc0"
+      },
+      {
+        "path": "athlete-drill-view.css",
+        "bytes": 17383,
+        "sha256": "43809b65543917cc4f168e167d4df0faa47ebb4deb6b6b448c24000e91a6d961"
+      },
+      {
+        "path": "athlete-drill-view.js",
+        "bytes": 59115,
+        "sha256": "fdd045d04eca9e257035f812aaa7877d8252086a65b68331f47b38cc05c03d9a"
+      },
+      {
+        "path": "athlete-mobile-pages.js",
+        "bytes": 52764,
+        "sha256": "44b0e845e93b096a70927056ef8ac2e4efce5985c3b8666bfb4f93ea6ce8a244"
+      },
+      {
+        "path": "athlete-portal.js",
+        "bytes": 33056,
+        "sha256": "e61f39dc74cf1ce2067482e1121781476b251516fac4ba13bd2c8cf61ffd2469"
+      },
+      {
+        "path": "athlete-stats-view.css",
+        "bytes": 11975,
+        "sha256": "26106a817ac0c097b4fd55af3305261e1e5f71c0ebfc95e6659f879a805d4330"
+      },
+      {
+        "path": "athlete-stats-view.js",
+        "bytes": 20410,
+        "sha256": "f3015da1d38d9ffae068ace7eff69167b1851ef7abfd4950236d31b5f72b9a8f"
+      },
+      {
+        "path": "backKickView.html",
+        "bytes": 124769,
+        "sha256": "16494b739fe284cf6096644914147f1f20867c4b1bd6b3f320d76645979d0a5d"
+      },
+      {
+        "path": "backfill-session-summaries.html",
+        "bytes": 31504,
+        "sha256": "50e12bb080065c6166c81ec3eaca77aebe1607d22db3287df8ce6e3975b79b44"
+      },
+      {
+        "path": "banner-6x3.html",
+        "bytes": 11094,
+        "sha256": "04688fa44c832f532b59600857a3da857bc36d8e8d368b0db7eb4f629b6c9e46"
+      },
+      {
+        "path": "bookPerformanceTest.html",
+        "bytes": 30599,
+        "sha256": "a2beaff336db9a261fa2928f2b4869de00dc05535965a3612d158a8b9eb69dd2"
+      },
+      {
+        "path": "coach-roster.js",
+        "bytes": 9701,
+        "sha256": "6c485edcb3c1b27a9cfb3d3af967e2dd31d088f4ca804e783e24819129f606b7"
+      },
+      {
+        "path": "convention-qr.html",
+        "bytes": 14445,
+        "sha256": "aa715d790d55145cbc2fe293f15b3232c3c30ec65b131933366f22748efd9b28"
+      },
+      {
+        "path": "drillList.html",
+        "bytes": 25231,
+        "sha256": "297dd51ee3205a1202136dbfbc5b0ed9c86f68fed2f303ac88596e8a4b13f0a4"
+      },
+      {
+        "path": "drillcreation.html",
+        "bytes": 35175,
+        "sha256": "b05db9c49dc2a874a01f7a0bcc42b4a540454a85dcb4b619a2cb05c04b0903b2"
+      },
+      {
+        "path": "edge-session-posetek-carousel.html",
+        "bytes": 43694,
+        "sha256": "33038695e68f167386ebb9c2ed39c6fd5beac14a343b6b1f7fdcbc1e93ae30ab"
+      },
+      {
+        "path": "failureDashboard.html",
+        "bytes": 35108,
+        "sha256": "c7d1d737d583f0b199b8c5baa3aeab80a881a01224733d204f75fc39b0203d2c"
+      },
+      {
+        "path": "favicon.svg",
+        "bytes": 9522,
+        "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+      },
+      {
+        "path": "feed.html",
+        "bytes": 30072,
+        "sha256": "2004c441dd192d192b8b4805ce69370ef2beb5d38a914a9974e0e0947cef760d"
+      },
+      {
+        "path": "feedbackForm.html",
+        "bytes": 56180,
+        "sha256": "e3d887b6eb5b259d81a63319bbefb430d8ade591a41f62965eacfb41a5249fd2"
+      },
+      {
+        "path": "firebase-identity.js",
+        "bytes": 2099,
+        "sha256": "c40dce34e94cf04a2f12add2d100267e9c2b9338001581ee70878529fa4ad9d4"
+      },
+      {
+        "path": "freeRecordPage.html",
+        "bytes": 152703,
+        "sha256": "84f5c074a100d929561917ed7d5f77a7b3c24d996b8cc2d6e9439fb202f66058"
+      },
+      {
+        "path": "fusionclinic.html",
+        "bytes": 91048,
+        "sha256": "9db3b73e1b6ef8071da17e0753a17fa8a0d867dd6745dc805817093cd7afbd1d"
+      },
+      {
+        "path": "hypothesis_athleticismSubscription.html",
+        "bytes": 69266,
+        "sha256": "b05c2395fca192753d2703eaba67c68f217bef2243d448c603b6d33b3b832ab2"
+      },
+      {
+        "path": "hypothesis_athleticismSubscription_signup.html",
+        "bytes": 36795,
+        "sha256": "cb1cdded03b1253a9d6d2fa829cc61f4cd70beb90f70a1b420ff4ede071683cf"
+      },
+      {
+        "path": "hypothesis_kickingAnalysis.html",
+        "bytes": 70469,
+        "sha256": "de67cb4bb37daa746d5da7738480af688af38c0f69080bcd8d26759c06848985"
+      },
+      {
+        "path": "hypothesis_kickingAnalysisSubscription.html",
+        "bytes": 76658,
+        "sha256": "3e1b09136c9ead177a877e6bb0754890d1c3a6a2dca5af1eca6a773223082ccf"
+      },
+      {
+        "path": "hypothesis_kickingAnalysisSubscription_signup.html",
+        "bytes": 36838,
+        "sha256": "a3226a78f2499a942403cb4e9bfa56783becdbd36e3aac4542b284f84611d678"
+      },
+      {
+        "path": "hypothesis_kickingCoach.html",
+        "bytes": 59036,
+        "sha256": "2ebb7a6626ecd8d292eb1eee4a01e2ed0dcc7e11c954274c2a9c102b2b50cb0c"
+      },
+      {
+        "path": "hypothesis_performanceTesting.html",
+        "bytes": 61826,
+        "sha256": "6d79e10d8ada22213c053509d0a976397bffa8f7237881298552cb6165a0d163"
+      },
+      {
+        "path": "hypothesis_quantificationTracking.html",
+        "bytes": 57211,
+        "sha256": "cedfdb943970c8f7db6a1262de39d996f7ed3901e6c2049d2ad73b9b197bb2b8"
+      },
+      {
+        "path": "hypothesis_trainingSession.html",
+        "bytes": 75345,
+        "sha256": "903b0fec4b04acfcbb4d22f6bc09f1740452d7124e1668d46f95d672ede55997"
+      },
+      {
+        "path": "hypothesis_trainingSessionKick.html",
+        "bytes": 84686,
+        "sha256": "59f79514956cacc1972def81b2213b873da9a2a96b696327d930a975b93cff7c"
+      },
+      {
+        "path": "icons.svg",
+        "bytes": 5031,
+        "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+      },
+      {
+        "path": "images/.DS_Store",
+        "bytes": 8196,
+        "sha256": "17248d27d009bcf161c450441fa941b7a0eae57a3a12a7b156069ae98b889fdd"
+      },
+      {
+        "path": "images/Dylan.png",
+        "bytes": 8736,
+        "sha256": "bda2abec78ef4b4e64743f5bcdc65844cfd958fd6ffb6148836630a427cb26dd"
+      },
+      {
+        "path": "images/Nolan.png",
+        "bytes": 33371,
+        "sha256": "2c16094845ca135d76714ea5d35f617daa7848af4fcdb4c852ae9c34e2b254c9"
+      },
+      {
+        "path": "images/README.md",
+        "bytes": 233,
+        "sha256": "4a1ce7c061b5c997a807036bf4ec42dc46038e1bf0692d847c927492c1474e21"
+      },
+      {
+        "path": "images/SprintAnalysis.png",
+        "bytes": 1769715,
+        "sha256": "2465062ae7cd7d9e60468306674699dd376b9a70890175da5f3b7d635bde3e70"
+      },
+      {
+        "path": "images/analysiskick.PNG",
+        "bytes": 1331381,
+        "sha256": "37718ee98dfa2df3535e76502753c6b0f0c7c036ccfc4b157b862dfbdfc436fd"
+      },
+      {
+        "path": "images/appKickRecording.png",
+        "bytes": 1634590,
+        "sha256": "098e22487dac3419235737ef98e5222c4a18c21aaf9a345486787dd9736ca89e"
+      },
+      {
+        "path": "images/backswing.png",
+        "bytes": 1054845,
+        "sha256": "5d27ba06a08a6a6bc6a80e56382a67a606490e8104dcf8507fa1c3c6d1587047"
+      },
+      {
+        "path": "images/bing_generated_qrcode.png",
+        "bytes": 2099,
+        "sha256": "0aba489478293f27ebeaba149869905375a799be229064a74ce0b008b73391b1"
+      },
+      {
+        "path": "images/contact.png",
+        "bytes": 1107657,
+        "sha256": "eaa9c81e61b12d90a50edbb3bfd6529e54d051fea7583d10dbca0194a416bbc7"
+      },
+      {
+        "path": "images/developmentplan.PNG",
+        "bytes": 184321,
+        "sha256": "92cc706e3fb25a58541a56955f7e466b802a66015581f9fdb02f6d988c4433df"
+      },
+      {
+        "path": "images/goalStanford.mp4",
+        "bytes": 1594582,
+        "sha256": "155542ac636bcc802029437c6119f5c6c5005cf80d85a179e62672c5f3c4943b"
+      },
+      {
+        "path": "images/graphpose.PNG",
+        "bytes": 70895,
+        "sha256": "0d9c8655d5dc0b9dd5afcc295cc62734fb3b41ecb95df38e4c86af491a5789f6"
+      },
+      {
+        "path": "images/https_www_tiktok_com_pose_tek.png",
+        "bytes": 52337,
+        "sha256": "dc213341a31dae61f978f5838faf03c37fa0090b0dc2485985e134d45067cbf4"
+      },
+      {
+        "path": "images/jump track.mov",
+        "bytes": 7887026,
+        "sha256": "60091da4879dbc55ab198a5f845bd14d17c40cf05697589648a4bb9fefb6146e"
+      },
+      {
+        "path": "images/jumpAnalysisMetrics.png",
+        "bytes": 535943,
+        "sha256": "1962a934e3f39cc97a5dce919f76f16a3f597e11ffe173a094418c528e99108e"
+      },
+      {
+        "path": "images/jumpPoseRawVid.png",
+        "bytes": 2645219,
+        "sha256": "5e8ec96dacd0abd900562c16716b1a15b5a37c83b2880c9b01a03698f6fa8c64"
+      },
+      {
+        "path": "images/jumpPower.png",
+        "bytes": 1887235,
+        "sha256": "c17cd7f82fadb8160598d44100d2f614a4860be8e627fe8d8c8bc2f98dd00225"
+      },
+      {
+        "path": "images/jumpanalysis.PNG",
+        "bytes": 1290974,
+        "sha256": "17a5c09574baf0503670db61e00367c0af615ae66dc993881767829cb015722a"
+      },
+      {
+        "path": "images/kick analysis video.mov",
+        "bytes": 3309399,
+        "sha256": "09c1472d0e40e164d617c25aba76c58ca27c5c8ce1de86416e0702f6f45ac07c"
+      },
+      {
+        "path": "images/kick overlay video.mov",
+        "bytes": 5621615,
+        "sha256": "4213fe29f1eb3229f9b5f0ec84ef86c30b7231ca19aaade69fe399030344591c"
+      },
+      {
+        "path": "images/kickanalysis.png",
+        "bytes": 667998,
+        "sha256": "f52dd7f8056af07b07ff4cd524b2ef1ced40facc2b50c3db47ada2beb37dfa63"
+      },
+      {
+        "path": "images/leaderboard.PNG",
+        "bytes": 213275,
+        "sha256": "a6394bcb0f664d71542a8a9a32bd48621b5e00e2f82d9d7fd275d8b68c060cc0"
+      },
+      {
+        "path": "images/logo-export.html",
+        "bytes": 3673,
+        "sha256": "7b051a2255c5115cfd05873f7cfe084096a770482553152b30ca4e78d9abecbc"
+      },
+      {
+        "path": "images/logo.svg",
+        "bytes": 568,
+        "sha256": "cdaf48031a4db9fc56f508332696b5a14cd7131c789ac3dd56982e571b022c16"
+      },
+      {
+        "path": "images/markerSetup.png",
+        "bytes": 2374653,
+        "sha256": "630cc12798b4fa8dae3fb461db9b4351d24427790b43839e7a203fb20b4d1a38"
+      },
+      {
+        "path": "images/player profile image.png",
+        "bytes": 1544163,
+        "sha256": "f4100955bdffdf78579dd526b236dac22df668199fce0f2cfd5a4b167e0204d2"
+      },
+      {
+        "path": "images/pose_strike.png",
+        "bytes": 7263690,
+        "sha256": "df0d0f1b1cec736c4972796594f2c816989f3e1cab887a3dbe0b342105cc8fb8"
+      },
+      {
+        "path": "images/pose_tek_qr.png",
+        "bytes": 1876124,
+        "sha256": "a2f0da51465d3cf4d15b1b0f940297f0acde135d13de2b1330842dffdbc1c221"
+      },
+      {
+        "path": "images/posejump.png",
+        "bytes": 552416,
+        "sha256": "f9b5f9b25fd25709ee84dd5be137cccffed6f5a20d628c14644c370dac1e99d7"
+      },
+      {
+        "path": "images/postestimation.png",
+        "bytes": 1019839,
+        "sha256": "4f70cc4d58f4fc7fecfa1f598045d2bea1b1ea559e109fc8f313f0d20237b5ae"
+      },
+      {
+        "path": "images/profilepose.PNG",
+        "bytes": 125009,
+        "sha256": "5fbc3b65952d65d2a87023d8c43b1cbbcce6300ece748c403655058fbfbeeb1f"
+      },
+      {
+        "path": "images/progressOverTime.png",
+        "bytes": 653489,
+        "sha256": "0550426b3c57edee89d7e4d68963ef5f1e6fbdb3953c59d729ec61bd9aeda456"
+      },
+      {
+        "path": "images/soccer-ball.png",
+        "bytes": 146504,
+        "sha256": "4e333725613194fcaba5065ca3ba96016599523a56d742935a626940896a5d9a"
+      },
+      {
+        "path": "images/sprintBreakdown.png",
+        "bytes": 519163,
+        "sha256": "33d4ad13e54f61e229a580f10bca0c6743eccf0616b8caac6e7f98ffbd0ddd4b"
+      },
+      {
+        "path": "images/sprinting.PNG",
+        "bytes": 163157,
+        "sha256": "7f15ef84af6270534fe6df1180610d1a1a61d46f573038c7f3e093aba6e3c1d6"
+      },
+      {
+        "path": "images/stats.png",
+        "bytes": 136806,
+        "sha256": "575ca7015b7e203f5859bd2d1876703f1689af1d32a404d0ad9683b604c8fd3e"
+      },
+      {
+        "path": "images/tripod.png",
+        "bytes": 26184,
+        "sha256": "b0b14d1b05190b18af22e3af8655c0ac093cee9535fe693058fcd04196b6d201"
+      },
+      {
+        "path": "index.html",
+        "bytes": 1243,
+        "sha256": "0a742e09588982cf7b393f1efaf0817b135640d2ac735c53a39ec4815bf515b0"
+      },
+      {
+        "path": "kickai-theme.css",
+        "bytes": 20574,
+        "sha256": "3575931c58a3ad30c0b900d3845ae01ba87321ac64697b4f4cf03a1eb38b560e"
+      },
+      {
+        "path": "kickingAnalysis_upload.html",
+        "bytes": 59127,
+        "sha256": "ce58769983a1a98dce094f5345344ac7e29e59af3629b5dce4e6b24324c71306"
+      },
+      {
+        "path": "kickingview.html",
+        "bytes": 201717,
+        "sha256": "60b5b45c3430e490acbe5ff579848d5eba45ac16a6cdaa2c17dcb5d4e21b1af3"
+      },
+      {
+        "path": "landing-pose-demo-data.js",
+        "bytes": 218511,
+        "sha256": "fb4c0f8061ee93fb5055ae326774e2ca62a13d6abed0717b401106dd8d916835"
+      },
+      {
+        "path": "landing-pose-demo.js",
+        "bytes": 15539,
+        "sha256": "0e1e033b6b107b9d1bef478847f6da18323d7ce0660efeee4e23f9b86f007920"
+      },
+      {
+        "path": "leaderboard.html",
+        "bytes": 66391,
+        "sha256": "a1dbc0f3ad06680a1d4efda1c2654e45ae67ab497115dd8d2c292589f8f80428"
+      },
+      {
+        "path": "pose-portal.css",
+        "bytes": 31421,
+        "sha256": "6ee96deb0bf86085c7b08131e9e08b1ccf80b95ec7fbae3fc386226af8808c9c"
+      },
+      {
+        "path": "premiumCheckout.js",
+        "bytes": 1723,
+        "sha256": "e3e5dc9af35976a58450b9f34c347abc682f18711aeb6ed37a7093d9c349cbac"
+      },
+      {
+        "path": "premiumInfo.html",
+        "bytes": 17924,
+        "sha256": "5525410d780287a4f6d8492fc335f71f19c89191bfb7b9fba4c816affa2356f9"
+      },
+      {
+        "path": "questAddPlayer.html",
+        "bytes": 29005,
+        "sha256": "aa9c899e57999bdbbc87b814851a76ba8aa24ce732fda4aca754f98960731016"
+      },
+      {
+        "path": "questLeaderboardResultsPage.html",
+        "bytes": 59644,
+        "sha256": "ef7491defdee7286d879587128ca54bc1e4323378b9290ee391b453a7dab7fb2"
+      },
+      {
+        "path": "questSearchPlayer.html",
+        "bytes": 33993,
+        "sha256": "23adb8763ffd867f8065ec9df5743c2a889b4f7848b9acdb9d28f26b31c6fd04"
+      },
+      {
+        "path": "questViewBiomechanics.html",
+        "bytes": 330987,
+        "sha256": "ede8d2beaa0bfc3d38f819aa473eb249fe0b153c031746001bbc44c490f5d95e"
+      },
+      {
+        "path": "sessions.html",
+        "bytes": 63867,
+        "sha256": "1cf47323d44aab089b7928f200f42816a9ee8308d00831ba0490e781194d2777"
+      },
+      {
+        "path": "sessionsexpanded.html",
+        "bytes": 34023,
+        "sha256": "ea64733a386f9c76081c939e5ec91a5c631bba208c20ddb07b7cde0b7b478aa1"
+      },
+      {
+        "path": "signupForm.html",
+        "bytes": 22608,
+        "sha256": "4a582d3d0039f57c9d78053ce844fae977d4372f2bde52d876a8b17e55343007"
+      },
+      {
+        "path": "sprintPage.html",
+        "bytes": 193918,
+        "sha256": "b8cc970415a0b605cfaa339903e095280c3f9d1687f7caaa86f511e3518124ff"
+      },
+      {
+        "path": "subscriptionWaitlist.html",
+        "bytes": 150119,
+        "sha256": "bb5642e6fe9c467ede8329d2bbfe277f6a69c39f61ccf1fe4e5e7e1b9c4d5664"
+      },
+      {
+        "path": "user-badge.js",
+        "bytes": 5900,
+        "sha256": "0aa352829d37c424994509baa3c0fd201d6262a17eaa06989ab744f45b96fa51"
+      },
+      {
+        "path": "videopage.html",
+        "bytes": 66248,
+        "sha256": "8e5872e193ff0c4fea90f4e9157a7af00bd99f2c3d8846018e6911f91bf7c6bd"
+      }
+    ],
+    "totalBytes": 55259855
+  },
+  "packaging": {
+    "reason": "New untracked iCloud duplicate source images copied to dist; identical to existing canonical public originals. Omitted only generated copies; source files preserved.",
+    "files": [
+      {
+        "path": "images/Dylan 2.png",
+        "bytes": 8736,
+        "sha256": "bda2abec78ef4b4e64743f5bcdc65844cfd958fd6ffb6148836630a427cb26dd"
+      },
+      {
+        "path": "images/README 2.md",
+        "bytes": 233,
+        "sha256": "4a1ce7c061b5c997a807036bf4ec42dc46038e1bf0692d847c927492c1474e21"
+      },
+      {
+        "path": "images/SprintAnalysis 2.png",
+        "bytes": 1769715,
+        "sha256": "2465062ae7cd7d9e60468306674699dd376b9a70890175da5f3b7d635bde3e70"
+      },
+      {
+        "path": "images/analysiskick 2.PNG",
+        "bytes": 1331381,
+        "sha256": "37718ee98dfa2df3535e76502753c6b0f0c7c036ccfc4b157b862dfbdfc436fd"
+      },
+      {
+        "path": "images/appKickRecording 2.png",
+        "bytes": 1634590,
+        "sha256": "098e22487dac3419235737ef98e5222c4a18c21aaf9a345486787dd9736ca89e"
+      },
+      {
+        "path": "images/graphpose 2.PNG",
+        "bytes": 70895,
+        "sha256": "0d9c8655d5dc0b9dd5afcc295cc62734fb3b41ecb95df38e4c86af491a5789f6"
+      },
+      {
+        "path": "images/jumpPoseRawVid 2.png",
+        "bytes": 2645219,
+        "sha256": "5e8ec96dacd0abd900562c16716b1a15b5a37c83b2880c9b01a03698f6fa8c64"
+      },
+      {
+        "path": "images/jumpanalysis 2.PNG",
+        "bytes": 1290974,
+        "sha256": "17a5c09574baf0503670db61e00367c0af615ae66dc993881767829cb015722a"
+      },
+      {
+        "path": "images/kick analysis video 2.mov",
+        "bytes": 3309399,
+        "sha256": "09c1472d0e40e164d617c25aba76c58ca27c5c8ce1de86416e0702f6f45ac07c"
+      },
+      {
+        "path": "images/kickanalysis 2.png",
+        "bytes": 667998,
+        "sha256": "f52dd7f8056af07b07ff4cd524b2ef1ced40facc2b50c3db47ada2beb37dfa63"
+      },
+      {
+        "path": "images/leaderboard 2.PNG",
+        "bytes": 213275,
+        "sha256": "a6394bcb0f664d71542a8a9a32bd48621b5e00e2f82d9d7fd275d8b68c060cc0"
+      },
+      {
+        "path": "images/markerSetup 2.png",
+        "bytes": 2374653,
+        "sha256": "630cc12798b4fa8dae3fb461db9b4351d24427790b43839e7a203fb20b4d1a38"
+      },
+      {
+        "path": "images/pose_strike 2.png",
+        "bytes": 7263690,
+        "sha256": "df0d0f1b1cec736c4972796594f2c816989f3e1cab887a3dbe0b342105cc8fb8"
+      },
+      {
+        "path": "images/pose_tek_qr 2.png",
+        "bytes": 1876124,
+        "sha256": "a2f0da51465d3cf4d15b1b0f940297f0acde135d13de2b1330842dffdbc1c221"
+      },
+      {
+        "path": "images/postestimation 2.png",
+        "bytes": 1019839,
+        "sha256": "4f70cc4d58f4fc7fecfa1f598045d2bea1b1ea559e109fc8f313f0d20237b5ae"
+      },
+      {
+        "path": "images/sprintBreakdown 2.png",
+        "bytes": 519163,
+        "sha256": "33d4ad13e54f61e229a580f10bca0c6743eccf0616b8caac6e7f98ffbd0ddd4b"
+      },
+      {
+        "path": "images/stats 2.png",
+        "bytes": 136806,
+        "sha256": "575ca7015b7e203f5859bd2d1876703f1689af1d32a404d0ad9683b604c8fd3e"
+      }
+    ],
+    "sourceCopiesPreserved": true,
+    "canonicalPublicOriginalsPreserved": true,
+    "remainingNonAssetFilesMatchPredecessorBuild": true,
+    "netlifyIgnoredMacMetadata": "images/.DS_Store"
+  },
+  "verification": {
+    "preview": {
+      "verifiedAt": "2026-09-08T20:46:11.529405+00:00",
+      "baseURL": "https://6aa0731ea06d42b6faafcd78--posetek.netlify.app",
+      "deployId": "6aa0731ea06d42b6faafcd78",
+      "manifestSHA256": "f9de3aa138cc7250333e6f2d3a3cd3cb57eb5ac382508f756a7ede49a8151bfc",
+      "allPassed": true,
+      "publicFiles": 153,
+      "checks": 154,
+      "allJavaScriptAndCSSChecked": 74,
+      "results": [
+        {
+          "path": "SideKickView.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 324741,
+          "sha256": "64e24c64a31739e5a3fa4b9962f8af28ae73275629f56a3ef67247b19cb165f3",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "StaticJumpPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 308706,
+          "sha256": "801ab12d1362aaa3a244abeb7bdcf4bdc3a1843294d7ccb9c765a9f16400192d",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "assets/AdminHome-D1HBEBz3.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2468,
+          "sha256": "4150ac0f5ff50ae460edab4991bc0e12f4728e00150c938ebf2817fb3b7a9b67",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminPage-B4YhVyoa.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 18682,
+          "sha256": "c51c5b4cc7136ce131ac203e7c99308515dd900cef62d07650bfca16488c99cd",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminPage-BK5LlkOw.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9223,
+          "sha256": "ea3b0d66dd4f43361bb143b97b56fac86917af53e7bbb082b503e1cc8cff05b8",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminResults-Buxcu3NM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2234,
+          "sha256": "670ad201bb931f0f29b7ad6bc88918691beb033a7eed44f1023acf25711fb660",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 4493,
+          "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AnalysisWorkspace-ZFS2v5hD.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 31172,
+          "sha256": "1177eaedd50fe409adc791fdea0778a237ae45fc9497b33ac56f1c40131ee337",
+          "matchesBuild": true,
+          "savedComparisonPickerPresent": true
+        },
+        {
+          "path": "assets/AthletePortalPage-Cfucw1d2.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 86676,
+          "sha256": "5e2274b845bb1488aaf1ede9b2ff1ee16a0e4e0b86fada50cd0ab28c104d690f",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthletePortalPage-DFR_Ya8Z.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 17753,
+          "sha256": "af8158d1db3d505f783a7c410c19c447509c3afb3fcb60dcb0273fc2f564f7f0",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthleteStats-CkCHqB47.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 13978,
+          "sha256": "f247af74376e6c8e87e38334b82e246eb45a02a5345aae685d8f353e8490dff6",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthleteStats-DignmqrO.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 11969,
+          "sha256": "b230f4385eda2f9496e9b953e4d793257082172b3985b16dd33096829fc8f5ca",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDashboardPage-B1Hblokk.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 36978,
+          "sha256": "2e993c075e887d5770391ebd74c306a657cba157ff47c9c45175bce98490fc65",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDashboardPage-Bc_e8vUl.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 10496,
+          "sha256": "6cb5a1ecca9204d20b19f76f1e58385bcc27638720e1cd8da2f9abed3e6a04a1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDetail-PwArWDot.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4068,
+          "sha256": "41d2701d75fe5b09397fd90bcc3e4ff8c6faa0912b7ae3a2773cf42ac53af01d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillDashboard-B2XDLWFr.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4634,
+          "sha256": "a51d609bad5c09950a6bcc4d9eb73fccfcf13ff38d01af1332557bf56703e1dc",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillDetail-Dk1B-_RM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5685,
+          "sha256": "1fa0ec93fa06e940794a1c56b5964cc3c596ed79da08a36e6fede0e49bd78dd8",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillForm-B3u3l0mK.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 17540,
+          "sha256": "1119f24abf98026dd10a30c0aaa274b3de67ca804f5a50e8c2b9708618139243",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillLibrary-CF8z84y5.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5011,
+          "sha256": "66f52ccf2d50860cfc9a7b167930d9a104283fff072a78cbba9fba978a722a7d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillSharePage-B3_5jxrB.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 38684,
+          "sha256": "08cf7ee1c93693f61f58273c5bd83873f41219d07e1ccde0b739fbff3b55e508",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillSharePage-CWTdmL-S.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 16477,
+          "sha256": "d719cfdaede974a6c617b4ef5bf64f8a8fb314a6ecd6ad6b660fe5fb8d87dc59",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/GeneratePrograms-Bevl5Nx1.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 14652,
+          "sha256": "663d25a4d86b95a593b551509bb711dccab31670053945dd1d13482b36c03530",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/HomePage-DiXuKW__.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 231569,
+          "sha256": "375bd7af09956418cb97ac61b9be31aab2942c34d70264cbee6395b02c942384",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/HomePage-tqMCfxV1.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 36229,
+          "sha256": "bc5a35c48f8a014ca6c28766f56cceb51a703fea779944ef4427a18a6b1020ab",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/LandingPage-CbYilQKk.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 31806,
+          "sha256": "e3c38243ada3a6a814ec0a8b5d1726bb5465ae4997735afb9b4cefcd2f4cc034",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/LandingPage-L24BCxr-.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 25245,
+          "sha256": "c8237d7b83d33c76897d25f7dab0e7f607f04d7719b097f359a2f3e8a6fe13cd",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/MonitorAccounts-CI2yoXLo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 7518,
+          "sha256": "4683ad860722b34c678cf0673abfd08f06497d092a17511512b354b04301f111",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/NotFoundPage-BCWl6O5B.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1345,
+          "sha256": "14c52a792f72c93b909175d0ca849dd05956daea13b20b9898c48ba53edc7db9",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/NotFoundPage-BHP3j_wX.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 1095,
+          "sha256": "e2d4d1d20be9192caedbb7f71c1ad0277abc4636fa277a6c477ad9b1c771ff32",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/OrganizationPage-BAiVTKpj.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 15419,
+          "sha256": "fe80668e90ea1e02bcab901902c18b557a1522cf3add096fd612383ebe235fdb",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PlayerDetail-BplgY4fD.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 18068,
+          "sha256": "ed59b1f5e95e08fc17c7e2946db6d07ff8962f77fc2576a51f2b04a2a7cdfb6e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PrivacyPage-BG9Mkra9.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 8583,
+          "sha256": "2424d298019af583066d810e6866573bab91208562120a76d7dca63d83ed3945",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PrivacyPage-cb2bhuEG.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 3463,
+          "sha256": "4beedd81e2b2a57f86057f7120d2d0defc49b75313874f55a820b5528bae131e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/RepTools-lG494POm.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 36183,
+          "sha256": "071d7d8ee3952896e4918cf7ac182142d112cd4075aae4456618576d30a792de",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/RosterPage-BIR5E2ge.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 12402,
+          "sha256": "4ef8205b8da2439e33b4dc5439a436139a6558f3502043dd01a7a079bdbca097",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/StaffInvitePage-BBeReXpF.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4695,
+          "sha256": "ca026e00c9d7591b1437fe280e9cf199fb233881385eac53574f2162b319d27d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/WorkoutEditor-pg-k59Lj.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 39683,
+          "sha256": "13d02339bd8627384da824ade9fcda5cf8ed1f46ff7f59dccf6086dc9557a7b6",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/accounts-DnlFs2lh.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 6625,
+          "sha256": "af00014132cbb99e7ff8ccedbf2bc657e7c8d7b358aec9d94262fce49eb7adcb",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/auto-D22YVyyl.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 202222,
+          "sha256": "807c3daafed64071b7a51e9af520494742efb40e52f01c7e46e4916512d27c3a",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/catalog-By4rojNU.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5072,
+          "sha256": "86c84d067662479e29c636ee043c4d362d24192c2f275badc5ed238f14de5d3d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/data-DE4Xe6zM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9046,
+          "sha256": "e63669a96c006f92cda93c8ea5fb9d22ab4019322a989a57e061eab03a532763",
+          "matchesBuild": true,
+          "shootingToKickMappingPresent": true
+        },
+        {
+          "path": "assets/drillV2-cco2rYEZ.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4540,
+          "sha256": "0da1ab72c8b9dc003712c38a775f7c3f6ef968c63610c7fc76d9588918528167",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/firebase-CUzwZjKV.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 764743,
+          "sha256": "7107b3f5e1de6b7217b4eb30c9e6fed5b0723f1509ce2c887a0b622027fe6379",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/identity-Bw64WvVM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 947,
+          "sha256": "2f26e7693fa5076e98f2884618e31c3f6909176d29c0557e64cb27b90996aa3e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/identity-DcnDfMZb.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1357,
+          "sha256": "fddfd46613128cff42d2192741df148fe30e894fb74486dcc9347fc0f52abded",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/index-BYYQm6QU.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 233333,
+          "sha256": "33d469ec396b960a05e02ccb5f397cf616a431e01a7bcedb7dbdb90317a74571",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/index-CkzNDReN.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 798,
+          "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/legacy-roster-BopdUrEo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 328,
+          "sha256": "7d20d7a5b806a2d05be62afedd5517b037aadcf49c82a3d35c5f91075878eee2",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/loaders-UJlz4CZi.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 17192,
+          "sha256": "d764d6be44416d494495e1c51d9324ba9f8e6cf9dfff2edfbfdce19f9d0762b4",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/organization-CSazI_mQ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 3339,
+          "sha256": "db340edad8e16ac0a52a58b9e987214ac1bace6475e71b1f5336af6b7999910f",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/organization-data-Oz5sFxbs.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1535,
+          "sha256": "13ad4d0baf50ebb5ae8e8f69a6701661b9f6d42a52ebb6c213590fab7eccb09e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/planJobs-C_taizoe.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1471,
+          "sha256": "a4b766e95ca1777c6a662f3a3d5c676173b4008bd20af1e0706a21ef58536f7b",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/planV3-mUnD1z1Z.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 6500,
+          "sha256": "ea89f26fe71d34c77a4e576fe58d509866a13c484df1a966fb1b9ec72da521c1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/pose-portal-BL__fjGJ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 34005,
+          "sha256": "392cd73b2d67e9da6cc251882ca0334c122bfd07429f8eac6b50ad5596a53c87",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/repToolsData-Dd0pFkqG.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 18090,
+          "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/results-Dfo07sSh.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 772,
+          "sha256": "e839017b61160968293a1b5d8246c11cb91a112b5beefe003143c3d083947267",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/rolldown-runtime-hePW80VL.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 716,
+          "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/training-JeY8eeNt.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9733,
+          "sha256": "5f0de8cc11fb7091ca7de151970c63efb0eabb47a103f3fec50d9fae08bb340b",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/types-CTuiavJH.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2252,
+          "sha256": "6a56c81b30c6be6dd36e013a0052cc4f234e99fd3ab3ce85aee7e0f347965ee1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/use-body-background-T9ExUiKQ.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 278,
+          "sha256": "ccb7b3332505b7f59b4d64c728f48a0476a2bc88b06d100189d6731c04f95cf7",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/use-theme-color-vKglh2tP.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 409,
+          "sha256": "355ab84052f7c9fb29e737e18d661f0f7f2ad618fd09bd0f1fd372bc67561d09",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-benchmarks.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2551,
+          "sha256": "12665314f1daa04b14f68a470c19efd91f378cb38081dfecaffc361ae3e63fc0",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-drill-view.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 17383,
+          "sha256": "43809b65543917cc4f168e167d4df0faa47ebb4deb6b6b448c24000e91a6d961",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-drill-view.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 59115,
+          "sha256": "fdd045d04eca9e257035f812aaa7877d8252086a65b68331f47b38cc05c03d9a",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-mobile-pages.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 52764,
+          "sha256": "44b0e845e93b096a70927056ef8ac2e4efce5985c3b8666bfb4f93ea6ce8a244",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-portal.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 33056,
+          "sha256": "e61f39dc74cf1ce2067482e1121781476b251516fac4ba13bd2c8cf61ffd2469",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-stats-view.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 11975,
+          "sha256": "26106a817ac0c097b4fd55af3305261e1e5f71c0ebfc95e6659f879a805d4330",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-stats-view.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 20410,
+          "sha256": "f3015da1d38d9ffae068ace7eff69167b1851ef7abfd4950236d31b5f72b9a8f",
+          "matchesBuild": true
+        },
+        {
+          "path": "backKickView.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 124769,
+          "sha256": "16494b739fe284cf6096644914147f1f20867c4b1bd6b3f320d76645979d0a5d",
+          "matchesBuild": true
+        },
+        {
+          "path": "backfill-session-summaries.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 31504,
+          "sha256": "50e12bb080065c6166c81ec3eaca77aebe1607d22db3287df8ce6e3975b79b44",
+          "matchesBuild": true
+        },
+        {
+          "path": "banner-6x3.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 11094,
+          "sha256": "04688fa44c832f532b59600857a3da857bc36d8e8d368b0db7eb4f629b6c9e46",
+          "matchesBuild": true
+        },
+        {
+          "path": "bookPerformanceTest.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 30599,
+          "sha256": "a2beaff336db9a261fa2928f2b4869de00dc05535965a3612d158a8b9eb69dd2",
+          "matchesBuild": true
+        },
+        {
+          "path": "coach-roster.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9701,
+          "sha256": "6c485edcb3c1b27a9cfb3d3af967e2dd31d088f4ca804e783e24819129f606b7",
+          "matchesBuild": true
+        },
+        {
+          "path": "convention-qr.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 14445,
+          "sha256": "aa715d790d55145cbc2fe293f15b3232c3c30ec65b131933366f22748efd9b28",
+          "matchesBuild": true
+        },
+        {
+          "path": "drillList.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 25219,
+          "sha256": "0c758e0d75a51ccf02e314a13c1f1dcc2ef5b7414d07db06def102c7125dc07a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "drillcreation.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 35171,
+          "sha256": "a9fe2f1e83b5a0068ba7f40df8b5fa59f420f6ca040c09fb150dc990856c0194",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "edge-session-posetek-carousel.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 43690,
+          "sha256": "0a25bbb423943b47a5e1452827ce051db9393e204b840b5a37acdd136aa61e64",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "failureDashboard.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 35108,
+          "sha256": "c7d1d737d583f0b199b8c5baa3aeab80a881a01224733d204f75fc39b0203d2c",
+          "matchesBuild": true
+        },
+        {
+          "path": "favicon.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 9522,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "feed.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 30072,
+          "sha256": "2004c441dd192d192b8b4805ce69370ef2beb5d38a914a9974e0e0947cef760d",
+          "matchesBuild": true
+        },
+        {
+          "path": "feedbackForm.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 56176,
+          "sha256": "19c657fb5784687557ca7f9f858c7f872ffecd77d22420224797379edb68f3ae",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "firebase-identity.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2099,
+          "sha256": "c40dce34e94cf04a2f12add2d100267e9c2b9338001581ee70878529fa4ad9d4",
+          "matchesBuild": true
+        },
+        {
+          "path": "freeRecordPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 152703,
+          "sha256": "84f5c074a100d929561917ed7d5f77a7b3c24d996b8cc2d6e9439fb202f66058",
+          "matchesBuild": true
+        },
+        {
+          "path": "fusionclinic.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 91030,
+          "sha256": "07927b2707e8f21700a2b059dd20f51ae257cee82dfbec47a2c1797f2e552805",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_athleticismSubscription.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 69232,
+          "sha256": "02826003c3e07dff0881a608791f79a8ad973a403e9d46af5ee9fbda4f5f4998",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_athleticismSubscription_signup.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 36778,
+          "sha256": "50c5947eb95d69887fe12c71e532d032577ea448a4e381b1480d75230a770067",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysis.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 70435,
+          "sha256": "f556c875fa9335ec5cf52e7301a3fc1751ec1b1aebe58502b93a2813ccffa0e0",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysisSubscription.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 76620,
+          "sha256": "3b8709e2af9bd5fb10aadcf19ffb10325576ec363bf1d76919ffac42bd858a2d",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysisSubscription_signup.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 36821,
+          "sha256": "a549306a1fffeaa945c966568020377e974cb59074a441bb684be65a5a38957a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingCoach.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59036,
+          "sha256": "2ebb7a6626ecd8d292eb1eee4a01e2ed0dcc7e11c954274c2a9c102b2b50cb0c",
+          "matchesBuild": true
+        },
+        {
+          "path": "hypothesis_performanceTesting.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 61792,
+          "sha256": "e229b59083892676a78078656b9ff290212a54b89c4099a7699cb9c725838c47",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_quantificationTracking.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 57211,
+          "sha256": "cedfdb943970c8f7db6a1262de39d996f7ed3901e6c2049d2ad73b9b197bb2b8",
+          "matchesBuild": true
+        },
+        {
+          "path": "hypothesis_trainingSession.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 75327,
+          "sha256": "faba036a0f7c072339bf42328bc63529dab94f9a7134bddd2a293a79a6378b3a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_trainingSessionKick.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 84668,
+          "sha256": "cfeae6d7b5d93aca52a472f8fa169397c54ed24c2c7aaa91a6783784428ff636",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "icons.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 5031,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/Dylan.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 8736,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/Nolan.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 33371,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/README.md",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "text/markdown; charset=UTF-8",
+          "bytes": 233,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/SprintAnalysis.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1769715,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/analysiskick.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1331381,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/appKickRecording.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1634590,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/backswing.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1054845,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/bing_generated_qrcode.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2099,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/contact.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1107657,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/developmentplan.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 184321,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/goalStanford.mp4",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/mp4",
+          "bytes": 1594582,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/graphpose.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 70895,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/https_www_tiktok_com_pose_tek.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 52337,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jump track.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 7887026,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpAnalysisMetrics.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 535943,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpPoseRawVid.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2645219,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpPower.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1887235,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpanalysis.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1290974,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kick analysis video.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 3309399,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kick overlay video.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 5621615,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kickanalysis.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 667998,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/leaderboard.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 213275,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/logo-export.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 3673,
+          "sha256": "7b051a2255c5115cfd05873f7cfe084096a770482553152b30ca4e78d9abecbc",
+          "matchesBuild": true
+        },
+        {
+          "path": "images/logo.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 568,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/markerSetup.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2374653,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/player profile image.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1544163,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/pose_strike.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 7263690,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/pose_tek_qr.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1876124,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/posejump.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 552416,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/postestimation.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1019839,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/profilepose.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 125009,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/progressOverTime.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 653489,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/soccer-ball.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 146504,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/sprintBreakdown.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 519163,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/sprinting.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 163157,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/stats.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 136806,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/tripod.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 26184,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "index.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 1243,
+          "sha256": "0a742e09588982cf7b393f1efaf0817b135640d2ac735c53a39ec4815bf515b0",
+          "matchesBuild": true
+        },
+        {
+          "path": "kickai-theme.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 20574,
+          "sha256": "3575931c58a3ad30c0b900d3845ae01ba87321ac64697b4f4cf03a1eb38b560e",
+          "matchesBuild": true
+        },
+        {
+          "path": "kickingAnalysis_upload.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59110,
+          "sha256": "4e8abf3483cee903e0a68692bf255f7a714f7e60e2d07d78f451be47f3d5fef9",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "kickingview.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 201713,
+          "sha256": "80966ecc6d7c32dbf81438cc8be3e6a89ee5635bb428455d2f89d663e879642b",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "landing-pose-demo-data.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 218511,
+          "sha256": "fb4c0f8061ee93fb5055ae326774e2ca62a13d6abed0717b401106dd8d916835",
+          "matchesBuild": true
+        },
+        {
+          "path": "landing-pose-demo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 15539,
+          "sha256": "0e1e033b6b107b9d1bef478847f6da18323d7ce0660efeee4e23f9b86f007920",
+          "matchesBuild": true
+        },
+        {
+          "path": "leaderboard.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 66391,
+          "sha256": "a1dbc0f3ad06680a1d4efda1c2654e45ae67ab497115dd8d2c292589f8f80428",
+          "matchesBuild": true
+        },
+        {
+          "path": "pose-portal.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 31421,
+          "sha256": "6ee96deb0bf86085c7b08131e9e08b1ccf80b95ec7fbae3fc386226af8808c9c",
+          "matchesBuild": true
+        },
+        {
+          "path": "premiumCheckout.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1723,
+          "sha256": "e3e5dc9af35976a58450b9f34c347abc682f18711aeb6ed37a7093d9c349cbac",
+          "matchesBuild": true
+        },
+        {
+          "path": "premiumInfo.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 17924,
+          "sha256": "5525410d780287a4f6d8492fc335f71f19c89191bfb7b9fba4c816affa2356f9",
+          "matchesBuild": true
+        },
+        {
+          "path": "questAddPlayer.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 28996,
+          "sha256": "85372a616b659036fb9ae8696f2981e1d8dbffa02b4b724d41d67cac4982ad08",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questLeaderboardResultsPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59635,
+          "sha256": "9777b8616672ed8a5e41f0b6e73f55b44a72a69eb72649dd13c7020809882a19",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questSearchPlayer.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 33984,
+          "sha256": "4a0364905df63366c27e73aae18128167819e6ebaf2576c4093f146aeca31bf8",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questViewBiomechanics.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 330983,
+          "sha256": "05776e48a8de2e256b14209af8057a9537e73926796f7100284eee129a6ff8da",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "sessions.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 63867,
+          "sha256": "1cf47323d44aab089b7928f200f42816a9ee8308d00831ba0490e781194d2777",
+          "matchesBuild": true
+        },
+        {
+          "path": "sessionsexpanded.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 34019,
+          "sha256": "d66298fb17fef8949d8a6d3483ebda69b6640aa6baa2746ec9ecb8ef24c81d44",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "signupForm.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 22599,
+          "sha256": "2a51f50c2a7dd2878c195c013236b5a1d26c95b2c27b7a1532a36be35236f849",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "sprintPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 193914,
+          "sha256": "d2588c01aa527b1e1b2d1d4c1c9ccb40fc560bf15a00c3e975f2730fb6851333",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "subscriptionWaitlist.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 150101,
+          "sha256": "92d488590dc9dcb09251e021513449098d6aa92f9329e52e38b10f5e24d16ce6",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "user-badge.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5900,
+          "sha256": "0aa352829d37c424994509baa3c0fd201d6262a17eaa06989ab744f45b96fa51",
+          "matchesBuild": true
+        },
+        {
+          "path": "videopage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 66248,
+          "sha256": "8e5872e193ff0c4fea90f4e9157a7af00bd99f2c3d8846018e6911f91bf7c6bd",
+          "matchesBuild": true
+        },
+        {
+          "path": "admin/analysis",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 1243,
+          "sha256": "0a742e09588982cf7b393f1efaf0817b135640d2ac735c53a39ec4815bf515b0",
+          "matchesBuild": true
+        }
+      ]
+    },
+    "production": {
+      "verifiedAt": "2026-09-08T20:47:16.544516+00:00",
+      "baseURL": "https://posetek.net",
+      "deployId": "6aa0731ea06d42b6faafcd78",
+      "manifestSHA256": "f9de3aa138cc7250333e6f2d3a3cd3cb57eb5ac382508f756a7ede49a8151bfc",
+      "allPassed": true,
+      "publicFiles": 153,
+      "checks": 154,
+      "allJavaScriptAndCSSChecked": 74,
+      "results": [
+        {
+          "path": "SideKickView.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 324741,
+          "sha256": "64e24c64a31739e5a3fa4b9962f8af28ae73275629f56a3ef67247b19cb165f3",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "StaticJumpPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 308706,
+          "sha256": "801ab12d1362aaa3a244abeb7bdcf4bdc3a1843294d7ccb9c765a9f16400192d",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "assets/AdminHome-D1HBEBz3.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2468,
+          "sha256": "4150ac0f5ff50ae460edab4991bc0e12f4728e00150c938ebf2817fb3b7a9b67",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminPage-B4YhVyoa.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 18682,
+          "sha256": "c51c5b4cc7136ce131ac203e7c99308515dd900cef62d07650bfca16488c99cd",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminPage-BK5LlkOw.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9223,
+          "sha256": "ea3b0d66dd4f43361bb143b97b56fac86917af53e7bbb082b503e1cc8cff05b8",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AdminResults-Buxcu3NM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2234,
+          "sha256": "670ad201bb931f0f29b7ad6bc88918691beb033a7eed44f1023acf25711fb660",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 4493,
+          "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AnalysisWorkspace-ZFS2v5hD.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 31172,
+          "sha256": "1177eaedd50fe409adc791fdea0778a237ae45fc9497b33ac56f1c40131ee337",
+          "matchesBuild": true,
+          "savedComparisonPickerPresent": true
+        },
+        {
+          "path": "assets/AthletePortalPage-Cfucw1d2.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 86676,
+          "sha256": "5e2274b845bb1488aaf1ede9b2ff1ee16a0e4e0b86fada50cd0ab28c104d690f",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthletePortalPage-DFR_Ya8Z.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 17753,
+          "sha256": "af8158d1db3d505f783a7c410c19c447509c3afb3fcb60dcb0273fc2f564f7f0",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthleteStats-CkCHqB47.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 13978,
+          "sha256": "f247af74376e6c8e87e38334b82e246eb45a02a5345aae685d8f353e8490dff6",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/AthleteStats-DignmqrO.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 11969,
+          "sha256": "b230f4385eda2f9496e9b953e4d793257082172b3985b16dd33096829fc8f5ca",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDashboardPage-B1Hblokk.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 36978,
+          "sha256": "2e993c075e887d5770391ebd74c306a657cba157ff47c9c45175bce98490fc65",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDashboardPage-Bc_e8vUl.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 10496,
+          "sha256": "6cb5a1ecca9204d20b19f76f1e58385bcc27638720e1cd8da2f9abed3e6a04a1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/CoachDetail-PwArWDot.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4068,
+          "sha256": "41d2701d75fe5b09397fd90bcc3e4ff8c6faa0912b7ae3a2773cf42ac53af01d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillDashboard-B2XDLWFr.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4634,
+          "sha256": "a51d609bad5c09950a6bcc4d9eb73fccfcf13ff38d01af1332557bf56703e1dc",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillDetail-Dk1B-_RM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5685,
+          "sha256": "1fa0ec93fa06e940794a1c56b5964cc3c596ed79da08a36e6fede0e49bd78dd8",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillForm-B3u3l0mK.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 17540,
+          "sha256": "1119f24abf98026dd10a30c0aaa274b3de67ca804f5a50e8c2b9708618139243",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillLibrary-CF8z84y5.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5011,
+          "sha256": "66f52ccf2d50860cfc9a7b167930d9a104283fff072a78cbba9fba978a722a7d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillSharePage-B3_5jxrB.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 38684,
+          "sha256": "08cf7ee1c93693f61f58273c5bd83873f41219d07e1ccde0b739fbff3b55e508",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/DrillSharePage-CWTdmL-S.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 16477,
+          "sha256": "d719cfdaede974a6c617b4ef5bf64f8a8fb314a6ecd6ad6b660fe5fb8d87dc59",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/GeneratePrograms-Bevl5Nx1.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 14652,
+          "sha256": "663d25a4d86b95a593b551509bb711dccab31670053945dd1d13482b36c03530",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/HomePage-DiXuKW__.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 231569,
+          "sha256": "375bd7af09956418cb97ac61b9be31aab2942c34d70264cbee6395b02c942384",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/HomePage-tqMCfxV1.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 36229,
+          "sha256": "bc5a35c48f8a014ca6c28766f56cceb51a703fea779944ef4427a18a6b1020ab",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/LandingPage-CbYilQKk.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 31806,
+          "sha256": "e3c38243ada3a6a814ec0a8b5d1726bb5465ae4997735afb9b4cefcd2f4cc034",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/LandingPage-L24BCxr-.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 25245,
+          "sha256": "c8237d7b83d33c76897d25f7dab0e7f607f04d7719b097f359a2f3e8a6fe13cd",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/MonitorAccounts-CI2yoXLo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 7518,
+          "sha256": "4683ad860722b34c678cf0673abfd08f06497d092a17511512b354b04301f111",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/NotFoundPage-BCWl6O5B.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1345,
+          "sha256": "14c52a792f72c93b909175d0ca849dd05956daea13b20b9898c48ba53edc7db9",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/NotFoundPage-BHP3j_wX.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 1095,
+          "sha256": "e2d4d1d20be9192caedbb7f71c1ad0277abc4636fa277a6c477ad9b1c771ff32",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/OrganizationPage-BAiVTKpj.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 15419,
+          "sha256": "fe80668e90ea1e02bcab901902c18b557a1522cf3add096fd612383ebe235fdb",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PlayerDetail-BplgY4fD.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 18068,
+          "sha256": "ed59b1f5e95e08fc17c7e2946db6d07ff8962f77fc2576a51f2b04a2a7cdfb6e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PrivacyPage-BG9Mkra9.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 8583,
+          "sha256": "2424d298019af583066d810e6866573bab91208562120a76d7dca63d83ed3945",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/PrivacyPage-cb2bhuEG.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 3463,
+          "sha256": "4beedd81e2b2a57f86057f7120d2d0defc49b75313874f55a820b5528bae131e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/RepTools-lG494POm.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 36183,
+          "sha256": "071d7d8ee3952896e4918cf7ac182142d112cd4075aae4456618576d30a792de",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/RosterPage-BIR5E2ge.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 12402,
+          "sha256": "4ef8205b8da2439e33b4dc5439a436139a6558f3502043dd01a7a079bdbca097",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/StaffInvitePage-BBeReXpF.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4695,
+          "sha256": "ca026e00c9d7591b1437fe280e9cf199fb233881385eac53574f2162b319d27d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/WorkoutEditor-pg-k59Lj.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 39683,
+          "sha256": "13d02339bd8627384da824ade9fcda5cf8ed1f46ff7f59dccf6086dc9557a7b6",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/accounts-DnlFs2lh.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 6625,
+          "sha256": "af00014132cbb99e7ff8ccedbf2bc657e7c8d7b358aec9d94262fce49eb7adcb",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/auto-D22YVyyl.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 202222,
+          "sha256": "807c3daafed64071b7a51e9af520494742efb40e52f01c7e46e4916512d27c3a",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/catalog-By4rojNU.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5072,
+          "sha256": "86c84d067662479e29c636ee043c4d362d24192c2f275badc5ed238f14de5d3d",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/data-DE4Xe6zM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9046,
+          "sha256": "e63669a96c006f92cda93c8ea5fb9d22ab4019322a989a57e061eab03a532763",
+          "matchesBuild": true,
+          "shootingToKickMappingPresent": true
+        },
+        {
+          "path": "assets/drillV2-cco2rYEZ.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 4540,
+          "sha256": "0da1ab72c8b9dc003712c38a775f7c3f6ef968c63610c7fc76d9588918528167",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/firebase-CUzwZjKV.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 764743,
+          "sha256": "7107b3f5e1de6b7217b4eb30c9e6fed5b0723f1509ce2c887a0b622027fe6379",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/identity-Bw64WvVM.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 947,
+          "sha256": "2f26e7693fa5076e98f2884618e31c3f6909176d29c0557e64cb27b90996aa3e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/identity-DcnDfMZb.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1357,
+          "sha256": "fddfd46613128cff42d2192741df148fe30e894fb74486dcc9347fc0f52abded",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/index-BYYQm6QU.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 233333,
+          "sha256": "33d469ec396b960a05e02ccb5f397cf616a431e01a7bcedb7dbdb90317a74571",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/index-CkzNDReN.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 798,
+          "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/legacy-roster-BopdUrEo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 328,
+          "sha256": "7d20d7a5b806a2d05be62afedd5517b037aadcf49c82a3d35c5f91075878eee2",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/loaders-UJlz4CZi.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 17192,
+          "sha256": "d764d6be44416d494495e1c51d9324ba9f8e6cf9dfff2edfbfdce19f9d0762b4",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/organization-CSazI_mQ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 3339,
+          "sha256": "db340edad8e16ac0a52a58b9e987214ac1bace6475e71b1f5336af6b7999910f",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/organization-data-Oz5sFxbs.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1535,
+          "sha256": "13ad4d0baf50ebb5ae8e8f69a6701661b9f6d42a52ebb6c213590fab7eccb09e",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/planJobs-C_taizoe.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1471,
+          "sha256": "a4b766e95ca1777c6a662f3a3d5c676173b4008bd20af1e0706a21ef58536f7b",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/planV3-mUnD1z1Z.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 6500,
+          "sha256": "ea89f26fe71d34c77a4e576fe58d509866a13c484df1a966fb1b9ec72da521c1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/pose-portal-BL__fjGJ.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 34005,
+          "sha256": "392cd73b2d67e9da6cc251882ca0334c122bfd07429f8eac6b50ad5596a53c87",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/repToolsData-Dd0pFkqG.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 18090,
+          "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/results-Dfo07sSh.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 772,
+          "sha256": "e839017b61160968293a1b5d8246c11cb91a112b5beefe003143c3d083947267",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/rolldown-runtime-hePW80VL.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 716,
+          "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/training-JeY8eeNt.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9733,
+          "sha256": "5f0de8cc11fb7091ca7de151970c63efb0eabb47a103f3fec50d9fae08bb340b",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/types-CTuiavJH.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2252,
+          "sha256": "6a56c81b30c6be6dd36e013a0052cc4f234e99fd3ab3ce85aee7e0f347965ee1",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/use-body-background-T9ExUiKQ.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 278,
+          "sha256": "ccb7b3332505b7f59b4d64c728f48a0476a2bc88b06d100189d6731c04f95cf7",
+          "matchesBuild": true
+        },
+        {
+          "path": "assets/use-theme-color-vKglh2tP.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 409,
+          "sha256": "355ab84052f7c9fb29e737e18d661f0f7f2ad618fd09bd0f1fd372bc67561d09",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-benchmarks.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2551,
+          "sha256": "12665314f1daa04b14f68a470c19efd91f378cb38081dfecaffc361ae3e63fc0",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-drill-view.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 17383,
+          "sha256": "43809b65543917cc4f168e167d4df0faa47ebb4deb6b6b448c24000e91a6d961",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-drill-view.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 59115,
+          "sha256": "fdd045d04eca9e257035f812aaa7877d8252086a65b68331f47b38cc05c03d9a",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-mobile-pages.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 52764,
+          "sha256": "44b0e845e93b096a70927056ef8ac2e4efce5985c3b8666bfb4f93ea6ce8a244",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-portal.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 33056,
+          "sha256": "e61f39dc74cf1ce2067482e1121781476b251516fac4ba13bd2c8cf61ffd2469",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-stats-view.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 11975,
+          "sha256": "26106a817ac0c097b4fd55af3305261e1e5f71c0ebfc95e6659f879a805d4330",
+          "matchesBuild": true
+        },
+        {
+          "path": "athlete-stats-view.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 20410,
+          "sha256": "f3015da1d38d9ffae068ace7eff69167b1851ef7abfd4950236d31b5f72b9a8f",
+          "matchesBuild": true
+        },
+        {
+          "path": "backKickView.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 124769,
+          "sha256": "16494b739fe284cf6096644914147f1f20867c4b1bd6b3f320d76645979d0a5d",
+          "matchesBuild": true
+        },
+        {
+          "path": "backfill-session-summaries.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 31504,
+          "sha256": "50e12bb080065c6166c81ec3eaca77aebe1607d22db3287df8ce6e3975b79b44",
+          "matchesBuild": true
+        },
+        {
+          "path": "banner-6x3.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 11094,
+          "sha256": "04688fa44c832f532b59600857a3da857bc36d8e8d368b0db7eb4f629b6c9e46",
+          "matchesBuild": true
+        },
+        {
+          "path": "bookPerformanceTest.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 30599,
+          "sha256": "a2beaff336db9a261fa2928f2b4869de00dc05535965a3612d158a8b9eb69dd2",
+          "matchesBuild": true
+        },
+        {
+          "path": "coach-roster.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 9701,
+          "sha256": "6c485edcb3c1b27a9cfb3d3af967e2dd31d088f4ca804e783e24819129f606b7",
+          "matchesBuild": true
+        },
+        {
+          "path": "convention-qr.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 14445,
+          "sha256": "aa715d790d55145cbc2fe293f15b3232c3c30ec65b131933366f22748efd9b28",
+          "matchesBuild": true
+        },
+        {
+          "path": "drillList.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 25219,
+          "sha256": "0c758e0d75a51ccf02e314a13c1f1dcc2ef5b7414d07db06def102c7125dc07a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "drillcreation.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 35171,
+          "sha256": "a9fe2f1e83b5a0068ba7f40df8b5fa59f420f6ca040c09fb150dc990856c0194",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "edge-session-posetek-carousel.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 43690,
+          "sha256": "0a25bbb423943b47a5e1452827ce051db9393e204b840b5a37acdd136aa61e64",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "failureDashboard.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 35108,
+          "sha256": "c7d1d737d583f0b199b8c5baa3aeab80a881a01224733d204f75fc39b0203d2c",
+          "matchesBuild": true
+        },
+        {
+          "path": "favicon.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 9522,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "feed.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 30072,
+          "sha256": "2004c441dd192d192b8b4805ce69370ef2beb5d38a914a9974e0e0947cef760d",
+          "matchesBuild": true
+        },
+        {
+          "path": "feedbackForm.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 56176,
+          "sha256": "19c657fb5784687557ca7f9f858c7f872ffecd77d22420224797379edb68f3ae",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "firebase-identity.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 2099,
+          "sha256": "c40dce34e94cf04a2f12add2d100267e9c2b9338001581ee70878529fa4ad9d4",
+          "matchesBuild": true
+        },
+        {
+          "path": "freeRecordPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 152703,
+          "sha256": "84f5c074a100d929561917ed7d5f77a7b3c24d996b8cc2d6e9439fb202f66058",
+          "matchesBuild": true
+        },
+        {
+          "path": "fusionclinic.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 91030,
+          "sha256": "07927b2707e8f21700a2b059dd20f51ae257cee82dfbec47a2c1797f2e552805",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_athleticismSubscription.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 69232,
+          "sha256": "02826003c3e07dff0881a608791f79a8ad973a403e9d46af5ee9fbda4f5f4998",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_athleticismSubscription_signup.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 36778,
+          "sha256": "50c5947eb95d69887fe12c71e532d032577ea448a4e381b1480d75230a770067",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysis.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 70435,
+          "sha256": "f556c875fa9335ec5cf52e7301a3fc1751ec1b1aebe58502b93a2813ccffa0e0",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysisSubscription.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 76620,
+          "sha256": "3b8709e2af9bd5fb10aadcf19ffb10325576ec363bf1d76919ffac42bd858a2d",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingAnalysisSubscription_signup.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 36821,
+          "sha256": "a549306a1fffeaa945c966568020377e974cb59074a441bb684be65a5a38957a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_kickingCoach.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59036,
+          "sha256": "2ebb7a6626ecd8d292eb1eee4a01e2ed0dcc7e11c954274c2a9c102b2b50cb0c",
+          "matchesBuild": true
+        },
+        {
+          "path": "hypothesis_performanceTesting.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 61792,
+          "sha256": "e229b59083892676a78078656b9ff290212a54b89c4099a7699cb9c725838c47",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_quantificationTracking.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 57211,
+          "sha256": "cedfdb943970c8f7db6a1262de39d996f7ed3901e6c2049d2ad73b9b197bb2b8",
+          "matchesBuild": true
+        },
+        {
+          "path": "hypothesis_trainingSession.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 75327,
+          "sha256": "faba036a0f7c072339bf42328bc63529dab94f9a7134bddd2a293a79a6378b3a",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "hypothesis_trainingSessionKick.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 84668,
+          "sha256": "cfeae6d7b5d93aca52a472f8fa169397c54ed24c2c7aaa91a6783784428ff636",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "icons.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 5031,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/Dylan.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 8736,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/Nolan.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 33371,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/README.md",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "text/markdown; charset=UTF-8",
+          "bytes": 233,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/SprintAnalysis.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1769715,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/analysiskick.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1331381,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/appKickRecording.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1634590,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/backswing.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1054845,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/bing_generated_qrcode.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2099,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/contact.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1107657,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/developmentplan.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 184321,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/goalStanford.mp4",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/mp4",
+          "bytes": 1594582,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/graphpose.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 70895,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/https_www_tiktok_com_pose_tek.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 52337,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jump track.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 7887026,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpAnalysisMetrics.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 535943,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpPoseRawVid.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2645219,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpPower.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1887235,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/jumpanalysis.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1290974,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kick analysis video.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 3309399,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kick overlay video.mov",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "video/quicktime",
+          "bytes": 5621615,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/kickanalysis.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 667998,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/leaderboard.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 213275,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/logo-export.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 3673,
+          "sha256": "7b051a2255c5115cfd05873f7cfe084096a770482553152b30ca4e78d9abecbc",
+          "matchesBuild": true
+        },
+        {
+          "path": "images/logo.svg",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/svg+xml",
+          "bytes": 568,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/markerSetup.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 2374653,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/player profile image.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1544163,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/pose_strike.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 7263690,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/pose_tek_qr.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1876124,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/posejump.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 552416,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/postestimation.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 1019839,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/profilepose.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 125009,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/progressOverTime.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 653489,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/soccer-ball.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 146504,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/sprintBreakdown.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 519163,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/sprinting.PNG",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 163157,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/stats.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 136806,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "images/tripod.png",
+          "method": "HEAD",
+          "status": 200,
+          "contentType": "image/png",
+          "bytes": 26184,
+          "matchesBuildSize": true
+        },
+        {
+          "path": "index.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 1243,
+          "sha256": "0a742e09588982cf7b393f1efaf0817b135640d2ac735c53a39ec4815bf515b0",
+          "matchesBuild": true
+        },
+        {
+          "path": "kickai-theme.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 20574,
+          "sha256": "3575931c58a3ad30c0b900d3845ae01ba87321ac64697b4f4cf03a1eb38b560e",
+          "matchesBuild": true
+        },
+        {
+          "path": "kickingAnalysis_upload.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59110,
+          "sha256": "4e8abf3483cee903e0a68692bf255f7a714f7e60e2d07d78f451be47f3d5fef9",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "kickingview.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 201713,
+          "sha256": "80966ecc6d7c32dbf81438cc8be3e6a89ee5635bb428455d2f89d663e879642b",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "landing-pose-demo-data.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 218511,
+          "sha256": "fb4c0f8061ee93fb5055ae326774e2ca62a13d6abed0717b401106dd8d916835",
+          "matchesBuild": true
+        },
+        {
+          "path": "landing-pose-demo.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 15539,
+          "sha256": "0e1e033b6b107b9d1bef478847f6da18323d7ce0660efeee4e23f9b86f007920",
+          "matchesBuild": true
+        },
+        {
+          "path": "leaderboard.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 66391,
+          "sha256": "a1dbc0f3ad06680a1d4efda1c2654e45ae67ab497115dd8d2c292589f8f80428",
+          "matchesBuild": true
+        },
+        {
+          "path": "pose-portal.css",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "bytes": 31421,
+          "sha256": "6ee96deb0bf86085c7b08131e9e08b1ccf80b95ec7fbae3fc386226af8808c9c",
+          "matchesBuild": true
+        },
+        {
+          "path": "premiumCheckout.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 1723,
+          "sha256": "e3e5dc9af35976a58450b9f34c347abc682f18711aeb6ed37a7093d9c349cbac",
+          "matchesBuild": true
+        },
+        {
+          "path": "premiumInfo.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 17924,
+          "sha256": "5525410d780287a4f6d8492fc335f71f19c89191bfb7b9fba4c816affa2356f9",
+          "matchesBuild": true
+        },
+        {
+          "path": "questAddPlayer.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 28996,
+          "sha256": "85372a616b659036fb9ae8696f2981e1d8dbffa02b4b724d41d67cac4982ad08",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questLeaderboardResultsPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 59635,
+          "sha256": "9777b8616672ed8a5e41f0b6e73f55b44a72a69eb72649dd13c7020809882a19",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questSearchPlayer.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 33984,
+          "sha256": "4a0364905df63366c27e73aae18128167819e6ebaf2576c4093f146aeca31bf8",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "questViewBiomechanics.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 330983,
+          "sha256": "05776e48a8de2e256b14209af8057a9537e73926796f7100284eee129a6ff8da",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "sessions.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 63867,
+          "sha256": "1cf47323d44aab089b7928f200f42816a9ee8308d00831ba0490e781194d2777",
+          "matchesBuild": true
+        },
+        {
+          "path": "sessionsexpanded.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 34019,
+          "sha256": "d66298fb17fef8949d8a6d3483ebda69b6640aa6baa2746ec9ecb8ef24c81d44",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "signupForm.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 22599,
+          "sha256": "2a51f50c2a7dd2878c195c013236b5a1d26c95b2c27b7a1532a36be35236f849",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "sprintPage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 193914,
+          "sha256": "d2588c01aa527b1e1b2d1d4c1c9ccb40fc560bf15a00c3e975f2730fb6851333",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "subscriptionWaitlist.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 150101,
+          "sha256": "92d488590dc9dcb09251e021513449098d6aa92f9329e52e38b10f5e24d16ce6",
+          "matchesBuild": false,
+          "htmlEquivalent": true
+        },
+        {
+          "path": "user-badge.js",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/javascript; charset=UTF-8",
+          "bytes": 5900,
+          "sha256": "0aa352829d37c424994509baa3c0fd201d6262a17eaa06989ab744f45b96fa51",
+          "matchesBuild": true
+        },
+        {
+          "path": "videopage.html",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 66248,
+          "sha256": "8e5872e193ff0c4fea90f4e9157a7af00bd99f2c3d8846018e6911f91bf7c6bd",
+          "matchesBuild": true
+        },
+        {
+          "path": "admin/analysis",
+          "method": "GET",
+          "status": 200,
+          "contentType": "text/html; charset=UTF-8",
+          "bytes": 1243,
+          "sha256": "0a742e09588982cf7b393f1efaf0817b135640d2ac735c53a39ec4815bf515b0",
+          "matchesBuild": true
+        }
+      ]
+    },
+    "htmlNormalization": "Only anchor href pretty URLs are normalized: .html removal, root-relative paths, lowercased local paths and index to root. HTMLParser normalizes attribute ordering/quoting. Other parsed tokens match."
+  },
+  "validation": {
+    "frontendTestsPassed": 546,
+    "frontendTestFiles": 24,
+    "focusedReviewTestsPassed": 12,
+    "newRegressionTests": 5,
+    "typeScript": "passed",
+    "productionBuild": "passed",
+    "scopedLint": "exit0; four existing set-state-in-effect warnings",
+    "diffCheck": "passed"
+  },
+  "limitations": [
+    "No signed-in browser click-through was performed.",
+    "Annotation save/reload, source-drift refusal, review publication and export browser interactions remain pending as recorded in the predecessor release.",
+    "This release changes only saved-pair discovery; it does not change gateway analysis or review callables."
+  ]
+}
