@@ -9,7 +9,7 @@ import type { AthleteLoad } from "../lib/programBatch";
 import { DEFAULT_INTAKE, HORIZON_WEEKS, SESSIONS_PER_WEEK, MINUTES_PER_SESSION, SETTINGS } from "../lib/planJobs";
 import { EQUIPMENT_OPTIONS, runBatch } from "../lib/programBatchLogic";
 import { submitLlmJob } from "../../athlete-portal/lib/loaders";
-import { activationParams, allocationRows, PERSONALIZED_CAPABILITIES, PERSONALIZED_ENGINE,
+import { activationParams, activePlansMatch, allocationRows, PERSONALIZED_CAPABILITIES, PERSONALIZED_ENGINE,
   personalizedParams, plannerLink, prescriptionSignature, previewEnabled, recentEvidence, operationLabel } from "../lib/personalizedLogic";
 import "../personalized.scss";
 import AthleteEvidenceBadges from "./AthleteEvidenceBadges";
@@ -112,8 +112,7 @@ export default function PersonalizedPrograms() {
   const canGenerate = previewEnabled(config) && !busy && !intake.painFlag && selected.size > 0
     && [...selected].every(id => evidence[id] && !inFlight(id));
   const today = draft?.plan?.timezone ? new Intl.DateTimeFormat("en-CA", { timeZone: draft.plan.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()) : "";
-  const stale = draft && (draft.plan.startDate !== today || JSON.stringify(draft.expectedActivePlans) !== JSON.stringify(plans.filter(p => p.status === "active")
-    .map(p => ({ planId: p.id, planRevision: p.planRevision ?? 1 })).sort((a, b) => a.planId.localeCompare(b.planId))));
+  const stale = draft && (draft.plan.startDate !== today || !activePlansMatch(draft.expectedActivePlans, plans));
 
   function toggle(id: string) { setSelected(old => { const next = new Set(old); if (next.has(id)) next.delete(id); else next.add(id); return next; }); }
   async function generate() {

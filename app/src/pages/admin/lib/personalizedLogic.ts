@@ -50,3 +50,18 @@ export function activationParams(draft: any) {
   return { engineVersion: PERSONALIZED_ENGINE, draftId: draft.draftId,
     comparisonToken: draft.comparisonToken, expectedActivePlans: draft.expectedActivePlans };
 }
+
+/** Compare the draft baseline with current active plans, independent of serialization. */
+export function activePlansMatch(expected: unknown, plans: any[]): boolean {
+  if (!Array.isArray(expected)) return false;
+  const active = plans.filter(p => p?.status === "active");
+  if (expected.length !== active.length) return false;
+  const revisions = new Map(active.map(p => [p.id, p.planRevision ?? 1]));
+  if (revisions.size !== active.length) return false;
+  const seen = new Set<string>();
+  return expected.every(row => {
+    if (!row || typeof row.planId !== "string" || !row.planId || seen.has(row.planId)) return false;
+    seen.add(row.planId);
+    return revisions.has(row.planId) && revisions.get(row.planId) === row.planRevision;
+  });
+}
