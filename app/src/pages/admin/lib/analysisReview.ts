@@ -32,6 +32,27 @@ export function reorderedFocus(rows: ReviewFocus[], index: number, direction: -1
 export function reliableFoot(rep: any): "left" | "right" | null {
   return ["left", "right"].includes(rep?.strike_foot) ? rep.strike_foot : null;
 }
+export interface ComparisonPair { leftId: string; rightId: string }
+export function comparisonTime(row: any): number {
+  const value = row?.generatedAt;
+  const time = typeof value?.toMillis === "function" ? value.toMillis() : typeof value?.seconds === "number" ? value.seconds * 1000 : typeof value === "string" ? Date.parse(value) : NaN;
+  return Number.isFinite(time) ? time : 0;
+}
+export function validSavedComparisons(reps: any[], comparisons: any[]): any[] {
+  const byId = new Map(reps.map(rep => [rep.id, rep]));
+  return comparisons.filter(row => typeof row?.comparisonId === "string" && row.comparisonId && row.leftRepId !== row.rightRepId
+    && reliableFoot(byId.get(row.leftRepId)) === "left" && reliableFoot(byId.get(row.rightRepId)) === "right")
+    .sort((a, b) => comparisonTime(b) - comparisonTime(a) || a.comparisonId.localeCompare(b.comparisonId));
+}
+export function selectComparisonPair(reps: any[], comparisons: any[], current?: ComparisonPair): ComparisonPair {
+  const valid = (id: string, foot: "left" | "right") => !id || reps.some(rep => rep.id === id && reliableFoot(rep) === foot);
+  if (current && valid(current.leftId, "left") && valid(current.rightId, "right")) return current;
+  const saved = validSavedComparisons(reps, comparisons)[0];
+  return saved ? { leftId: saved.leftRepId, rightId: saved.rightRepId } : {
+    leftId: reps.find(rep => reliableFoot(rep) === "left")?.id || "",
+    rightId: reps.find(rep => reliableFoot(rep) === "right")?.id || "",
+  };
+}
 export function phaseFrame(result: any, metadata: any, phase: Phase): number | null {
   const value = result?.keyFrames?.[phase] ?? (phase === "contact" ? metadata?.contact_frame : phase === "backswing" ? metadata?.transition_frame : null);
   return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : null;
