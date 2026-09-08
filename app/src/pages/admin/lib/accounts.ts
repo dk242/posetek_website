@@ -24,6 +24,17 @@ export interface OrganizationRow {
   name: string;
   code: string;
   coachIds: string[];
+  /** 2 = a club organization with `teams` documents; anything else is a legacy roster org. */
+  schemaVersion: number;
+  logoUrl: string | null;
+}
+
+export interface TeamRow {
+  id: string;
+  organizationId: string;
+  name: string;
+  playerIds: string[];
+  coachUIDs: string[];
 }
 
 export interface CoachRow {
@@ -42,7 +53,9 @@ export interface PlayerRow {
   name: string;
   email: string;
   coachId: string | null;
+  /** The club `organizationId` string when migrated, else the legacy `organization` ref id. */
   organizationId: string | null;
+  teamId: string | null;
   registered: boolean;
   raw: any;
 }
@@ -79,9 +92,50 @@ export async function loadOrganizations(): Promise<OrganizationRow[]> {
         name: String(data.name || "Organization"),
         code: String(data.code || ""),
         coachIds: (Array.isArray(data.coaches) ? data.coaches : []).map((entry: unknown) => String(refId(entry) ?? entry)),
+        schemaVersion: Number(data.schemaVersion || 1),
+        logoUrl: typeof data.logoUrl === "string" && data.logoUrl ? data.logoUrl : null,
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Every club team. Admins may read the whole `teams` collection (the rule is
+ * not resource-dependent), so one query covers every organization — the
+ * Monitor accounts page groups them client-side.
+ */
+export async function loadTeams(): Promise<TeamRow[]> {
+  const snapshot = await db.collection("teams").get();
+  return snapshot.docs
+    .map(doc => {
+      const data: any = doc.data() || {};
+      return {
+        id: doc.id,
+        organizationId: String(data.organizationId || ""),
+        name: String(data.name || "Team"),
+        playerIds: stringArray(data.playerIds),
+        coachUIDs: stringArray(data.coachUIDs),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * The athletes of one club team: every indexed player whose `teamId` names the
+ * team, plus any id on the team's `playerIds` projection that the capped index
+ * missed (fetched individually). Both relations exist in real data.
+ */
+export async function loadTeamPlayers(team: TeamRow, index: PlayerRow[]): Promise<PlayerRow[]> {
+  const byId = new Map<string, PlayerRow>();
+  for (const player of index) {
+    if (player.teamId === team.id && player.organizationId === team.organizationId) byId.set(player.id, player);
+  }
+  const missing = team.playerIds.filter(id => !byId.has(id));
+  const docs = await Promise.all(missing.map(id => db.collection("players").doc(id).get().catch(() => null)));
+  for (const doc of docs) {
+    if (doc?.exists) byId.set(doc.id, playerRow(doc.id, doc.data()));
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function loadCoaches(): Promise<CoachRow[]> {
@@ -109,7 +163,8 @@ export function playerRow(id: string, data: any): PlayerRow {
     name: personName(data, "Athlete"),
     email: String(data?.signupEmail || data?.email || ""),
     coachId: refId(data?.coach) ?? (data?.coachUID ? String(data.coachUID) : null),
-    organizationId: refId(data?.organization),
+    organizationId: (typeof data?.organizationId === "string" && data.organizationId) || refId(data?.organization),
+    teamId: typeof data?.teamId === "string" && data.teamId ? data.teamId : null,
     registered: data?.registered === true || Boolean(data?.userUID) || Boolean(data?.authenticationUID),
     raw: data || {},
   };

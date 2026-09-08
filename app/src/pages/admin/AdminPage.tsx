@@ -25,6 +25,8 @@ const MonitorAccounts = lazy(() => import("./views/MonitorAccounts"));
 const CoachDetail = lazy(() => import("./views/CoachDetail"));
 const PlayerDetail = lazy(() => import("./views/PlayerDetail"));
 const WorkoutEditor = lazy(() => import("./views/WorkoutEditor"));
+const AdminResults = lazy(() => import("./views/AdminResults"));
+const RepTools = lazy(() => import("./views/RepTools"));
 
 export default function AdminPage() {
   const session = useAdminSession();
@@ -82,6 +84,9 @@ export default function AdminPage() {
           <Route path="accounts" element={<MonitorAccounts />} />
           <Route path="accounts/coach/:coachId" element={<CoachDetail />} />
           <Route path="accounts/player/:playerId" element={<PlayerDetail />} />
+          <Route path="accounts/player/:playerId/results" element={<AdminResults />} />
+          <Route path="accounts/player/:playerId/results/:drillKey" element={<AdminResults />} />
+          <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
             element={<WorkoutEditor />}

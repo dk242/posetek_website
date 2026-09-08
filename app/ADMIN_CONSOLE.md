@@ -193,3 +193,88 @@ breaks on a `schemaVersion: 3` plan.
 
 See §5 of `PoseTek-mobile-app/Agentic Work/reports/05-report.md` for what was verified and what
 is still unverified (rules on an emulator, live data, cross-client parity with 02/03/04).
+
+---
+
+## 5. Rep tools (2026-09-08)
+
+Admin "debug" tools for reps that did not process correctly the first time — fix the event
+frames, annotate the athlete's center of mass and the ball, see the re-processed rep, and push it
+over the original. Built under Monitor accounts.
+
+### Navigation
+
+- `views/MonitorAccounts.tsx` now lists **every organization first**: a club (`schemaVersion: 2`)
+  shows its `teams`, each team expands to its athletes (`lib/accounts.ts` `loadTeams` /
+  `loadTeamPlayers` — the player's `teamId` plus the team's `playerIds` projection), and every
+  athlete row carries a direct **Results** link. Coaches and independent coaches follow as before.
+- `views/PlayerDetail.tsx` gained a **Recorded results** card (one tile per drill with its rep
+  count) and a header link to the results page.
+- `views/AdminResults.tsx` — `/admin/accounts/player/:playerId/results/:drillKey`. The athlete
+  portal's own `DrillDashboard` (chart, summary, sessions → reps) with every rep opening the rep
+  tools instead of the read-only viewer. Reads through `lib/results.ts`, byte-identical to the
+  portal's loader.
+- `views/RepTools.tsx` — `/admin/accounts/player/:playerId/results/:drillKey/:repId`.
+
+### The rep tools page
+
+1. **Scrub** the saved `.mov` frame by frame (transport buttons, slider, ← → keys, shift for a
+   bigger step, space plays). The frame counter is `floor(currentTime × fps)`; seeks land on
+   `(frame + 0.5) / fps`. fps is `metadata.json → framesPerSecond` (what the phone measured),
+   else the `reprocess_context.json` capture block, else pose frames over duration.
+2. **Event frames** — for change of direction / dribbling: start, turn start (`phase1EndFrame`),
+   turn apex (`apexFrame`), turn end (`phase2EndFrame`), end. "Use current" stamps the frame
+   being viewed. Other drills expose their own frame fields (sprint start/finish, jump takeoff /
+   peak / landing, broad jump takeoff/landing, shooting contact/transition).
+3. **Annotate** — pick a stride (default 3: mark every third frame, the two skipped frames are
+   interpolated linearly) and a range (start → end frames, or the whole clip). Click the
+   athlete's center of mass; the tool records the point in normalized video coordinates and
+   jumps to the next frame in the queue until the range is done. Same for the ball center.
+   Undo (backspace) steps back one mark; Skip leaves a gap; Continue resumes a stopped pass.
+   The hip midpoint from `pose.json` and the phone's `ball_boxes.json` are offered as
+   alternative tracks so distances can be re-derived without annotating.
+4. **Re-processed rep** — `lib/repTools.ts` re-derives the shuttle drills exactly as
+   `KickAI/DrillProcessing/CodProcessingMath.swift` does: every time is frames over fps; phase
+   times need `start ≤ turn start ≤ turn end ≤ end`; percentages are shares of the phase sum;
+   distances convert the track through the gate (`arucoGate` in metadata.json, else the session's
+   `aruco_corners.json` when `calibrationGeometryTrusted` is not false, else the tapped
+   `{drill}_marker.json` points) with `x = 0` at the start marker; outbound = apex − start,
+   return = apex − end; dribbling's `avgBallDistance` = mean |ball.x − com.x| over the window.
+   The "Find apex / Find end / Find turn phases (90%)" buttons apply the phone's own event
+   detectors to the annotated track. Non-shuttle drills are not re-derived on the web — their
+   values are typed directly. The before/after table highlights what changes.
+5. **Push** — a confirmation dialog, then the `adminReviseRep` callable overwrites the rep
+   **in place**: same `repId`, `sessionNumber`, `repNumber`, `absoluteRepNumber`, `sessionId`,
+   `storagePath` and `createdAt`; `repCount` is never touched. It writes the allow-listed fields
+   to `players/{id}/reps/{repId}`, merges the same values into the rep folder's `metadata.json`
+   (the phone's session viewer reads its numbers from there), clears `failedSteps` /
+   `processingStatus` when the rep now has a total time, and writes `admin_annotations.json`
+   (marks, gate, fps, frames, sources). A provenance block `adminRevision` lands on both.
+6. **Revisions** — every push first snapshots the previous document to
+   `players/{id}/reps/{repId}/revisions/{revisionId}` and the previous `metadata.json` to
+   `{repFolder}/admin_revisions/{revisionId}/`. **Restore** (`adminRestoreRepRevision`) puts both
+   back; a revision restores once.
+
+### Why a callable
+
+The live Firestore ruleset (`e84fb428…`) and Storage ruleset (`9f5bcd27…`) deny every client,
+admins included, any write to `players/{id}/reps` and to athlete recording prefixes — that is
+`docs/rules/admin.rules` ("no admin write to reps") as deployed. Rather than widen the rules, the
+write runs in `functions/rep-revisions.js` with the Admin SDK, gated on the same verified
+`@posetek.net` predicate the rules use (`club-access.js` `isClubAdmin`). Field names and value
+shapes are allow-listed per drill (`FIELD_RULES`); anything else is refused before a byte is
+written, and an artifact-write failure rolls the document back.
+
+### Verification
+
+- `npm --prefix app test` — 494 passing, including `src/pages/admin/lib/repTools.test.ts`
+  (gate resolution, meters sign convention, interpolation, the apex / end / 90% detectors, the
+  all-or-nothing timing rule, dribbling ball distance, the payload).
+- `node --test functions/*.test.js` — 57 passing, including `functions/rep-revisions.test.js`
+  (admin gate, in-place overwrite with identity fields kept, allow-list refusals, storage-path
+  escape refused, rollback when the artifact write fails, restore once).
+- `npm --prefix app run build` — clean.
+- **Not yet deployed**: `adminReviseRep` and `adminRestoreRepRevision` must be deployed to
+  `kickai-69dd0/us-central1` before the push/restore buttons work in production. The page loads,
+  scrubs and previews without them. **Not yet exercised in a browser** against a real rep with a
+  saved video — do that on Safari first (the phone's HEVC `.mov` files may not decode elsewhere).
