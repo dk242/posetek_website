@@ -48,7 +48,8 @@ const FIELD_RULES = Object.freeze({
   },
   jump: { numbers: ["jumpHeight"], frames: ["takeoffFrame", "peakFrame", "apexFrame", "landingFrame"], strings: {} },
   broadJump: { numbers: ["broadJumpDistance", "jumpHeight"], frames: ["takeoffFrame", "landingFrame"], strings: {} },
-  shooting: { numbers: ["velocity", "launch_angle", "launchAngle"], frames: ["contact_frame", "transition_frame"], strings: { strike_foot: ["left", "right"], direction: ["left", "right"] } },
+  // `direction` is the phone's travel label (KickProcessingMath.kickDirection), not a foot.
+  shooting: { numbers: ["velocity", "launch_angle", "launchAngle"], frames: ["contact_frame", "transition_frame"], strings: { strike_foot: ["left", "right"], direction: ["left_to_right", "right_to_left"] } },
 });
 
 const METADATA_EXTRA_KEYS = ["failedSteps", "processingStatus", "resultsValid"];

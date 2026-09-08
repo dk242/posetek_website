@@ -279,3 +279,13 @@ test("artifacts outside the drill's allow-list are refused before anything is wr
   await assert.rejects(revisions.reviseRep({ ...payload, artifacts: { "ball_information.json": { ball_speed_ms: 1 } } }, admin), { code: "invalid-argument" });
   assert.equal(writes.length, 0);
 });
+
+test("a kick's direction takes the phone's travel labels, not a foot", async () => {
+  const { db, revisions } = harness({ seed: { "players/p1/reps/k2": { repType: "side_kick", sessionNumber: 3, repNumber: 1, direction: "left_to_right" } } });
+  const request = { playerId: "p1", repId: "k2", drill: "shooting" };
+  await revisions.reviseRep({ ...request, fields: { direction: "right_to_left", velocity: 27.071, launch_angle: 34.451, contact_frame: 442 } }, admin);
+  assert.equal(db.snapshot("players/p1/reps/k2").direction, "right_to_left");
+  for (const value of ["left", "right", "up"]) {
+    await assert.rejects(revisions.reviseRep({ ...request, fields: { direction: value } }, admin), { code: "invalid-argument" });
+  }
+});
