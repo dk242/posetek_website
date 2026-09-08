@@ -39,6 +39,15 @@ export default function AdminHome() {
             training program workout by workout, and the editor for any workout in it.
           </p>
         </Link>
+
+        <Link className="admin-home-option" to="/admin/programs">
+          <span className="material-symbols-outlined">auto_awesome</span>
+          <h2>Generate programs</h2>
+          <p>
+            Pick a club's athletes, set weeks, sessions and minutes, and build every training
+            program in one go — each job watched live, each plan opened from its row.
+          </p>
+        </Link>
       </div>
     </>
   );

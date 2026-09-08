@@ -27,6 +27,7 @@ const PlayerDetail = lazy(() => import("./views/PlayerDetail"));
 const WorkoutEditor = lazy(() => import("./views/WorkoutEditor"));
 const AdminResults = lazy(() => import("./views/AdminResults"));
 const RepTools = lazy(() => import("./views/RepTools"));
+const GeneratePrograms = lazy(() => import("./views/GeneratePrograms"));
 
 export default function AdminPage() {
   const session = useAdminSession();
@@ -87,6 +88,7 @@ export default function AdminPage() {
           <Route path="accounts/player/:playerId/results" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
+          <Route path="programs" element={<GeneratePrograms />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
             element={<WorkoutEditor />}
@@ -125,6 +127,10 @@ export default function AdminPage() {
             <NavLink className={navClass} to="/admin/accounts">
               <span className="material-symbols-outlined">supervisor_account</span>
               <span>Monitor accounts</span>
+            </NavLink>
+            <NavLink className={navClass} to="/admin/programs">
+              <span className="material-symbols-outlined">auto_awesome</span>
+              <span>Generate programs</span>
             </NavLink>
           </nav>
         )}
