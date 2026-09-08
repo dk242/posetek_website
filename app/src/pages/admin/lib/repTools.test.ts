@@ -15,12 +15,17 @@ import {
   hipTrackFromPose,
   inferStartingSide,
   interpolateTrack,
+  measurementInputsChanged,
   nearestFinitePosition,
+  isLabelOnlyEdit,
   parseArtifactJson,
   resolveClipTiming,
   resolveGate,
+  revisionPreviewFields,
   shuttleFramesFrom,
   signedMeters,
+  stringFieldValues,
+  toolSpecFor,
   trackToSignedMeters,
 } from "./repTools";
 import type { Gate } from "./repTools";
@@ -243,5 +248,94 @@ describe("the preview and the payload", () => {
     expect(payload.fields).toEqual({ totalTime: 2.5, endFrame: 400, totalDistance: null });
     expect(payload.metadata).toEqual({ totalTime: 2.5, endFrame: 400, totalDistance: null, failedSteps: [], processingStatus: "complete" });
     expect(payload.note).toBe("fixed the end frame");
+  });
+});
+
+describe("recorded-rep foot edits", () => {
+  it.each([ ["dribbling", "dribble_foot"], ["shooting", "strike_foot"] ])("exposes and seeds the %s foot, including an explicit clear", (drill, key) => {
+    const spec = toolSpecFor(drill)!;
+    expect(spec.stringFields?.find(field => field.key === key)?.options.map(option => option.value)).toEqual(["left", "right"]);
+    expect(stringFieldValues(spec, { [key]: "right" }, { [key]: "left" })).toEqual({ [key]: "right" });
+    expect(stringFieldValues(spec, {}, { [key]: "left" })).toEqual({ [key]: "left" });
+    expect(stringFieldValues(spec, { [key]: null }, { [key]: "left" })).toEqual({ [key]: null });
+    expect(stringFieldValues(spec, {}, {})).toEqual({ [key]: null });
+    // Legacy values remain unchanged until the admin makes an explicit selection.
+    expect(stringFieldValues(spec, { [key]: "unknown" }, {})).toEqual({ [key]: "unknown" });
+  });
+
+  it.each([ ["dribbling", "dribble_foot"], ["shooting", "strike_foot"] ])("saves, replaces, and clears %s foot in both documents", (drill, key) => {
+    const spec = toolSpecFor(drill)!;
+    for (const [before, after] of [[null, "left"], ["left", "right"], ["right", null]]) {
+      const original = { [key]: before, totalTime: 4, totalDistance: 20, velocity: 25 };
+      const preview = revisionPreviewFields({ spec, original, frames: {}, numbers: {}, strings: { [key]: after }, derivation: null, side: null, measurementsEdited: false });
+      const diff = diffFields(original, preview, [...spec.frameFields, ...spec.numberFields, ...(spec.stringFields ?? [])].map(field => field.key));
+      expect(diff.filter(row => row.changed)).toEqual([{ key, before, after, changed: true }]);
+      expect(isLabelOnlyEdit(spec, diff, false)).toBe(true);
+      const fields = Object.fromEntries(diff.filter(row => row.changed).map(row => [row.key, row.after]));
+      const payload = buildRevisionPayload({ playerId: "p", repId: "r", drill, fields, metadataExtras: {}, annotations: null, note: "" });
+      expect(payload.fields).toEqual({ [key]: after });
+      expect(payload.metadata).toEqual({ [key]: after });
+      expect(payload.annotations).toBeNull();
+    }
+  });
+
+  it("preserves retained shuttle distances and the assigned foot while editing timing", () => {
+    const spec = toolSpecFor("dribbling")!;
+    const original = { dribble_foot: "left", totalTime: 3, totalDistance: 20, outboundDistance: 10, returnDistance: 10, markerDistance: 10, avgBallDistance: 0.4 };
+    const frames = { startFrame: 0, phase1EndFrame: 50, apexFrame: 60, phase2EndFrame: 70, endFrame: 120 };
+    const derivation = deriveShuttleMetrics({ frames, fps: 60, original, comMeters: null, ballMeters: null, dribbling: true });
+    const preview = revisionPreviewFields({ spec, original, frames, numbers: {}, strings: { dribble_foot: "left" }, derivation, side: null, measurementsEdited: true });
+    expect(preview).toMatchObject({ dribble_foot: "left", totalTime: 2, totalDistance: 20, outboundDistance: 10, returnDistance: 10, avgBallDistance: 0.4 });
+    const diff = diffFields(original, preview, [...spec.numberFields, ...(spec.stringFields ?? [])].map(field => field.key));
+    expect(diff.filter(row => row.changed).map(row => row.key)).not.toContain("dribble_foot");
+    expect(isLabelOnlyEdit(spec, diff, true)).toBe(false);
+  });
+
+  it("keeps original shuttle metrics on a foot-only edit even when artifacts cannot reproduce them", () => {
+    const spec = toolSpecFor("dribbling")!;
+    const original = { dribble_foot: null, totalTime: 4, totalDistance: 20, phase1Time: 1.5, phase2Time: 1, phase3Time: 1.5 };
+    const frames = { startFrame: null, phase1EndFrame: null, apexFrame: null, phase2EndFrame: null, endFrame: null };
+    const derivation = deriveShuttleMetrics({ frames, fps: 60, original, comMeters: null, ballMeters: null, dribbling: true });
+    expect(derivation.metrics.totalTime).toBeNull();
+    const preview = revisionPreviewFields({ spec, original, frames, numbers: {}, strings: { dribble_foot: "right" }, derivation, side: "left", measurementsEdited: false });
+    expect(preview).toMatchObject({ dribble_foot: "right", totalTime: 4, totalDistance: 20, phase1Time: 1.5, phase2Time: 1, phase3Time: 1.5 });
+    expect(preview).not.toHaveProperty("gateStartSide");
+  });
+
+  it("saves new annotations with a foot change even when the aggregate measurements stay identical", () => {
+    const spec = toolSpecFor("dribbling")!;
+    const diff = diffFields({ dribble_foot: "left", totalTime: 4 }, { dribble_foot: "right", totalTime: 4 }, ["dribble_foot", "totalTime"]);
+    expect(isLabelOnlyEdit(spec, diff, false)).toBe(true);
+    expect(isLabelOnlyEdit(spec, diff, true)).toBe(false);
+    const annotations = { com: [{ frame: 10, x: 0.2, y: 0.5 }] };
+    const payload = buildRevisionPayload({ playerId: "p", repId: "r", drill: "dribbling", fields: { dribble_foot: "right" }, metadataExtras: {}, annotations: isLabelOnlyEdit(spec, diff, true) ? null : annotations, note: "" });
+    expect(payload.annotations).toEqual(annotations);
+  });
+
+  it("preserves legacy phase metrics after a same-value or reverted frame edit followed by a foot edit", () => {
+    const spec = toolSpecFor("dribbling")!;
+    const original = { dribble_foot: null, startFrame: 0, endFrame: 240, totalTime: 4, phase1Time: 1.5, phase2Time: 1, phase3Time: 1.5 };
+    const frames = { startFrame: 0, endFrame: 240, phase1EndFrame: null, apexFrame: null, phase2EndFrame: null };
+    const initial = { frames, numbers: {}, comMarks: [], ballMarks: [], comSource: "none", ballSource: "none", sideOverride: "auto" };
+    const changed = { ...initial, frames: { ...frames, endFrame: 300 } };
+    expect(measurementInputsChanged(initial, changed)).toBe(true);
+    const reverted = { ...changed, frames: { ...changed.frames, endFrame: 240 } };
+    const sameValue = { ...initial, frames: { ...frames, startFrame: 0 } };
+    const derivation = deriveShuttleMetrics({ frames, fps: 60, original, comMeters: null, ballMeters: null, dribbling: true });
+    expect(derivation.metrics.phase1Time).toBeNull();
+    for (const current of [sameValue, reverted]) {
+      const measurementsEdited = measurementInputsChanged(initial, current);
+      expect(measurementsEdited).toBe(false);
+      const preview = revisionPreviewFields({ spec, original, frames: current.frames, numbers: {}, strings: { dribble_foot: "left" }, derivation, side: null, measurementsEdited });
+      expect(preview).toMatchObject({ dribble_foot: "left", phase1Time: 1.5, phase2Time: 1, phase3Time: 1.5 });
+    }
+  });
+
+  it("compares annotation coordinates and numeric values rather than object references", () => {
+    const initial = { frames: {}, numbers: { velocity: "25" }, comMarks: [{ frame: 1, x: 0.2, y: 0.5 }], ballMarks: [], comSource: "annotated", ballSource: "none", sideOverride: "auto" };
+    const equal = { ...initial, numbers: { velocity: "25.0" }, comMarks: [{ frame: 1, x: 0.2, y: 0.5 }] };
+    expect(measurementInputsChanged(initial, equal)).toBe(false);
+    expect(measurementInputsChanged(initial, { ...equal, comMarks: [{ frame: 1, x: 0.25, y: 0.5 }] })).toBe(true);
+    expect(measurementInputsChanged(initial, { ...equal, sideOverride: "left" })).toBe(true);
   });
 });

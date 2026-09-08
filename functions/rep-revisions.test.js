@@ -182,6 +182,46 @@ test("dribbling and sprint field rules accept their own fields and nothing else"
   await assert.rejects(revisions.reviseRep({ playerId: "p1", repId: "s1", drill: "sprint", fields: { phase1Time: 1 } }, admin), { code: "invalid-argument" });
 });
 
+for (const [drill, repType, key] of [["dribbling", "dribbling", "dribble_foot"], ["shooting", "side_kick", "strike_foot"]]) {
+  test(`${drill} foot can be assigned, replaced, cleared, and restored without altering measurements`, async () => {
+    const folder = `p1/${drill === "shooting" ? "deadballShot" : drill}/session1/kick1`;
+    const original = { repType, sessionNumber: 1, repNumber: 1, totalTime: 4, velocity: 25, markerDistance: 10, gateStartSide: "right" };
+    const originalMetadata = { framesPerSecond: 60, totalTime: 4, velocity: 25, failedSteps: ["existing.failure"], processingStatus: "partial" };
+    const originalAnnotations = JSON.stringify({ com: [{ frame: 10, x: 0.2, y: 0.5 }], customNote: "Keep this annotation" });
+    const { db, revisions, store } = harness({ seed: { "players/p1/reps/foot": original }, files: { [`${folder}/metadata.json`]: JSON.stringify(originalMetadata), [`${folder}/admin_annotations.json`]: originalAnnotations } });
+    const request = { playerId: "p1", repId: "foot", drill };
+    for (const value of ["left", "right", null]) {
+      await revisions.reviseRep({ ...request, fields: { [key]: value }, metadata: { [key]: value } }, admin);
+      const rep = db.snapshot("players/p1/reps/foot");
+      assert.equal(rep[key], value);
+      for (const [field, expected] of Object.entries(original)) assert.deepEqual(rep[field], expected);
+      const metadata = JSON.parse(store.get(`${folder}/metadata.json`));
+      assert.equal(metadata[key], value);
+      for (const [field, expected] of Object.entries(originalMetadata)) assert.deepEqual(metadata[field], expected);
+      assert.equal(store.get(`${folder}/admin_annotations.json`), originalAnnotations);
+    }
+    await revisions.reviseRep({ ...request, fields: { [key]: "left" }, metadata: { [key]: "left" } }, admin);
+    const measurements = drill === "dribbling" ? { totalTime: 3 } : { velocity: 30 };
+    const { revisionId } = await revisions.reviseRep({ ...request, fields: measurements, metadata: measurements }, admin);
+    assert.equal(db.snapshot("players/p1/reps/foot")[key], "left");
+    assert.equal(JSON.parse(store.get(`${folder}/metadata.json`))[key], "left");
+    await revisions.restoreRepRevision({ playerId: "p1", repId: "foot", revisionId }, admin);
+    assert.equal(db.snapshot("players/p1/reps/foot")[key], "left");
+  });
+
+  test(`${drill} foot rejects invalid values and another drill's foot field before writing`, async () => {
+    const { revisions, writes } = harness({ seed: { "players/p1/reps/foot": { repType, sessionNumber: 1, repNumber: 1 } } });
+    const request = { playerId: "p1", repId: "foot", drill };
+    for (const value of ["both", "LEFT", "", 0, [], {}]) {
+      await assert.rejects(revisions.reviseRep({ ...request, fields: { [key]: value } }, admin), { code: "invalid-argument" });
+      await assert.rejects(revisions.reviseRep({ ...request, metadata: { [key]: value } }, admin), { code: "invalid-argument" });
+    }
+    const otherKey = key === "dribble_foot" ? "strike_foot" : "dribble_foot";
+    await assert.rejects(revisions.reviseRep({ ...request, fields: { [otherKey]: "left" } }, admin), { code: "invalid-argument" });
+    assert.equal(writes.length, 0);
+  });
+}
+
 test("every written file carries a Firebase download token so the web SDK can open it", async () => {
   const { revisions, meta, store } = harness();
   const { revisionId } = await revisions.reviseRep(payload, admin);
