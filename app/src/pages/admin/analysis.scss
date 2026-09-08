@@ -1,0 +1,44 @@
+.pt-admin .analysis-workspace {
+  .analysis-editor-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .analysis-selection { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .analysis-selection .admin-form-actions, .analysis-selection > .admin-note { grid-column: 1 / -1; }
+  .analysis-status { padding: 14px 18px; border-radius: 12px; background: rgba(183,243,74,.1); }
+  .analysis-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .analysis-card-heading h2, .analysis-card-heading h3 { margin: 0; }
+  .analysis-phase-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .active { border-color: #b7f34a; color: #b7f34a; background: rgba(183,243,74,.08); }
+  .analysis-videos { display: grid; gap: 18px; }
+  .analysis-videos.paired { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .analysis-video-card { min-width: 0; }
+  .analysis-video-card > .analysis-card-heading { margin-bottom: 10px; font-size: .85rem; }
+  .analysis-video-stage { position: relative; background: #09131c; overflow: hidden; border-radius: 12px; }
+  .analysis-video-stage video { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .analysis-video-missing { position: absolute; inset: 0; display: grid; place-content: center; padding: 20px; text-align: center; color: #8ba1b1; }
+  .analysis-pose { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .analysis-pose.editable { pointer-events: auto; cursor: crosshair; }
+  .analysis-pose.editable line { cursor: pointer; }
+  .analysis-transport { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: .8rem; }
+  .analysis-transport input { flex: 1; width: 40px; }
+  .analysis-limb-picks { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+  .analysis-annotation-tools { padding: 14px; background: rgba(255,255,255,.025); border-radius: 12px; }
+  .analysis-review-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; align-items: start; margin: 20px 0; }
+  .analysis-original, .analysis-priority { padding: 18px 0; border-top: 1px solid rgba(255,255,255,.1); }
+  .analysis-priority .admin-field { margin-top: 12px; }
+  .analysis-annotations { margin: 20px 0; }
+  .analysis-annotation { display: flex; justify-content: space-between; align-items: start; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.1); }
+  .analysis-annotation > div { flex: 1; }
+  .analysis-annotation p { margin: 5px 0; }
+  .analysis-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .analysis-check { display: flex; align-items: start; gap: 8px; padding: 8px 0; font-size: .9rem; overflow-wrap: anywhere; }
+  .analysis-check input { margin-top: 3px; }
+  .analysis-table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  th, td { text-align: left; vertical-align: top; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  pre { max-height: 400px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .75rem; padding: 14px; background: rgba(0,0,0,.2); border-radius: 10px; }
+  details { margin-top: 16px; }
+  summary { cursor: pointer; font-size: .9rem; }
+  textarea { width: 100%; min-height: 80px; resize: vertical; }
+  .admin-card { margin-bottom: 20px; }
+  @media (max-width: 1000px) { .analysis-notes { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .analysis-review-columns, .analysis-videos.paired { grid-template-columns: 1fr; } .analysis-selection { grid-template-columns: 1fr; } }
+}
