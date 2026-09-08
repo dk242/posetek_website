@@ -12,8 +12,12 @@ const { createTeamLeaderboard } = require("./team-leaderboard");
 const { createAthleteShares } = require("./athlete-shares");
 const { createClubs } = require("./clubs");
 const { createClubBranding } = require("./club-branding");
+const { createRepRevisions } = require("./rep-revisions");
 const clubBranding = createClubBranding({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubs = createClubs({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+// Admin rep tools (see rep-revisions.js): the only writer of athlete reps
+// outside the phone, gated on the same verified @posetek.net predicate the rules use.
+const repRevisions = createRepRevisions({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 
 // Signed, server-issued result shares (see athlete-shares.js). Legacy
 // documents were client-writable; their tokens and pointers are never accepted.
@@ -346,6 +350,8 @@ exports.revokeClubStaffInvitation = functions.https.onCall((data, context) => cl
 exports.setClubPlayerTeam = functions.https.onCall((data, context) => clubs.setClubPlayerTeam(data, requireCaller(context)));
 exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => clubs.issueClubPlayerInvitation(data, requireCaller(context)));
 exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
+exports.adminReviseRep = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.reviseRep(data, requireCaller(context)));
+exports.adminRestoreRepRevision = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.restoreRepRevision(data, requireCaller(context)));
 
 exports.redeemPlayerSignupCode = functions.https.onCall((data, context) =>
   admission.redeemPlayerSignupCode({ ...requireCaller(context), code: data?.code })

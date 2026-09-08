@@ -54,6 +54,7 @@ import {
   startPlanGeneration,
 } from "../lib/planJobs";
 import type { PlanIntakeForm, PlanJobState } from "../lib/planJobs";
+import { RESULT_DRILLS, resultsPath } from "../lib/results";
 
 export default function PlayerDetail() {
   const { playerId = "" } = useParams();
@@ -118,6 +119,9 @@ export default function PlayerDetail() {
           </p>
         </div>
         <div className="admin-heading-actions">
+          <Link className="primary-cta small" to={resultsPath(player.id)}>
+            <span className="material-symbols-outlined">analytics</span>Recorded results
+          </Link>
           <Link className="quiet-button" to={`/athlete?player=${player.id}`}>
             <span className="material-symbols-outlined">open_in_new</span>Their portal
           </Link>
@@ -125,6 +129,8 @@ export default function PlayerDetail() {
       </section>
 
       {error && <p className="form-message" role="alert">{error}</p>}
+
+      <ResultsCard playerId={player.id} reps={reps} />
 
       <div className="admin-grid-two">
         <ProfileCard key={String(player.raw?.updatedAt?.seconds ?? player.id)} player={player} coach={coach} onSaved={reload} />
@@ -144,6 +150,33 @@ export default function PlayerDetail() {
 
       {plan && isV3Plan(plan) && <AdjustmentHistory adjustments={adjustments} />}
     </>
+  );
+}
+
+// MARK: - Recorded results → the rep tools
+
+function ResultsCard({ playerId, reps }: { playerId: string; reps: any[] }) {
+  return (
+    <section className="admin-card">
+      <div className="admin-heading" style={{ marginBottom: 8 }}>
+        <div>
+          <h2>Recorded results</h2>
+          <p>Every drill this athlete has recorded. Open one to inspect its sessions and reps, or to fix a rep that did not process correctly.</p>
+        </div>
+      </div>
+      <div className="admin-results-grid">
+        {RESULT_DRILLS.map(drill => {
+          const count = reps.filter(rep => rep._statsDrill === drill.key).length;
+          return (
+            <Link key={drill.key} className={`admin-result-tile${count ? "" : " empty"}`} to={resultsPath(playerId, drill.key)}>
+              <span className="material-symbols-outlined">{drill.icon}</span>
+              <strong>{drill.label}</strong>
+              <span>{count} {count === 1 ? "rep" : "reps"}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
