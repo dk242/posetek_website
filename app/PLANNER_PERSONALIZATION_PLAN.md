@@ -1,6 +1,6 @@
 # Workout planner personalization: implementation and fallback plan
 
-Status: proposed implementation plan. No new page, engine, feature switch, or activation workflow has been implemented by this document.
+Status: implemented as an optional admin preview. The current planner remains the default and no existing player plan is automatically replaced. See `../docs/planner/README.md` for the implemented contracts and `../docs/planner/RELEASE.md` for validation, deployment status, and remaining pilot/content acceptance.
 
 ## Outcome
 

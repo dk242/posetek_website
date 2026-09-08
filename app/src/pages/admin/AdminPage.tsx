@@ -30,6 +30,7 @@ const WorkoutEditor = lazy(() => import("./views/WorkoutEditor"));
 const AdminResults = lazy(() => import("./views/AdminResults"));
 const RepTools = lazy(() => import("./views/RepTools"));
 const GeneratePrograms = lazy(() => import("./views/GeneratePrograms"));
+const PersonalizedPrograms = lazy(() => import("./views/PersonalizedPrograms"));
 
 export default function AdminPage() {
   const session = useAdminSession();
@@ -91,6 +92,7 @@ export default function AdminPage() {
           <Route path="accounts/player/:playerId/results/:drillKey" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
           <Route path="programs" element={<GeneratePrograms />} />
+          <Route path="programs/personalized" element={<PersonalizedPrograms />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
             element={<WorkoutEditor />}

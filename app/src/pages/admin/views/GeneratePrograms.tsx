@@ -7,7 +7,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { plannerLink } from "../lib/personalizedLogic";
+import "../personalized.scss";
 import { loadOrganizations, loadTeams } from "../lib/accounts";
 import type { OrganizationRow, PlayerRow, TeamRow } from "../lib/accounts";
 import { DEFAULT_INTAKE, HORIZON_WEEKS, MINUTES_PER_SESSION, SESSIONS_PER_WEEK, SETTINGS } from "../lib/planJobs";
@@ -65,9 +67,11 @@ function defaultOrganization(orgs: OrganizationRow[]): string {
 }
 
 export default function GeneratePrograms() {
+  const [query] = useSearchParams();
+  const initialSelection = useRef({ orgId: query.get("orgId") ?? "", ids: (query.get("players") ?? "").split(",").filter(Boolean) });
   const [orgs, setOrgs] = useState<OrganizationRow[] | null>(null);
   const [teams, setTeams] = useState<TeamRow[]>(NO_TEAMS);
-  const [orgId, setOrgId] = useState("");
+  const [orgId, setOrgId] = useState(initialSelection.current.orgId);
   const [roster, setRoster] = useState<Roster>({ kind: "loading" });
   const [evidence, setEvidence] = useState<Record<string, Evidence>>({});
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
@@ -106,7 +110,7 @@ export default function GeneratePrograms() {
     setRoster({ kind: "loading" });
     evidenceRef.current = {};
     setEvidence({});
-    setSelected(new Set());
+    setSelected(new Set(initialSelection.current.orgId === orgId ? initialSelection.current.ids : []));
     setJobs({});
     loadOrganizationPlayers(orgId)
       .then(async players => {
@@ -244,6 +248,7 @@ export default function GeneratePrograms() {
 
   return (
     <>
+      <nav className="planner-switch" aria-label="Workout planner version"><span aria-current="page">Current planner</span><Link to={plannerLink(true, orgId, selected, initialSelection.current.orgId === orgId ? query.get("teamId") ?? "" : "")}>Personalized planner · Preview</Link></nav>
       <section className="admin-heading">
         <div>
           <p className="eyebrow">Generate programs</p>
