@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-09-08T19:37:17.276456+00:00",
+  "sourceCommit": "5301d8789122ebe9d2186f32aa2142304e4823df",
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aa061cc30bf0203f6cfb3d9",
+  "previewURL": "https://6aa061cc30bf0203f6cfb3d9--posetek.netlify.app",
+  "deployState": "ready",
+  "deployContext": "deploy-preview",
+  "productionDeployAtVerification": "6aa05687fda0b26f17cce8be",
+  "build": {
+    "fileCount": 154,
+    "totalBytes": 55258456,
+    "manifestSHA256": "57e4069b5e8f0ba6c101a22b7b31f14f12f7bc67b5491ae94a35904817fc1b40"
+  },
+  "routeShell": {
+    "path": "/admin/analysis",
+    "status": 200,
+    "bytes": 1243,
+    "sha256": "1f69d5b61e6853ae48c15877b7d1dce7c5a67f043ee65a7e5c313610d00fbfab",
+    "matchesBuiltIndex": true
+  },
+  "publicPathChecks": {
+    "method": "HTTP HEAD with Accept-Encoding: identity",
+    "manifestPathsChecked": 154,
+    "productPaths": 153,
+    "allProductPathsHTTP200": true,
+    "nonHTMLProductPaths": 112,
+    "allNonHTMLProductSizesMatch": true,
+    "excludedManifestPaths": [
+      {
+        "path": "images/.DS_Store",
+        "reason": "macOS metadata excluded by Netlify; path response is HTML with the SPA shell size"
+      }
+    ]
+  },
+  "exactHTTPAssetSamples": [
+    {
+      "path": "assets/index-B2BHYljX.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 233333,
+      "sha256": "cbd4597a28765283b09b530e6e00e1d4e2e6119717fa9271f869de1a6e4d5b26",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/AdminPage-ZFmunPJz.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 9223,
+      "sha256": "3f664e975030c4f003fd0d398d7240665f9324b5211694362871c17d3874f7e4",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/AdminHome-DPFlK16_.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 2468,
+      "sha256": "c34bd8fdb7377c41cf5d428de8b2fe7054ed1aa234f9cfc8826c27b0dee7a083",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/AnalysisWorkspace-CPgbIPEz.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 29773,
+      "sha256": "076fab76b26a8769d83a7f996ed621686b1df09394177305a886481af43b7387",
+      "matchesBuild": true,
+      "containsReviewFeature": true
+    },
+    {
+      "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+      "status": 200,
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 4493,
+      "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/RepTools-CUagljsH.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 36183,
+      "sha256": "35b8d60972d15c648488cac6ec952e73f12b4aa0e5a2e90ae2f803ba00c16563",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/repToolsData-Dd0pFkqG.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 18090,
+      "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/data-BZeovQ6L.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 9046,
+      "sha256": "3980ea06a9ad54451d56bd5fbc379c87eaabc7a9f9dbeb36d6e5ed102d945f71",
+      "matchesBuild": true,
+      "containsCanonicalShootingKickMap": true
+    },
+    {
+      "path": "assets/index-CkzNDReN.css",
+      "status": 200,
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 798,
+      "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612",
+      "matchesBuild": true
+    },
+    {
+      "path": "assets/AdminPage-B4YhVyoa.css",
+      "status": 200,
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 18682,
+      "sha256": "c51c5b4cc7136ce131ac203e7c99308515dd900cef62d07650bfca16488c99cd",
+      "matchesBuild": true
+    },
+    {
+      "path": "backKickView.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 124769,
+      "sha256": "16494b739fe284cf6096644914147f1f20867c4b1bd6b3f320d76645979d0a5d",
+      "matchesBuild": true
+    },
+    {
+      "path": "pose-portal.css",
+      "status": 200,
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 31421,
+      "sha256": "6ee96deb0bf86085c7b08131e9e08b1ccf80b95ec7fbae3fc386226af8808c9c",
+      "matchesBuild": true
+    },
+    {
+      "path": "images/logo.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 568,
+      "sha256": "cdaf48031a4db9fc56f508332696b5a14cd7131c789ac3dd56982e571b022c16",
+      "matchesBuild": true
+    }
+  ],
+  "processedHTML": {
+    "normalization": "HTML attribute order/quoting and local anchor pretty URLs (.html removal, root index, lowercased HTML path); all other parsed content compared",
+    "pages": [
+      {
+        "path": "SideKickView.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 324745,
+        "servedBytes": 324741
+      },
+      {
+        "path": "StaticJumpPage.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 308710,
+        "servedBytes": 308706
+      },
+      {
+        "path": "drillList.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 25231,
+        "servedBytes": 25219
+      },
+      {
+        "path": "drillcreation.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 35175,
+        "servedBytes": 35171
+      },
+      {
+        "path": "edge-session-posetek-carousel.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 43694,
+        "servedBytes": 43690
+      },
+      {
+        "path": "feedbackForm.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 56180,
+        "servedBytes": 56176
+      },
+      {
+        "path": "fusionclinic.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 91048,
+        "servedBytes": 91030
+      },
+      {
+        "path": "hypothesis_athleticismSubscription.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 69266,
+        "servedBytes": 69232
+      },
+      {
+        "path": "hypothesis_athleticismSubscription_signup.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 36795,
+        "servedBytes": 36778
+      },
+      {
+        "path": "hypothesis_kickingAnalysis.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 70469,
+        "servedBytes": 70435
+      },
+      {
+        "path": "hypothesis_kickingAnalysisSubscription.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 76658,
+        "servedBytes": 76620
+      },
+      {
+        "path": "hypothesis_kickingAnalysisSubscription_signup.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 36838,
+        "servedBytes": 36821
+      },
+      {
+        "path": "hypothesis_performanceTesting.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 61826,
+        "servedBytes": 61792
+      },
+      {
+        "path": "hypothesis_trainingSession.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 75345,
+        "servedBytes": 75327
+      },
+      {
+        "path": "hypothesis_trainingSessionKick.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 84686,
+        "servedBytes": 84668
+      },
+      {
+        "path": "kickingAnalysis_upload.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 59127,
+        "servedBytes": 59110
+      },
+      {
+        "path": "kickingview.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 201717,
+        "servedBytes": 201713
+      },
+      {
+        "path": "questAddPlayer.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 29005,
+        "servedBytes": 28996
+      },
+      {
+        "path": "questLeaderboardResultsPage.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 59644,
+        "servedBytes": 59635
+      },
+      {
+        "path": "questSearchPlayer.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 33993,
+        "servedBytes": 33984
+      },
+      {
+        "path": "questViewBiomechanics.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 330987,
+        "servedBytes": 330983
+      },
+      {
+        "path": "sessionsexpanded.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 34023,
+        "servedBytes": 34019
+      },
+      {
+        "path": "signupForm.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 22608,
+        "servedBytes": 22599
+      },
+      {
+        "path": "sprintPage.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 193918,
+        "servedBytes": 193914
+      },
+      {
+        "path": "subscriptionWaitlist.html",
+        "sameAfterCanonicalAnchorURLs": true,
+        "sourceBytes": 150119,
+        "servedBytes": 150101
+      }
+    ],
+    "allEquivalent": true
+  },
+  "limitations": [
+    "No signed-in browser interactions, annotation save/reload, or athlete rendering was tested in this static preview check.",
+    "Installed Netlify OpenAPI exposes current-site file listing only; draft checks use public HTTP. Full-body SHA256 verification covers the listed samples; remaining non-HTML files were checked by path and size.",
+    "No production promotion was performed."
+  ]
+}

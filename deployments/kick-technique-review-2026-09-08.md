@@ -1,6 +1,6 @@
 # Kick technique review — 2026-09-08
 
-Status: implementation complete; verification and release in progress. No deployment has been performed by the website implementation agent.
+Status: implementation validated and static preview verified; signed-in browser checks and production release remain pending. The root integration task deployed the preview; the website implementation agent performed read-only preview checks.
 
 `/admin/analysis` brings the legacy kick annotation workflow into the authenticated admin console. Organization and athlete selection lead to a single recorded kick or a labeled left/right pair. Generation uses the gateway's `kick_analysis` and `kick_foot_comparison` jobs. The workspace shows phase frames, recorded video and pose limbs, frame comments and markers, measured evidence, original feedback, an editable priority list, private review notes, publication controls and immutable review history. Rep tools link directly to this workspace. Existing rep measurements and legacy `kick_analysis.json` remain untouched by a review.
 
@@ -46,3 +46,11 @@ The first preservation attempt left all 12 implementation and documentation file
 ### Resumed validation
 
 After renewed ownership verification and the user's explicit hydration request, the three originally blocked website files became local through normal `brctl download`. The initial approved request timed out before execution; its permitted one retry executed successfully. File Provider completed the requests asynchronously. `fileproviderctl evaluate` confirmed downloaded state. Staged Git diff/check/status now finish normally. Full frontend tests, lint and the production build passed as recorded above. A bounded request covered 2,621 existing declaration files totaling 8.07 MB, with no package install or cache replacement. The final compiler wait on `typescript/lib/lib.esnext.disposable.d.ts` reported download requested/in progress and no conflict or download error; one explicit documented Foundation download request was accepted. The same build worker continued after hydration and completed successfully. Disk headroom remained 16 GiB. No validation workers remain running. The earlier stalled-worker receipts describe the first attempt, not a compiler failure.
+
+### Static preview verification
+
+Source commit `5301d8789122ebe9d2186f32aa2142304e4823df` is preserved on `kick-technique-review`. The root deployed preview `6aa061cc30bf0203f6cfb3d9`; its [admin route](https://6aa061cc30bf0203f6cfb3d9--posetek.netlify.app/admin/analysis) returns HTTP 200 and exactly matches the tested `index.html` SHA-256. The frozen build manifest contains 154 files, 55,258,456 bytes, and SHA-256 `57e4069b5e8f0ba6c101a22b7b31f14f12f7bc67b5491ae94a35904817fc1b40`.
+
+All 153 intended public resources are present. The remaining manifest entry, `images/.DS_Store`, is macOS metadata excluded by Netlify. All 112 non-HTML public resources match their build sizes. Thirteen sampled asset bodies match their build SHA-256, including the review JS/CSS, admin shell bundles, RepTools, and `data-BZeovQ6L.js` with the existing `shooting` to `kick` stats mapping. All 25 HTML files changed by Netlify processing preserve their parsed content after normalizing only anchor pretty URLs and attribute serialization. This includes the legacy side-kick/replay/upload pages. No build output or runtime source changed during these checks.
+
+The [machine-readable receipt](kick-technique-review-preview-2026-09-08.json) contains public paths and hashes only. The installed Netlify OpenAPI has no draft file-list operation, so checks use public HTTP. Remaining non-HTML files were checked by path and size, not full-body hashes. Production was still `6aa05687fda0b26f17cce8be` at verification. Production promotion awaits the root's callable IAM approval/release step; signed-in annotation and athlete UI interactions remain unverified.
