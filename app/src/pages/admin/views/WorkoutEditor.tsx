@@ -22,7 +22,7 @@ import {
   stateOf,
   workoutStates,
 } from "../../../lib/contracts/planV3";
-import { domainLabel } from "../../../lib/contracts/types";
+import { domainLabel, isPosition } from "../../../lib/contracts/types";
 import type { BlockV3 } from "../../../lib/contracts/types";
 import { eligibilityFor, loadCoachOfPlayer, loadPlayer, loadWorkoutLogs, resolvePlayerAge } from "../lib/accounts";
 import type { PlayerRow } from "../lib/accounts";
@@ -95,11 +95,13 @@ export default function WorkoutEditor() {
     ]);
     const eligibility = eligibilityFor(player, coach);
     const age = resolvePlayerAge(player.raw).age;
+    const position = player.raw?.position;
     const athlete: AthleteContext = {
       age,
       maxDrillDifficulty: eligibility.maxDrillDifficulty,
       setting: String(plan.intake?.setting ?? "solo"),
       equipment: Array.isArray(plan.intake?.equipment) ? plan.intake.equipment.map(String) : [],
+      position: isPosition(position) ? position : null,
     };
     const [frequency, context] = await Promise.all([
       loadFrequencyContext(playerId, plan, Number(found.week.weekNumber)),

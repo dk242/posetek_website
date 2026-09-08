@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatDoseText, formatRestText } from "../../../lib/contracts/drillV2";
 import type { CatalogDrill } from "../../../lib/contracts/drillV2";
-import { MEDIA_SLOTS, MEDIA_SLOT_LABELS, domainLabel } from "../../../lib/contracts/types";
+import { MEDIA_SLOTS, MEDIA_SLOT_LABELS, POSITION_LABELS, domainLabel, isPosition } from "../../../lib/contracts/types";
 import type { MediaSlot } from "../../../lib/contracts/types";
 import { loadDrill, mediaPlaybackUrl } from "../lib/catalog";
 
@@ -49,7 +49,8 @@ export default function DrillDetail() {
           <p>
             Difficulty {drill.difficultyLevel} · Ages {drill.minAge}–{drill.maxAge} ·{" "}
             {drill.requiresPartner ? "Needs a partner" : "Can be done alone"} · at most{" "}
-            {drill.maxFrequencyPerWeek}× per week
+            {drill.maxFrequencyPerWeek}× per week ·{" "}
+            {isPosition(drill.positionSpecific) ? `${POSITION_LABELS[drill.positionSpecific]} only` : "Any position"}
           </p>
         </div>
         <div className="admin-heading-actions">

@@ -18,11 +18,14 @@ import {
   EQUIPMENT,
   MEDIA_SLOTS,
   MEDIA_SLOT_LABELS,
+  POSITIONS,
+  POSITION_LABELS,
   REP_UNITS,
   domainLabel,
   isContinuousUnit,
+  isPosition,
 } from "../../../lib/contracts/types";
-import type { CatalogDose, Domain, DrillStatus, MediaSlot } from "../../../lib/contracts/types";
+import type { CatalogDose, Domain, DrillStatus, MediaSlot, Position } from "../../../lib/contracts/types";
 import {
   createDrill,
   loadDrill,
@@ -40,6 +43,8 @@ interface FormState {
   difficultyLevel: number;
   equipment: string[];
   requiresPartner: boolean;
+  /** "" is the form's "Any position"; it is written as null. */
+  positionSpecific: Position | "";
   setup: string;
   steps: string[];
   setsMin: number; setsMax: number;
@@ -64,6 +69,7 @@ const BLANK: FormState = {
   difficultyLevel: 2,
   equipment: ["ball"],
   requiresPartner: false,
+  positionSpecific: "",
   setup: "",
   steps: [""],
   setsMin: 3, setsMax: 4,
@@ -92,6 +98,7 @@ function formFromDrill(drill: CatalogDrill): FormState {
     difficultyLevel: drill.difficultyLevel,
     equipment: drill.equipment,
     requiresPartner: drill.requiresPartner,
+    positionSpecific: isPosition(drill.positionSpecific) ? drill.positionSpecific : "",
     setup: drill.howTo.setup,
     steps: drill.howTo.steps.length ? drill.howTo.steps : [""],
     setsMin: num(dose.setsMin, 1), setsMax: num(dose.setsMax, num(dose.setsMin, 1)),
@@ -170,6 +177,7 @@ function writeFrom(form: FormState): DrillWrite {
     difficultyLevel: form.difficultyLevel,
     equipment: form.equipment,
     requiresPartner: form.requiresPartner,
+    positionSpecific: form.positionSpecific || null,
     howTo: { setup: form.setup.trim(), steps: cleaned(form.steps, 12, 240) },
     dose: doseFrom(form) as Record<string, unknown>,
     maxFrequencyPerWeek: form.maxFrequencyPerWeek,
@@ -282,6 +290,20 @@ export default function DrillForm({ mode }: { mode: "create" | "edit" }) {
                 </select>
               </label>
             </div>
+            <label className="admin-field">
+              <span>Position-specific</span>
+              <select
+                value={form.positionSpecific}
+                onChange={event => set("positionSpecific")(event.target.value as Position | "")}
+              >
+                <option value="">Any position</option>
+                {POSITIONS.map(value => <option key={value} value={value}>{POSITION_LABELS[value]} only</option>)}
+              </select>
+            </label>
+            <p className="admin-note">
+              Leave on “Any position” unless the drill only makes sense for one — a position-specific
+              drill is prescribed only to athletes recorded in that position.
+            </p>
             <div className="admin-field-row">
               <label className="admin-field">
                 <span>Minimum age</span>

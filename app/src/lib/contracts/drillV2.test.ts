@@ -129,6 +129,7 @@ describe("normalizeCatalogDrill", () => {
       difficultyLevel: 4,
       equipment: [],
       requiresPartner: false,
+      positionSpecific: "GK",
       howTo: { setup: "Two cones, 2 m apart.", steps: ["Weave the ball around both cones."] },
       dose: { setsMin: 4, setsMax: 4, repsMin: 30, repsMax: 30, repUnit: "seconds" },
       maxFrequencyPerWeek: 2,
@@ -141,6 +142,7 @@ describe("normalizeCatalogDrill", () => {
     });
     expect(drill.needsMigration).toBe(false);
     expect(drill.difficultyLevel).toBe(4);
+    expect(drill.positionSpecific).toBe("GK");
     expect(drill.status).toBe("draft");
     expect(drill.coachComments).toEqual([]); // an authored empty list is authoritative
     expect(drill.howToSource).toBe("admin");
@@ -148,6 +150,16 @@ describe("normalizeCatalogDrill", () => {
 
   it("takes the document id as the drill id even when the field disagrees", () => {
     expect(normalizeCatalogDrill("SPD-002", { schemaVersion: 2, drillId: "WRONG" }).drillId).toBe("SPD-002");
+  });
+
+  it("keeps positionSpecific only when it is a known position (§1)", () => {
+    const v2 = (extra: Record<string, unknown>) =>
+      normalizeCatalogDrill("DRB-501", { schemaVersion: 2, drillId: "DRB-501", ...extra });
+    expect(v2({}).positionSpecific).toBeNull();
+    expect(v2({ positionSpecific: null }).positionSpecific).toBeNull();
+    expect(v2({ positionSpecific: "SW" }).positionSpecific).toBeNull();
+    expect(v2({ positionSpecific: "GK" }).positionSpecific).toBe("GK");
+    expect(normalizeCatalogDrill("PAS-003", legacy).positionSpecific).toBeNull();
   });
 });
 
@@ -174,6 +186,18 @@ describe("fitFor", () => {
 
   it("does not judge age when the athlete's age is unknown", () => {
     expect(fitFor(drill, { age: null, maxDrillDifficulty: 5, setting: "partner", equipment: [] }).ageOk).toBe(true);
+  });
+
+  it("passes any-position drills to everyone and position-specific drills only to that position", () => {
+    const anyone = { age: 16, maxDrillDifficulty: 5, setting: "partner", equipment: ["sledOrBand"] };
+    expect(fitFor(drill, anyone).positionOk).toBe(true);
+    expect(fitFor(drill, { ...anyone, position: "ST" }).positionOk).toBe(true);
+    const keeper = normalizeCatalogDrill("SHT-501", { schemaVersion: 2, drillId: "SHT-501", positionSpecific: "GK" });
+    expect(fitFor(keeper, { ...anyone, position: "GK" }).positionOk).toBe(true);
+    expect(fitFor(keeper, { ...anyone, position: "ST" }).positionOk).toBe(false);
+    // No position on file is not a match — the pool narrows rather than guessing.
+    expect(fitFor(keeper, anyone).positionOk).toBe(false);
+    expect(fitFor(keeper, { ...anyone, position: null }).positionOk).toBe(false);
   });
 });
 

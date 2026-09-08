@@ -254,7 +254,7 @@ export function setMeta(draft: WorkoutDraft, patch: MetaPatch): WorkoutDraft {
 
 export type IssueCode =
   | "blockCount" | "duplicateBlockId" | "unknownDrill" | "formula" | "doseRange" | "frequency"
-  | "notPublished" | "age" | "difficulty" | "partner" | "equipment" | "budget";
+  | "notPublished" | "age" | "difficulty" | "partner" | "position" | "equipment" | "budget";
 
 export interface Issue {
   code: IssueCode;
@@ -337,6 +337,10 @@ export function validateDraft(draft: WorkoutDraft, context: ValidationContext): 
     }
     if (!fit.partnerOk) {
       issues.push({ code: "partner", severity: "warning", blockId: block.blockId, drillId: block.drillId, message: `${drill.name} needs a partner; this plan is set to “${context.athlete.setting}”.` });
+    }
+    if (!fit.positionOk) {
+      const athlete = context.athlete.position ? `recorded as ${context.athlete.position}` : "not recorded in a position";
+      issues.push({ code: "position", severity: "warning", blockId: block.blockId, drillId: block.drillId, message: `${drill.name} is written for ${drill.positionSpecific} only; this athlete is ${athlete}.` });
     }
     if (!fit.equipmentOk) {
       const missing = drill.equipment.filter(item => !context.athlete.equipment.includes(item));
