@@ -1,0 +1,19 @@
+// Markup compatibility for the preserved analysis/results app. All common
+// styling comes from the same SCSS used by the refreshed admin source.
+.pt-admin {
+  .portal-brand > span:nth-child(2) { font-size: 17px; letter-spacing: 0.18em; }
+  #pt-admin-technique-shortcut { display: none; }
+  .analysis-workspace .active { color: var(--admin-accent); border-color: var(--admin-accent); background: rgba(124, 255, 24, 0.12); }
+  .analysis-workspace .analysis-selection { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+  .analysis-workspace .analysis-transport { flex-wrap: wrap; }
+  @media (max-width: 760px) {
+    .portal-brand > span:nth-child(2) { font-size: 15px; letter-spacing: 0.12em; }
+    .admin-header-right > button { width: 44px; padding: 0; }
+    .admin-header-right > button > span:last-child { display: none; }
+    #pt-admin-technique-shortcut { display: inline-flex; }
+    .admin-nav a[href="/admin/analysis"] { display: none; }
+    .admin-nav a[data-admin-short] > span:not(.material-symbols-outlined) { display: none; }
+    .admin-nav a[data-admin-short]::after { content: attr(data-admin-short); }
+    &:has(nav[aria-label="Admin sections"]) .admin-shell { padding-bottom: calc(var(--admin-tab-height) + env(safe-area-inset-bottom) + 40px); }
+  }
+}

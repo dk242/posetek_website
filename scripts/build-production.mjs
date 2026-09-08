@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
+import { createRequire } from "node:module";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const app = join(root, "app");
@@ -82,9 +83,21 @@ await mkdir(namespace, { recursive: true });
 await cp(join(root, "dist/assets"), join(namespace, "assets"), { recursive: true });
 await cp(join(root, "deployment/planner-entry.js"), join(namespace, "entry.js"));
 await cp(join(root, "deployment/planner-entry.css"), join(namespace, "entry.css"));
+await cp(join(root, "deployment/admin-routes.js"), join(namespace, "admin-routes.js"));
+// Compile the exact shared admin theme for the preserved results/analysis
+// pages too. Extra root specificity beats lazy-loaded legacy CSS without
+// changing any non-admin selectors or original deployed files.
+const require = createRequire(join(app, "package.json"));
+const sass = require("sass");
+const styles = ["app/src/pages/admin/admin.scss", "app/src/pages/admin/admin-surfaces.scss", "deployment/preserved-admin.scss"]
+  .map(file => sass.compile(join(root, file), { style: "compressed" }).css.replaceAll(".pt-admin", ".pt-admin.pt-admin"))
+  .join("\n");
+const themeName = `admin-theme-${hash(styles).slice(0, 12)}.css`;
+await writeFile(join(namespace, "assets", themeName), styles);
 function attach(html, shell) {
   if (!html.includes("</body>") || html.includes("personalized-planner-entry:start")) throw new Error("Unexpected entry HTML");
-  return html.replace("</body>", `\n<!-- personalized-planner-entry:start -->\n<link rel="stylesheet" href="/personalized-app/entry.css">\n<script defer src="/personalized-app/entry.js" data-planner-shell="${shell}"></script>\n<!-- personalized-planner-entry:end -->\n</body>`);
+  const theme = shell === "main" ? `\n<link rel="stylesheet" href="/personalized-app/assets/${themeName}">` : "";
+  return html.replace("</body>", `\n<!-- personalized-planner-entry:start -->\n<link rel="stylesheet" href="/personalized-app/entry.css">${theme}\n<script type="module" src="/personalized-app/entry.js" data-planner-shell="${shell}"></script>\n<!-- personalized-planner-entry:end -->\n</body>`);
 }
 await writeFile(join(output, "index.html"), attach(await readFile(join(output, "index.html"), "utf8"), "main"));
 await writeFile(join(namespace, "index.html"), attach(await readFile(join(root, "dist/index.html"), "utf8"), "personalized"));
@@ -93,4 +106,4 @@ for (const file of contentFiles) {
   const preserved = file.path === "/index.html" ? bytes.toString("utf8").replace(injected, "") : bytes;
   if (hash(preserved) !== file.sha) throw new Error("Preservation verification failed: " + file.path);
 }
-console.log(`[production] Preserved ${contentFiles.length} existing files; added the planner and its entry link.`);
+console.log(`[production] Preserved ${contentFiles.length} existing files; added refreshed admin routes, planner and shared theme.`);

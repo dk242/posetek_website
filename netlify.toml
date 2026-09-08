@@ -36,8 +36,8 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# The planner has an isolated entry while the newer kick-workspace source is
-# recovered. All existing production assets remain checksum-identical.
+# Refreshed admin pages share one entry while the newer kick-workspace source
+# is recovered. All existing production assets remain checksum-identical.
 [[headers]]
   for = "/personalized-app/assets/*"
   [headers.values]
@@ -48,14 +48,45 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
+[[headers]]
+  for = "/personalized-app/admin-routes.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Keep the newer technique review and recorded-results tools on their serving
+# app. These exceptions must precede the shared admin rewrite below.
 [[redirects]]
-  from = "/admin/programs/personalized"
+  from = "/admin/analysis"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/analysis/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/accounts/player/:playerId/results"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/accounts/player/:playerId/results/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin"
   to = "/personalized-app/index.html"
   status = 200
   force = true
 
 [[redirects]]
-  from = "/admin/programs/personalized/"
+  from = "/admin/*"
   to = "/personalized-app/index.html"
   status = 200
   force = true

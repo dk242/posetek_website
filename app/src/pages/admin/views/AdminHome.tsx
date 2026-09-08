@@ -21,6 +21,8 @@ export default function AdminHome() {
       </section>
 
       <div className="admin-home-options">
+        <Link className="admin-home-option" to="/admin/programs/personalized"><span className="material-symbols-outlined">tune</span><h2>Personalized planner</h2><p>Build from each player's testing, compare a draft, then choose whether to use it.</p></Link>
+        <a className="admin-home-option" href="/admin/analysis"><span className="material-symbols-outlined">edit_note</span><h2>Technique review</h2><p>Review saved kick analyses, compare reps, and edit technique feedback.</p></a>
         <Link className="admin-home-option" to="/admin/organizations"><span className="material-symbols-outlined">groups</span><h2>Organizations</h2><p>Create clubs and teams, invite coaches and managers, and manage access to athlete rosters.</p></Link>
         <Link className="admin-home-option" to="/admin/drills">
           <span className="material-symbols-outlined">library_books</span>

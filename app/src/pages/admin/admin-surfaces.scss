@@ -52,8 +52,10 @@
     font-size: 10px; font-weight: 900; letter-spacing: 0.1em;
   }
   .admin-header-right { margin-left: auto; gap: 12px; }
+  .admin-technique-link { gap: 6px; }
+  .admin-technique-link[aria-current="page"] { color: var(--admin-accent); background: rgba(124, 255, 24, 0.12); border-color: rgba(124, 255, 24, 0.25); }
   .admin-who { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .admin-nav { align-items: center; gap: 6px; }
+  .admin-nav { align-items: center; gap: 6px; flex-wrap: wrap; }
   .admin-nav-short { display: none; }
   .admin-nav-link {
     padding: 0 12px; font-size: 13px; white-space: nowrap;
@@ -185,6 +187,9 @@
     .admin-wordmark { font-size: 15px; letter-spacing: 0.12em; }
     .admin-who, .admin-signout > span:last-child { display: none; }
     .admin-signout { width: 44px; padding: 0; }
+    .admin-header-right { gap: 8px; }
+    .admin-technique-link { width: 44px; padding: 0; }
+    .admin-technique-link > span:last-child:not(.material-symbols-outlined) { display: none; }
     .admin-nav {
       position: fixed; inset: auto 0 0; z-index: 30; margin: 0;
       display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px;

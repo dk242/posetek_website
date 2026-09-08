@@ -33,6 +33,10 @@ export default function AdminHeader({ ready, email, onSignOut }: {
       )}
       <div className="admin-header-right">
         {ready && <span className="admin-who" title={email}>{email}</span>}
+        {ready && <a className="quiet-button admin-technique-link" href="/admin/analysis" aria-label="Technique review" title="Technique review">
+          <span className="material-symbols-outlined" aria-hidden="true">edit_note</span>
+          <span>Technique review</span>
+        </a>}
         <button className="quiet-button admin-signout" type="button" onClick={onSignOut} aria-label="Sign out">
           <span className="material-symbols-outlined" aria-hidden="true">logout</span>
           <span>Sign out</span>
