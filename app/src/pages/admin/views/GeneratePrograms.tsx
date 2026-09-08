@@ -18,10 +18,8 @@ import { generateForAthlete, loadAthleteEvidence, loadOrganizationPlayers } from
 import type { AthleteLoad } from "../lib/programBatch";
 import {
   BATCH_CONCURRENCY,
-  DRILL_SHORT_LABELS,
   EQUIPMENT_OPTIONS,
   LEVEL_OPTIONS,
-  MEASURED_DRILL_KEYS,
   describeBatch,
   isFullyTested,
   runBatch,
@@ -29,6 +27,7 @@ import {
   sortRoster,
 } from "../lib/programBatchLogic";
 import type { LevelChoice } from "../lib/programBatchLogic";
+import AthleteEvidenceBadges from "./AthleteEvidenceBadges";
 
 const NO_TEAMS: TeamRow[] = [];
 const NO_PLAYERS: PlayerRow[] = [];
@@ -422,7 +421,6 @@ function AthleteRow({ player, teamName, evidence, job, checked, locked, onToggle
   const load = loadOf(evidence);
   const block = selectable(load?.evidence);
   const inputId = `batch-${player.id}`;
-  const missing = load ? MEASURED_DRILL_KEYS.filter(key => !load.evidence.tested.includes(key)) : [];
 
   return (
     <div className={`admin-row admin-batch-row${checked ? " is-selected" : ""}`} title={block.ok ? undefined : block.reason}>
@@ -431,27 +429,8 @@ function AthleteRow({ player, teamName, evidence, job, checked, locked, onToggle
         <label htmlFor={inputId}><strong>{player.name}</strong></label>
         <div className="admin-row-meta">
           <span className="admin-chip">{teamName ?? "No team"}</span>
-          {evidence?.kind === "loading" && <span className="admin-chip">Checking evidence…</span>}
-          {evidence?.kind === "error" && <span className="admin-chip danger" title={evidence.message}>Evidence unavailable</span>}
-          {load && (
-            <>
-              {load.evidence.position
-                ? <span className="admin-chip">{load.evidence.position}</span>
-                : <span className="admin-chip warn" title="The engine uses the position-neutral base.">No position</span>}
-              {load.evidence.age === null
-                ? <span className="admin-chip danger">No age</span>
-                : <span className={`admin-chip${load.evidence.ageStale ? " warn" : ""}`} title={load.evidence.ageStale ? "Recorded more than a year ago." : undefined}>Age {load.evidence.age}{load.evidence.ageStale ? " · stale" : ""}</span>}
-              <span
-                className={`admin-chip${missing.length ? " warn" : " accent"}`}
-                title={missing.length ? `Missing ${missing.map(key => DRILL_SHORT_LABELS[key]).join(", ")}` : `${load.evidence.repCount} reps across all six drills`}
-              >
-                {load.evidence.tested.length}/{MEASURED_DRILL_KEYS.length} tested
-              </span>
-              {load.evidence.activePlanVersion !== null && (
-                <span className="admin-chip warn">v{load.evidence.activePlanVersion} plan active</span>
-              )}
-            </>
-          )}
+          <AthleteEvidenceBadges evidence={load?.evidence} loading={evidence?.kind === "loading"}
+            error={evidence?.kind === "error" ? evidence.message : undefined} />
         </div>
         {job?.status === "failed" && <p className="admin-note form-message" role="alert">{job.message || "The plan could not be generated."}</p>}
       </div>

@@ -12,6 +12,7 @@ import { submitLlmJob } from "../../athlete-portal/lib/loaders";
 import { activationParams, allocationRows, PERSONALIZED_CAPABILITIES, PERSONALIZED_ENGINE,
   personalizedParams, plannerLink, prescriptionSignature, previewEnabled, recentEvidence, operationLabel } from "../lib/personalizedLogic";
 import "../personalized.scss";
+import AthleteEvidenceBadges from "./AthleteEvidenceBadges";
 
 const label = (value: string) => value.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
 const millis = (value: any) => value?.toMillis?.() ?? (typeof value === "string" ? Date.parse(value) : 0);
@@ -99,6 +100,7 @@ export default function PersonalizedPrograms() {
   }, [focused]);
 
   const visible = useMemo(() => players.filter(p => (!teamId || p.teamId === teamId) && `${p.name} ${p.email ?? ""}`.toLowerCase().includes(search.toLowerCase())), [players, teamId, search]);
+  const teamNames = useMemo(() => new Map(teams.map(team => [team.id, team.name])), [teams]);
   const draft = drafts.find(d => d.draftId === draftId) ?? drafts.find(d => d.status === "ready") ?? drafts[0];
   const current = activePlan(plans);
   useEffect(() => { setReviewed(false); }, [draft?.comparisonToken, draft?.status, current?.id, current?.planRevision]);
@@ -161,8 +163,16 @@ export default function PersonalizedPrograms() {
           const latest = jobs.find(j => j.playerId === p.id);
           return <div key={p.id} className={`personalized-player ${focused === p.id ? "is-focused" : ""}`}>
             <input type="checkbox" aria-label={`Select ${p.name}`} checked={selected.has(p.id)} disabled={!load || busy || inFlight(p.id)} onChange={() => toggle(p.id)} />
-            <button type="button" className="personalized-player-name" onClick={() => { setFocused(p.id); setReviewed(false); }}><strong>{p.name}</strong><span>{p.email || "Email unavailable"}</span>
-              <small>{evidenceErrors[p.id] || (!load ? "Loading evidence…" : `${load.evidence.position || "Position unavailable"} · ${recent!.reps.length} recent test reps${recent!.excluded ? ` · ${recent!.excluded} undated/older reps excluded` : ""}`)}</small></button>
+            <div className="personalized-player-copy">
+              <button type="button" className="personalized-player-name" onClick={() => { setFocused(p.id); setReviewed(false); }}><strong>{p.name}</strong><span>{p.email || "Email unavailable"}</span></button>
+              <div className="admin-row-meta personalized-player-badges">
+                <span className="admin-chip">{teamNames.get(p.teamId ?? "") ?? "No team"}</span>
+                <AthleteEvidenceBadges evidence={load?.evidence} loading={!load && !evidenceErrors[p.id]} error={evidenceErrors[p.id]} />
+              </div>
+              {(evidenceErrors[p.id] || recent) && <p className={`personalized-evidence-summary${evidenceErrors[p.id] ? " is-error" : ""}`}>
+                {evidenceErrors[p.id] || `${recent!.reps.length} recent test reps${recent!.excluded ? ` · ${recent!.excluded} undated/older reps excluded` : ""}`}
+              </p>}
+            </div>
             {latest && <span className={`personalized-status ${latest.status === "failed" ? "is-error" : ""}`}>{operationLabel(latest.capability)}: {latest.status}</span>}
           </div>;
         })}</div>}
