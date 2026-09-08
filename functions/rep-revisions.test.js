@@ -15,24 +15,35 @@ const REP = {
   totalTime: null, phase1Time: null, startFrame: 120, apexFrame: 400, endFrame: null, markerDistance: 9.144,
 };
 
-function fakeBucket(files = {}) {
+function fakeBucket(files = {}, tokens = {}) {
   const store = new Map(Object.entries(files));
+  const meta = new Map(Object.entries(tokens).map(([path, token]) => [path, { firebaseStorageDownloadTokens: token }]));
   const writes = [];
   const bucket = {
     name: "kickai-69dd0.firebasestorage.app",
     file: (path) => ({
       exists: async () => [store.has(path)],
       download: async () => [Buffer.from(store.get(path), "utf8")],
-      save: async (bytes, options) => { store.set(path, Buffer.isBuffer(bytes) ? bytes.toString("utf8") : String(bytes)); writes.push({ path, options }); },
-      delete: async () => { store.delete(path); },
+      getMetadata: async () => { if (!store.has(path)) throw new Error("No such object"); return [{ metadata: meta.get(path) || {} }]; },
+      save: async (bytes, options) => {
+        store.set(path, Buffer.isBuffer(bytes) ? bytes.toString("utf8") : String(bytes));
+        meta.set(path, options?.metadata?.metadata || {});
+        writes.push({ path, options });
+      },
+      delete: async () => { store.delete(path); meta.delete(path); },
     }),
   };
-  return { bucket, store, writes };
+  return { bucket, store, meta, writes };
 }
 
-function harness({ files, seed = {}, failSaveOn } = {}) {
+const PHONE_TOKEN = "phone-token-1111";
+
+function harness({ files, tokens, seed = {}, failSaveOn } = {}) {
   const db = new FakeFirestore({ "players/p1": { firstName: "A" }, "players/p1/reps/r1": REP, ...seed });
-  const storage = fakeBucket(files ?? { [`${FOLDER}/metadata.json`]: JSON.stringify({ framesPerSecond: 120, totalFrames: 900, startFrame: 120, endFrame: NaN, failedSteps: ["cod.frames.end"], processingStatus: "partial" }).replace("null", "NaN") });
+  const storage = fakeBucket(
+    files ?? { [`${FOLDER}/metadata.json`]: JSON.stringify({ framesPerSecond: 120, totalFrames: 900, startFrame: 120, endFrame: NaN, failedSteps: ["cod.frames.end"], processingStatus: "partial" }).replace("null", "NaN") },
+    tokens ?? (files ? {} : { [`${FOLDER}/metadata.json`]: PHONE_TOKEN }),
+  );
   if (failSaveOn) {
     const original = storage.bucket.file;
     storage.bucket.file = (path) => {
@@ -42,7 +53,8 @@ function harness({ files, seed = {}, failSaveOn } = {}) {
     };
   }
   let tick = 1_700_000_000_000;
-  const revisions = createRepRevisions({ db, bucket: storage.bucket, FieldValue, HttpsError, now: () => (tick += 1000), randomHex: () => "abcd1234" });
+  let minted = 0;
+  const revisions = createRepRevisions({ db, bucket: storage.bucket, FieldValue, HttpsError, now: () => (tick += 1000), randomHex: () => "abcd1234", randomToken: () => `minted-${++minted}` });
   return { db, revisions, ...storage };
 }
 
@@ -168,4 +180,23 @@ test("dribbling and sprint field rules accept their own fields and nothing else"
   await revisions.reviseRep({ playerId: "p1", repId: "s1", drill: "sprint", fields: { max_velocity: 7.2, endFrame: 300 } }, admin);
   assert.equal(db.snapshot("players/p1/reps/s1").max_velocity, 7.2);
   await assert.rejects(revisions.reviseRep({ playerId: "p1", repId: "s1", drill: "sprint", fields: { phase1Time: 1 } }, admin), { code: "invalid-argument" });
+});
+
+test("every written file carries a Firebase download token so the web SDK can open it", async () => {
+  const { revisions, meta, store } = harness();
+  const { revisionId } = await revisions.reviseRep(payload, admin);
+  // The phone's own token survives the overwrite, so cached download URLs stay valid.
+  assert.equal(meta.get(`${FOLDER}/metadata.json`).firebaseStorageDownloadTokens, PHONE_TOKEN);
+  assert.match(meta.get(`${FOLDER}/admin_annotations.json`).firebaseStorageDownloadTokens, /^minted-/);
+  assert.match(meta.get(`${FOLDER}/admin_revisions/${revisionId}/metadata.json`).firebaseStorageDownloadTokens, /^minted-/);
+  assert.match(meta.get(`${FOLDER}/admin_revisions/${revisionId}/rep.json`).firebaseStorageDownloadTokens, /^minted-/);
+  await revisions.restoreRepRevision({ playerId: "p1", repId: "r1", revisionId }, admin);
+  assert.equal(meta.get(`${FOLDER}/metadata.json`).firebaseStorageDownloadTokens, PHONE_TOKEN);
+  assert.ok(store.has(`${FOLDER}/metadata.json`));
+});
+
+test("a rep whose metadata.json had no token gets a minted one", async () => {
+  const { revisions, meta } = harness({ tokens: {} });
+  await revisions.reviseRep(payload, admin);
+  assert.match(meta.get(`${FOLDER}/metadata.json`).firebaseStorageDownloadTokens, /^minted-/);
 });
