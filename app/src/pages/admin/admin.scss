@@ -611,6 +611,45 @@
   }
 
   .admin-drill-tabs { position: static; background: none; margin-bottom: 4px; }
+
+  // MARK: - Generate programs (the batch roster)
+
+  .admin-batch-row {
+    input[type="checkbox"] { width: 18px; height: 18px; flex: 0 0 auto; accent-color: var(--admin-accent); cursor: pointer; }
+    input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.4; }
+    label { cursor: pointer; }
+    .admin-note { margin: 4px 0 0; }
+    &.is-selected { border-color: var(--admin-accent); background: rgba(0, 0, 0, 0.16); }
+  }
+
+  .admin-batch-bar {
+    position: sticky;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--admin-line);
+    border-radius: 14px;
+    background: var(--admin-panel);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+    .admin-batch-bar-copy {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--admin-dim);
+      strong { color: inherit; font-size: 14px; }
+      .admin-progress { margin-top: 4px; }
+    }
+
+    .primary-cta { margin: 0; white-space: nowrap; }
+  }
 }
 
 // MARK: - Rep tools (video scrubbing, annotation, re-processing)
