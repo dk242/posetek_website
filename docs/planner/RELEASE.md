@@ -1,14 +1,14 @@
-# Personalized planner preview — 2026-09-08
+# Personalized planner release — 2026-09-08
 
 Implemented and enabled as an optional verified-admin pilot. The current planner remains the default. No roster plan was activated, superseded, or regenerated in storage during this rollout.
 
-## Available preview
+## Main website
 
-[Open the personalized planner](https://6aa07614d290c0d3c2ab602a--posetek.netlify.app/admin/programs/personalized).
+[Open the personalized planner](https://posetek.net/admin/programs/personalized). The original [separate preview](https://6aa07614d290c0d3c2ab602a--posetek.netlify.app/admin/programs/personalized) also remains available.
 
 Sign in with a verified PoseTek admin account. Generation creates separate drafts. Compare the evidence, allocation and executable workouts, select the review checkbox, then explicitly choose **Use this plan** for that player. Returning to **Current planner** is always available and does not change plans.
 
-The main website was not replaced. Its latest independently published deployment is `6aa0731ea06d42b6faafcd78`, titled **Admin saved kick comparison picker: verified f05ec43**, created September 8 at 20:42 UTC. Its source is absent from this checkout and the fetched `origin/main`; `f05ec43` does not resolve locally. Incorporate that source before promoting this website build to `posetek.net`. The live index matches that preserved deployment after the preview release.
+The main-site package preserves deployment `6aa0731ea06d42b6faafcd78`, titled **Admin saved kick comparison picker: verified f05ec43**, created September 8 at 20:42 UTC. That source commit remains unavailable, so the personalized planner uses a separate entry with a visible launcher in the preserved site. All 153 existing served files are verified against their deployed checksums; the original index receives only the marked launcher block. The 62 assets not recoverable from tracked source are archived in the repository (655 KB compressed). See `PRODUCTION_INTEGRATION.md` for build, validation and eventual source-merge instructions.
 
 ## Runtime and access controls
 

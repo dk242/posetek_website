@@ -1,6 +1,8 @@
 # Personalized planner preview
 
-The existing `/admin/programs` page remains the default. `/admin/programs/personalized` is an optional admin preview; returning to the current page never applies, discards or restores a plan. The existing individual builder remains available on player details.
+The existing `/admin/programs` page remains the default. `/admin/programs/personalized` is an optional personalized planner on the main website; returning to the current page never applies, discards or restores a plan. The existing individual builder remains available on player details.
+
+Production currently composes the preserved, newer kick-comparison deployment with a separate planner entry. Use `node scripts/build-production.mjs` and publish `production-dist`, as configured in `netlify.toml`. See `PRODUCTION_INTEGRATION.md`; the ordinary app build alone is not a safe production replacement until the newer kick source is merged.
 
 ## Implemented flow
 
