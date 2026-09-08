@@ -240,3 +240,42 @@ test("a rep whose metadata.json had no token gets a minted one", async () => {
   await revisions.reviseRep(payload, admin);
   assert.match(meta.get(`${FOLDER}/metadata.json`).firebaseStorageDownloadTokens, /^minted-/);
 });
+
+test("a kick revision rewrites the ball artifacts the phone's viewer reads, backs them up, and restores them", async () => {
+  const folder = "p1/deadballShot/session2/kick1";
+  const originalInfo = JSON.stringify({ ball_speed_ms: 20, ball_speed_mph: 44.7, launch_angle: 12, contact_frame: 100 });
+  const { db, revisions, store, meta } = harness({
+    seed: { "players/p1/reps/k1": { repType: "side_kick", drillType: "deadballShot", sessionNumber: 2, repNumber: 1, velocity: 20, launch_angle: 12, contact_frame: 100 } },
+    files: { [`${folder}/metadata.json`]: JSON.stringify({ frameWidth: 1920, m_per_px: 0.002, resultsValid: true }), [`${folder}/ball_information.json`]: originalInfo },
+  });
+  const request = {
+    playerId: "p1", repId: "k1", drill: "shooting",
+    fields: { velocity: 24.5, launch_angle: 15.2, contact_frame: 98 },
+    metadata: { velocity: 24.5, launch_angle: 15.2, contact_frame: 98, resultsValid: true, processingStatus: "complete" },
+    artifacts: {
+      "ball_information.json": { ball_speed_ms: 24.5, ball_speed_mph: 54.8, launch_angle: 15.2, contact_frame: 98 },
+      "ball_trajectory.json": { t_values: [98, 99], x_values: [0.4, 0.42], y_values: [0.8, 0.78], contact_frame: 98, transition_frame: null, direction: null },
+    },
+  };
+  const { revisionId } = await revisions.reviseRep(request, admin);
+  assert.equal(db.snapshot("players/p1/reps/k1").velocity, 24.5);
+  assert.equal(JSON.parse(store.get(`${folder}/ball_information.json`)).ball_speed_ms, 24.5);
+  assert.deepEqual(JSON.parse(store.get(`${folder}/ball_trajectory.json`)).t_values, [98, 99]);
+  assert.match(meta.get(`${folder}/ball_trajectory.json`).firebaseStorageDownloadTokens, /^minted-/);
+  assert.equal(store.get(`${folder}/admin_revisions/${revisionId}/ball_information.json`), originalInfo);
+  const revision = db.snapshot(`players/p1/reps/k1/revisions/${revisionId}`);
+  assert.deepEqual(revision.artifactsWritten, ["ball_information.json", "ball_trajectory.json"]);
+  assert.deepEqual(revision.artifactsBackedUp, ["ball_information.json"]);
+  await revisions.restoreRepRevision({ playerId: "p1", repId: "k1", revisionId }, admin);
+  assert.equal(store.get(`${folder}/ball_information.json`), originalInfo);
+  assert.equal(store.has(`${folder}/ball_trajectory.json`), false);
+  assert.equal(db.snapshot("players/p1/reps/k1").velocity, 20);
+});
+
+test("artifacts outside the drill's allow-list are refused before anything is written", async () => {
+  const { revisions, writes } = harness({ seed: { "players/p1/reps/k1": { repType: "side_kick", sessionNumber: 2, repNumber: 1 } } });
+  await assert.rejects(revisions.reviseRep({ playerId: "p1", repId: "k1", drill: "shooting", artifacts: { "pose.json": { frames: [] } } }, admin), { code: "invalid-argument" });
+  await assert.rejects(revisions.reviseRep({ playerId: "p1", repId: "k1", drill: "shooting", artifacts: { "ball_information.json": [1, 2] } }, admin), { code: "invalid-argument" });
+  await assert.rejects(revisions.reviseRep({ ...payload, artifacts: { "ball_information.json": { ball_speed_ms: 1 } } }, admin), { code: "invalid-argument" });
+  assert.equal(writes.length, 0);
+});

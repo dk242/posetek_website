@@ -53,6 +53,13 @@ const FIELD_RULES = Object.freeze({
 
 const METADATA_EXTRA_KEYS = ["failedSteps", "processingStatus", "resultsValid"];
 const MAX_ANNOTATION_BYTES = 4 * 1024 * 1024;
+// JSON artifacts a revision may rewrite in the rep folder, besides
+// metadata.json — the ones another reader (the phone's deadball viewer) takes
+// its numbers from, so a corrected rep looks corrected everywhere.
+const ARTIFACT_RULES = Object.freeze({
+  shooting: ["ball_information.json", "ball_trajectory.json"],
+});
+const MAX_ARTIFACT_BYTES = 1024 * 1024;
 const MAX_NOTE_LENGTH = 2000;
 const MAX_REVISIONS_LISTED = 50;
 
@@ -136,6 +143,20 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     const text = JSON.stringify(input);
     if (Buffer.byteLength(text, "utf8") > MAX_ANNOTATION_BYTES) fail("invalid-argument", "The annotation file is too large.");
     return input;
+  }
+
+  function sanitizeArtifacts(drill, input) {
+    if (input === undefined || input === null) return {};
+    if (typeof input !== "object" || Array.isArray(input)) fail("invalid-argument", "Artifacts must be an object keyed by file name.");
+    const allowed = ARTIFACT_RULES[drill] || [];
+    const out = {};
+    for (const [name, value] of Object.entries(input)) {
+      if (!allowed.includes(name)) fail("invalid-argument", `${name} is not an artifact the rep tools may rewrite for this drill.`);
+      if (!value || typeof value !== "object" || Array.isArray(value)) fail("invalid-argument", `${name} must be a JSON object.`);
+      if (Buffer.byteLength(JSON.stringify(value), "utf8") > MAX_ARTIFACT_BYTES) fail("invalid-argument", `${name} is too large.`);
+      out[name] = value;
+    }
+    return out;
   }
 
   function noteOf(value) {
@@ -226,8 +247,9 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     const fields = sanitizeFields(drill, data?.fields);
     const metadataPatch = sanitizeMetadata(drill, data?.metadata);
     const annotations = sanitizeAnnotations(data?.annotations);
+    const artifacts = sanitizeArtifacts(drill, data?.artifacts);
     const note = noteOf(data?.note);
-    if (!Object.keys(fields).length && !Object.keys(metadataPatch).length && !annotations) fail("invalid-argument", "There is nothing to push.");
+    if (!Object.keys(fields).length && !Object.keys(metadataPatch).length && !annotations && !Object.keys(artifacts).length) fail("invalid-argument", "There is nothing to push.");
 
     const repRef = db.collection("players").doc(playerId).collection("reps").doc(repId);
     const repDoc = await repRef.get();
@@ -245,6 +267,15 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
       await bucket.file(`${backupPrefix}/metadata.json`).save(previousMetadata.raw, saveOptions(randomToken()));
     }
     await saveJson(`${backupPrefix}/rep.json`, { repId, playerId, drill, previous: existing });
+    const artifactsBackedUp = [];
+    for (const name of Object.keys(artifacts)) {
+      const current = bucket.file(`${folder}/${name}`);
+      const [exists] = await current.exists();
+      if (!exists) continue;
+      const [buffer] = await current.download();
+      await bucket.file(`${backupPrefix}/${name}`).save(buffer, saveOptions(randomToken()));
+      artifactsBackedUp.push(name);
+    }
 
     const stampMillis = now();
     const revision = {
@@ -262,6 +293,8 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
       folder,
       metadataBackedUp: previousMetadata.exists,
       annotationsWritten: Boolean(annotations),
+      artifactsWritten: Object.keys(artifacts),
+      artifactsBackedUp,
       previous: existing,
       createdAtMillis: stampMillis,
       createdAt: FieldValue.serverTimestamp(),
@@ -283,6 +316,7 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
       }
       await metadataFile.save(JSON.stringify(merged), saveOptions(metadataToken));
       if (annotations) await saveJson(`${folder}/admin_annotations.json`, { ...annotations, revisionId, playerId, repId, drill });
+      for (const [name, value] of Object.entries(artifacts)) await saveJson(`${folder}/${name}`, value);
     } catch (error) {
       await db.runTransaction(async (transaction) => {
         transaction.set(repRef, existing);
@@ -318,6 +352,18 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
       const [exists] = await current.exists();
       if (exists) await current.delete();
     }
+    for (const name of Array.isArray(revision.artifactsWritten) ? revision.artifactsWritten : []) {
+      const current = bucket.file(`${revision.folder}/${name}`);
+      const saved = bucket.file(`${revision.folder}/admin_revisions/${revisionId}/${name}`);
+      const [hadBackup] = await saved.exists();
+      if (hadBackup) {
+        const [buffer] = await saved.download();
+        await current.save(buffer, saveOptions(await downloadToken(current)));
+      } else {
+        const [exists] = await current.exists();
+        if (exists) await current.delete();
+      }
+    }
 
     await db.runTransaction(async (transaction) => {
       transaction.set(repRef, revision.previous || {});
@@ -326,7 +372,7 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     return { revisionId, rep: { id: repId, ...(revision.previous || {}) } };
   }
 
-  return { reviseRep, restoreRepRevision, FIELD_RULES, MAX_REVISIONS_LISTED };
+  return { reviseRep, restoreRepRevision, FIELD_RULES, ARTIFACT_RULES, MAX_REVISIONS_LISTED };
 }
 
-module.exports = { createRepRevisions, REP_TYPES, FIELD_RULES };
+module.exports = { createRepRevisions, REP_TYPES, FIELD_RULES, ARTIFACT_RULES };

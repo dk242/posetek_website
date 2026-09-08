@@ -417,6 +417,250 @@ export function deriveShuttleMetrics(input: {
   return { metrics, derived, notes };
 }
 
+// MARK: - Annotation range
+
+export interface FrameRange { from: number; to: number }
+
+/** Frames before contact the ball pass starts on, so the resting ball is captured too. */
+export const KICK_LEAD_FRAMES = 10;
+/** KickProcessingMath.trackBallTrajectory fits the 60 frames after contact. */
+export const KICK_FIT_WINDOW_FRAMES = 60;
+
+/**
+ * Where an annotation pass runs by default: the start → end frames for the
+ * shuttle drills, contact − 10 → contact + 60 for a kick (the resting ball
+ * plus the phone's own fit window), else the whole clip. Always clamped to
+ * the clip and ordered.
+ */
+export function defaultAnnotationRange(spec: DrillToolSpec | null, frames: Record<string, number | null | undefined>, lastFrame: number): FrameRange {
+  const clamp = (value: number) => Math.max(0, Math.min(lastFrame, Math.round(value)));
+  let from = 0;
+  let to = lastFrame;
+  if (spec?.derive === "shuttle") {
+    from = clamp(frames.startFrame ?? 0);
+    to = clamp(frames.endFrame ?? lastFrame);
+  } else if (spec?.derive === "kick") {
+    const contact = frames.contact_frame;
+    if (contact !== null && contact !== undefined) {
+      from = clamp(contact - KICK_LEAD_FRAMES);
+      to = clamp(contact + KICK_FIT_WINDOW_FRAMES);
+    }
+  }
+  return from <= to ? { from, to } : { from: to, to: from };
+}
+
+// MARK: - Kick scale (pixel → meters through the ArUco marker)
+
+/** ArucoMarkerPhysicalSize.sideLengthMeters — a 5.875 in marker. */
+export const DEFAULT_MARKER_LENGTH_METERS = 5.875 * 0.0254;
+
+/** KickProcessingMath.metersPerPixel — marker length over the mean pixel edge of its four corners. */
+export function metersPerPixelFromCorners(cornersPixels: unknown, markerLengthMeters = DEFAULT_MARKER_LENGTH_METERS): number | null {
+  if (!Array.isArray(cornersPixels) || cornersPixels.length < 4 || !(markerLengthMeters > 0)) return null;
+  const points = cornersPixels.slice(0, 4).map(corner => {
+    if (Array.isArray(corner)) return { x: num(corner[0]), y: num(corner[1]) };
+    return { x: num(corner?.x), y: num(corner?.y) };
+  });
+  if (points.some(point => point.x === null || point.y === null)) return null;
+  const edges: number[] = [];
+  for (let i = 0; i < 4; i++) {
+    const a = points[i], b = points[(i + 1) % 4];
+    const length = Math.hypot((b.x as number) - (a.x as number), (b.y as number) - (a.y as number));
+    if (Number.isFinite(length) && length > 0) edges.push(length);
+  }
+  if (!edges.length) return null;
+  return markerLengthMeters / (edges.reduce((sum, edge) => sum + edge, 0) / edges.length);
+}
+
+export interface KickScale {
+  metersPerPixel: number | null;
+  /** The upright frame width in pixels, which the phone multiplies normalized speed by. */
+  frameWidth: number | null;
+  source: "metadata.m_per_px" | "metadata.arucoMarkers" | "unavailable";
+}
+
+/** The scale the phone used: metadata's `m_per_px`, else recomputed from its `arucoMarkers` corners. */
+export function resolveKickScale(metadata: any, videoWidth: number | null): KickScale {
+  const frameWidth = num(metadata?.frameWidth) ?? num(metadata?.videoDisplayWidth) ?? (videoWidth && videoWidth > 0 ? videoWidth : null);
+  const recorded = num(metadata?.m_per_px);
+  if (recorded !== null && recorded > 0) return { metersPerPixel: recorded, frameWidth, source: "metadata.m_per_px" };
+  const markers = Array.isArray(metadata?.arucoMarkers) ? metadata.arucoMarkers : [];
+  const length = num(metadata?.aruco_marker_length_m) ?? DEFAULT_MARKER_LENGTH_METERS;
+  for (const marker of markers) {
+    const mpp = metersPerPixelFromCorners(marker?.cornersPixels, length);
+    if (mpp !== null) return { metersPerPixel: mpp, frameWidth, source: "metadata.arucoMarkers" };
+  }
+  return { metersPerPixel: null, frameWidth, source: "unavailable" };
+}
+
+// MARK: - Kick re-derivation (KickProcessingMath.trackBallTrajectory)
+
+/** The last frame the ball is still at rest: the frame before it first moves past the threshold. */
+export function deriveContactFrame(track: (Point | null)[], from: number, threshold = 0.01): number | null {
+  let origin: Point | null = null;
+  let originFrame = -1;
+  for (let f = Math.max(0, from); f < track.length; f++) {
+    const point = track[f];
+    if (!point) continue;
+    if (!origin) { origin = point; originFrame = f; continue; }
+    if (Math.hypot(point.x - origin.x, point.y - origin.y) > threshold) return Math.max(originFrame, f - 1);
+  }
+  return null;
+}
+
+export function linearFit(xs: number[], ys: number[]): { slope: number; intercept: number } {
+  const n = Math.min(xs.length, ys.length);
+  if (n === 0) return { slope: 0, intercept: 0 };
+  const meanX = xs.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  let sxx = 0, sxy = 0;
+  for (let i = 0; i < n; i++) {
+    sxx += (xs[i] - meanX) ** 2;
+    sxy += (xs[i] - meanX) * (ys[i] - meanY);
+  }
+  const slope = sxx > 0 ? sxy / sxx : 0;
+  return { slope, intercept: meanY - slope * meanX };
+}
+
+/** KickProcessingMath.maxValidBallVelocityMetersPerSecond — 100 mph. */
+export const MAX_VALID_BALL_VELOCITY_MPS = 44.704;
+
+export interface KickMetrics { velocity: number | null; launch_angle: number | null }
+
+export interface KickFit {
+  samples: number;
+  windowStart: number;
+  windowEnd: number;
+  /** Normalized units per second, x by frame width and y by frame height — the phone's convention. */
+  vxNorm: number;
+  vyNorm: number;
+  velocityNorm: number;
+  resultsValid: boolean;
+  /** Which way the ball travels, from the sign of the fitted x slope. */
+  direction: "left_to_right" | "right_to_left" | null;
+}
+
+export interface KickDerivation {
+  metrics: KickMetrics;
+  derived: (keyof KickMetrics)[];
+  notes: string[];
+  fit: KickFit | null;
+}
+
+/**
+ * Fit a straight line through the ball center over the frames after contact
+ * (the phone's linear tracker: `fitTrajectory` over contact … contact + 60),
+ * convert the slope to normalized units per second, and take the hypotenuse
+ * for speed and the angle above horizontal for the launch angle. Speed in m/s
+ * is the normalized speed × frame width × meters per pixel; without a marker
+ * scale the launch angle is still derived and the original velocity is kept.
+ * A speed over 100 mph fails the phone's validity check and nulls both, as
+ * the phone would.
+ *
+ * One deliberate difference from the phone: it computes atan2(−vy, vx) and
+ * stores the absolute value, which for a ball travelling right to left comes
+ * out as 180° minus the real launch angle. Here the angle is measured against
+ * the direction of travel, atan2(−vy, |vx|), so a 26° shot is 26° either way,
+ * and the direction itself is reported from the sign of vx.
+ */
+export function deriveKickMetrics(input: {
+  ballTrack: (Point | null)[] | null;
+  contactFrame: number | null;
+  fps: number;
+  windowFrames?: number;
+  scale: KickScale;
+  original: Partial<Record<keyof KickMetrics, unknown>>;
+}): KickDerivation {
+  const { ballTrack, contactFrame, fps, windowFrames = KICK_FIT_WINDOW_FRAMES, scale, original } = input;
+  const metrics: KickMetrics = { velocity: num(original.velocity), launch_angle: num(original.launch_angle) };
+  const notes: string[] = [];
+  if (!ballTrack || !ballTrack.some(Boolean)) {
+    notes.push("Velocity and launch angle kept from the original: no ball track was annotated.");
+    return { metrics, derived: [], notes, fit: null };
+  }
+  if (contactFrame === null || contactFrame === undefined) {
+    notes.push("Set the contact frame to derive velocity and launch angle from the ball track.");
+    return { metrics, derived: [], notes, fit: null };
+  }
+  const windowStart = Math.max(0, contactFrame);
+  const windowEnd = Math.min(ballTrack.length - 1, contactFrame + Math.max(1, Math.round(windowFrames)));
+  const xs: number[] = [], ysX: number[] = [], ysY: number[] = [];
+  for (let f = windowStart; f <= windowEnd; f++) {
+    const point = ballTrack[f];
+    if (!point) continue;
+    xs.push(f); ysX.push(point.x); ysY.push(point.y);
+  }
+  const derived: (keyof KickMetrics)[] = ["velocity", "launch_angle"];
+  if (xs.length < 2) {
+    notes.push(`No ball positions between the contact frame and ${windowEnd}: annotate the ball after contact.`);
+    return { metrics: { velocity: null, launch_angle: null }, derived, notes, fit: null };
+  }
+  const fitX = linearFit(xs, ysX);
+  const fitY = linearFit(xs, ysY);
+  const vxNorm = fitX.slope * Math.max(fps, 1);
+  const vyNorm = fitY.slope * Math.max(fps, 1);
+  const velocityNorm = Math.hypot(vxNorm, vyNorm);
+  if (!(velocityNorm > 0) || !Number.isFinite(velocityNorm)) {
+    notes.push("The ball does not move in the fit window, so no velocity or launch angle can be derived.");
+    return { metrics: { velocity: null, launch_angle: null }, derived, notes, fit: null };
+  }
+  const launchAngle = Math.abs((Math.atan2(-vyNorm, Math.abs(vxNorm)) * 180) / Math.PI);
+  const direction: KickFit["direction"] = vxNorm > 0 ? "left_to_right" : vxNorm < 0 ? "right_to_left" : null;
+  if (direction === "right_to_left") notes.push("The ball travels right to left; the launch angle is measured against its direction of travel (the phone's own fit would have recorded 180° minus this).");
+  let velocity: number | null = null;
+  if (scale.metersPerPixel !== null && scale.frameWidth !== null && scale.frameWidth > 0) {
+    velocity = velocityNorm * scale.frameWidth * scale.metersPerPixel;
+  } else {
+    notes.push("No marker scale (m_per_px) on this rep, so the velocity is kept from the original; the launch angle is derived.");
+    velocity = metrics.velocity;
+  }
+  const resultsValid = velocity !== null && velocity > 0 && velocity <= MAX_VALID_BALL_VELOCITY_MPS;
+  if (velocity !== null && !resultsValid) {
+    notes.push(`The fitted velocity (${velocity.toFixed(2)} m/s) is over the phone's 44.704 m/s validity limit; both values are nulled as the phone would.`);
+    return { metrics: { velocity: null, launch_angle: null }, derived, notes, fit: { samples: xs.length, windowStart, windowEnd, vxNorm, vyNorm, velocityNorm, resultsValid: false, direction } };
+  }
+  return {
+    metrics: { velocity, launch_angle: launchAngle },
+    derived: scale.metersPerPixel !== null ? derived : ["launch_angle"],
+    notes,
+    fit: { samples: xs.length, windowStart, windowEnd, vxNorm, vyNorm, velocityNorm, resultsValid, direction },
+  };
+}
+
+/**
+ * The two ball artifacts the phone's deadball viewer reads, rebuilt from the
+ * track so the app shows the same numbers the website pushed:
+ * `ball_trajectory.json` (per-frame centers from contact through the window)
+ * and `ball_information.json` (speed, angle, contact — valid results only).
+ */
+export function kickArtifacts(input: {
+  ballTrack: (Point | null)[];
+  contactFrame: number;
+  transitionFrame: number | null;
+  direction: string | null;
+  windowEnd: number;
+  metrics: KickMetrics;
+  resultsValid: boolean;
+}): Record<string, any> {
+  const { ballTrack, contactFrame, transitionFrame, direction, windowEnd, metrics, resultsValid } = input;
+  const t: number[] = [], x: number[] = [], y: number[] = [];
+  for (let f = Math.max(0, contactFrame); f <= Math.min(windowEnd, ballTrack.length - 1); f++) {
+    const point = ballTrack[f];
+    if (!point) continue;
+    t.push(f); x.push(point.x); y.push(point.y);
+  }
+  const velocity = resultsValid ? metrics.velocity : null;
+  return {
+    "ball_trajectory.json": { t_values: t, x_values: x, y_values: y, contact_frame: contactFrame, transition_frame: transitionFrame, direction },
+    "ball_information.json": {
+      ball_speed_ms: velocity,
+      ball_speed_mph: velocity === null ? null : velocity * 2.2369362920544,
+      launch_angle: resultsValid ? metrics.launch_angle : null,
+      contact_frame: resultsValid ? contactFrame : null,
+    },
+  };
+}
+
 // MARK: - The diff shown before pushing
 
 export interface FieldChange {
@@ -461,6 +705,8 @@ export interface DrillToolSpec {
   stringFields?: StringFieldSpec[];
   /** True for the two shuttle drills whose metrics this module re-derives. */
   rederive: boolean;
+  /** Which re-derivation this module runs for the drill: the shuttle math, the kick fit, or none. */
+  derive: "shuttle" | "kick" | null;
   ball: boolean;
 }
 
@@ -510,6 +756,8 @@ export interface MeasurementInputs {
   comSource: string;
   ballSource: string;
   sideOverride: string;
+  /** The kick fit window, when the drill has one. */
+  window?: number;
 }
 
 /** Re-entering a value or undoing an edit does not opt an old rep into reprocessing. */
@@ -524,7 +772,8 @@ export function measurementInputsChanged(initial: MeasurementInputs, current: Me
     || !sameMarks(initial.ballMarks, current.ballMarks)
     || initial.comSource !== current.comSource
     || initial.ballSource !== current.ballSource
-    || initial.sideOverride !== current.sideOverride;
+    || initial.sideOverride !== current.sideOverride
+    || (initial.window ?? null) !== (current.window ?? null);
 }
 
 /** Changing just the foot must not reprocess an older rep with incomplete artifacts. */
@@ -535,10 +784,11 @@ export function revisionPreviewFields(input: {
   numbers: Record<string, string>;
   strings: Record<string, string | null>;
   derivation: ShuttleDerivation | null;
+  kick?: KickDerivation | null;
   side: StartingSide | null;
   measurementsEdited: boolean;
 }): Record<string, number | string | null> {
-  const { spec, original, frames, numbers, strings, derivation, side, measurementsEdited } = input;
+  const { spec, original, frames, numbers, strings, derivation, kick = null, side, measurementsEdited } = input;
   const next: Record<string, number | string | null> = { ...strings };
   const stringChanged = diffFields(original, strings, (spec?.stringFields ?? []).map(field => field.key)).some(row => row.changed);
   if (stringChanged && !measurementsEdited) {
@@ -556,18 +806,25 @@ export function revisionPreviewFields(input: {
       const raw = numbers[field.key] ?? "";
       next[field.key] = raw.trim() === "" ? null : num(raw);
     }
+    // A kick with a ball track: velocity and launch angle come from the fit,
+    // never from the typed values, and the direction from the fit's sign.
+    if (kick) {
+      for (const key of kick.derived) next[key] = kick.metrics[key];
+      if (kick.fit?.direction) next.direction = kick.fit.direction;
+    }
   }
   return next;
 }
 
 export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
-  changeOfDirection: { key: "changeOfDirection", frameFields: SHUTTLE_FRAME_FIELDS, numberFields: SHUTTLE_NUMBER_FIELDS, rederive: true, ball: false },
+  changeOfDirection: { key: "changeOfDirection", frameFields: SHUTTLE_FRAME_FIELDS, numberFields: SHUTTLE_NUMBER_FIELDS, rederive: true, derive: "shuttle", ball: false },
   dribbling: {
     key: "dribbling",
     frameFields: SHUTTLE_FRAME_FIELDS,
     numberFields: [...SHUTTLE_NUMBER_FIELDS, { key: "avgBallDistance", label: "Avg ball distance", unit: "m" }],
     stringFields: [{ key: "dribble_foot", label: "Dribbling foot", options: FOOT_OPTIONS }],
     rederive: true,
+    derive: "shuttle",
     ball: true,
   },
   sprint: {
@@ -582,6 +839,7 @@ export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
       { key: "distance", label: "Distance", unit: "m" },
     ],
     rederive: false,
+    derive: null,
     ball: false,
   },
   jump: {
@@ -589,6 +847,7 @@ export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
     frameFields: [{ key: "takeoffFrame", label: "Takeoff" }, { key: "peakFrame", label: "Peak" }, { key: "landingFrame", label: "Landing" }],
     numberFields: [{ key: "jumpHeight", label: "Jump height", unit: "m" }],
     rederive: false,
+    derive: null,
     ball: false,
   },
   broadJump: {
@@ -596,14 +855,19 @@ export const DRILL_TOOL_SPECS: Record<string, DrillToolSpec> = {
     frameFields: [{ key: "takeoffFrame", label: "Takeoff" }, { key: "landingFrame", label: "Landing" }],
     numberFields: [{ key: "broadJumpDistance", label: "Distance", unit: "m" }, { key: "jumpHeight", label: "Peak height", unit: "m" }],
     rederive: false,
+    derive: null,
     ball: false,
   },
   shooting: {
     key: "shooting",
-    frameFields: [{ key: "contact_frame", label: "Contact" }, { key: "transition_frame", label: "Transition" }],
+    frameFields: [
+      { key: "contact_frame", label: "Contact", hint: "The last frame the ball is still at rest — it starts moving on the next frame." },
+      { key: "transition_frame", label: "Transition", hint: "Backswing to downswing." },
+    ],
     numberFields: [{ key: "velocity", label: "Ball velocity", unit: "m/s" }, { key: "launch_angle", label: "Launch angle", unit: "°" }],
     stringFields: [{ key: "strike_foot", label: "Shooting foot", options: FOOT_OPTIONS }],
     rederive: false,
+    derive: "kick",
     ball: true,
   },
 };
@@ -621,6 +885,8 @@ export interface RevisionPayload {
   fields: Record<string, number | string | null>;
   metadata: Record<string, any>;
   annotations: Record<string, any> | null;
+  /** Extra JSON artifacts to rewrite in the rep folder, by file name (allow-listed per drill by the callable). */
+  artifacts: Record<string, any> | null;
   note: string;
 }
 
@@ -631,6 +897,7 @@ export function buildRevisionPayload(input: {
   fields: Record<string, number | string | null | undefined>;
   metadataExtras: Record<string, any>;
   annotations: Record<string, any> | null;
+  artifacts?: Record<string, any> | null;
   note: string;
 }): RevisionPayload {
   const fields: Record<string, number | string | null> = {};
@@ -645,6 +912,7 @@ export function buildRevisionPayload(input: {
     fields,
     metadata: { ...fields, ...input.metadataExtras },
     annotations: input.annotations,
+    artifacts: input.artifacts ?? null,
     note: input.note.trim().slice(0, 2000),
   };
 }

@@ -273,6 +273,28 @@ preserves distances when no new athlete or ball track is supplied.
 existing metric projection, alongside `strike_foot`, so the mobile athlete leaderboard
 can compare both feet and match dribbling against change of direction course lengths.
 
+### Kicks (deadball shot)
+
+- **Range.** The ball pass defaults to `contact − 10 → contact + 60` (the resting ball, then the
+  phone's own fit window) rather than the whole clip; the range is editable (from/to with
+  "Use current") and a pass can be stopped and continued. The shuttle drills default to
+  start → end; everything else to the whole clip.
+- **Velocity and launch angle are fitted from the ball marks**, never typed once a track exists:
+  `deriveKickMetrics` mirrors `KickProcessingMath.trackBallTrajectory` — a least-squares line
+  through the ball center over the frames after contact (window 60, adjustable), the slope ×
+  fps as normalized speed, speed in m/s = normalized speed × frame width × `m_per_px`
+  (metadata's value, else recomputed from its `arucoMarkers` corners with the 5.875 in marker),
+  and the phone's 44.704 m/s validity limit (over it, both values are nulled as the phone does).
+  Without a marker scale the angle is still derived and the original velocity kept.
+  "Find contact" sets the contact frame to the last frame the ball is at rest.
+- **One deliberate difference from the phone:** it computes `atan2(−vy, vx)` and stores the
+  absolute value, so a ball travelling right to left comes out as 180° minus the real angle
+  (a phone bug to look at). The web measures the angle against the direction of travel and
+  writes `direction` from the fit's sign; the preview says so when it applies.
+- **The push also rewrites `ball_information.json` and `ball_trajectory.json`** (the phone's
+  deadball viewer reads them) through the callable's per-drill artifact allow-list, backed up
+  and restored with the rest of the revision.
+
 ### Why a callable
 
 The live Firestore ruleset (`e84fb428…`) and Storage ruleset (`9f5bcd27…`) deny every client,

@@ -339,3 +339,152 @@ describe("recorded-rep foot edits", () => {
     expect(measurementInputsChanged(initial, { ...equal, sideOverride: "left" })).toBe(true);
   });
 });
+
+// MARK: - Kicks: the annotation range and the ball fit
+
+import {
+  DEFAULT_MARKER_LENGTH_METERS,
+  KICK_FIT_WINDOW_FRAMES,
+  defaultAnnotationRange,
+  deriveContactFrame,
+  deriveKickMetrics,
+  kickArtifacts,
+  linearFit,
+  metersPerPixelFromCorners,
+  resolveKickScale,
+} from "./repTools";
+import type { KickScale, Point } from "./repTools";
+
+const shooting = toolSpecFor("shooting");
+const cod = toolSpecFor("changeOfDirection");
+
+describe("annotation range defaults", () => {
+  it("covers the resting ball and the phone's fit window for a kick", () => {
+    expect(defaultAnnotationRange(shooting, { contact_frame: 100 }, 500)).toEqual({ from: 90, to: 160 });
+    expect(defaultAnnotationRange(shooting, { contact_frame: 5 }, 40)).toEqual({ from: 0, to: 40 });
+    expect(defaultAnnotationRange(shooting, { contact_frame: null }, 500)).toEqual({ from: 0, to: 500 });
+    expect(KICK_FIT_WINDOW_FRAMES).toBe(60);
+  });
+  it("uses start → end for the shuttle drills and the whole clip otherwise", () => {
+    expect(defaultAnnotationRange(cod, { startFrame: 30, endFrame: 400 }, 900)).toEqual({ from: 30, to: 400 });
+    expect(defaultAnnotationRange(cod, { startFrame: null, endFrame: null }, 900)).toEqual({ from: 0, to: 900 });
+    expect(defaultAnnotationRange(cod, { startFrame: 400, endFrame: 30 }, 900)).toEqual({ from: 30, to: 400 });
+    expect(defaultAnnotationRange(toolSpecFor("sprint"), { startFrame: 30 }, 200)).toEqual({ from: 0, to: 200 });
+    expect(defaultAnnotationRange(null, {}, 10)).toEqual({ from: 0, to: 10 });
+  });
+});
+
+describe("kick scale", () => {
+  it("recomputes meters per pixel from the marker corners the way the phone does", () => {
+    const square = [[100, 100], [200, 100], [200, 200], [100, 200]];
+    expect(metersPerPixelFromCorners(square)).toBeCloseTo(DEFAULT_MARKER_LENGTH_METERS / 100, 9);
+    expect(metersPerPixelFromCorners([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 50, y: 50 }, { x: 0, y: 50 }], 0.1)).toBeCloseTo(0.002);
+    expect(metersPerPixelFromCorners([[0, 0], [1, 1]])).toBeNull();
+    expect(metersPerPixelFromCorners(square, 0)).toBeNull();
+  });
+  it("prefers metadata's m_per_px, then its marker corners, then reports unavailable", () => {
+    expect(resolveKickScale({ m_per_px: 0.0021, frameWidth: 1920 }, 1080)).toEqual({ metersPerPixel: 0.0021, frameWidth: 1920, source: "metadata.m_per_px" });
+    const fromCorners = resolveKickScale({ arucoMarkers: [{ cornersPixels: [[0, 0], [100, 0], [100, 100], [0, 100]] }], aruco_marker_length_m: 0.2 }, 1920);
+    expect(fromCorners.metersPerPixel).toBeCloseTo(0.002);
+    expect(fromCorners.frameWidth).toBe(1920);
+    expect(fromCorners.source).toBe("metadata.arucoMarkers");
+    expect(resolveKickScale({}, null)).toEqual({ metersPerPixel: null, frameWidth: null, source: "unavailable" });
+  });
+});
+
+describe("kick contact and fit", () => {
+  const still: Point = { x: 0.4, y: 0.8 };
+  const track: (Point | null)[] = new Array(200).fill(null);
+  for (let f = 90; f < 100; f++) track[f] = still;
+  // From frame 100 the ball moves +0.01 in x and −0.005 in y per frame.
+  for (let f = 100; f < 200; f++) track[f] = { x: 0.4 + 0.01 * (f - 99), y: 0.8 - 0.005 * (f - 99) };
+  const scale: KickScale = { metersPerPixel: 0.002, frameWidth: 1920, source: "metadata.m_per_px" };
+
+  it("finds the contact frame as the last frame the ball is at rest", () => {
+    expect(deriveContactFrame(track, 90)).toBe(99);
+    expect(deriveContactFrame(track, 150)).toBe(150);
+    expect(deriveContactFrame(new Array(5).fill(still), 0)).toBeNull();
+    expect(deriveContactFrame([], 0)).toBeNull();
+  });
+  it("fits a line", () => {
+    expect(linearFit([0, 1, 2], [1, 3, 5])).toEqual({ slope: 2, intercept: 1 });
+    expect(linearFit([2, 2], [1, 3])).toEqual({ slope: 0, intercept: 2 });
+  });
+  it("derives velocity and launch angle from the slope, scaled by the marker", () => {
+    const { metrics, derived, fit, notes } = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, scale, original: { velocity: 1, launch_angle: 1 } });
+    // 0.01 × 240 = 2.4 widths/s, 0.005 × 240 = 1.2 heights/s → hypot 2.683 → × 1920 px × 0.002 m/px.
+    expect(fit).not.toBeNull();
+    expect(fit!.vxNorm).toBeCloseTo(2.4);
+    expect(fit!.vyNorm).toBeCloseTo(-1.2);
+    expect(metrics.velocity).toBeCloseTo(Math.hypot(2.4, 1.2) * 1920 * 0.002, 6);
+    expect(metrics.launch_angle).toBeCloseTo((Math.atan2(1.2, 2.4) * 180) / Math.PI, 6);
+    expect(derived).toEqual(["velocity", "launch_angle"]);
+    expect(fit!.resultsValid).toBe(true);
+    expect(fit!.windowStart).toBe(99);
+    expect(fit!.windowEnd).toBe(159);
+    expect(fit!.samples).toBe(61);
+    expect(notes).toEqual([]);
+  });
+  it("measures the launch angle against the direction of travel and reports that direction", () => {
+    const forward = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, scale, original: {} });
+    expect(forward.fit!.direction).toBe("left_to_right");
+    const mirrored = track.map(point => (point ? { x: 1 - point.x, y: point.y } : null));
+    const backward = deriveKickMetrics({ ballTrack: mirrored, contactFrame: 99, fps: 240, scale, original: {} });
+    expect(backward.metrics.launch_angle).toBeCloseTo((Math.atan2(1.2, 2.4) * 180) / Math.PI, 6);
+    expect(backward.metrics.velocity).toBeCloseTo(forward.metrics.velocity as number, 9);
+    expect(backward.fit!.direction).toBe("right_to_left");
+    expect(backward.notes.some(note => /right to left/.test(note))).toBe(true);
+    // A ball kicked downward still gets a positive angle, as on the phone.
+    const down = track.map(point => (point ? { x: point.x, y: 1.6 - point.y } : null));
+    expect(deriveKickMetrics({ ballTrack: down, contactFrame: 99, fps: 240, scale, original: {} }).metrics.launch_angle).toBeCloseTo(26.565, 2);
+  });
+  it("respects the fit window", () => {
+    const { fit } = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, windowFrames: 20, scale, original: {} });
+    expect(fit!.windowEnd).toBe(119);
+    expect(fit!.samples).toBe(21);
+  });
+  it("keeps the original velocity but derives the angle without a marker scale", () => {
+    const { metrics, derived, notes } = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, scale: { metersPerPixel: null, frameWidth: 1920, source: "unavailable" }, original: { velocity: 22.5 } });
+    expect(metrics.velocity).toBe(22.5);
+    expect(metrics.launch_angle).toBeCloseTo(26.565, 2);
+    expect(derived).toEqual(["launch_angle"]);
+    expect(notes.some(note => /No marker scale/.test(note))).toBe(true);
+  });
+  it("nulls both values when the fitted speed exceeds the phone's 100 mph limit", () => {
+    const { metrics, fit, notes } = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, scale: { ...scale, metersPerPixel: 0.02 }, original: { velocity: 22.5, launch_angle: 10 } });
+    expect(metrics).toEqual({ velocity: null, launch_angle: null });
+    expect(fit!.resultsValid).toBe(false);
+    expect(notes.some(note => /validity limit/.test(note))).toBe(true);
+  });
+  it("keeps the originals with a note when there is no ball track or no contact frame", () => {
+    expect(deriveKickMetrics({ ballTrack: null, contactFrame: 99, fps: 240, scale, original: { velocity: 22.5, launch_angle: 10 } })).toMatchObject({ metrics: { velocity: 22.5, launch_angle: 10 }, derived: [], fit: null });
+    expect(deriveKickMetrics({ ballTrack: track, contactFrame: null, fps: 240, scale, original: { velocity: 22.5 } })).toMatchObject({ metrics: { velocity: 22.5 }, derived: [], fit: null });
+    const sparse = deriveKickMetrics({ ballTrack: [still], contactFrame: 0, fps: 240, scale, original: {} });
+    expect(sparse.metrics).toEqual({ velocity: null, launch_angle: null });
+    expect(sparse.derived).toEqual(["velocity", "launch_angle"]);
+  });
+  it("rebuilds the ball artifacts the phone's viewer reads", () => {
+    const built = kickArtifacts({ ballTrack: track, contactFrame: 99, transitionFrame: 40, direction: "left_to_right", windowEnd: 101, metrics: { velocity: 10, launch_angle: 26.6 }, resultsValid: true });
+    expect(built["ball_trajectory.json"]).toMatchObject({ t_values: [99, 100, 101], contact_frame: 99, transition_frame: 40, direction: "left_to_right" });
+    expect(built["ball_trajectory.json"].x_values.map((v: number) => Number(v.toFixed(6)))).toEqual([0.4, 0.41, 0.42]);
+    expect(built["ball_trajectory.json"].y_values.map((v: number) => Number(v.toFixed(6)))).toEqual([0.8, 0.795, 0.79]);
+    expect(built["ball_information.json"].ball_speed_ms).toBe(10);
+    expect(built["ball_information.json"].ball_speed_mph).toBeCloseTo(22.369, 3);
+    expect(built["ball_information.json"].contact_frame).toBe(99);
+    const invalid = kickArtifacts({ ballTrack: track, contactFrame: 99, transitionFrame: null, direction: null, windowEnd: 100, metrics: { velocity: null, launch_angle: null }, resultsValid: false });
+    expect(invalid["ball_information.json"]).toEqual({ ball_speed_ms: null, ball_speed_mph: null, launch_angle: null, contact_frame: null });
+  });
+  it("puts the fitted values, not the typed ones, into the preview", () => {
+    const kick = deriveKickMetrics({ ballTrack: track, contactFrame: 99, fps: 240, scale, original: { velocity: 1, launch_angle: 1 } });
+    const preview = revisionPreviewFields({ spec: shooting, original: { velocity: 1, launch_angle: 1, contact_frame: 90 }, frames: { contact_frame: 99, transition_frame: null }, numbers: { velocity: "5", launch_angle: "5" }, strings: { strike_foot: null }, derivation: null, kick, side: null, measurementsEdited: true });
+    expect(preview.velocity).toBeCloseTo(kick.metrics.velocity as number);
+    expect(preview.contact_frame).toBe(99);
+    expect(preview.strike_foot).toBeNull();
+    expect(preview.direction).toBe("left_to_right");
+  });
+  it("counts a changed fit window as a measurement edit", () => {
+    const base = { frames: {}, numbers: {}, comMarks: [], ballMarks: [], comSource: "none", ballSource: "none", sideOverride: "auto", window: 60 };
+    expect(measurementInputsChanged(base, { ...base })).toBe(false);
+    expect(measurementInputsChanged(base, { ...base, window: 30 })).toBe(true);
+  });
+});
