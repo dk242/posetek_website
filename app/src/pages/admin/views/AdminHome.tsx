@@ -21,6 +21,7 @@ export default function AdminHome() {
       </section>
 
       <div className="admin-home-options">
+        <Link className="admin-home-option" to="/admin/analysis"><span className="material-symbols-outlined">edit_note</span><h2>Technique review</h2><p>Review single kicks and both feet, annotate phase frames, edit feedback, and preserve expert examples for training and evaluation.</p></Link>
         <Link className="admin-home-option" to="/admin/organizations"><span className="material-symbols-outlined">groups</span><h2>Organizations</h2><p>Create clubs and teams, invite coaches and managers, and manage access to athlete rosters.</p></Link>
         <Link className="admin-home-option" to="/admin/drills">
           <span className="material-symbols-outlined">library_books</span>

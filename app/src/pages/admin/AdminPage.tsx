@@ -28,6 +28,7 @@ const WorkoutEditor = lazy(() => import("./views/WorkoutEditor"));
 const AdminResults = lazy(() => import("./views/AdminResults"));
 const RepTools = lazy(() => import("./views/RepTools"));
 const GeneratePrograms = lazy(() => import("./views/GeneratePrograms"));
+const AnalysisWorkspace = lazy(() => import("./views/AnalysisWorkspace"));
 
 export default function AdminPage() {
   const session = useAdminSession();
@@ -89,6 +90,7 @@ export default function AdminPage() {
           <Route path="accounts/player/:playerId/results/:drillKey" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
           <Route path="programs" element={<GeneratePrograms />} />
+          <Route path="analysis" element={<AnalysisWorkspace />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
             element={<WorkoutEditor />}
@@ -132,6 +134,7 @@ export default function AdminPage() {
               <span className="material-symbols-outlined">auto_awesome</span>
               <span>Generate programs</span>
             </NavLink>
+            <NavLink className={navClass} to="/admin/analysis"><span className="material-symbols-outlined">edit_note</span><span>Technique review</span></NavLink>
           </nav>
         )}
         <div className="admin-header-right">

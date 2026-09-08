@@ -646,7 +646,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
         back={back}
         title={`${athleteName} · ${sessionLabel}`}
         subtitle={drillLabel}
-        actions={<Link className="quiet-button" to={`/athlete?player=${encodeURIComponent(playerId)}`}><span className="material-symbols-outlined">open_in_new</span>Their portal</Link>}
+        actions={<>{drillKey === "shooting" && <Link className="quiet-button" to={`/admin/analysis?player=${encodeURIComponent(playerId)}&rep=${encodeURIComponent(repId)}`}><span className="material-symbols-outlined">edit_note</span>Technique review</Link>}<Link className="quiet-button" to={`/athlete?player=${encodeURIComponent(playerId)}`}><span className="material-symbols-outlined">open_in_new</span>Their portal</Link></>}
       />
 
       {pushed && (

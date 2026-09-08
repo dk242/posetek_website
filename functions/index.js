@@ -13,6 +13,8 @@ const { createAthleteShares } = require("./athlete-shares");
 const { createClubs } = require("./clubs");
 const { createClubBranding } = require("./club-branding");
 const { createRepRevisions } = require("./rep-revisions");
+const { createAnalysisReviews } = require("./analysis-reviews");
+const analysisReviews = createAnalysisReviews({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubBranding = createClubBranding({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubs = createClubs({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 // Admin rep tools (see rep-revisions.js): the only writer of athlete reps
@@ -352,6 +354,8 @@ exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => cl
 exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
 exports.adminReviseRep = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.reviseRep(data, requireCaller(context)));
 exports.adminRestoreRepRevision = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.restoreRepRevision(data, requireCaller(context)));
+exports.adminSaveAnalysisReview = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => analysisReviews.saveReview(data, requireCaller(context)));
+exports.adminExportAnalysisReviews = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => analysisReviews.exportReviews(data, requireCaller(context)));
 
 exports.redeemPlayerSignupCode = functions.https.onCall((data, context) =>
   admission.redeemPlayerSignupCode({ ...requireCaller(context), code: data?.code })

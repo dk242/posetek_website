@@ -1,0 +1,678 @@
+{
+  "schemaVersion": 1,
+  "runtimeSourceCommit": "5301d8789122ebe9d2186f32aa2142304e4823df",
+  "promotion": {
+    "operation": "restoreSiteDeploy",
+    "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+    "previousProductionDeployId": "6aa05687fda0b26f17cce8be",
+    "productionDeployId": "6aa061cc30bf0203f6cfb3d9",
+    "publishedAt": "2026-09-08T19:41:12.368Z",
+    "verifiedViaProjectReader": true,
+    "rebuilt": false
+  },
+  "http": {
+    "verifiedAt": "2026-09-08T19:41:51.477252+00:00",
+    "siteURL": "https://posetek.net/",
+    "deployId": "6aa061cc30bf0203f6cfb3d9",
+    "buildManifestSHA256": "57e4069b5e8f0ba6c101a22b7b31f14f12f7bc67b5491ae94a35904817fc1b40",
+    "allMatch": true,
+    "routeAndAssetsChecked": 60,
+    "totalFetchedBytes": 2151323,
+    "results": [
+      {
+        "path": "assets/AdminHome-DPFlK16_.js",
+        "buildPath": "assets/AdminHome-DPFlK16_.js",
+        "status": 200,
+        "bytes": 2468,
+        "sha256": "c34bd8fdb7377c41cf5d428de8b2fe7054ed1aa234f9cfc8826c27b0dee7a083",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AdminPage-B4YhVyoa.css",
+        "buildPath": "assets/AdminPage-B4YhVyoa.css",
+        "status": 200,
+        "bytes": 18682,
+        "sha256": "c51c5b4cc7136ce131ac203e7c99308515dd900cef62d07650bfca16488c99cd",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AdminPage-ZFmunPJz.js",
+        "buildPath": "assets/AdminPage-ZFmunPJz.js",
+        "status": 200,
+        "bytes": 9223,
+        "sha256": "3f664e975030c4f003fd0d398d7240665f9324b5211694362871c17d3874f7e4",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AdminResults-BKZU6mIi.js",
+        "buildPath": "assets/AdminResults-BKZU6mIi.js",
+        "status": 200,
+        "bytes": 2234,
+        "sha256": "58374b31f9e0a340ab45902631fac3779517c6e1f51b4a10c90d07e7a364743c",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AnalysisWorkspace-CPgbIPEz.js",
+        "buildPath": "assets/AnalysisWorkspace-CPgbIPEz.js",
+        "status": 200,
+        "bytes": 29773,
+        "sha256": "076fab76b26a8769d83a7f996ed621686b1df09394177305a886481af43b7387",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true,
+        "reviewCapabilityAndCallablesPresent": true
+      },
+      {
+        "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+        "buildPath": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+        "status": 200,
+        "bytes": 4493,
+        "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AthletePortalPage-DFR_Ya8Z.css",
+        "buildPath": "assets/AthletePortalPage-DFR_Ya8Z.css",
+        "status": 200,
+        "bytes": 17753,
+        "sha256": "af8158d1db3d505f783a7c410c19c447509c3afb3fcb60dcb0273fc2f564f7f0",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AthletePortalPage-Dgwn8W2r.js",
+        "buildPath": "assets/AthletePortalPage-Dgwn8W2r.js",
+        "status": 200,
+        "bytes": 86676,
+        "sha256": "b0e6f2c3dd94bc9b0144c63c6e562c1c2dbbe658238f732c7b6edf85c3d9107e",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AthleteStats-DignmqrO.css",
+        "buildPath": "assets/AthleteStats-DignmqrO.css",
+        "status": 200,
+        "bytes": 11969,
+        "sha256": "b230f4385eda2f9496e9b953e4d793257082172b3985b16dd33096829fc8f5ca",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/AthleteStats-m6rt5sZT.js",
+        "buildPath": "assets/AthleteStats-m6rt5sZT.js",
+        "status": 200,
+        "bytes": 13978,
+        "sha256": "4767c2fcc7ebed59b16c2af1b82b8a92162577d5ad31f5d53cee5cfae3adaae4",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/CoachDashboardPage-Bc_e8vUl.css",
+        "buildPath": "assets/CoachDashboardPage-Bc_e8vUl.css",
+        "status": 200,
+        "bytes": 10496,
+        "sha256": "6cb5a1ecca9204d20b19f76f1e58385bcc27638720e1cd8da2f9abed3e6a04a1",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/CoachDashboardPage-chvyeXJ4.js",
+        "buildPath": "assets/CoachDashboardPage-chvyeXJ4.js",
+        "status": 200,
+        "bytes": 36978,
+        "sha256": "d1260420aa3d084e87c37b748161e168944b28a7a508514abfe7ee69efbb72b5",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/CoachDetail-86FITH3N.js",
+        "buildPath": "assets/CoachDetail-86FITH3N.js",
+        "status": 200,
+        "bytes": 4068,
+        "sha256": "86a62ae08c896a1e93874bf2907f9ca8cb47ae53a2635002c3cf8bb5ca52e808",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillDashboard-DNa3wX0N.js",
+        "buildPath": "assets/DrillDashboard-DNa3wX0N.js",
+        "status": 200,
+        "bytes": 4634,
+        "sha256": "e3331f5d5def7cc99e64dab2218c47b64ca83f5cd4dff37acc3cc69b93274056",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillDetail-DciALcz5.js",
+        "buildPath": "assets/DrillDetail-DciALcz5.js",
+        "status": 200,
+        "bytes": 5685,
+        "sha256": "d9b7d0b0c68fa8fd957e35884cfda487998e6ac2db8499cc91a4d98fefe6f395",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillForm-5TJEJ-1e.js",
+        "buildPath": "assets/DrillForm-5TJEJ-1e.js",
+        "status": 200,
+        "bytes": 17540,
+        "sha256": "14a4af8eaa84bb8a017a515a0d34fded82455f8359c70e2e97df9ee7bbfc9ee8",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillLibrary-DLFuYsJB.js",
+        "buildPath": "assets/DrillLibrary-DLFuYsJB.js",
+        "status": 200,
+        "bytes": 5011,
+        "sha256": "afc7889c606ca4ad96a72ed1840da73b526956d9d79661674f9f84b607053e73",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillSharePage-Bpjf5jnW.js",
+        "buildPath": "assets/DrillSharePage-Bpjf5jnW.js",
+        "status": 200,
+        "bytes": 38684,
+        "sha256": "73e947059bb1e6d84320381a7d41511485e26590a7f3cb178fc9faf75a52ef18",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/DrillSharePage-CWTdmL-S.css",
+        "buildPath": "assets/DrillSharePage-CWTdmL-S.css",
+        "status": 200,
+        "bytes": 16477,
+        "sha256": "d719cfdaede974a6c617b4ef5bf64f8a8fb314a6ecd6ad6b660fe5fb8d87dc59",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/GeneratePrograms-DC7aFXm1.js",
+        "buildPath": "assets/GeneratePrograms-DC7aFXm1.js",
+        "status": 200,
+        "bytes": 14652,
+        "sha256": "f40e8c183e7de7d53bf5927078bb43fe2f1b656b74e3db122464753d4115e21e",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/HomePage-CwadX9ga.js",
+        "buildPath": "assets/HomePage-CwadX9ga.js",
+        "status": 200,
+        "bytes": 231569,
+        "sha256": "840f611a4a8929aeebb68fc3fc2aeb3672308c89b47d148fefa453e465c7d8b0",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/HomePage-tqMCfxV1.css",
+        "buildPath": "assets/HomePage-tqMCfxV1.css",
+        "status": 200,
+        "bytes": 36229,
+        "sha256": "bc5a35c48f8a014ca6c28766f56cceb51a703fea779944ef4427a18a6b1020ab",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/LandingPage-0CRXwTAh.js",
+        "buildPath": "assets/LandingPage-0CRXwTAh.js",
+        "status": 200,
+        "bytes": 25245,
+        "sha256": "986c1b4b39a0890546073a51bf8b107fec5aafeafb3508e8d98b02b3e0b278cf",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/LandingPage-CbYilQKk.css",
+        "buildPath": "assets/LandingPage-CbYilQKk.css",
+        "status": 200,
+        "bytes": 31806,
+        "sha256": "e3c38243ada3a6a814ec0a8b5d1726bb5465ae4997735afb9b4cefcd2f4cc034",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/MonitorAccounts-DrXXWvnk.js",
+        "buildPath": "assets/MonitorAccounts-DrXXWvnk.js",
+        "status": 200,
+        "bytes": 7518,
+        "sha256": "203d0916e524247a3208d714b58393cec9226b5813c4b2ae793b29e6f8cbf6c6",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/NotFoundPage-BHP3j_wX.css",
+        "buildPath": "assets/NotFoundPage-BHP3j_wX.css",
+        "status": 200,
+        "bytes": 1095,
+        "sha256": "e2d4d1d20be9192caedbb7f71c1ad0277abc4636fa277a6c477ad9b1c771ff32",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/NotFoundPage-HyA8kr9C.js",
+        "buildPath": "assets/NotFoundPage-HyA8kr9C.js",
+        "status": 200,
+        "bytes": 1345,
+        "sha256": "58308d717a37892db1f6889332581ee8ddbcea358b425c5b4309e66cfaed0849",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/OrganizationPage-qE6C_rXk.js",
+        "buildPath": "assets/OrganizationPage-qE6C_rXk.js",
+        "status": 200,
+        "bytes": 15419,
+        "sha256": "5651f0c838250ef5c3cd64ac09cf5ba0825f920b2b297c98d254560410b8a060",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/PlayerDetail-D9S9m17e.js",
+        "buildPath": "assets/PlayerDetail-D9S9m17e.js",
+        "status": 200,
+        "bytes": 18068,
+        "sha256": "44ee5a3381ba644f19d69d737b657903f51a67d751baf49187c6b1d812ee7229",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/PrivacyPage-B3T200jm.js",
+        "buildPath": "assets/PrivacyPage-B3T200jm.js",
+        "status": 200,
+        "bytes": 8583,
+        "sha256": "a26acac7457ea9737635ba03493d91337fd06c9ceda77a4b996d15b1c90e7ffc",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/PrivacyPage-cb2bhuEG.css",
+        "buildPath": "assets/PrivacyPage-cb2bhuEG.css",
+        "status": 200,
+        "bytes": 3463,
+        "sha256": "4beedd81e2b2a57f86057f7120d2d0defc49b75313874f55a820b5528bae131e",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/RepTools-CUagljsH.js",
+        "buildPath": "assets/RepTools-CUagljsH.js",
+        "status": 200,
+        "bytes": 36183,
+        "sha256": "35b8d60972d15c648488cac6ec952e73f12b4aa0e5a2e90ae2f803ba00c16563",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/RosterPage-dx0KxJrB.js",
+        "buildPath": "assets/RosterPage-dx0KxJrB.js",
+        "status": 200,
+        "bytes": 12402,
+        "sha256": "b3755dda54fae50c58d1d188e8cb29f0b53dd03045a80725c97b321a4d6b2c95",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/StaffInvitePage-Lsmm1saW.js",
+        "buildPath": "assets/StaffInvitePage-Lsmm1saW.js",
+        "status": 200,
+        "bytes": 4695,
+        "sha256": "d2bb32d4b9ead7e84fd094cda5cf7f80772d1a086b33e240b97a5ef43803c02c",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/WorkoutEditor-BUPVhoSq.js",
+        "buildPath": "assets/WorkoutEditor-BUPVhoSq.js",
+        "status": 200,
+        "bytes": 39683,
+        "sha256": "e7456e1943dc7f417a35d77c803f5ab2e796287ab8093a38a2f7e35c4b5fcf2e",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/accounts-DnlFs2lh.js",
+        "buildPath": "assets/accounts-DnlFs2lh.js",
+        "status": 200,
+        "bytes": 6625,
+        "sha256": "af00014132cbb99e7ff8ccedbf2bc657e7c8d7b358aec9d94262fce49eb7adcb",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/auto-D22YVyyl.js",
+        "buildPath": "assets/auto-D22YVyyl.js",
+        "status": 200,
+        "bytes": 202222,
+        "sha256": "807c3daafed64071b7a51e9af520494742efb40e52f01c7e46e4916512d27c3a",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/catalog-By4rojNU.js",
+        "buildPath": "assets/catalog-By4rojNU.js",
+        "status": 200,
+        "bytes": 5072,
+        "sha256": "86c84d067662479e29c636ee043c4d362d24192c2f275badc5ed238f14de5d3d",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/data-BZeovQ6L.js",
+        "buildPath": "assets/data-BZeovQ6L.js",
+        "status": 200,
+        "bytes": 9046,
+        "sha256": "3980ea06a9ad54451d56bd5fbc379c87eaabc7a9f9dbeb36d6e5ed102d945f71",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true,
+        "canonicalShootingKickMapping": true
+      },
+      {
+        "path": "assets/drillV2-cco2rYEZ.js",
+        "buildPath": "assets/drillV2-cco2rYEZ.js",
+        "status": 200,
+        "bytes": 4540,
+        "sha256": "0da1ab72c8b9dc003712c38a775f7c3f6ef968c63610c7fc76d9588918528167",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/firebase-CUzwZjKV.js",
+        "buildPath": "assets/firebase-CUzwZjKV.js",
+        "status": 200,
+        "bytes": 764743,
+        "sha256": "7107b3f5e1de6b7217b4eb30c9e6fed5b0723f1509ce2c887a0b622027fe6379",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/identity-Bw64WvVM.js",
+        "buildPath": "assets/identity-Bw64WvVM.js",
+        "status": 200,
+        "bytes": 947,
+        "sha256": "2f26e7693fa5076e98f2884618e31c3f6909176d29c0557e64cb27b90996aa3e",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/identity-DcnDfMZb.js",
+        "buildPath": "assets/identity-DcnDfMZb.js",
+        "status": 200,
+        "bytes": 1357,
+        "sha256": "fddfd46613128cff42d2192741df148fe30e894fb74486dcc9347fc0f52abded",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/index-B2BHYljX.js",
+        "buildPath": "assets/index-B2BHYljX.js",
+        "status": 200,
+        "bytes": 233333,
+        "sha256": "cbd4597a28765283b09b530e6e00e1d4e2e6119717fa9271f869de1a6e4d5b26",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/index-CkzNDReN.css",
+        "buildPath": "assets/index-CkzNDReN.css",
+        "status": 200,
+        "bytes": 798,
+        "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/legacy-roster-BopdUrEo.js",
+        "buildPath": "assets/legacy-roster-BopdUrEo.js",
+        "status": 200,
+        "bytes": 328,
+        "sha256": "7d20d7a5b806a2d05be62afedd5517b037aadcf49c82a3d35c5f91075878eee2",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/loaders-UJlz4CZi.js",
+        "buildPath": "assets/loaders-UJlz4CZi.js",
+        "status": 200,
+        "bytes": 17192,
+        "sha256": "d764d6be44416d494495e1c51d9324ba9f8e6cf9dfff2edfbfdce19f9d0762b4",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/organization-CSazI_mQ.css",
+        "buildPath": "assets/organization-CSazI_mQ.css",
+        "status": 200,
+        "bytes": 3339,
+        "sha256": "db340edad8e16ac0a52a58b9e987214ac1bace6475e71b1f5336af6b7999910f",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/organization-data-Oz5sFxbs.js",
+        "buildPath": "assets/organization-data-Oz5sFxbs.js",
+        "status": 200,
+        "bytes": 1535,
+        "sha256": "13ad4d0baf50ebb5ae8e8f69a6701661b9f6d42a52ebb6c213590fab7eccb09e",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/planJobs-BsAP_Sj1.js",
+        "buildPath": "assets/planJobs-BsAP_Sj1.js",
+        "status": 200,
+        "bytes": 1471,
+        "sha256": "b1c598c0880cb8c015d2be3024321b8f777e778a4a659ce11e49c631627858f4",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/planV3-mUnD1z1Z.js",
+        "buildPath": "assets/planV3-mUnD1z1Z.js",
+        "status": 200,
+        "bytes": 6500,
+        "sha256": "ea89f26fe71d34c77a4e576fe58d509866a13c484df1a966fb1b9ec72da521c1",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/pose-portal-BL__fjGJ.css",
+        "buildPath": "assets/pose-portal-BL__fjGJ.css",
+        "status": 200,
+        "bytes": 34005,
+        "sha256": "392cd73b2d67e9da6cc251882ca0334c122bfd07429f8eac6b50ad5596a53c87",
+        "contentType": "text/css; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/repToolsData-Dd0pFkqG.js",
+        "buildPath": "assets/repToolsData-Dd0pFkqG.js",
+        "status": 200,
+        "bytes": 18090,
+        "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/results-Dfo07sSh.js",
+        "buildPath": "assets/results-Dfo07sSh.js",
+        "status": 200,
+        "bytes": 772,
+        "sha256": "e839017b61160968293a1b5d8246c11cb91a112b5beefe003143c3d083947267",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/rolldown-runtime-hePW80VL.js",
+        "buildPath": "assets/rolldown-runtime-hePW80VL.js",
+        "status": 200,
+        "bytes": 716,
+        "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/training-JeY8eeNt.js",
+        "buildPath": "assets/training-JeY8eeNt.js",
+        "status": 200,
+        "bytes": 9733,
+        "sha256": "5f0de8cc11fb7091ca7de151970c63efb0eabb47a103f3fec50d9fae08bb340b",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/types-CTuiavJH.js",
+        "buildPath": "assets/types-CTuiavJH.js",
+        "status": 200,
+        "bytes": 2252,
+        "sha256": "6a56c81b30c6be6dd36e013a0052cc4f234e99fd3ab3ce85aee7e0f347965ee1",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/use-body-background-BkVkE5qf.js",
+        "buildPath": "assets/use-body-background-BkVkE5qf.js",
+        "status": 200,
+        "bytes": 278,
+        "sha256": "debfb8d75d97554ff5015fe3dcffab48a76d26bed05e4807a2d777f61c817aa2",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "assets/use-theme-color-DWjK9Atk.js",
+        "buildPath": "assets/use-theme-color-DWjK9Atk.js",
+        "status": 200,
+        "bytes": 409,
+        "sha256": "a4edb9ccbfeadacec2c7753ee165e487352e887edac690f553083e03629148a4",
+        "contentType": "application/javascript; charset=UTF-8",
+        "matchesBuild": true
+      },
+      {
+        "path": "admin/analysis",
+        "buildPath": "index.html",
+        "status": 200,
+        "bytes": 1243,
+        "sha256": "1f69d5b61e6853ae48c15877b7d1dce7c5a67f043ee65a7e5c313610d00fbfab",
+        "contentType": "text/html; charset=UTF-8",
+        "matchesBuild": true
+      }
+    ]
+  },
+  "functions": {
+    "deployments": [
+      {
+        "function": "adminSaveAnalysisReview",
+        "resource": "projects/kickai-69dd0/locations/us-central1/functions/adminSaveAnalysisReview",
+        "status": "ACTIVE",
+        "updatedAt": "2026-09-08T19:18:37.600485267Z",
+        "url": "https://us-central1-kickai-69dd0.cloudfunctions.net/adminSaveAnalysisReview"
+      },
+      {
+        "function": "adminExportAnalysisReviews",
+        "resource": "projects/kickai-69dd0/locations/us-central1/functions/adminExportAnalysisReviews",
+        "status": "ACTIVE",
+        "updatedAt": "2026-09-08T19:19:02.538274921Z",
+        "url": "https://us-central1-kickai-69dd0.cloudfunctions.net/adminExportAnalysisReviews"
+      }
+    ],
+    "sourceReadback": {
+      "sourceHash": "fa14a510a0dd6d018f1046a492e293354fb981535e5ab9bbf1073bc3914fa2ed",
+      "functions": [
+        {
+          "function": "adminSaveAnalysisReview",
+          "uploadedFilesMatch": true,
+          "files": 12,
+          "zipSha256": "8331180a11f2d6511e1492d16c779d218bb7563ec56bde6799a2355d1851a045"
+        },
+        {
+          "function": "adminExportAnalysisReviews",
+          "uploadedFilesMatch": true,
+          "files": 12,
+          "zipSha256": "8331180a11f2d6511e1492d16c779d218bb7563ec56bde6799a2355d1851a045"
+        }
+      ]
+    },
+    "liveAuthAndCorsSmoke": {
+      "passed": true,
+      "checks": [
+        {
+          "function": "adminSaveAnalysisReview",
+          "case": "unauthenticated",
+          "status": 401,
+          "allowOrigin": "https://posetek.net",
+          "response": {
+            "error": {
+              "message": "Sign in to continue.",
+              "status": "UNAUTHENTICATED"
+            }
+          }
+        },
+        {
+          "function": "adminSaveAnalysisReview",
+          "case": "invalid-token",
+          "status": 401,
+          "allowOrigin": "https://posetek.net",
+          "response": {
+            "error": {
+              "message": "Unauthenticated",
+              "status": "UNAUTHENTICATED"
+            }
+          }
+        },
+        {
+          "function": "adminSaveAnalysisReview",
+          "case": "preflight",
+          "status": 204,
+          "allowOrigin": "https://posetek.net"
+        },
+        {
+          "function": "adminExportAnalysisReviews",
+          "case": "unauthenticated",
+          "status": 401,
+          "allowOrigin": "https://posetek.net",
+          "response": {
+            "error": {
+              "message": "Sign in to continue.",
+              "status": "UNAUTHENTICATED"
+            }
+          }
+        },
+        {
+          "function": "adminExportAnalysisReviews",
+          "case": "invalid-token",
+          "status": 401,
+          "allowOrigin": "https://posetek.net",
+          "response": {
+            "error": {
+              "message": "Unauthenticated",
+              "status": "UNAUTHENTICATED"
+            }
+          }
+        },
+        {
+          "function": "adminExportAnalysisReviews",
+          "case": "preflight",
+          "status": 204,
+          "allowOrigin": "https://posetek.net"
+        }
+      ]
+    }
+  },
+  "validation": {
+    "frontendTestsPassed": 541,
+    "functionsTestsPassed": 83,
+    "typeScript": "passed",
+    "lint": "passed with warnings, no errors",
+    "productionBuild": "passed"
+  },
+  "limitations": [
+    "Signed-in browser interactions and annotation save/reload have not been exercised in this release verification.",
+    "Live function smoke covers missing authentication, invalid tokens and browser CORS preflight; authenticated admin mutation/export behavior is covered by the Functions tests, not a live admin-write smoke.",
+    "Mobile UI and Vacaville analysis execution are tracked by the root integration task."
+  ]
+}
