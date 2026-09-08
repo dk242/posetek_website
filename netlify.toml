@@ -6,6 +6,11 @@
 # older, which failed every build since the React port with "exit code 2".
 [build.environment]
   NODE_VERSION = "22"
+  # Netlify's smart secrets detection fails the build on the Firebase web API key,
+  # which is a public project identifier (access is enforced by Firestore/Storage
+  # rules and App Check, not by this value). Every deploy since the React port
+  # failed at this step with "exit code 2" after a successful build.
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyBSfyXyhmD4kYGRSg-jOmGeLeOO8hX0-Gs"
 
 # Hashed SPA bundles are immutable; everything else stays fresh so legacy
 # pages and the SPA shell update on every deploy. The /assets rule comes LAST:
