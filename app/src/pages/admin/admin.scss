@@ -691,6 +691,24 @@
   }
   .rt-frame-label { font-size: 13px; }
 
+  .rt-range-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    input {
+      background: var(--admin-panel-strong);
+      color: var(--admin-text);
+      border: 1px solid var(--admin-line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font: inherit;
+      font-variant-numeric: tabular-nums;
+      width: 100%;
+    }
+    .quiet-button.small { margin: 0; }
+  }
+
   .rt-derive {
     display: flex;
     gap: 8px;

@@ -25,11 +25,15 @@ import type { PlayerRow } from "../lib/accounts";
 import { loadRep, loadRepArtifacts, loadRepRevisions, pushRepRevision, restoreRepRevision } from "../lib/repToolsData";
 import type { RepArtifactBundle, RepRevisionRow } from "../lib/repToolsData";
 import {
+  KICK_FIT_WINDOW_FRAMES,
   SHUTTLE_FRAME_KEYS,
   annotationFrames,
   buildRevisionPayload,
+  defaultAnnotationRange,
   deriveApexFrame,
+  deriveContactFrame,
   deriveEndFrame,
+  deriveKickMetrics,
   derivePhaseBoundaries,
   deriveShuttleMetrics,
   diffFields,
@@ -38,18 +42,20 @@ import {
   inferStartingSide,
   int,
   interpolateTrack,
+  kickArtifacts,
   measurementInputsChanged,
   num,
   isLabelOnlyEdit,
   resolveClipTiming,
   resolveGate,
+  resolveKickScale,
   revisionPreviewFields,
   shuttleFramesFrom,
   stringFieldValues,
   toolSpecFor,
   trackToSignedMeters,
 } from "../lib/repTools";
-import type { Mark, Point, ShuttleFrames, StartingSide } from "../lib/repTools";
+import type { FrameRange, Mark, Point, ShuttleFrames, StartingSide } from "../lib/repTools";
 import { resultsPath } from "../lib/results";
 
 type AnnotationTarget = "com" | "ball";
@@ -274,20 +280,29 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
 
   // MARK: annotation
   const [stride, setStride] = useState(3);
-  const [rangeMode, setRangeMode] = useState<"events" | "clip">("events");
+  const [rangeOverride, setRangeOverride] = useState<FrameRange | null>(null);
+  const [kickWindow, setKickWindow] = useState(KICK_FIT_WINDOW_FRAMES);
   const [comMarks, setComMarks] = useState<Mark[]>(() => Array.isArray(artifacts.adminAnnotations?.com) ? artifacts.adminAnnotations.com.filter(validMark) : []);
   const [ballMarks, setBallMarks] = useState<Mark[]>(() => Array.isArray(artifacts.adminAnnotations?.ball) ? artifacts.adminAnnotations.ball.filter(validMark) : []);
   const [comSource, setComSource] = useState<ComSource>(() => (Array.isArray(artifacts.adminAnnotations?.com) && artifacts.adminAnnotations.com.length ? "annotated" : "none"));
-  const [ballSource, setBallSource] = useState<BallSource>(() => (Array.isArray(artifacts.adminAnnotations?.ball) && artifacts.adminAnnotations.ball.length ? "annotated" : Array.isArray(artifacts.ballBoxes) ? "boxes" : "none"));
+  // A kick starts from "none" so the preview shows no change until the ball is
+  // actually annotated; the phone's own fitted ball_boxes.json is an opt-in.
+  const [ballSource, setBallSource] = useState<BallSource>(() => (Array.isArray(artifacts.adminAnnotations?.ball) && artifacts.adminAnnotations.ball.length ? "annotated" : Array.isArray(artifacts.ballBoxes) && spec?.derive !== "kick" ? "boxes" : "none"));
   const [run, setRun] = useState<AnnotationRun | null>(null);
   const [showPose, setShowPose] = useState(true);
   const [showTracks, setShowTracks] = useState(true);
   const [sideOverride, setSideOverride] = useState<StartingSide | "auto">("auto");
-  const initialMeasurements = useRef({ frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride });
-  const measurementsEdited = measurementInputsChanged(initialMeasurements.current, { frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride });
+  const initialMeasurements = useRef({ frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride, window: kickWindow });
+  const measurementsEdited = measurementInputsChanged(initialMeasurements.current, { frames, numbers, comMarks, ballMarks, comSource, ballSource, sideOverride, window: kickWindow });
 
-  const rangeStart = rangeMode === "events" ? (frames.startFrame ?? 0) : 0;
-  const rangeEnd = rangeMode === "events" ? (frames.endFrame ?? lastFrame) : lastFrame;
+  // The annotation range: the drill's default (start → end frames, or
+  // contact − 10 → contact + 60 for a kick) until the admin edits it.
+  const defaultRange = useMemo(() => defaultAnnotationRange(spec, frames, lastFrame), [spec, frames, lastFrame]);
+  const range = rangeOverride ?? defaultRange;
+  const rangeStart = Math.min(range.from, range.to);
+  const rangeEnd = Math.max(range.from, range.to);
+  const setRangeFrom = (value: number) => setRangeOverride({ from: Math.max(0, Math.min(lastFrame, Math.round(value))), to: range.to });
+  const setRangeTo = (value: number) => setRangeOverride({ from: range.from, to: Math.max(0, Math.min(lastFrame, Math.round(value))) });
 
   const comAnnotatedTrack = useMemo(() => interpolateTrack(comMarks, totalFrames), [comMarks, totalFrames]);
   const ballAnnotatedTrack = useMemo(() => interpolateTrack(ballMarks, totalFrames), [ballMarks, totalFrames]);
@@ -296,8 +311,8 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
     return artifacts.ballBoxes.map((box: any) => (Array.isArray(box) && box.length >= 4 && num(box[0]) !== null ? { x: (Number(box[0]) + Number(box[2])) / 2, y: (Number(box[1]) + Number(box[3])) / 2 } : null));
   }, [artifacts.ballBoxes]);
 
-  const comTrack: (Point | null)[] | null = comSource === "annotated" ? comAnnotatedTrack : comSource === "pose" ? poseTrack : null;
-  const ballTrack: (Point | null)[] | null = ballSource === "annotated" ? ballAnnotatedTrack : ballSource === "boxes" ? ballBoxesTrack : null;
+  const comTrack = useMemo<(Point | null)[] | null>(() => (comSource === "annotated" ? comAnnotatedTrack : comSource === "pose" ? poseTrack : null), [comSource, comAnnotatedTrack, poseTrack]);
+  const ballTrack = useMemo<(Point | null)[] | null>(() => (ballSource === "annotated" ? ballAnnotatedTrack : ballSource === "boxes" ? ballBoxesTrack : null), [ballSource, ballAnnotatedTrack, ballBoxesTrack]);
 
   const gate = useMemo(() => resolveGate({ metadata, rep, arucoCorners: artifacts.arucoCorners, markerConfig: artifacts.markerConfig }), [metadata, rep, artifacts.arucoCorners, artifacts.markerConfig]);
   const gateUsable = gate.source !== "unavailable";
@@ -321,18 +336,28 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
     return deriveShuttleMetrics({ frames: shuttle, fps, original, comMeters, ballMeters, dribbling });
   }, [rederive, frames, fps, original, comMeters, ballMeters, dribbling]);
 
-  const after = useMemo(() => revisionPreviewFields({ spec, original, frames, numbers, strings, derivation, side, measurementsEdited }),
-    [spec, original, frames, numbers, strings, derivation, side, measurementsEdited]);
+  // A kick: velocity and launch angle from a straight-line fit through the
+  // annotated ball centers after contact, scaled by the marker (the phone's
+  // KickProcessingMath.trackBallTrajectory).
+  const kickScale = useMemo(() => resolveKickScale(metadata, videoSize?.width ?? null), [metadata, videoSize]);
+  const contactFrame = frames.contact_frame ?? null;
+  const kick = useMemo(() => (spec?.derive === "kick"
+    ? deriveKickMetrics({ ballTrack, contactFrame, fps, windowFrames: kickWindow, scale: kickScale, original })
+    : null), [spec, ballTrack, contactFrame, fps, kickWindow, kickScale, original]);
+
+  const after = useMemo(() => revisionPreviewFields({ spec, original, frames, numbers, strings, derivation, kick, side, measurementsEdited }),
+    [spec, original, frames, numbers, strings, derivation, kick, side, measurementsEdited]);
 
   const diffKeys = useMemo(() => [
     ...(spec?.frameFields ?? []).map(field => field.key),
     ...(spec?.numberFields ?? []).map(field => field.key),
     ...(spec?.stringFields ?? []).map(field => field.key),
     ...(Object.hasOwn(after, "gateStartSide") ? ["gateStartSide"] : []),
+    ...(Object.hasOwn(after, "direction") ? ["direction"] : []),
   ], [spec, after]);
   const diff = useMemo(() => diffFields(original, after, diffKeys), [original, after, diffKeys]);
   const changedCount = diff.filter(row => row.changed).length;
-  const labelFor = (key: string) => spec?.frameFields.find(f => f.key === key)?.label ?? spec?.numberFields.find(f => f.key === key)?.label ?? spec?.stringFields?.find(f => f.key === key)?.label ?? key;
+  const labelFor = (key: string) => spec?.frameFields.find(f => f.key === key)?.label ?? spec?.numberFields.find(f => f.key === key)?.label ?? spec?.stringFields?.find(f => f.key === key)?.label ?? ({ gateStartSide: "Start side", direction: "Direction" } as Record<string, string>)[key] ?? key;
   const labelOnlyChange = isLabelOnlyEdit(spec, diff, measurementsEdited);
 
   // MARK: push
@@ -345,7 +370,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
   const [restoring, setRestoring] = useState<string | null>(null);
   const [restoreArmed, setRestoreArmed] = useState<string | null>(null);
 
-  const resultsValid = derivation ? derivation.metrics.totalTime !== null : null;
+  const resultsValid = derivation ? derivation.metrics.totalTime !== null : kick?.fit ? kick.fit.resultsValid : null;
 
   async function push() {
     setPushing(true);
@@ -361,9 +386,29 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
         for (const key of derivation.derived) fields[key] = derivation.metrics[key];
         for (const key of SHUTTLE_FRAME_KEYS) fields[key] = frames[key] ?? null;
       }
+      // A kick with a ball fit: the fitted velocity and angle are written, and
+      // the two ball artifacts the phone's viewer reads are rebuilt from the track.
+      let artifacts: Record<string, any> | null = null;
+      if (kick && !labelOnlyChange) {
+        for (const key of kick.derived) fields[key] = kick.metrics[key];
+        fields.contact_frame = contactFrame;
+        fields.transition_frame = frames.transition_frame ?? null;
+        if (kick.fit?.direction) fields.direction = kick.fit.direction;
+        if (kick.fit && ballTrack && contactFrame !== null) {
+          artifacts = kickArtifacts({
+            ballTrack,
+            contactFrame,
+            transitionFrame: frames.transition_frame ?? null,
+            direction: kick.fit.direction ?? (typeof original.direction === "string" ? original.direction : null),
+            windowEnd: kick.fit.windowEnd,
+            metrics: kick.metrics,
+            resultsValid: kick.fit.resultsValid,
+          });
+        }
+      }
       const metadataExtras: Record<string, any> = {};
       if (clearFlags && resultsValid !== null && !labelOnlyChange) {
-        metadataExtras.failedSteps = resultsValid ? [] : ["cod.metrics"];
+        if (derivation) metadataExtras.failedSteps = resultsValid ? [] : ["cod.metrics"];
         metadataExtras.processingStatus = resultsValid ? "complete" : "partial";
         metadataExtras.resultsValid = resultsValid;
       }
@@ -373,10 +418,13 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
         fps,
         fpsSource: timing.fpsSource,
         totalFrames,
-        videoDisplayWidth: num(metadata?.videoDisplayWidth) ?? videoSize?.width ?? null,
-        videoDisplayHeight: num(metadata?.videoDisplayHeight) ?? videoSize?.height ?? null,
+        videoDisplayWidth: num(metadata?.videoDisplayWidth) ?? num(metadata?.frameWidth) ?? videoSize?.width ?? null,
+        videoDisplayHeight: num(metadata?.videoDisplayHeight) ?? num(metadata?.frameHeight) ?? videoSize?.height ?? null,
         stride,
-        rangeMode,
+        range: { from: rangeStart, to: rangeEnd },
+        kickWindow: spec?.derive === "kick" ? kickWindow : null,
+        kickFit: kick?.fit ?? null,
+        kickScale: spec?.derive === "kick" ? kickScale : null,
         comSource,
         ballSource,
         com: comMarks,
@@ -385,9 +433,9 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
         startingSide: side,
         startingSideSource: sideOverride === "auto" ? "inferred" : "admin",
         frames: { ...frames },
-        derivationNotes: derivation?.notes ?? [],
+        derivationNotes: derivation?.notes ?? kick?.notes ?? [],
       };
-      const payload = buildRevisionPayload({ playerId, repId, drill: drillKey, fields, metadataExtras, annotations: labelOnlyChange ? null : annotations, note });
+      const payload = buildRevisionPayload({ playerId, repId, drill: drillKey, fields, metadataExtras, annotations: labelOnlyChange ? null : annotations, artifacts: labelOnlyChange ? null : artifacts, note });
       const result = await pushRepRevision(payload);
       setPushed(result.revisionId);
       setConfirming(false);
@@ -582,6 +630,12 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
     }
   }
 
+  function findContactFromBall() {
+    if (!ballTrack) return;
+    const found = deriveContactFrame(ballTrack, rangeStart);
+    if (found !== null) { setFrameField("contact_frame", found); seekTo(found); }
+  }
+
   const sessionLabel = `Session ${sessionNumber(rep)} · Rep ${repNumber(rep)}`;
   const runMarks = run ? (run.target === "com" ? comMarks : ballMarks) : [];
   const runDone = run ? run.queue.filter(f => runMarks.some(mark => mark.frame === f)).length : 0;
@@ -718,6 +772,12 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                   <button className="quiet-button small" type="button" disabled={!comMeters || frames.apexFrame === null || frames.apexFrame === undefined} onClick={() => deriveFromTrack("phases")}>Find turn phases (90%)</button>
                 </div>
               )}
+              {spec.derive === "kick" && (
+                <div className="rt-derive">
+                  <span className="admin-note">From the ball track:</span>
+                  <button className="quiet-button small" type="button" disabled={!ballTrack} onClick={findContactFromBall}>Find contact (last frame at rest)</button>
+                </div>
+              )}
             </section>
           )}
 
@@ -725,7 +785,10 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
             <section className="admin-card">
               <h3>Annotate</h3>
               <p className="admin-note">
-                Click on the video to mark the point; the tool jumps ahead {stride} frame{stride === 1 ? "" : "s"} and the skipped frames are interpolated. Range: {rangeMode === "events" ? `start → end frames (${rangeStart}–${rangeEnd})` : `whole clip (0–${lastFrame})`}.
+                Click on the video to mark the point; the tool jumps ahead {stride} frame{stride === 1 ? "" : "s"} and the skipped frames are interpolated,
+                from frame {rangeStart} to {rangeEnd}
+                {rangeOverride ? "" : spec.derive === "kick" ? " (contact − 10 → contact + the fit window)" : spec.derive === "shuttle" ? " (start → end)" : " (whole clip)"}.
+                Stop any time; a stopped pass can be continued.
               </p>
               <div className="admin-field-row">
                 <label className="admin-field">
@@ -734,16 +797,34 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                     {[1, 2, 3, 4, 5, 6, 8, 10].map(value => <option key={value} value={value}>{value}{value === 3 ? " (skip 2)" : ""}</option>)}
                   </select>
                 </label>
-                <label className="admin-field">
-                  <span>Range</span>
-                  <select value={rangeMode} onChange={event => setRangeMode(event.target.value as "events" | "clip")} disabled={Boolean(run)}>
-                    <option value="events">Start → end frames</option>
-                    <option value="clip">Whole clip</option>
-                  </select>
-                </label>
+                <div className="admin-field">
+                  <span>From frame</span>
+                  <div className="rt-range-field">
+                    <input type="number" min={0} max={lastFrame} value={range.from} disabled={Boolean(run)} onChange={event => setRangeFrom(Number(event.target.value) || 0)} aria-label="Range start frame" />
+                    <button className="quiet-button small" type="button" disabled={Boolean(run)} onClick={() => setRangeFrom(frame)}>Use current</button>
+                  </div>
+                </div>
+                <div className="admin-field">
+                  <span>To frame</span>
+                  <div className="rt-range-field">
+                    <input type="number" min={0} max={lastFrame} value={range.to} disabled={Boolean(run)} onChange={event => setRangeTo(Number(event.target.value) || 0)} aria-label="Range end frame" />
+                    <button className="quiet-button small" type="button" disabled={Boolean(run)} onClick={() => setRangeTo(frame)}>Use current</button>
+                  </div>
+                </div>
+                {spec.derive === "kick" && (
+                  <label className="admin-field">
+                    <span>Fit window after contact (frames)</span>
+                    <select value={kickWindow} onChange={event => setKickWindow(Number(event.target.value))} disabled={Boolean(run)}>
+                      {[20, 30, 45, 60, 90, 120].map(value => <option key={value} value={value}>{value}{value === KICK_FIT_WINDOW_FRAMES ? " (phone default)" : ""}</option>)}
+                    </select>
+                  </label>
+                )}
               </div>
+              {rangeOverride && (
+                <button className="quiet-button small" type="button" style={{ marginTop: 8 }} disabled={Boolean(run)} onClick={() => setRangeOverride(null)}>Reset the range to the default</button>
+              )}
 
-              <div className="rt-annotate-row">
+              {spec.derive !== "kick" && <div className="rt-annotate-row">
                 <div>
                   <strong>Athlete center of mass</strong>
                   <span className="admin-row-meta"><span>{comMarks.length} marks</span></span>
@@ -760,12 +841,16 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                     <button className="primary-cta small" type="button" disabled={Boolean(run) || !artifacts.mediaUrl} onClick={() => startRun("com")}>{comMarks.length ? "Continue" : "Start"}</button>
                   </div>
                 )}
-              </div>
+              </div>}
               {(spec.ball || dribbling) && (
                 <div className="rt-annotate-row">
                   <div>
                     <strong>Ball center</strong>
-                    <span className="admin-row-meta"><span>{ballMarks.length} marks</span>{Array.isArray(artifacts.ballBoxes) && <span>ball_boxes.json on file</span>}</span>
+                    <span className="admin-row-meta">
+                      <span>{ballMarks.length} marks</span>
+                      {spec.derive === "kick" && <span>velocity and launch angle are fitted from these</span>}
+                      {Array.isArray(artifacts.ballBoxes) && <span>ball_boxes.json on file</span>}
+                    </span>
                   </div>
                   {run?.target === "ball" ? (
                     <div className="admin-row-actions">
@@ -779,6 +864,25 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                       <button className="primary-cta small" type="button" disabled={Boolean(run) || !artifacts.mediaUrl} onClick={() => startRun("ball")}>{ballMarks.length ? "Continue" : "Start"}</button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {spec.derive === "kick" && (
+                <div className="admin-form" style={{ marginTop: 12 }}>
+                  <label className="admin-field">
+                    <span>Ball track used for the fit</span>
+                    <select value={ballSource} onChange={event => setBallSource(event.target.value as BallSource)} disabled={Boolean(run)}>
+                      <option value="annotated" disabled={!ballMarks.length}>Annotated ball center{ballMarks.length ? "" : " (none yet)"}</option>
+                      <option value="boxes" disabled={!Array.isArray(artifacts.ballBoxes)}>ball_boxes.json from the phone (its own fitted track)</option>
+                      <option value="none">None — keep the original velocity and angle</option>
+                    </select>
+                  </label>
+                  <p className="admin-note">
+                    Scale: {kickScale.metersPerPixel !== null
+                      ? `${kickScale.source} · ${(kickScale.metersPerPixel * 1000).toFixed(3)} mm per pixel · frame width ${kickScale.frameWidth ?? "?"} px`
+                      : "no marker scale on this rep — the launch angle can be derived, the velocity cannot"}.
+                    {kick?.fit ? ` Fit: ${kick.fit.samples} ball positions over frames ${kick.fit.windowStart}–${kick.fit.windowEnd}.` : ""}
+                  </p>
                 </div>
               )}
 
@@ -823,7 +927,9 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
           {spec && (!rederive || Boolean(spec.stringFields?.length)) && (
             <section className="admin-card">
               <h3>Values</h3>
-              {!rederive && <p className="admin-note">This drill is not re-derived on the web; type the corrected values directly. Units are the stored units (meters, m/s, seconds).</p>}
+              {!rederive && !kick?.fit && spec.derive !== "kick" && <p className="admin-note">This drill is not re-derived on the web; type the corrected values directly. Units are the stored units (meters, m/s, seconds).</p>}
+              {spec.derive === "kick" && !kick?.fit && <p className="admin-note">Annotate the ball to fit velocity and launch angle from its positions. Until then they can only be typed here (m/s and degrees).</p>}
+              {kick?.fit && <p className="admin-note">Velocity and launch angle come from the ball fit above; only the foot is set here.</p>}
               <div className="admin-form">
                 {(spec.stringFields ?? []).map(field => (
                   <label className="admin-field" key={field.key}>
@@ -835,7 +941,7 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                     </select>
                   </label>
                 ))}
-                {!rederive && spec.numberFields.map(field => (
+                {!rederive && !kick?.fit && spec.numberFields.map(field => (
                   <label className="admin-field" key={field.key}>
                     <span>{field.label}{field.unit ? ` (${field.unit})` : ""}</span>
                     <input type="number" step="any" value={numbers[field.key] ?? ""} placeholder="—" onChange={event => setNumbers(current => ({ ...current, [field.key]: event.target.value }))} />
@@ -853,6 +959,11 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
                   {derivation.notes.map((text, index) => <li className="admin-issue warning" key={index}>{text}</li>)}
                 </ul>
               )}
+              {kick && !labelOnlyChange && kick.notes.length > 0 && (
+                <ul className="admin-issues">
+                  {kick.notes.map((text, index) => <li className="admin-issue warning" key={index}>{text}</li>)}
+                </ul>
+              )}
               <table className="rt-diff">
                 <thead><tr><th>Field</th><th>Original</th><th>Re-processed</th></tr></thead>
                 <tbody>
@@ -868,7 +979,11 @@ function RepToolsLoaded({ drillLabel, drillKey, playerId, repId, athleteName, lo
               {resultsValid !== null && !labelOnlyChange && (
                 <label className="rt-check">
                   <input type="checkbox" checked={clearFlags} onChange={event => setClearFlags(event.target.checked)} />
-                  <span>{resultsValid ? "Clear the processing failure flags (failedSteps, partial status) since the rep now has a total time." : "Mark the rep partial: it still has no total time."}</span>
+                  <span>
+                    {derivation
+                      ? (resultsValid ? "Clear the processing failure flags (failedSteps, partial status) since the rep now has a total time." : "Mark the rep partial: it still has no total time.")
+                      : (resultsValid ? "Mark the results valid (resultsValid, complete status): the fitted velocity is within the phone's 100 mph limit." : "Mark the rep partial: the fit gives no valid velocity.")}
+                  </span>
                 </label>
               )}
               <label className="admin-field" style={{ marginTop: 12 }}>
