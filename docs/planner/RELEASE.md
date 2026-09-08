@@ -6,6 +6,10 @@ Implemented and enabled as an optional verified-admin pilot. The current planner
 
 [Open the personalized planner](https://posetek.net/admin/programs/personalized). The original [separate preview](https://6aa07614d290c0d3c2ab602a--posetek.netlify.app/admin/programs/personalized) also remains available.
 
+Published September 8, 2026 at 22:08 UTC as Netlify deployment `6aa087784119565fc043dabf`, from integration source commit `6568246`. The current Programs page remains the default and now shows **Open personalized planner**; the admin home and player details also provide that entry.
+
+Post-release checks verified all 152 unchanged existing files against their original deployment hashes, the exact tested additions (including 63 planner files), and the additive index change. Production browser checks at 1440 and 390px loaded the real applications, checked the sign-in gates and navigation in both directions, and reported no asset failures or JavaScript errors. Launcher visibility was tested with synthetic readiness markup, not a live authenticated activation. The backend health and existing configuration were also rechecked successfully. No training plan or completion record was changed by this website rollout.
+
 Sign in with a verified PoseTek admin account. Generation creates separate drafts. Compare the evidence, allocation and executable workouts, select the review checkbox, then explicitly choose **Use this plan** for that player. Returning to **Current planner** is always available and does not change plans.
 
 The main-site package preserves deployment `6aa0731ea06d42b6faafcd78`, titled **Admin saved kick comparison picker: verified f05ec43**, created September 8 at 20:42 UTC. That source commit remains unavailable, so the personalized planner uses a separate entry with a visible launcher in the preserved site. All 153 existing served files are verified against their deployed checksums; the original index receives only the marked launcher block. The 62 assets not recoverable from tracked source are archived in the repository (655 KB compressed). See `PRODUCTION_INTEGRATION.md` for build, validation and eventual source-merge instructions.

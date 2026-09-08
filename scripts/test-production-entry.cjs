@@ -50,4 +50,3 @@ for(const width of [1440,820,390]){
 fs.writeFileSync(path.join(outputDir,'production-entry-test-report.json'),JSON.stringify(results,null,2));console.log(results);
 }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});
-
