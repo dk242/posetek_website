@@ -263,7 +263,9 @@ admins included, any write to `players/{id}/reps` and to athlete recording prefi
 write runs in `functions/rep-revisions.js` with the Admin SDK, gated on the same verified
 `@posetek.net` predicate the rules use (`club-access.js` `isClubAdmin`). Field names and value
 shapes are allow-listed per drill (`FIELD_RULES`); anything else is refused before a byte is
-written, and an artifact-write failure rolls the document back.
+written, and an artifact-write failure rolls the document back. Every file the callable writes
+keeps the Firebase download token the phone's upload minted (or mints one): the web SDK's
+`getDownloadURL()` refuses an object without one, and Admin SDK writes carry none by default.
 
 ### Verification
 

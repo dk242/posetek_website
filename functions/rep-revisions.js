@@ -16,6 +16,7 @@
 // `players/{id}/reps/{repId}/revisions/{revisionId}` and the previous
 // metadata.json under `{repFolder}/admin_revisions/{revisionId}/`.
 
+const crypto = require("crypto");
 const { isClubAdmin } = require("./club-access");
 const { playerSegment, storageFolderCandidates } = require("./athlete-storage-paths");
 
@@ -55,7 +56,7 @@ const MAX_ANNOTATION_BYTES = 4 * 1024 * 1024;
 const MAX_NOTE_LENGTH = 2000;
 const MAX_REVISIONS_LISTED = 50;
 
-function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Date.now(), randomHex = () => Math.random().toString(16).slice(2, 10) }) {
+function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Date.now(), randomHex = () => Math.random().toString(16).slice(2, 10), randomToken = () => crypto.randomUUID() }) {
   const fail = (code, message) => { throw new HttpsError(code, message); };
 
   function requireAdmin(auth) {
@@ -175,8 +176,30 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     return candidates[0];
   }
 
-  function saveJson(path, value) {
-    return bucket.file(path).save(JSON.stringify(value), { resumable: false, contentType: "application/json", metadata: { cacheControl: "no-cache" } });
+  /**
+   * The web SDK's getDownloadURL() refuses an object with no Firebase download
+   * token, and objects written through the Admin SDK get none — so every file
+   * written here keeps the token the phone's upload minted, or mints one.
+   */
+  async function downloadToken(file) {
+    try {
+      const [meta] = await file.getMetadata();
+      const existing = meta?.metadata?.firebaseStorageDownloadTokens;
+      if (typeof existing === "string" && existing.trim()) return existing.split(",")[0].trim();
+    } catch (_) {
+      // Absent or unreadable: mint a fresh token below.
+    }
+    return randomToken();
+  }
+
+  function saveOptions(token, contentType = "application/json") {
+    return { resumable: false, contentType, metadata: { cacheControl: "no-cache", metadata: { firebaseStorageDownloadTokens: token } } };
+  }
+
+  async function saveJson(path, value) {
+    const file = bucket.file(path);
+    const token = await downloadToken(file);
+    await file.save(JSON.stringify(value), saveOptions(token));
   }
 
   function revisionRef(playerId, repId, revisionId) {
@@ -217,8 +240,9 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     const metadataFile = bucket.file(`${folder}/metadata.json`);
     const previousMetadata = await readJsonFile(metadataFile);
     const backupPrefix = `${folder}/admin_revisions/${revisionId}`;
+    const metadataToken = await downloadToken(metadataFile);
     if (previousMetadata.exists) {
-      await bucket.file(`${backupPrefix}/metadata.json`).save(previousMetadata.raw, { resumable: false, contentType: "application/json" });
+      await bucket.file(`${backupPrefix}/metadata.json`).save(previousMetadata.raw, saveOptions(randomToken()));
     }
     await saveJson(`${backupPrefix}/rep.json`, { repId, playerId, drill, previous: existing });
 
@@ -257,7 +281,7 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
       if (previousMetadata.value && Array.isArray(previousMetadata.value.failedSteps) && "failedSteps" in metadataPatch) {
         merged.adminRevision = { ...provenance, previousFailedSteps: previousMetadata.value.failedSteps };
       }
-      await saveJson(`${folder}/metadata.json`, merged);
+      await metadataFile.save(JSON.stringify(merged), saveOptions(metadataToken));
       if (annotations) await saveJson(`${folder}/admin_annotations.json`, { ...annotations, revisionId, playerId, repId, drill });
     } catch (error) {
       await db.runTransaction(async (transaction) => {
@@ -287,7 +311,8 @@ function createRepRevisions({ db, bucket, FieldValue, HttpsError, now = () => Da
     const [hasBackup] = await backup.exists();
     if (hasBackup) {
       const [buffer] = await backup.download();
-      await bucket.file(`${revision.folder}/metadata.json`).save(buffer, { resumable: false, contentType: "application/json", metadata: { cacheControl: "no-cache" } });
+      const current = bucket.file(`${revision.folder}/metadata.json`);
+      await current.save(buffer, saveOptions(await downloadToken(current)));
     } else if (revision.metadataBackedUp === false) {
       const current = bucket.file(`${revision.folder}/metadata.json`);
       const [exists] = await current.exists();
