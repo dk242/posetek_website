@@ -175,7 +175,7 @@ describe("buildStatsSnapshot", () => {
     // Unmeasured axes have no score key at all (omitted, not null).
     const striking = snapshot.axes.find((axis: { axis: string }) => axis.axis === "striking");
     expect(striking.score).toBeUndefined();
-    expect(striking.missingDrills).toEqual(["deadballShot"]);
+    expect(striking.missingDrills).toEqual(["kick"]);
 
     expect(snapshot.drills.length).toBe(2);
     for (const drill of snapshot.drills) {
@@ -190,6 +190,36 @@ describe("buildStatsSnapshot", () => {
         expect(metric.score).toBeLessThanOrEqual(400);
       }
     }
+  });
+
+  it("places all six primary best results under the gateway's canonical drill IDs", () => {
+    const snapshot = buildStatsSnapshot([
+      { id: "shot", _statsDrill: "shooting", velocity: 24 },
+      sprintRep({ totalTime: 2.4 }),
+      jumpRep(),
+      { id: "broad", _statsDrill: "broadJump", broadJumpDistance: 1.8 },
+      { id: "dribble", _statsDrill: "dribbling", totalTime: 7.2 },
+      { id: "cod", _statsDrill: "changeOfDirection", totalTime: 5.4 },
+    ]);
+    // These pairs are enforced by program_profile._best_result_evidence.
+    // A populated shooting row used to reject the entire generation request.
+    const expected = [
+      ["kick", "ballSpeed", 24],
+      ["sprint", "sprintCompletionTime", 2.4],
+      ["jump", "verticalJumpHeight", 0.4],
+      ["broadJump", "broadJumpDistance", 1.8],
+      ["dribbling", "dribbleTotalTime", 7.2],
+      ["changeOfDirection", "codTotalTime", 5.4],
+    ] as const;
+    expect(snapshot.drills).toHaveLength(6);
+    for (const [drillId, metricId, best] of expected) {
+      const drill = snapshot.drills.find((row: { drill: string }) => row.drill === drillId);
+      expect(drill).toBeDefined();
+      expect(drill.metrics).toContainEqual(expect.objectContaining({
+        metric: metricId, bestCanonical: best, repCount: 1,
+      }));
+    }
+    expect(snapshot.axes.every((axis: { missingDrills: string[] }) => axis.missingDrills.length === 0)).toBe(true);
   });
 
   it("uses the latest rep for latestCanonical", () => {
