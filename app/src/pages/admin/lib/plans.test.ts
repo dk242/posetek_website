@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { draftFromWorkout, removeBlock } from "./editor";
+import { normalizeCatalogDrill } from "../../../lib/contracts/drillV2";
+import { addBlock, draftFromWorkout, moveBlock, removeBlock, setDose } from "./editor";
 import { saveWorkoutEdit } from "./plans";
 import type { SaveWorkoutEdit } from "./plans";
 import { NO_FEEDBACK_RATIONALE } from "./rationale";
@@ -157,5 +158,36 @@ describe("admin workout transaction", () => {
       ...input, draft: removeBlock(input.draft, "b1"), rationale: "", noFeedback: true,
     })).rejects.toMatchObject({ code: "validation" });
     expect(writes.size).toBe(0);
+  });
+
+  it("saves a replacement drill with a fresh block ID and records both sides of the change", async () => {
+    documents.set("drillCatalog/DRB-003", rawDrill);
+    const draft = addBlock(input.draft, normalizeCatalogDrill("DRB-003", rawDrill));
+    await saveWorkoutEdit({ ...input, draft });
+    expect(writes.get(planPath)?.weeks[0].workouts[0].blocks.map((block: { blockId: string }) => block.blockId))
+      .toEqual(["b1", "b3"]);
+    expect(writes.get(adjustmentPath)?.diff).toMatchObject({
+      added: [{ blockId: "b3", drillId: "DRB-003", domain: "dribbling" }],
+      removed: [{ blockId: "b2", drillId: "DRB-002", domain: "dribbling" }],
+    });
+  });
+
+  it("saves reordered drills without changing their identities", async () => {
+    documents.set("drillCatalog/DRB-002", rawDrill);
+    const draft = moveBlock(draftFromWorkout("plan1", 1, workout, 1), "b2", 0);
+    await saveWorkoutEdit({ ...input, draft });
+    const saved = writes.get(planPath)?.weeks[0].workouts[0].blocks;
+    expect(saved.map((block: { blockId: string; order: number }) => [block.blockId, block.order]))
+      .toEqual([["b2", 1], ["b1", 2]]);
+    expect(writes.get(adjustmentPath)?.diff).toMatchObject({ reordered: true, added: [], removed: [] });
+  });
+
+  it("saves edited sets and reps and preserves the original dose in the audit", async () => {
+    const draft = setDose(input.draft, "b1", { sets: 4, reps: 12 });
+    await saveWorkoutEdit({ ...input, draft });
+    expect(writes.get(planPath)?.weeks[0].workouts[0].blocks[0]).toMatchObject({ sets: 4, reps: 12 });
+    expect(writes.get(adjustmentPath)?.diff.doseChanged).toEqual([
+      { blockId: "b1", drillId: "DRB-001", from: { sets: 3, reps: 8 }, to: { sets: 4, reps: 12 } },
+    ]);
   });
 });
