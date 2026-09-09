@@ -1,0 +1,585 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Transitional AI boundary, not a full application lockdown. Public legacy
+    // access is retained only by the explicitly excluded fallbacks below.
+    function signedIn() { return request.auth != null; }
+    function playerData(pid) { return get(/databases/$(database)/documents/players/$(pid)).data; }
+    function legacySelfPlayer(pid) {
+      let p = playerData(pid);
+      return signedIn() && !isPosetekAdmin() && (pid == request.auth.uid
+        || p.get('authenticationUID', '') == request.auth.uid || p.get('userUID', '') == request.auth.uid
+        || (request.auth.token.get('email_verified', false) == true
+          && p.get('signupEmail', '') is string
+          && p.get('signupEmail', '__absent__').lower() == request.auth.token.get('email', '__other__').lower()));
+    }
+    function legacyCoachOf(pid) {
+      let p = playerData(pid);
+      return signedIn() && !selfPlayer(pid) && (p.get('coachUID', '') == request.auth.uid
+        || (exists(/databases/$(database)/documents/coaches/$(request.auth.uid))
+          && get(/databases/$(database)/documents/coaches/$(request.auth.uid)).data.get('userUID', '') == request.auth.uid
+          && (get(/databases/$(database)/documents/coaches/$(request.auth.uid)).data.get('members', []).hasAny([pid])
+            || (p.get('organizationCode', '') != ''
+              && get(/databases/$(database)/documents/coaches/$(request.auth.uid)).data.get('organizationCode', '__none__') == p.organizationCode))));
+    }
+    function clubMembership(orgId) {
+      return get(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data;
+    }
+    function activeClubMember(orgId) {
+      let member = clubMembership(orgId);
+      return signedIn() && member.get('userUID', '') == request.auth.uid
+        && member.get('status', '') == 'active'
+        && member.get('role', '') in ['manager', 'coach'];
+    }
+    function clubManager(orgId) {
+      return activeClubMember(orgId) && clubMembership(orgId).role == 'manager';
+    }
+    function clubStaffData(p) {
+      let orgId = p.get('organizationId', '');
+      return orgId is string && orgId.size() > 0
+        && activeClubMember(orgId)
+        && (clubMembership(orgId).role == 'manager'
+          || (p.get('teamId', '') is string && p.get('teamId', '').size() > 0
+            && clubMembership(orgId).get('teamIds', []).hasAny([p.teamId])));
+    }
+    function strictClubSelf(pid, p) {
+      return request.auth != null && !isPosetekAdmin()
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous'
+        && p.get('authenticationUID', request.auth.uid) == request.auth.uid
+        && p.get('userUID', request.auth.uid) == request.auth.uid
+        && (p.get('authenticationUID', '') == request.auth.uid
+          || p.get('userUID', '') == request.auth.uid || pid == request.auth.uid);
+    }
+    function clubPlayer(pid) { return 'organizationId' in playerData(pid); }
+    function selfPlayer(pid) {
+      let p = playerData(pid);
+      return ('organizationId' in p) ? strictClubSelf(pid, p) : legacySelfPlayer(pid);
+    }
+    function coachOf(pid) {
+      let p = playerData(pid);
+      return ('organizationId' in p)
+        ? (request.auth != null && !isPosetekAdmin() && !selfPlayer(pid)
+          && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous' && clubStaffData(p))
+        : legacyCoachOf(pid);
+    }
+    function visiblePlayer(pid) { return selfPlayer(pid) || coachOf(pid) || isPosetekAdmin(); }
+function isPosetekAdmin() {
+  return request.auth != null
+    && ('email' in request.auth.token)
+    && request.auth.token.email_verified == true
+    && request.auth.token.email.lower().matches('^[a-z0-9._%+-]+@posetek\\.net$');
+}
+function difficultyChangeIsValid() {
+  return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['maxDrillDifficulty'])
+    || !('maxDrillDifficulty' in request.resource.data)
+    || (request.resource.data.maxDrillDifficulty is int
+        && request.resource.data.maxDrillDifficulty >= 1
+        && request.resource.data.maxDrillDifficulty <= 5);
+}
+match /admins/{uid} {
+  function isWellFormedAdminProfile() {
+    return request.resource.data.schemaVersion == 1
+      && request.resource.data.uid == uid
+      && request.resource.data.email == request.auth.token.email.lower();
+  }
+  allow read: if isPosetekAdmin();
+  allow create, update: if isPosetekAdmin()
+    && request.auth.uid == uid
+    && isWellFormedAdminProfile();
+  allow delete: if false;
+}
+match /players/{playerId} {
+  allow read: if isPosetekAdmin();
+}
+match /players/{playerId}/{subcollection}/{document=**} {
+  allow read: if isPosetekAdmin() && !(subcollection in ["coachWorkspace", "coachMemories", "aiConversations"]);
+}
+match /coaches/{coachId} {
+  allow read: if isPosetekAdmin();
+  allow update: if isPosetekAdmin()
+    && request.resource.data.diff(resource.data).affectedKeys()
+         .hasOnly(['maxDrillDifficulty', 'updatedAt'])
+    && request.resource.data.updatedAt == request.time
+    && difficultyChangeIsValid();
+}
+match /organizations/{orgId} {
+  allow read: if isPosetekAdmin();
+}
+match /players/{playerId} {
+  function isSelfPlayer() { return selfPlayer(playerId); }
+  function isCoachOfThisPlayer() { return coachOf(playerId); }
+  function changesOnly(keys) {
+    return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+  }
+  function positionIsValid() {
+    return !('position' in request.resource.data)
+      || request.resource.data.position in ['GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST'];
+  }
+  function profileValuesAreValid() {
+    let changed = request.resource.data.diff(resource.data).affectedKeys();
+    return (!changed.hasAny(['birthDate'])
+        || !('birthDate' in request.resource.data)
+        || (request.resource.data.birthDate is timestamp
+            && request.resource.data.birthDate <= request.time))
+      && (!changed.hasAny(['age'])
+        || (request.resource.data.age is int
+            && request.resource.data.age >= 5 && request.resource.data.age <= 80
+            && request.resource.data.ageRecordedAt == request.time))
+      && (!changed.hasAny(['ageRecordedAt']) || changed.hasAny(['age']));
+  }
+  allow update: if isPosetekAdmin()
+    && changesOnly(['position', 'birthDate', 'age', 'ageRecordedAt', 'maxDrillDifficulty', 'updatedAt'])
+    && positionIsValid() && profileValuesAreValid() && difficultyChangeIsValid();
+  allow update: if request.auth != null && isCoachOfThisPlayer()
+    && changesOnly(['position', 'birthDate', 'age', 'ageRecordedAt', 'updatedAt'])
+    && positionIsValid() && profileValuesAreValid();
+  allow update: if request.auth != null && isSelfPlayer()
+    && changesOnly(['position', 'birthDate', 'age', 'ageRecordedAt', 'updatedAt'])
+    && positionIsValid() && profileValuesAreValid()
+    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['position'])
+        || !('position' in resource.data));
+}
+match /players/{playerId}/privateProfile/coachFeedback {
+  function ownCoach() { return coachOf(playerId); }
+  function validNote() {
+    let note = request.resource.data;
+    return note.keys().hasOnly(['text', 'emphasis', 'authorUid', 'authorRole', 'updatedAt'])
+      && note.text is string && note.text.size() >= 1 && note.text.size() <= 1000
+      && note.authorUid == request.auth.uid
+      && note.authorRole == (isPosetekAdmin() ? 'admin' : 'coach')
+      && note.updatedAt == request.time
+      && (!('emphasis' in note) || (note.emphasis is list && note.emphasis.size() <= 4));
+  }
+  allow read: if isPosetekAdmin() || ownCoach();
+  allow create, update: if (isPosetekAdmin() || ownCoach()) && validNote();
+  allow delete: if isPosetekAdmin() || ownCoach(); // clear current note, not immutable history
+}
+match /players/{playerId}/trainingPlanContexts/{planId} {
+  allow read: if isPosetekAdmin();
+  allow write: if false;
+}
+match /players/{playerId}/workoutSchedule/current {
+  function scheduleActor() { return visiblePlayer(playerId); }
+  allow read: if scheduleActor();
+  allow update: if scheduleActor()
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revision', 'updatedAt'])
+    && request.resource.data.revision == resource.data.revision + 1
+    && request.resource.data.updatedAt == request.time;
+  allow create, delete: if false;
+}
+match /llmJobs/{jobId} {
+  function serverOwnedFields() {
+    return ['result', 'resultRef', 'traceRef', 'usage', 'error', 'startedAt', 'completedAt', 'progress', 'engineVersion'];
+  }
+  function isWellFormedPendingJob() {
+    return request.resource.data.status == 'pending'
+      && request.resource.data.requestedByUid == request.auth.uid
+      && request.resource.data.schemaVersion == 1
+      && request.resource.data.capability is string
+      && request.resource.data.playerId is string
+      && request.resource.data.playerId.size() > 0
+      && request.resource.data.params is map
+      && request.resource.data.createdAt == request.time
+      && (request.resource.data.capability in ['generate_personalized_plan','activate_personalized_plan','discard_personalized_plan','assess_personalized_plan']
+        ? isPosetekAdmin() && request.resource.data.params.get('engineVersion', '') == 'personalized-v1'
+          && (request.resource.data.capability in ['generate_personalized_plan','assess_personalized_plan']
+            ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow'])
+              && request.resource.data.params.planVersion == 3
+              && request.resource.data.params.intake is map
+              && request.resource.data.params.timezone is string
+            : request.resource.data.params.draftId is string
+              && request.resource.data.params.draftId.size() > 0
+              && (request.resource.data.capability == 'activate_personalized_plan'
+                ? request.resource.data.params.keys().hasOnly(['engineVersion','draftId','comparisonToken','expectedActivePlans'])
+                  && request.resource.data.params.comparisonToken is string
+                  && request.resource.data.params.expectedActivePlans is list
+                : request.resource.data.params.keys().hasOnly(['engineVersion','draftId'])))
+        : true)
+      && !request.resource.data.keys().hasAny(serverOwnedFields());
+  }
+  allow create: if request.auth != null && isWellFormedPendingJob();
+  allow read: if request.auth != null
+    && resource.data.requestedByUid == request.auth.uid;
+  allow update, delete: if false;
+}
+match /players/{playerId}/aiConversations/{conversationId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  function creatorMayRead(data) {
+    return (data.get('coachWorkspaceVersion', 0) != 1 && data.get('capability', '') != 'workout_chat')
+      || data.get('createdByUid', '') == request.auth.uid;
+  }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer() || isPosetekAdmin())
+    && creatorMayRead(resource.data);
+  allow write: if false;
+  match /messages/{messageId} {
+    allow read: if request.auth != null
+      && (isSelf() || isCoachOfPlayer() || isPosetekAdmin())
+      && creatorMayRead(get(/databases/$(database)/documents/players/$(playerId)/aiConversations/$(conversationId)).data);
+    allow write: if false;
+  }
+}
+match /players/{playerId}/aiAnalyses/{repId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer());
+  allow write: if false;
+}
+match /config/llm {
+  allow read: if request.auth != null;
+  allow write: if false;
+}
+match /llmUsage/{entryId} {
+  allow read, write: if false;
+}
+// Daily quota reservations and any descendants are gateway-only.
+// The root fallback below excludes this collection as well.
+match /llmDailyAllowances/{document=**} {
+  allow read, write: if false;
+}
+
+match /players/{playerId}/trainingPlans/{planId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer());
+  allow write: if false;
+}
+match /players/{playerId}/plannedWorkouts/{workoutId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer());
+  allow write: if false;
+}
+match /players/{playerId}/workoutLogs/{workoutId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  function isWellFormedLog() {
+    return request.resource.data.schemaVersion in [1, 2]
+      && request.resource.data.planId is string
+      && request.resource.data.blocks is list;
+  }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer());
+  function advancesSchedule() {
+    return request.resource.data.schemaVersion == 1
+      || getAfter(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision
+          == get(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision + 1;
+  }
+  function validV2Identity() {
+    let d = request.resource.data;
+    return d.schemaVersion == 1 || (d.workoutId is string
+      && d.workoutRevision is int && d.workoutRevision >= 1
+      && d.workoutSnapshot is map && d.source in ['plan', 'adhoc']
+      && (d.source == 'plan' ? workoutId == d.planId + '_' + d.workoutId
+                            : workoutId == d.workoutId));
+  }
+  allow create: if request.auth != null && !isPosetekAdmin() && (isSelf() || isCoachOfPlayer())
+    && isWellFormedLog() && validV2Identity() && advancesSchedule()
+    && (request.resource.data.schemaVersion == 1 || isSelf());
+  allow update: if request.auth != null && !isPosetekAdmin() && (isSelf() || isCoachOfPlayer())
+    && isWellFormedLog() && validV2Identity() && advancesSchedule()
+    && (request.resource.data.schemaVersion == 1 || isSelf())
+    && (resource.data.schemaVersion == 1
+        || (request.resource.data.schemaVersion == 2
+            && resource.data.get('endedAt', null) == null
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(
+                ['planId', 'workoutId', 'workoutRevision', 'workoutSnapshot', 'source', 'startedAt'])));
+  allow delete: if false;
+}
+match /players/{playerId}/trainingPlans/{planId} {
+  allow update: if isPosetekAdmin()
+    && resource.data.schemaVersion == 3
+    && resource.data.status == 'active'
+    && request.resource.data.schemaVersion == 3
+    && request.resource.data.diff(resource.data).affectedKeys()
+         .hasOnly(['weeks', 'planRevision', 'lastEdit', 'updatedAt'])
+    && request.resource.data.planRevision == resource.data.planRevision + 1
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision
+        == get(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision + 1
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.lastEdit.adjustmentId is string
+    && !exists(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId))
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.planId == planId
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.basePlanRevision == resource.data.planRevision
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.newPlanRevision == request.resource.data.planRevision
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.editor.uid == request.auth.uid;
+}
+match /players/{playerId}/planAdjustments/{adjustmentId} {
+  function isWellFormedAdjustment() {
+    return request.resource.data.schemaVersion in [1, 2]
+      && request.resource.data.planId is string
+      && request.resource.data.workoutId is string
+      && request.resource.data.editor.uid == request.auth.uid
+      && request.resource.data.editor.role == 'admin'
+      && request.resource.data.before is map
+      && request.resource.data.after is map
+      && request.resource.data.rationale is string
+      && request.resource.data.rationale.size() >= 3
+      && request.resource.data.rationale.size() <= 2000
+      && request.resource.data.createdAt == request.time;
+  }
+  allow read: if isPosetekAdmin();
+  allow create: if isPosetekAdmin() && isWellFormedAdjustment()
+    && get(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.planRevision == request.resource.data.basePlanRevision
+    && request.resource.data.newPlanRevision == request.resource.data.basePlanRevision + 1
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.planRevision == request.resource.data.newPlanRevision
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.lastEdit.adjustmentId == adjustmentId
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.lastEdit.workoutId == request.resource.data.workoutId
+    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.updatedAt == request.time;
+  allow update, delete: if false;
+}
+match /players/{playerId}/workoutDrafts/{draftId} {
+
+  function isSelf() { return selfPlayer(playerId); }
+  function isCoachOfPlayer() { return coachOf(playerId); }
+  allow read: if request.auth != null && (isSelf() || isCoachOfPlayer() || isPosetekAdmin());
+  allow write: if false;
+}
+match /players/{playerId}/coachWorkspace/{workspaceId} {
+  function memorySelf() {
+    let p = get(/databases/$(database)/documents/players/$(playerId)).data;
+    return (('organizationId' in p) ? strictClubSelf(playerId, p) : (request.auth != null && !isPosetekAdmin()
+      && (p.get('authenticationUID', '') == request.auth.uid
+          || p.get('userUID', '') == request.auth.uid || playerId == request.auth.uid)));
+  }
+  allow read: if memorySelf();
+  allow write: if false;
+}
+match /players/{playerId}/coachMemories/{memoryId} {
+  function memorySelf() {
+    let p = get(/databases/$(database)/documents/players/$(playerId)).data;
+    return (('organizationId' in p) ? strictClubSelf(playerId, p) : (request.auth != null && !isPosetekAdmin()
+      && (p.get('authenticationUID', '') == request.auth.uid
+          || p.get('userUID', '') == request.auth.uid || playerId == request.auth.uid)));
+  }
+  allow read: if memorySelf();
+  allow write: if false;
+}
+match /drillCatalog/{drillId} {
+  function isWellFormedV2Drill() {
+    return request.resource.data.schemaVersion == 2
+      && request.resource.data.drillId == drillId
+      && request.resource.data.name is string
+      && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 80
+      && request.resource.data.equipment is list
+      && request.resource.data.requiresPartner is bool
+      && request.resource.data.howTo is map
+      && request.resource.data.howTo.setup is string
+      && request.resource.data.howTo.steps is list
+      && request.resource.data.howTo.steps.size() >= 1 && request.resource.data.howTo.steps.size() <= 12
+      && request.resource.data.dose is map
+      && request.resource.data.coachComments is list
+      && request.resource.data.coachComments.size() <= 8
+      && request.resource.data.adaptiveLevers is list
+      && request.resource.data.adaptiveLevers.size() <= 6
+      && request.resource.data.catalogVersion is string
+      && request.resource.data.domain in ['ballMastery', 'dribbling', 'passing', 'receiving', 'shooting',
+                                           'speed', 'agility', 'plyometrics', 'strength', 'games']
+      && request.resource.data.minAge is int
+      && request.resource.data.maxAge is int
+      && request.resource.data.minAge >= 5 && request.resource.data.maxAge <= 99
+      && request.resource.data.minAge <= request.resource.data.maxAge
+      && request.resource.data.difficultyLevel is int
+      && request.resource.data.difficultyLevel >= 1
+      && request.resource.data.difficultyLevel <= 5
+      && request.resource.data.maxFrequencyPerWeek is int
+      && request.resource.data.maxFrequencyPerWeek >= 1
+      && request.resource.data.maxFrequencyPerWeek <= 7
+      && request.resource.data.status in ['draft', 'published', 'archived']
+      && request.resource.data.updatedBy == request.auth.uid
+      && request.resource.data.updatedAt == request.time;
+  }
+  allow read: if request.auth != null;
+  allow create: if isPosetekAdmin() && isWellFormedV2Drill()
+    && request.resource.data.createdAt == request.time;
+  // Every document the workbook ingestion wrote — the whole live catalog,
+  // 101 documents on 2026-09-07 — predates v2 and has no `createdAt`.
+  // Reading a missing field is a rules *error*, so the plain comparison
+  // denied every in-app edit of an existing drill and nothing ever saved.
+  // A document that has the stamp keeps it exactly; one that lacks it may
+  // gain a server stamp on this write (the app does, on a drill's first
+  // admin save) or stay without one (a media-only attach never touches it).
+  // Same block as firebase/firestore.rules in PoseTek-mobile-app (2026-09-07).
+  function createdAtIsPreserved() {
+    return ('createdAt' in resource.data)
+      ? request.resource.data.createdAt == resource.data.createdAt
+      : (!('createdAt' in request.resource.data)
+        || request.resource.data.createdAt == request.time);
+  }
+  allow update: if isPosetekAdmin() && isWellFormedV2Drill()
+    && createdAtIsPreserved();
+  allow delete: if false;
+}
+match /drillCatalogMeta/{docId} {
+  allow read: if request.auth != null;
+  allow write: if isPosetekAdmin();
+}
+
+    // The released website's legacy coach editor changes only these three
+    // fields. v3 remains subject to the atomic plan/audit/counter contract.
+    match /players/{pid}/trainingPlans/{planId} {
+      allow update: if coachOf(pid) && !isPosetekAdmin()
+        && resource.data.get('schemaVersion', 1) in [1, 2]
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['weeks', 'coachAdjustedAt', 'coachAdjustedByUid'])
+        && request.resource.data.weeks is list
+        && request.resource.data.coachAdjustedAt == request.time
+        && request.resource.data.coachAdjustedByUid == request.auth.uid;
+    }
+    match /players/{pid} {
+      // Legacy discovery stays compatible; club athlete discovery is scoped.
+      allow read: if !('organizationId' in resource.data)
+        || strictClubSelf(pid, resource.data) || (signedIn() && clubStaffData(resource.data)) || isPosetekAdmin();
+      // Query discovery may filter on only one canonical UID alias. Strict
+      // owner consistency is still enforced for gets, descendants and Storage.
+      allow list: if signedIn() && !isPosetekAdmin()
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous'
+        && (resource.data.get('authenticationUID', '') == request.auth.uid
+          || resource.data.get('userUID', '') == request.auth.uid);
+      function protectedProfileFields() {
+        return ['authenticationUID','userUID','signupEmail','email','coachUID','coach','organizationCode','organization',
+          'registered','signupCode','playerCode','maxDrillDifficulty','position','birthDate','age','ageRecordedAt',
+          'organizationId','teamId','role','organizationRole','coachId','coachDocId','signupCodeVersion'];
+      }
+      function ownNewIdentity() {
+        let d=request.resource.data;
+        return d.get('authenticationUID', request.auth.uid) == request.auth.uid
+          && d.get('userUID', request.auth.uid) == request.auth.uid;
+      }
+      // Self signup, and coach-created unclaimed roster profiles. A create may
+      // never pre-assign another Auth UID or a privileged difficulty override.
+      allow create: if signedIn() && !isPosetekAdmin()
+        && !request.resource.data.keys().hasAny(['maxDrillDifficulty','organizationId','teamId','organizationRole'])
+        && ((pid == request.auth.uid && ownNewIdentity())
+          || (request.resource.data.get('coachUID', '') == request.auth.uid
+            && request.resource.data.get('registered', false) == false
+            && !request.resource.data.keys().hasAny(['authenticationUID','userUID'])));
+      allow update: if signedIn() && !isPosetekAdmin() && (selfPlayer(pid) || coachOf(pid))
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(protectedProfileFields());
+      // Existing owner may backfill its own missing Auth UID without changing
+      // any other authority field (the mobile queryPlayers migration).
+      allow update: if signedIn() && selfPlayer(pid)
+        && resource.data.get('authenticationUID', '') == ''
+        && request.resource.data.authenticationUID == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authenticationUID','updatedAt']);
+      // Preserve the existing invitation signup protocol for an unowned profile.
+      // It cannot take over an established owner or an existing memory workspace.
+      // Public invitation-code discovery is an existing non-AI limitation.
+      allow update: if signedIn() && !isPosetekAdmin()
+        && !('organizationId' in resource.data)
+        && resource.data.get('authenticationUID', '') == '' && resource.data.get('userUID', '') == ''
+        && resource.data.get('registered', true) == false
+        && !exists(/databases/$(database)/documents/players/$(pid)/coachWorkspace/current)
+        && request.resource.data.authenticationUID == request.auth.uid
+        && request.resource.data.userUID == request.auth.uid && request.resource.data.registered == true
+        && request.resource.data.email == request.auth.token.get('email', '__absent__')
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['authenticationUID','userUID','registered','email','updatedAt']);
+      allow delete: if false;
+    }
+    match /coaches/{cid} {
+      allow read: if !('organizationId' in resource.data)
+        || (signedIn() && resource.data.get('userUID', '') == request.auth.uid) || isPosetekAdmin();
+      function ownCoachDoc() { return signedIn() && resource.data.get('userUID', '') == request.auth.uid; }
+      function safeRosterAddition() {
+        let old=resource.data.get('members', []);
+        let next=request.resource.data.get('members', []);
+        let added=next.removeAll(old);
+        return old is list && next is list && added.size() <= 1
+          && (added.size() == 0 || get(/databases/$(database)/documents/players/$(added[0])).data.get('coachUID', '') == request.auth.uid);
+      }
+      allow create: if signedIn() && !isPosetekAdmin() && cid == request.auth.uid
+        && request.resource.data.userUID == request.auth.uid
+        && request.resource.data.get('members', []) == []
+        && !request.resource.data.keys().hasAny(['organizationCode','maxDrillDifficulty','organizationId','organizationRole','organizationStatus','teamIds']);
+      allow update: if ownCoachDoc() && !isPosetekAdmin()
+        && (!('organizationId' in resource.data)
+          || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members','numberMembers']))
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['userUID','authenticationUID','organizationCode','maxDrillDifficulty','organizationId','organizationRole','organizationStatus','teamIds'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['members']) || safeRosterAddition());
+      allow delete: if false;
+    }
+
+    // Club memberships are authoritative and server-written. Directory arrays
+    // and legacy organization fields never grant access to migrated athletes.
+    match /organizations/{orgId} {
+      allow read: if signedIn() && (resource.data.get('schemaVersion', 1) == 2
+        ? activeClubMember(orgId)
+        : (resource.data.get('coaches', []).hasAny([request.auth.uid])
+          || resource.data.get('players', []).hasAny([request.auth.uid])));
+      allow read: if resource.data.get('schemaVersion', 1) != 2;
+      allow create: if request.resource.data.get('schemaVersion', 1) != 2
+        && !request.resource.data.keys().hasAny(['memberUIDs', 'managerUIDs']);
+      allow update: if resource.data.get('schemaVersion', 1) != 2
+        && request.resource.data.get('schemaVersion', 1) != 2
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberUIDs', 'managerUIDs']);
+      allow delete: if resource.data.get('schemaVersion', 1) != 2;
+      match /members/{uid} {
+        allow read: if isPosetekAdmin() || (signedIn()
+          && (uid == request.auth.uid || clubManager(orgId)));
+        allow write: if false;
+      }
+      match /staffProfiles/{profileId} {
+        allow read: if isPosetekAdmin() || (signedIn() && clubManager(orgId));
+        allow write: if false;
+      }
+    }
+    match /teams/{teamId} {
+      allow read: if isPosetekAdmin() || (signedIn()
+        && activeClubMember(resource.data.organizationId)
+        && (clubManager(resource.data.organizationId)
+          || clubMembership(resource.data.organizationId).get('teamIds', []).hasAny([teamId])));
+      allow write: if false;
+    }
+    match /clubStaffInvitations/{invitationId} {
+      // The callable returns bounded summaries; no client can read code hashes
+      // or mutate invitations, including managers and domain administrators.
+      allow read, write: if false;
+    }
+
+    match /{root}/{doc=**} {
+      allow read, write: if !(root in ['players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2']);
+    }
+    match /config/{configId}/{nested=**} {
+      allow read, write: if configId != 'llm';
+    }
+    match /coaches/{cid}/{sub}/{doc=**} {
+      allow read, write: if !('organizationId' in get(/databases/$(database)/documents/coaches/$(cid)).data);
+    }
+    match /players/{pid}/{sub}/{doc=**} {
+      allow read: if (!clubPlayer(pid) || visiblePlayer(pid)) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+      allow write: if !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+    }
+
+    // Kick evidence and expert-review projections (2026-09-08).
+    match /players/{playerId}/aiKickComparisons/{id} {
+      allow read: if visiblePlayer(playerId);
+      allow write: if false;
+    }
+    match /players/{playerId}/aiAnalysisCorrections/{id} {
+      allow read: if visiblePlayer(playerId);
+      allow write: if false;
+    }
+    match /players/{playerId}/aiAnalysisRuns/{id} {
+      allow read: if isPosetekAdmin();
+      allow write: if false;
+    }
+    match /players/{playerId}/aiAnalysisReviews/{id} {
+      allow read: if isPosetekAdmin();
+      allow write: if false;
+    }
+    match /players/{playerId}/aiAnalysisReviewHeads/{id} {
+      allow read: if isPosetekAdmin();
+      allow write: if false;
+    }
+
+  }
+}

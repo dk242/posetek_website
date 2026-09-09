@@ -326,3 +326,25 @@ keeps the Firebase download token the phone's upload minted (or mints one): the 
   `Importing module "node:process" is not allowed in node_repl`; its troubleshooting API
   was unavailable before setup. A real admin rep save/reload/clear/restore pass remains
   unrun, preferably on Safari for a saved HEVC `.mov` rep.
+
+
+## Admin roster codes and responsive surfaces (2026-09-08)
+
+Team rosters, athlete search results, and coach rosters share `PlayerRosterRow`.
+Unregistered players show **Awaiting signup**, their existing `signupCode` (falling
+back to `code`), and a Copy action outside the player link. Missing codes show
+**Code unavailable**; registered/claimed players never expose stale codes. Copy
+failures leave selectable text and a manual-copy message. No invitation writes
+or admission changes are involved.
+
+`admin-surfaces.scss` adapts the mobile app's CoachSurface palette and spacing
+across all admin tools, including embedded organization and results screens.
+Desktop uses top navigation; screens at 760px or narrower use four bottom tabs.
+Batch controls reserve space above the tabs, and dialogs layer above both bars.
+All new style rules are scoped to `.pt-admin`.
+
+Verification: TypeScript and focused lint pass; 230 tests pass across admin,
+shared plan contracts, and legacy plan editing. Isolated browser fixtures (no
+live database writes) exercised 12 admin routes at 1440px, 820px, and 390px, plus
+clipboard success/failure, search results, keyboard navigation, dose/rationale
+dialogs, batch/tab clearance, and standalone organization style isolation.

@@ -1,0 +1,37 @@
+#pt-personalized-planner-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin: 0 0 24px;
+  padding: 20px 24px;
+  color: #f7fbf9;
+  background: linear-gradient(115deg, #092a20, #082417);
+  border: 1px solid #7cff184a;
+  border-radius: 18px;
+  font-family: Inter, sans-serif;
+}
+#pt-personalized-planner-entry > div { flex: 1 1 300px; min-width: 0; }
+#pt-personalized-planner-entry strong { font-size: 18px; line-height: 1.4; }
+#pt-personalized-planner-entry p { margin: 6px 0 0; color: #c8dbd4; font-size: 14px; line-height: 1.5; }
+#pt-personalized-planner-entry a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: #7cff18;
+  color: #041610;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+}
+#pt-personalized-planner-entry a:focus-visible { outline: 3px solid #f7fbf9; outline-offset: 4px; }
+#pt-personalized-planner-entry a[aria-disabled="true"] { opacity: .55; cursor: wait; }
+@media (max-width: 760px) {
+  #pt-personalized-planner-entry { padding: 20px 16px; margin-bottom: 16px; }
+  #pt-personalized-planner-entry a { width: 100%; }
+}

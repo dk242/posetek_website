@@ -1,0 +1,868 @@
+{
+  "date": "2026-09-09",
+  "localParent": "ad136f3b246c293654f32f47fbd6cad4ae65c4ef",
+  "partnerParent": "eed666743d01f766277c37540cd6d3ca41033bb9",
+  "mobileMain": "f3cb9a24860c99ec2a566bddebdb877d0aa5d25c",
+  "productionBefore": {
+    "id": "6aa0973690a4730008ed43f4",
+    "commit_ref": "eed666743d01f766277c37540cd6d3ca41033bb9",
+    "published_at": "2026-09-08T23:16:33.017Z",
+    "title": "Fix draft review falsely blocked by Firestore field ordering"
+  },
+  "checks": {
+    "frontendTests": 579,
+    "frontendFiles": 28,
+    "functionsTests": 83,
+    "typescript": "passed",
+    "build": "passed",
+    "lint": "passed with existing warnings",
+    "http": {
+      "base": "http://127.0.0.1:58616",
+      "routes": 19,
+      "assets": 63,
+      "results": [],
+      "browserChecks": "not exercised",
+      "authenticatedWorkflows": "not exercised"
+    },
+    "callableSources": [
+      {
+        "function": "adminReviseRep",
+        "files": [
+          {
+            "file": "rep-revisions.js",
+            "matches": true,
+            "liveSha256": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911",
+            "localSha256": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911"
+          },
+          {
+            "file": "athlete-storage-paths.js",
+            "matches": true,
+            "liveSha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+            "localSha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c"
+          }
+        ]
+      },
+      {
+        "function": "adminRestoreRepRevision",
+        "files": [
+          {
+            "file": "rep-revisions.js",
+            "matches": true,
+            "liveSha256": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911",
+            "localSha256": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911"
+          },
+          {
+            "file": "athlete-storage-paths.js",
+            "matches": true,
+            "liveSha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+            "localSha256": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c"
+          }
+        ]
+      },
+      {
+        "function": "getTeamLeaderboard",
+        "files": [
+          {
+            "file": "team-leaderboard.js",
+            "matches": false,
+            "liveSha256": "3900ff759a7e4221b184e396c970370abd904dd8cb97bcb6ff8ad46154d6b1ac",
+            "localSha256": "3e7624f50f475c9b0e4efd763da59740171d844d94d8182ab5bb87a4e0eae162"
+          }
+        ]
+      }
+    ]
+  },
+  "release": "blocked: automatic approval review rejected Netlify preview upload; main push withheld because it automatically deploys the same bundle",
+  "files": [
+    {
+      "path": "SideKickView.html",
+      "bytes": 324745,
+      "sha256": "97948524b2ca493370013192e7cfdbcb262a56bc37dccdeaaa50a4584c7fef91"
+    },
+    {
+      "path": "StaticJumpPage.html",
+      "bytes": 308710,
+      "sha256": "52255686370481cd9b519ab92b35d4ce4949a8c941e75b68127ed0d5bdbb8f2d"
+    },
+    {
+      "path": "assets/AdminHome-6OhkZllC.js",
+      "bytes": 2793,
+      "sha256": "3b25f2fa52e9424534a50956d583d28a67e56c22e4d71c3f506806b11087bc8e"
+    },
+    {
+      "path": "assets/AdminPage-BugbrmAK.js",
+      "bytes": 9867,
+      "sha256": "325309914740cfe4193d3cc8045654fdf1e036318a533ebed211d346532bff08"
+    },
+    {
+      "path": "assets/AdminPage-CQ1_QBF-.css",
+      "bytes": 33007,
+      "sha256": "f6ebbe69deec981f2ec7903c99adfbfd3b9b9aa7ee2a3c19b13168ba0be66276"
+    },
+    {
+      "path": "assets/AdminResults-DroEdWbA.js",
+      "bytes": 2234,
+      "sha256": "783409547c3f02dbab999aa7546b05364172ad6a68c7ad1e933288eae69ae4a8"
+    },
+    {
+      "path": "assets/AnalysisWorkspace-DDsfXJhZ.css",
+      "bytes": 4493,
+      "sha256": "4ecd6aec3369ffae08bfea27a31824c00b393afea79941fef73728f18cf6a00c"
+    },
+    {
+      "path": "assets/AnalysisWorkspace-DerQ9MTE.js",
+      "bytes": 31172,
+      "sha256": "b4de049a354054664ad172df0576f860cb724592b9e276adea5c453aa9c4724b"
+    },
+    {
+      "path": "assets/AthleteEvidenceBadges-Bfl0ejX6.css",
+      "bytes": 7773,
+      "sha256": "11bf4ffcdc86cf5e34b5f5d6703668cd158549c02c534f0310543bf2ae9af389"
+    },
+    {
+      "path": "assets/AthleteEvidenceBadges-C-IXKYvo.js",
+      "bytes": 6078,
+      "sha256": "b18b681ddf2a00439c97f01dffc20a6669910ddf23bfabea77098f4f160372db"
+    },
+    {
+      "path": "assets/AthletePortalPage-CdxbT_E3.js",
+      "bytes": 86676,
+      "sha256": "8bf04a891caa5ad58bce0010d451103864a6aaedd41debf9d0d1e597e8d7bca4"
+    },
+    {
+      "path": "assets/AthletePortalPage-DFR_Ya8Z.css",
+      "bytes": 17753,
+      "sha256": "af8158d1db3d505f783a7c410c19c447509c3afb3fcb60dcb0273fc2f564f7f0"
+    },
+    {
+      "path": "assets/AthleteStats-B_WTRsGm.js",
+      "bytes": 13978,
+      "sha256": "20f4594336e73f78c44fe5e803f22b8310322da8edca619fcc929865fda78feb"
+    },
+    {
+      "path": "assets/AthleteStats-DignmqrO.css",
+      "bytes": 11969,
+      "sha256": "b230f4385eda2f9496e9b953e4d793257082172b3985b16dd33096829fc8f5ca"
+    },
+    {
+      "path": "assets/CoachDashboardPage-Bc_e8vUl.css",
+      "bytes": 10496,
+      "sha256": "6cb5a1ecca9204d20b19f76f1e58385bcc27638720e1cd8da2f9abed3e6a04a1"
+    },
+    {
+      "path": "assets/CoachDashboardPage-BdE_Wkl7.js",
+      "bytes": 36978,
+      "sha256": "ab27b7a5a29bfb51f7f45c596ce86265a0a46e8a1ed47c2c5437a887e70d9cff"
+    },
+    {
+      "path": "assets/CoachDetail-D3hb-lmn.js",
+      "bytes": 3668,
+      "sha256": "8cbecc4fd2813e59b5f03dc94278506fd55939f19d77c596c3fa30ec509391ef"
+    },
+    {
+      "path": "assets/DrillDashboard-CopIwF_F.js",
+      "bytes": 4634,
+      "sha256": "891785a9191b1762df6f1239ef96ff6178f98a975920d510e3d751837bb8a1a2"
+    },
+    {
+      "path": "assets/DrillDetail-DHC-aEbi.js",
+      "bytes": 5685,
+      "sha256": "a8d38916850b7f2248ad93868cf58d70d029cff0a33dfe0968f946f4b3c9c8d2"
+    },
+    {
+      "path": "assets/DrillForm-CQaxkjkw.js",
+      "bytes": 17540,
+      "sha256": "0b3d9e3cf1b658068e82265be9303e108438406aadec2fd4fd5fbe0cc23737c5"
+    },
+    {
+      "path": "assets/DrillLibrary-CaVwuby6.js",
+      "bytes": 5011,
+      "sha256": "b9492aee89c50234f2e44aa7a9ce3fa6ab9e7de85aff32bf69ac5d2cd0e3f0cc"
+    },
+    {
+      "path": "assets/DrillSharePage-CWTdmL-S.css",
+      "bytes": 16477,
+      "sha256": "d719cfdaede974a6c617b4ef5bf64f8a8fb314a6ecd6ad6b660fe5fb8d87dc59"
+    },
+    {
+      "path": "assets/DrillSharePage-DWs0Jc4v.js",
+      "bytes": 38684,
+      "sha256": "31a158ba49c6a43d9de70dae9fdee427995c46bb0f9bb11d05b35ecb78af54e7"
+    },
+    {
+      "path": "assets/GeneratePrograms-De1fz_Gu.js",
+      "bytes": 11831,
+      "sha256": "d10ebf2d3b214cf30c7155c304c81d764a8822c8c1a05ee2ccddf6df8a1e1d9c"
+    },
+    {
+      "path": "assets/HomePage-CPcyA3fd.js",
+      "bytes": 231569,
+      "sha256": "8058ad1fc565cea8fa541effdf1704f85e53725e2e53221b8b5ad9137acbecfc"
+    },
+    {
+      "path": "assets/HomePage-tqMCfxV1.css",
+      "bytes": 36229,
+      "sha256": "bc5a35c48f8a014ca6c28766f56cceb51a703fea779944ef4427a18a6b1020ab"
+    },
+    {
+      "path": "assets/LandingPage-CN83L16-.js",
+      "bytes": 25245,
+      "sha256": "0f1de535875f8e804e44d6e731a11741fb97e4d51b6ceaa354f8684c3c137289"
+    },
+    {
+      "path": "assets/LandingPage-CbYilQKk.css",
+      "bytes": 31806,
+      "sha256": "e3c38243ada3a6a814ec0a8b5d1726bb5465ae4997735afb9b4cefcd2f4cc034"
+    },
+    {
+      "path": "assets/MonitorAccounts-CaMtzINY.js",
+      "bytes": 6547,
+      "sha256": "688494e1f478a15644f77e209e0effa91ce08867f213691dd1991a3b014d4303"
+    },
+    {
+      "path": "assets/NotFoundPage-BHP3j_wX.css",
+      "bytes": 1095,
+      "sha256": "e2d4d1d20be9192caedbb7f71c1ad0277abc4636fa277a6c477ad9b1c771ff32"
+    },
+    {
+      "path": "assets/NotFoundPage-sSnlgdSb.js",
+      "bytes": 1345,
+      "sha256": "38caa6ab0745200c7c4b7581a41a336cf2c495a24bd1ca2fc0bfd8ffe410704b"
+    },
+    {
+      "path": "assets/OrganizationPage-KmH5GLNU.js",
+      "bytes": 15419,
+      "sha256": "175ad1026b542e4ad2a3e8b854b885dd9309b25ca0b1f75b66fb487e6d313057"
+    },
+    {
+      "path": "assets/PersonalizedPrograms-P9HCBZdz.js",
+      "bytes": 20406,
+      "sha256": "4d591eeaa54c624096008a12b59d1ae93d95f69b76bae4703c88dd5dbe5921b3"
+    },
+    {
+      "path": "assets/PlayerDetail-DQaZE6mA.js",
+      "bytes": 18270,
+      "sha256": "c8d97e1b8ba7e9818de23d87b9499bc7728160c751560da90883e5a0b261a71e"
+    },
+    {
+      "path": "assets/PlayerRosterRow-Ca37wtku.js",
+      "bytes": 2995,
+      "sha256": "2fcb42ba339bb8a6c6c3831474c295a26bb3ce95b620b857c14eb329e19c9c9e"
+    },
+    {
+      "path": "assets/PrivacyPage-C1wOqIY0.js",
+      "bytes": 8583,
+      "sha256": "2432b57681cf3efd251837aa290cc0e8fc6ddc1ae88e8c238df1f1c9e6efd1b9"
+    },
+    {
+      "path": "assets/PrivacyPage-cb2bhuEG.css",
+      "bytes": 3463,
+      "sha256": "4beedd81e2b2a57f86057f7120d2d0defc49b75313874f55a820b5528bae131e"
+    },
+    {
+      "path": "assets/RepTools-phDUaJzN.js",
+      "bytes": 36183,
+      "sha256": "b984c09a59b5b0ff4f3fb37aec38bcc30cab012be1ee334b9c73247960373363"
+    },
+    {
+      "path": "assets/RosterPage-CRYxfMv1.js",
+      "bytes": 12402,
+      "sha256": "4c9b5647bc9204d022209b07078b4977aef88adaecc1514de4d6ed37bd7c43c7"
+    },
+    {
+      "path": "assets/StaffInvitePage-BhgfeB-J.js",
+      "bytes": 4695,
+      "sha256": "88706fdd7f02f28014f6788741913923c9161649553a64323575a735be1e4f93"
+    },
+    {
+      "path": "assets/WorkoutEditor-7MHPb5rH.js",
+      "bytes": 39683,
+      "sha256": "00b481ca070dbbcfdbd74cd612d1b347fdf46532ea9f823b20e34cae80baefea"
+    },
+    {
+      "path": "assets/accounts-BneeWPVS.js",
+      "bytes": 6798,
+      "sha256": "40df89507cfab830f2256d0bf86ce5c7e93f0ba0340171b4a427730ef4d4e352"
+    },
+    {
+      "path": "assets/auto-D22YVyyl.js",
+      "bytes": 202222,
+      "sha256": "807c3daafed64071b7a51e9af520494742efb40e52f01c7e46e4916512d27c3a"
+    },
+    {
+      "path": "assets/catalog-By4rojNU.js",
+      "bytes": 5072,
+      "sha256": "86c84d067662479e29c636ee043c4d362d24192c2f275badc5ed238f14de5d3d"
+    },
+    {
+      "path": "assets/data-BXYKeOSp.js",
+      "bytes": 9046,
+      "sha256": "1e347845bee95fece0949233ee34b842ed67736ec5c5a3e73a614cb082d806e7"
+    },
+    {
+      "path": "assets/drillV2-cco2rYEZ.js",
+      "bytes": 4540,
+      "sha256": "0da1ab72c8b9dc003712c38a775f7c3f6ef968c63610c7fc76d9588918528167"
+    },
+    {
+      "path": "assets/firebase-CUzwZjKV.js",
+      "bytes": 764743,
+      "sha256": "7107b3f5e1de6b7217b4eb30c9e6fed5b0723f1509ce2c887a0b622027fe6379"
+    },
+    {
+      "path": "assets/identity-Bw64WvVM.js",
+      "bytes": 947,
+      "sha256": "2f26e7693fa5076e98f2884618e31c3f6909176d29c0557e64cb27b90996aa3e"
+    },
+    {
+      "path": "assets/identity-DcnDfMZb.js",
+      "bytes": 1357,
+      "sha256": "fddfd46613128cff42d2192741df148fe30e894fb74486dcc9347fc0f52abded"
+    },
+    {
+      "path": "assets/index-BzVV21Ai.js",
+      "bytes": 233333,
+      "sha256": "118464234ed46f081455dec15ce706814bcc95e8b67112ba517622699d19d932"
+    },
+    {
+      "path": "assets/index-CkzNDReN.css",
+      "bytes": 798,
+      "sha256": "cc1cb5aad86a4e6ae207454468efabf4bb03b7a6d102f8425ec0eab5dec94612"
+    },
+    {
+      "path": "assets/legacy-roster-BopdUrEo.js",
+      "bytes": 328,
+      "sha256": "7d20d7a5b806a2d05be62afedd5517b037aadcf49c82a3d35c5f91075878eee2"
+    },
+    {
+      "path": "assets/loaders-UJlz4CZi.js",
+      "bytes": 17192,
+      "sha256": "d764d6be44416d494495e1c51d9324ba9f8e6cf9dfff2edfbfdce19f9d0762b4"
+    },
+    {
+      "path": "assets/organization-CSazI_mQ.css",
+      "bytes": 3339,
+      "sha256": "db340edad8e16ac0a52a58b9e987214ac1bace6475e71b1f5336af6b7999910f"
+    },
+    {
+      "path": "assets/organization-data-Oz5sFxbs.js",
+      "bytes": 1535,
+      "sha256": "13ad4d0baf50ebb5ae8e8f69a6701661b9f6d42a52ebb6c213590fab7eccb09e"
+    },
+    {
+      "path": "assets/planJobs-CEiQYPFE.js",
+      "bytes": 1471,
+      "sha256": "feb82f1af6d2735e8a6e3c1535f75b7a17be5db6ee3cdad4dfc3d746a111dfb7"
+    },
+    {
+      "path": "assets/planV3-mUnD1z1Z.js",
+      "bytes": 6500,
+      "sha256": "ea89f26fe71d34c77a4e576fe58d509866a13c484df1a966fb1b9ec72da521c1"
+    },
+    {
+      "path": "assets/pose-portal-BL__fjGJ.css",
+      "bytes": 34005,
+      "sha256": "392cd73b2d67e9da6cc251882ca0334c122bfd07429f8eac6b50ad5596a53c87"
+    },
+    {
+      "path": "assets/repToolsData-Dd0pFkqG.js",
+      "bytes": 18090,
+      "sha256": "e146c8c2307cc60c1d10afe5e0975ffc1d0f1a73c46976ddad1224a2760855ca"
+    },
+    {
+      "path": "assets/results-Dfo07sSh.js",
+      "bytes": 772,
+      "sha256": "e839017b61160968293a1b5d8246c11cb91a112b5beefe003143c3d083947267"
+    },
+    {
+      "path": "assets/rolldown-runtime-hePW80VL.js",
+      "bytes": 716,
+      "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021"
+    },
+    {
+      "path": "assets/training-JeY8eeNt.js",
+      "bytes": 9733,
+      "sha256": "5f0de8cc11fb7091ca7de151970c63efb0eabb47a103f3fec50d9fae08bb340b"
+    },
+    {
+      "path": "assets/types-CTuiavJH.js",
+      "bytes": 2252,
+      "sha256": "6a56c81b30c6be6dd36e013a0052cc4f234e99fd3ab3ce85aee7e0f347965ee1"
+    },
+    {
+      "path": "assets/use-body-background-L09ol-EA.js",
+      "bytes": 278,
+      "sha256": "fc556c2164d1bd316d6578e7c905f7cee98c7d7b2a25f07e7853c31d0def8831"
+    },
+    {
+      "path": "assets/use-theme-color-D-v4hKxq.js",
+      "bytes": 409,
+      "sha256": "cfaebf9529bb4631c72b620f6d243a18fcb87d0a9a77feeee4562c2ea5b23697"
+    },
+    {
+      "path": "athlete-benchmarks.js",
+      "bytes": 2551,
+      "sha256": "12665314f1daa04b14f68a470c19efd91f378cb38081dfecaffc361ae3e63fc0"
+    },
+    {
+      "path": "athlete-drill-view.css",
+      "bytes": 17383,
+      "sha256": "43809b65543917cc4f168e167d4df0faa47ebb4deb6b6b448c24000e91a6d961"
+    },
+    {
+      "path": "athlete-drill-view.js",
+      "bytes": 59115,
+      "sha256": "fdd045d04eca9e257035f812aaa7877d8252086a65b68331f47b38cc05c03d9a"
+    },
+    {
+      "path": "athlete-mobile-pages.js",
+      "bytes": 52764,
+      "sha256": "44b0e845e93b096a70927056ef8ac2e4efce5985c3b8666bfb4f93ea6ce8a244"
+    },
+    {
+      "path": "athlete-portal.js",
+      "bytes": 33056,
+      "sha256": "e61f39dc74cf1ce2067482e1121781476b251516fac4ba13bd2c8cf61ffd2469"
+    },
+    {
+      "path": "athlete-stats-view.css",
+      "bytes": 11975,
+      "sha256": "26106a817ac0c097b4fd55af3305261e1e5f71c0ebfc95e6659f879a805d4330"
+    },
+    {
+      "path": "athlete-stats-view.js",
+      "bytes": 20410,
+      "sha256": "f3015da1d38d9ffae068ace7eff69167b1851ef7abfd4950236d31b5f72b9a8f"
+    },
+    {
+      "path": "backKickView.html",
+      "bytes": 124769,
+      "sha256": "16494b739fe284cf6096644914147f1f20867c4b1bd6b3f320d76645979d0a5d"
+    },
+    {
+      "path": "backfill-session-summaries.html",
+      "bytes": 31504,
+      "sha256": "50e12bb080065c6166c81ec3eaca77aebe1607d22db3287df8ce6e3975b79b44"
+    },
+    {
+      "path": "banner-6x3.html",
+      "bytes": 11094,
+      "sha256": "04688fa44c832f532b59600857a3da857bc36d8e8d368b0db7eb4f629b6c9e46"
+    },
+    {
+      "path": "bookPerformanceTest.html",
+      "bytes": 30599,
+      "sha256": "a2beaff336db9a261fa2928f2b4869de00dc05535965a3612d158a8b9eb69dd2"
+    },
+    {
+      "path": "coach-roster.js",
+      "bytes": 9701,
+      "sha256": "6c485edcb3c1b27a9cfb3d3af967e2dd31d088f4ca804e783e24819129f606b7"
+    },
+    {
+      "path": "convention-qr.html",
+      "bytes": 14445,
+      "sha256": "aa715d790d55145cbc2fe293f15b3232c3c30ec65b131933366f22748efd9b28"
+    },
+    {
+      "path": "drillList.html",
+      "bytes": 25231,
+      "sha256": "297dd51ee3205a1202136dbfbc5b0ed9c86f68fed2f303ac88596e8a4b13f0a4"
+    },
+    {
+      "path": "drillcreation.html",
+      "bytes": 35175,
+      "sha256": "b05db9c49dc2a874a01f7a0bcc42b4a540454a85dcb4b619a2cb05c04b0903b2"
+    },
+    {
+      "path": "edge-session-posetek-carousel.html",
+      "bytes": 43694,
+      "sha256": "33038695e68f167386ebb9c2ed39c6fd5beac14a343b6b1f7fdcbc1e93ae30ab"
+    },
+    {
+      "path": "failureDashboard.html",
+      "bytes": 35108,
+      "sha256": "c7d1d737d583f0b199b8c5baa3aeab80a881a01224733d204f75fc39b0203d2c"
+    },
+    {
+      "path": "favicon.svg",
+      "bytes": 9522,
+      "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+    },
+    {
+      "path": "feed.html",
+      "bytes": 30072,
+      "sha256": "2004c441dd192d192b8b4805ce69370ef2beb5d38a914a9974e0e0947cef760d"
+    },
+    {
+      "path": "feedbackForm.html",
+      "bytes": 56180,
+      "sha256": "e3d887b6eb5b259d81a63319bbefb430d8ade591a41f62965eacfb41a5249fd2"
+    },
+    {
+      "path": "firebase-identity.js",
+      "bytes": 2099,
+      "sha256": "c40dce34e94cf04a2f12add2d100267e9c2b9338001581ee70878529fa4ad9d4"
+    },
+    {
+      "path": "freeRecordPage.html",
+      "bytes": 152703,
+      "sha256": "84f5c074a100d929561917ed7d5f77a7b3c24d996b8cc2d6e9439fb202f66058"
+    },
+    {
+      "path": "fusionclinic.html",
+      "bytes": 91048,
+      "sha256": "9db3b73e1b6ef8071da17e0753a17fa8a0d867dd6745dc805817093cd7afbd1d"
+    },
+    {
+      "path": "hypothesis_athleticismSubscription.html",
+      "bytes": 69266,
+      "sha256": "b05c2395fca192753d2703eaba67c68f217bef2243d448c603b6d33b3b832ab2"
+    },
+    {
+      "path": "hypothesis_athleticismSubscription_signup.html",
+      "bytes": 36795,
+      "sha256": "cb1cdded03b1253a9d6d2fa829cc61f4cd70beb90f70a1b420ff4ede071683cf"
+    },
+    {
+      "path": "hypothesis_kickingAnalysis.html",
+      "bytes": 70469,
+      "sha256": "de67cb4bb37daa746d5da7738480af688af38c0f69080bcd8d26759c06848985"
+    },
+    {
+      "path": "hypothesis_kickingAnalysisSubscription.html",
+      "bytes": 76658,
+      "sha256": "3e1b09136c9ead177a877e6bb0754890d1c3a6a2dca5af1eca6a773223082ccf"
+    },
+    {
+      "path": "hypothesis_kickingAnalysisSubscription_signup.html",
+      "bytes": 36838,
+      "sha256": "a3226a78f2499a942403cb4e9bfa56783becdbd36e3aac4542b284f84611d678"
+    },
+    {
+      "path": "hypothesis_kickingCoach.html",
+      "bytes": 59036,
+      "sha256": "2ebb7a6626ecd8d292eb1eee4a01e2ed0dcc7e11c954274c2a9c102b2b50cb0c"
+    },
+    {
+      "path": "hypothesis_performanceTesting.html",
+      "bytes": 61826,
+      "sha256": "6d79e10d8ada22213c053509d0a976397bffa8f7237881298552cb6165a0d163"
+    },
+    {
+      "path": "hypothesis_quantificationTracking.html",
+      "bytes": 57211,
+      "sha256": "cedfdb943970c8f7db6a1262de39d996f7ed3901e6c2049d2ad73b9b197bb2b8"
+    },
+    {
+      "path": "hypothesis_trainingSession.html",
+      "bytes": 75345,
+      "sha256": "903b0fec4b04acfcbb4d22f6bc09f1740452d7124e1668d46f95d672ede55997"
+    },
+    {
+      "path": "hypothesis_trainingSessionKick.html",
+      "bytes": 84686,
+      "sha256": "59f79514956cacc1972def81b2213b873da9a2a96b696327d930a975b93cff7c"
+    },
+    {
+      "path": "icons.svg",
+      "bytes": 5031,
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+    },
+    {
+      "path": "images/.DS_Store",
+      "bytes": 8196,
+      "sha256": "17248d27d009bcf161c450441fa941b7a0eae57a3a12a7b156069ae98b889fdd"
+    },
+    {
+      "path": "images/Dylan.png",
+      "bytes": 8736,
+      "sha256": "bda2abec78ef4b4e64743f5bcdc65844cfd958fd6ffb6148836630a427cb26dd"
+    },
+    {
+      "path": "images/Nolan.png",
+      "bytes": 33371,
+      "sha256": "2c16094845ca135d76714ea5d35f617daa7848af4fcdb4c852ae9c34e2b254c9"
+    },
+    {
+      "path": "images/README.md",
+      "bytes": 233,
+      "sha256": "4a1ce7c061b5c997a807036bf4ec42dc46038e1bf0692d847c927492c1474e21"
+    },
+    {
+      "path": "images/SprintAnalysis.png",
+      "bytes": 1769715,
+      "sha256": "2465062ae7cd7d9e60468306674699dd376b9a70890175da5f3b7d635bde3e70"
+    },
+    {
+      "path": "images/analysiskick.PNG",
+      "bytes": 1331381,
+      "sha256": "37718ee98dfa2df3535e76502753c6b0f0c7c036ccfc4b157b862dfbdfc436fd"
+    },
+    {
+      "path": "images/appKickRecording.png",
+      "bytes": 1634590,
+      "sha256": "098e22487dac3419235737ef98e5222c4a18c21aaf9a345486787dd9736ca89e"
+    },
+    {
+      "path": "images/backswing.png",
+      "bytes": 1054845,
+      "sha256": "5d27ba06a08a6a6bc6a80e56382a67a606490e8104dcf8507fa1c3c6d1587047"
+    },
+    {
+      "path": "images/bing_generated_qrcode.png",
+      "bytes": 2099,
+      "sha256": "0aba489478293f27ebeaba149869905375a799be229064a74ce0b008b73391b1"
+    },
+    {
+      "path": "images/contact.png",
+      "bytes": 1107657,
+      "sha256": "eaa9c81e61b12d90a50edbb3bfd6529e54d051fea7583d10dbca0194a416bbc7"
+    },
+    {
+      "path": "images/developmentplan.PNG",
+      "bytes": 184321,
+      "sha256": "92cc706e3fb25a58541a56955f7e466b802a66015581f9fdb02f6d988c4433df"
+    },
+    {
+      "path": "images/goalStanford.mp4",
+      "bytes": 1594582,
+      "sha256": "155542ac636bcc802029437c6119f5c6c5005cf80d85a179e62672c5f3c4943b"
+    },
+    {
+      "path": "images/graphpose.PNG",
+      "bytes": 70895,
+      "sha256": "0d9c8655d5dc0b9dd5afcc295cc62734fb3b41ecb95df38e4c86af491a5789f6"
+    },
+    {
+      "path": "images/https_www_tiktok_com_pose_tek.png",
+      "bytes": 52337,
+      "sha256": "dc213341a31dae61f978f5838faf03c37fa0090b0dc2485985e134d45067cbf4"
+    },
+    {
+      "path": "images/jump track.mov",
+      "bytes": 7887026,
+      "sha256": "60091da4879dbc55ab198a5f845bd14d17c40cf05697589648a4bb9fefb6146e"
+    },
+    {
+      "path": "images/jumpAnalysisMetrics.png",
+      "bytes": 535943,
+      "sha256": "1962a934e3f39cc97a5dce919f76f16a3f597e11ffe173a094418c528e99108e"
+    },
+    {
+      "path": "images/jumpPoseRawVid.png",
+      "bytes": 2645219,
+      "sha256": "5e8ec96dacd0abd900562c16716b1a15b5a37c83b2880c9b01a03698f6fa8c64"
+    },
+    {
+      "path": "images/jumpPower.png",
+      "bytes": 1887235,
+      "sha256": "c17cd7f82fadb8160598d44100d2f614a4860be8e627fe8d8c8bc2f98dd00225"
+    },
+    {
+      "path": "images/jumpanalysis.PNG",
+      "bytes": 1290974,
+      "sha256": "17a5c09574baf0503670db61e00367c0af615ae66dc993881767829cb015722a"
+    },
+    {
+      "path": "images/kick analysis video.mov",
+      "bytes": 3309399,
+      "sha256": "09c1472d0e40e164d617c25aba76c58ca27c5c8ce1de86416e0702f6f45ac07c"
+    },
+    {
+      "path": "images/kick overlay video.mov",
+      "bytes": 5621615,
+      "sha256": "4213fe29f1eb3229f9b5f0ec84ef86c30b7231ca19aaade69fe399030344591c"
+    },
+    {
+      "path": "images/kickanalysis.png",
+      "bytes": 667998,
+      "sha256": "f52dd7f8056af07b07ff4cd524b2ef1ced40facc2b50c3db47ada2beb37dfa63"
+    },
+    {
+      "path": "images/leaderboard.PNG",
+      "bytes": 213275,
+      "sha256": "a6394bcb0f664d71542a8a9a32bd48621b5e00e2f82d9d7fd275d8b68c060cc0"
+    },
+    {
+      "path": "images/logo-export.html",
+      "bytes": 3673,
+      "sha256": "7b051a2255c5115cfd05873f7cfe084096a770482553152b30ca4e78d9abecbc"
+    },
+    {
+      "path": "images/logo.svg",
+      "bytes": 568,
+      "sha256": "cdaf48031a4db9fc56f508332696b5a14cd7131c789ac3dd56982e571b022c16"
+    },
+    {
+      "path": "images/markerSetup.png",
+      "bytes": 2374653,
+      "sha256": "630cc12798b4fa8dae3fb461db9b4351d24427790b43839e7a203fb20b4d1a38"
+    },
+    {
+      "path": "images/player profile image.png",
+      "bytes": 1544163,
+      "sha256": "f4100955bdffdf78579dd526b236dac22df668199fce0f2cfd5a4b167e0204d2"
+    },
+    {
+      "path": "images/pose_strike.png",
+      "bytes": 7263690,
+      "sha256": "df0d0f1b1cec736c4972796594f2c816989f3e1cab887a3dbe0b342105cc8fb8"
+    },
+    {
+      "path": "images/pose_tek_qr.png",
+      "bytes": 1876124,
+      "sha256": "a2f0da51465d3cf4d15b1b0f940297f0acde135d13de2b1330842dffdbc1c221"
+    },
+    {
+      "path": "images/posejump.png",
+      "bytes": 552416,
+      "sha256": "f9b5f9b25fd25709ee84dd5be137cccffed6f5a20d628c14644c370dac1e99d7"
+    },
+    {
+      "path": "images/postestimation.png",
+      "bytes": 1019839,
+      "sha256": "4f70cc4d58f4fc7fecfa1f598045d2bea1b1ea559e109fc8f313f0d20237b5ae"
+    },
+    {
+      "path": "images/profilepose.PNG",
+      "bytes": 125009,
+      "sha256": "5fbc3b65952d65d2a87023d8c43b1cbbcce6300ece748c403655058fbfbeeb1f"
+    },
+    {
+      "path": "images/progressOverTime.png",
+      "bytes": 653489,
+      "sha256": "0550426b3c57edee89d7e4d68963ef5f1e6fbdb3953c59d729ec61bd9aeda456"
+    },
+    {
+      "path": "images/soccer-ball.png",
+      "bytes": 146504,
+      "sha256": "4e333725613194fcaba5065ca3ba96016599523a56d742935a626940896a5d9a"
+    },
+    {
+      "path": "images/sprintBreakdown.png",
+      "bytes": 519163,
+      "sha256": "33d4ad13e54f61e229a580f10bca0c6743eccf0616b8caac6e7f98ffbd0ddd4b"
+    },
+    {
+      "path": "images/sprinting.PNG",
+      "bytes": 163157,
+      "sha256": "7f15ef84af6270534fe6df1180610d1a1a61d46f573038c7f3e093aba6e3c1d6"
+    },
+    {
+      "path": "images/stats.png",
+      "bytes": 136806,
+      "sha256": "575ca7015b7e203f5859bd2d1876703f1689af1d32a404d0ad9683b604c8fd3e"
+    },
+    {
+      "path": "images/tripod.png",
+      "bytes": 26184,
+      "sha256": "b0b14d1b05190b18af22e3af8655c0ac093cee9535fe693058fcd04196b6d201"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1243,
+      "sha256": "5e2f3fe5e478a1ec3fd9723e7e6325603740e52251251840c2456a2828d98d2d"
+    },
+    {
+      "path": "kickai-theme.css",
+      "bytes": 20574,
+      "sha256": "3575931c58a3ad30c0b900d3845ae01ba87321ac64697b4f4cf03a1eb38b560e"
+    },
+    {
+      "path": "kickingAnalysis_upload.html",
+      "bytes": 59127,
+      "sha256": "ce58769983a1a98dce094f5345344ac7e29e59af3629b5dce4e6b24324c71306"
+    },
+    {
+      "path": "kickingview.html",
+      "bytes": 201717,
+      "sha256": "60b5b45c3430e490acbe5ff579848d5eba45ac16a6cdaa2c17dcb5d4e21b1af3"
+    },
+    {
+      "path": "landing-pose-demo-data.js",
+      "bytes": 218511,
+      "sha256": "fb4c0f8061ee93fb5055ae326774e2ca62a13d6abed0717b401106dd8d916835"
+    },
+    {
+      "path": "landing-pose-demo.js",
+      "bytes": 15539,
+      "sha256": "0e1e033b6b107b9d1bef478847f6da18323d7ce0660efeee4e23f9b86f007920"
+    },
+    {
+      "path": "leaderboard.html",
+      "bytes": 66391,
+      "sha256": "a1dbc0f3ad06680a1d4efda1c2654e45ae67ab497115dd8d2c292589f8f80428"
+    },
+    {
+      "path": "pose-portal.css",
+      "bytes": 31421,
+      "sha256": "6ee96deb0bf86085c7b08131e9e08b1ccf80b95ec7fbae3fc386226af8808c9c"
+    },
+    {
+      "path": "premiumCheckout.js",
+      "bytes": 1723,
+      "sha256": "e3e5dc9af35976a58450b9f34c347abc682f18711aeb6ed37a7093d9c349cbac"
+    },
+    {
+      "path": "premiumInfo.html",
+      "bytes": 17924,
+      "sha256": "5525410d780287a4f6d8492fc335f71f19c89191bfb7b9fba4c816affa2356f9"
+    },
+    {
+      "path": "questAddPlayer.html",
+      "bytes": 29005,
+      "sha256": "aa9c899e57999bdbbc87b814851a76ba8aa24ce732fda4aca754f98960731016"
+    },
+    {
+      "path": "questLeaderboardResultsPage.html",
+      "bytes": 59644,
+      "sha256": "ef7491defdee7286d879587128ca54bc1e4323378b9290ee391b453a7dab7fb2"
+    },
+    {
+      "path": "questSearchPlayer.html",
+      "bytes": 33993,
+      "sha256": "23adb8763ffd867f8065ec9df5743c2a889b4f7848b9acdb9d28f26b31c6fd04"
+    },
+    {
+      "path": "questViewBiomechanics.html",
+      "bytes": 330987,
+      "sha256": "ede8d2beaa0bfc3d38f819aa473eb249fe0b153c031746001bbc44c490f5d95e"
+    },
+    {
+      "path": "sessions.html",
+      "bytes": 63867,
+      "sha256": "1cf47323d44aab089b7928f200f42816a9ee8308d00831ba0490e781194d2777"
+    },
+    {
+      "path": "sessionsexpanded.html",
+      "bytes": 34023,
+      "sha256": "ea64733a386f9c76081c939e5ec91a5c631bba208c20ddb07b7cde0b7b478aa1"
+    },
+    {
+      "path": "signupForm.html",
+      "bytes": 22608,
+      "sha256": "4a582d3d0039f57c9d78053ce844fae977d4372f2bde52d876a8b17e55343007"
+    },
+    {
+      "path": "sprintPage.html",
+      "bytes": 193918,
+      "sha256": "b8cc970415a0b605cfaa339903e095280c3f9d1687f7caaa86f511e3518124ff"
+    },
+    {
+      "path": "subscriptionWaitlist.html",
+      "bytes": 150119,
+      "sha256": "bb5642e6fe9c467ede8329d2bbfe277f6a69c39f61ccf1fe4e5e7e1b9c4d5664"
+    },
+    {
+      "path": "user-badge.js",
+      "bytes": 5900,
+      "sha256": "0aa352829d37c424994509baa3c0fd201d6262a17eaa06989ab744f45b96fa51"
+    },
+    {
+      "path": "videopage.html",
+      "bytes": 66248,
+      "sha256": "8e5872e193ff0c4fea90f4e9157a7af00bd99f2c3d8846018e6911f91bf7c6bd"
+    }
+  ]
+}
