@@ -5,7 +5,7 @@
 // Everything structural lives in lib/editor.ts (pure) and lib/plans.ts (the
 // transaction). This file is the surface: two panes, a live minute total from
 // the shared formula, the error/warning split, and a Save that cannot complete
-// without an answer to "why did you make the adjustments that you made?".
+// without feedback or an explicit choice to provide none.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -190,21 +190,17 @@ export default function WorkoutEditor() {
     }
   }
 
-  async function commit(rationale: string) {
+  async function commit(rationale: string, noFeedback: boolean) {
     if (!loaded || !draft) return;
     setSaving(true);
     setSaveError(null);
     try {
-      const catalogRows: Record<string, any> = {};
-      for (const block of draft.blocks) {
-        const drill = drillsById.get(block.drillId);
-        if (drill) catalogRows[block.drillId] = drill;
-      }
       const result = await saveWorkoutEdit({
         playerId,
         planId,
         draft,
         rationale,
+        noFeedback,
         warningsOverridden: warnings,
         frequency: loaded.frequency,
         setting: loaded.athlete.setting,
@@ -212,7 +208,6 @@ export default function WorkoutEditor() {
         generatorIntent: loaded.context.originalWorkouts[workoutId]?.intent ?? null,
         generatorCheck: loaded.context.originalChecks[workoutId] ?? null,
         generationContextRef: loaded.context.ref,
-        catalogRows,
       });
       setConfirming(false);
       navigate(`/admin/accounts/player/${playerId}`, {
@@ -281,7 +276,7 @@ export default function WorkoutEditor() {
                     Number(original.nextBlockSequence) || 1,
                   ),
                 }, Number(loaded.plan.planRevision) || 1));
-                setBanner("Loaded the original generated workout. Nothing is saved until you save it with a reason.");
+                setBanner("Loaded the original generated workout. Review it, then save with feedback or select that you have none.");
               }}
             >
               <span className="material-symbols-outlined">restart_alt</span>Load the original

@@ -1,18 +1,14 @@
 // "The admin also gets prompted 'why did you make the adjustments that you
 // made?' and whatever the coach writes in gets saved."
 //
-// The rationale is the product here — it is the ground truth a future generator
-// is evaluated against. So it is required (3–2000 characters, the same bounds
-// the security rules enforce), nothing is written without it, and the dialog
-// shows exactly what is about to change and who it changes it for.
+// Each edit records feedback or an explicit no-feedback declaration, together
+// with exactly what is about to change and who it changes it for.
 
 import { useMemo, useState } from "react";
 import { domainLabel } from "../../../lib/contracts/types";
 import type { AdjustmentDiff } from "../../../lib/contracts/types";
 import type { Issue } from "../lib/editor";
-
-export const RATIONALE_MIN = 3;
-export const RATIONALE_MAX = 2000;
+import { NO_FEEDBACK_RATIONALE, RATIONALE_MAX, workoutRationale } from "../lib/rationale";
 
 interface Props {
   playerName: string;
@@ -27,7 +23,7 @@ interface Props {
   saving: boolean;
   error: string | null;
   onCancel: () => void;
-  onSave: (rationale: string) => void;
+  onSave: (rationale: string, noFeedback: boolean) => void;
 }
 
 export default function RationaleDialog({
@@ -35,8 +31,9 @@ export default function RationaleDialog({
   inProgress, isNext, saving, error, onCancel, onSave,
 }: Props) {
   const [rationale, setRationale] = useState("");
+  const [noFeedback, setNoFeedback] = useState(false);
   const trimmed = rationale.trim();
-  const valid = trimmed.length >= RATIONALE_MIN && trimmed.length <= RATIONALE_MAX;
+  const valid = workoutRationale(rationale, noFeedback) !== null;
 
   const summary = useMemo(() => {
     const parts: string[] = [];
@@ -52,8 +49,8 @@ export default function RationaleDialog({
       <div className="admin-dialog">
         <h3>Why did you make the adjustments that you made?</h3>
         <p>
-          This answer is saved with the edit and is the record we score future workout building
-          against. Say what you saw and what you were trying to fix, not just what you changed.
+          Feedback is saved with the edit to help improve future workouts. Share what you
+          were trying to fix, or select that you have no feedback to provide.
         </p>
 
         <section className="admin-card">
@@ -105,28 +102,41 @@ export default function RationaleDialog({
         )}
 
         <label className="admin-field" style={{ marginTop: 14 }}>
-          <span>Your reason (required)</span>
+          <span>Your feedback</span>
           <textarea
             value={rationale}
             maxLength={RATIONALE_MAX}
+            disabled={noFeedback || saving}
             autoFocus
             placeholder="Swapped the second dribbling block for a change-of-direction drill — he is well ahead on ball control and 22nd percentile on agility, and the session was running four minutes long."
             onChange={event => setRationale(event.target.value)}
           />
         </label>
         <p className="admin-counter">{trimmed.length} / {RATIONALE_MAX}</p>
+        <div className="admin-checks">
+          <label>
+            <input
+              type="checkbox"
+              checked={noFeedback}
+              disabled={saving}
+              onChange={event => setNoFeedback(event.target.checked)}
+            />
+            {NO_FEEDBACK_RATIONALE}
+          </label>
+        </div>
+        {noFeedback && <p className="admin-note">Your no-feedback choice will be saved with this edit.</p>}
 
         {error && <p className="form-message" role="alert">{error}</p>}
 
         <div className="admin-dialog-actions">
           <button className="quiet-button" type="button" disabled={saving} onClick={onCancel}>Keep editing</button>
-          <button className="primary-cta" type="button" disabled={!valid || saving} onClick={() => onSave(trimmed)}>
+          <button className="primary-cta" type="button" disabled={!valid || saving} onClick={() => onSave(trimmed, noFeedback)}>
             {saving ? "Saving…" : "Save the workout"}
           </button>
         </div>
         {!valid && (
           <p className="admin-note">
-            The edit is not saved until this is filled in — that is deliberate.
+            Write at least 3 characters of feedback, or select that you have none.
           </p>
         )}
       </div>
