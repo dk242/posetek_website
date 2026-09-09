@@ -72,7 +72,43 @@
       }
     ]
   },
-  "release": "blocked: automatic approval review rejected Netlify preview upload; main push withheld because it automatically deploys the same bundle",
+  "release": {
+    "status": "published and HTTP-verified",
+    "userApproval": "Explicit approval in this conversation on 2026-09-09 supersedes the initial auto-review rejection.",
+    "sourceCommit": "a8477be1dbc76975d46eb8ab653afb2aae8cb096",
+    "preview": {
+      "site_id": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+      "site_name": "posetek",
+      "deploy_id": "6aa1a383181c5dbc8813fcec",
+      "deploy_url": "https://6aa1a383181c5dbc8813fcec--posetek.netlify.app",
+      "logs": "https://app.netlify.com/projects/posetek/deploys/6aa1a383181c5dbc8813fcec",
+      "function_logs": "https://app.netlify.com/projects/posetek/logs/functions?scope=deploy:6aa1a383181c5dbc8813fcec",
+      "edge_function_logs": "https://app.netlify.com/projects/posetek/logs/edge-functions?scope=deployid:6aa1a383181c5dbc8813fcec"
+    },
+    "previewChecks": {
+      "base": "https://6aa1a383181c5dbc8813fcec--posetek.netlify.app",
+      "routes": 19,
+      "assets": 63,
+      "results": [],
+      "browserChecks": "not exercised",
+      "authenticatedWorkflows": "not exercised"
+    },
+    "production": {
+      "id": "6aa1a3b8dd4bbb0008aee897",
+      "state": "ready",
+      "error_message": null,
+      "commit_ref": "a8477be1dbc76975d46eb8ab653afb2aae8cb096",
+      "published_at": "2026-09-09T18:22:22.865Z"
+    },
+    "productionChecks": {
+      "base": "https://posetek.net",
+      "routes": 19,
+      "assets": 63,
+      "results": [],
+      "browserChecks": "not exercised",
+      "authenticatedWorkflows": "not exercised"
+    }
+  },
   "files": [
     {
       "path": "SideKickView.html",
