@@ -1,6 +1,6 @@
 # Website source integration — 2026-09-09
 
-Status: code complete, local validation passed; external release approval and interactive acceptance outstanding.
+Status: merged, pushed and published 2026-09-09; local and deployed HTTP validation passed. Interactive acceptance remains outstanding.
 
 The integration preserves Nolan's local main `ad136f3` (10 commits beyond the common base) and Dylan's GitHub main `eed6667` (8 commits beyond the common base). Both histories share `a5b9580`. The interrupted merge observed earlier had been reset before this work began; the checkout was clean. An incremental Git bundle at `/private/tmp/posetek-website-pre-integration-20260909.bundle` preserves both parent refs and verifies against the common base, which remains in repository history.
 
@@ -30,8 +30,16 @@ Live source downloads verified `adminReviseRep` and `adminRestoreRepRevision` al
 
 A separate `getTeamLeaderboard` comparison found the deployed projection still omits `markerDistance` and `dribble_foot`. This is the existing foot/timing release gap, not a merge regression; deployment and cross-client parity verification remain pending. Do not claim the athlete leaderboard path is fully released based on Git synchronization.
 
-Automatic approval review rejected the preview upload because the combined proprietary website bundle and external Netlify destination need specific approval. No preview or production release occurred. The main push is withheld because the linked Netlify site automatically deploys main. The unchanged production baseline is deployment `6aa0973690a4730008ed43f4`, GitHub commit `eed6667`.
+## Published release
 
-After explicit release approval: recheck repository ownership, GitHub main and the serving Netlify deployment; reconcile any newer partner work; publish the frozen `dist` candidate to the existing PoseTek site's preview; run `node scripts/test-production-entry.cjs <previewURL> --http-only` (plus browser mode when available); push the normal merged main history without force. Verify the automatic production build and repeat serving-entry/asset checks against production. If the remote build has different generated hashes, retrieve and inspect its output before claiming exact-byte equivalence. Any emergency website rollback must preserve both feature sets; do not deploy one parent's app alone.
+Nolan explicitly approved the website bundle upload, GitHub main push and automatic Netlify deployment after the initial automatic-review rejection. Both GitHub and serving production were rechecked unchanged before release. All 158 local output files still matched the frozen receipt.
+
+- Preview: `6aa1a383181c5dbc8813fcec`, [immutable candidate](https://6aa1a383181c5dbc8813fcec--posetek.netlify.app). All 19 deep links and 63 exact generated JS/CSS asset checks passed.
+- Normal Git push: GitHub main advanced from `eed6667` to `a8477be`, preserving both parent histories; no force push.
+- Automatic production deployment: `6aa1a3b8dd4bbb0008aee897`, source `a8477be1dbc76975d46eb8ab653afb2aae8cb096`, published at **2026-09-09T18:22:22.865Z**. Netlify reported ready with no error.
+- Live [posetek.net](https://posetek.net): all 19 deep links and all 63 generated JS/CSS files passed exact-byte comparison with the tested local build. The remote build therefore reproduced the verified application assets.
+- The documentation-only verification commit follows the runtime release; it does not change the tested application or build configuration. The release JSON retains preview/production receipts and the original output manifest.
+
+The earlier release hold is resolved. No callable redeploy, athlete-data mutation or mobile build was performed. The pre-integration production baseline remains recorded for history as `6aa0973690a4730008ed43f4`; do not restore one parent's application over the combined release without preserving both feature sets.
 
 Signed-in saved-pair selection/reload, annotation save/reload/export, real planner draft review/activation, and outstanding mobile device checks remain acceptance work. These were not silently marked passed. The automated suites cover their pure logic and mocked backend contracts, not authenticated production interactions.
