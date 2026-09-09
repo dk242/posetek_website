@@ -38,6 +38,7 @@ import {
 } from "./editor";
 import type { Issue, WorkoutDraft } from "./editor";
 import { ADMIN_CLIENT_VERSION } from "./identity";
+import { workoutRationale } from "./rationale";
 
 export const MAX_DOCUMENT_BYTES = 900 * 1024;
 
@@ -171,6 +172,8 @@ export interface SaveWorkoutEdit {
   planId: string;
   draft: WorkoutDraft;
   rationale: string;
+  /** Explicitly selected by the admin; an empty text field alone is not consent. */
+  noFeedback?: boolean;
   /** The warnings the admin chose to save through; recorded verbatim. */
   warningsOverridden: Issue[];
   frequency: FrequencyContext;
@@ -180,8 +183,6 @@ export interface SaveWorkoutEdit {
   generatorIntent: string | null;
   generatorCheck: any | null;
   generationContextRef: string | null;
-  /** The catalog rows this edit relies on, captured so a later catalog edit cannot change the case. */
-  catalogRows: Record<string, any>;
 }
 
 export interface SaveResult {
@@ -193,9 +194,9 @@ export interface SaveResult {
 export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResult> {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new SaveError("signedOut", "You are signed out. Sign in again to save.");
-  const rationale = input.rationale.trim();
-  if (rationale.length < 3 || rationale.length > 2000) {
-    throw new SaveError("validation", "The rationale must be between 3 and 2000 characters.");
+  const rationale = workoutRationale(input.rationale, input.noFeedback === true);
+  if (rationale === null) {
+    throw new SaveError("validation", "Write 3–2000 characters of feedback or select “I have no feedback to provide here”.");
   }
 
   const playerRef = db.collection("players").doc(input.playerId);
@@ -263,9 +264,16 @@ export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResul
     // pulled from `published` since the draft was made must be caught here.
     const drillIds = [...new Set(input.draft.blocks.map(block => block.drillId))];
     const drills = new Map<string, CatalogDrill>();
+    const catalogRows: Record<string, firebase.firestore.DocumentData> = {};
     for (const drillId of drillIds) {
       const doc = await transaction.get(db.collection("drillCatalog").doc(drillId));
-      if (doc.exists) drills.set(drillId, normalizeCatalogDrill(doc.id, doc.data()));
+      if (doc.exists) {
+        const raw = doc.data()!;
+        drills.set(drillId, normalizeCatalogDrill(doc.id, raw));
+        // Keep the exact evidence validated by this transaction. Normalized UI
+        // rows introduce undefined optional fields, which Firestore rejects.
+        catalogRows[drillId] = raw;
+      }
     }
 
     const issues = validateDraft(input.draft, {
@@ -340,6 +348,7 @@ export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResul
       after,
       diff,
       rationale,
+      feedbackProvided: input.noFeedback !== true,
       conversationId: null,
       // Never the CURRENT intent: after one edit that is the editor's, not the
       // generator's (01A F14). Absent context is recorded as absent.
@@ -354,7 +363,7 @@ export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResul
         blockId: issue.blockId ?? null,
         message: issue.message,
       })),
-      catalogRows: input.catalogRows,
+      catalogRows,
       profileSnapshot: {
         position: player.position ?? assessmentInputs.position ?? null,
         ageBand: ageBand(resolvePlayerAge(player).age) ?? assessmentInputs.ageBand ?? null,
