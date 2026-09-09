@@ -395,6 +395,7 @@ function PlanSection({ playerId, player, plan, plans, logs, reps, age, onReload 
         <div className="admin-heading" style={{ marginBottom: 8 }}>
           <div>
             <h2>Training program</h2>
+            <Link to={`/admin/programs/personalized?players=${encodeURIComponent(playerId)}${player?.organizationId ? `&orgId=${encodeURIComponent(player.organizationId)}` : ""}`}>Open personalized planner · Preview</Link>
             <p>
               {plan
                 ? `${planHorizonWeeks(plan)} weeks from ${String(plan.startDate ?? "—")} · ${plan.sessionsPerWeek ?? plan.intake?.daysPerWeek ?? "?"} sessions/week · plan revision ${plan.planRevision ?? 1}`

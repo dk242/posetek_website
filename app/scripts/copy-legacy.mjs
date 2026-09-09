@@ -26,6 +26,7 @@ const PORTED = new Set([
 // Root-level files never meant to be served.
 const SKIP = new Set([
   "firebase.json",
+  "firebase.planner-test.json",
   "firestore.indexes.json",
   "netlify.toml",
   "cors.json",

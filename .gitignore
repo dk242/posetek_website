@@ -4,4 +4,7 @@
 firebase-debug.log*
 node_modules/
 /dist/
+/production-dist/
 .DS_Store
+
+firestore-debug.log*

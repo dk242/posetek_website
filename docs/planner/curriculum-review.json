@@ -1,0 +1,367 @@
+{
+  "status": "Prepared for content review; no catalog writes performed",
+  "drills": [
+    {
+      "drillId": "PAS-002",
+      "name": "Passing gates",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "perSide": true,
+        "frequencyText": "3x/week",
+        "restText": "Natural retrieval",
+        "frequencyPerWeekMin": 1,
+        "doseNote": "foot",
+        "setsMin": 3,
+        "repUnit": "passes",
+        "frequencyPerWeekMax": 3,
+        "setsMax": 5,
+        "frequencyNote": null,
+        "restBetweenSetsSecondsMin": null,
+        "doseText": "3-5 sets x 8-12 passes per side",
+        "repsMax": 12,
+        "restBetweenSetsSecondsMax": null,
+        "repsMin": 8,
+        "restScope": "sets",
+        "familiarizationReps": null,
+        "restSecondsMax": null,
+        "restSecondsMin": null
+      },
+      "howTo": {
+        "setup": "Pairs 4-15 m apart with target gate.",
+        "steps": [
+          "Pass through gate;",
+          "adjust distance/width after success streaks."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-002"
+    },
+    {
+      "drillId": "PAS-003",
+      "name": "Receive through exit gate",
+      "domain": "receiving",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "frequencyPerWeekMin": 1,
+        "perSide": false,
+        "restBetweenSetsSecondsMin": null,
+        "frequencyText": "2x/week",
+        "restBetweenSetsSecondsMax": null,
+        "setsMin": 3,
+        "restSecondsMin": 30,
+        "frequencyPerWeekMax": 2,
+        "frequencyNote": null,
+        "repUnit": "reps",
+        "doseText": "3-5 sets x 6-10 reps",
+        "restSecondsMax": 45,
+        "setsMax": 5,
+        "repsMax": 10,
+        "repsMin": 6,
+        "restScope": "sets",
+        "restText": "30-45 s between sets",
+        "doseNote": null,
+        "familiarizationReps": null
+      },
+      "howTo": {
+        "setup": "Receiver central with left/right/forward exit gates.",
+        "steps": [
+          "Check shoulder, receive pass and take first touch through called/open gate."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-003"
+    },
+    {
+      "drillId": "PAS-004",
+      "name": "Triangle pass-and-move",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "familiarizationReps": null,
+        "restSecondsMin": 45,
+        "repsMin": 60,
+        "doseText": "3-5 sets x 60-90 s per side",
+        "restSecondsMax": 45,
+        "repsMax": 90,
+        "restScope": "sets",
+        "restText": "45 s between sets",
+        "frequencyNote": null,
+        "setsMin": 3,
+        "restBetweenSetsSecondsMin": null,
+        "frequencyPerWeekMax": 2,
+        "restBetweenSetsSecondsMax": null,
+        "perSide": true,
+        "doseNote": "each direction",
+        "setsMax": 5,
+        "frequencyText": "2x/week",
+        "repUnit": "seconds",
+        "frequencyPerWeekMin": 1
+      },
+      "howTo": {
+        "setup": "Triangle 5-12 m sides.",
+        "steps": [
+          "Pass, move to next cone, receive across body, continue."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-004"
+    },
+    {
+      "drillId": "PAS-005",
+      "name": "Two-touch scan pass",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "markers"
+      ],
+      "dose": {
+        "restSecondsMin": 30,
+        "frequencyPerWeekMax": 2,
+        "restSecondsMax": 45,
+        "restBetweenSetsSecondsMin": null,
+        "restBetweenSetsSecondsMax": null,
+        "doseText": "3-5 sets x 8-12 reps",
+        "repsMin": 8,
+        "frequencyPerWeekMin": 1,
+        "repsMax": 12,
+        "setsMax": 5,
+        "doseNote": null,
+        "restText": "30-45 s between sets",
+        "frequencyText": "2x/week",
+        "repUnit": "reps",
+        "familiarizationReps": null,
+        "frequencyNote": null,
+        "restScope": "sets",
+        "setsMin": 3,
+        "perSide": false
+      },
+      "howTo": {
+        "setup": "Receiver between two target gates.",
+        "steps": [
+          "Scan cue before feed, first touch prepares, second touch passes to indicated target."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-005"
+    },
+    {
+      "drillId": "PAS-006",
+      "name": "Moving-target pass",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "setsMax": 5,
+        "repUnit": "reps",
+        "familiarizationReps": null,
+        "restScope": "sets",
+        "restBetweenSetsSecondsMin": null,
+        "doseNote": "each role",
+        "restBetweenSetsSecondsMax": null,
+        "setsMin": 3,
+        "restText": "30-45 s between sets",
+        "perSide": true,
+        "restSecondsMax": 45,
+        "frequencyNote": null,
+        "frequencyPerWeekMax": 2,
+        "restSecondsMin": 30,
+        "repsMin": 6,
+        "frequencyPerWeekMin": 1,
+        "frequencyText": "2x/week",
+        "doseText": "3-5 sets x 6-10 reps per side",
+        "repsMax": 10
+      },
+      "howTo": {
+        "setup": "Receiver moves across/away through channel.",
+        "steps": [
+          "Pass into receiver's path at varied speed and angle."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-006"
+    },
+    {
+      "drillId": "PAS-007",
+      "name": "Rondo 3v1 / 4v1",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "repUnit": "seconds",
+        "frequencyPerWeekMin": 1,
+        "setsMax": 5,
+        "perSide": false,
+        "frequencyPerWeekMax": 3,
+        "doseText": "3-5 sets x 60-120 s",
+        "setsMin": 3,
+        "restBetweenSetsSecondsMax": null,
+        "frequencyText": "3x/week",
+        "restBetweenSetsSecondsMin": null,
+        "restScope": "sets",
+        "doseNote": null,
+        "frequencyNote": null,
+        "restSecondsMin": 60,
+        "repsMax": 120,
+        "familiarizationReps": null,
+        "restSecondsMax": 60,
+        "restText": "60 s between sets",
+        "repsMin": 60
+      },
+      "howTo": {
+        "setup": "8 x 8 to 12 x 12 m grid.",
+        "steps": [
+          "Maintain possession against defender;",
+          "constraints scaled to level."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-007"
+    },
+    {
+      "drillId": "PAS-008",
+      "name": "Third-player combination",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "frequencyPerWeekMax": 2,
+        "restSecondsMin": 45,
+        "frequencyNote": null,
+        "restSecondsMax": 60,
+        "restScope": "sets",
+        "repsMin": 6,
+        "frequencyText": "2x/week",
+        "frequencyPerWeekMin": 1,
+        "doseNote": "each side",
+        "restText": "45-60 s between sets",
+        "repsMax": 10,
+        "restBetweenSetsSecondsMax": null,
+        "setsMax": 5,
+        "restBetweenSetsSecondsMin": null,
+        "repUnit": "reps",
+        "familiarizationReps": null,
+        "setsMin": 3,
+        "perSide": true,
+        "doseText": "3-5 sets x 6-10 reps per side"
+      },
+      "howTo": {
+        "setup": "Set wall-player and runner lanes.",
+        "steps": [
+          "Pass into wall player, set to third runner, then continue movement."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-008"
+    },
+    {
+      "drillId": "PAS-009",
+      "name": "Long-pass target zones",
+      "domain": "passing",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "markers"
+      ],
+      "dose": {
+        "restBetweenSetsSecondsMin": null,
+        "frequencyText": "2x/week",
+        "perSide": true,
+        "restText": "45-75 s between sets",
+        "restBetweenSetsSecondsMax": null,
+        "restScope": "sets",
+        "doseNote": "side",
+        "setsMin": 3,
+        "repUnit": "passes",
+        "familiarizationReps": null,
+        "restSecondsMin": 45,
+        "frequencyNote": null,
+        "setsMax": 5,
+        "restSecondsMax": 75,
+        "doseText": "3-5 sets x 4-8 passes per side",
+        "repsMax": 8,
+        "repsMin": 4,
+        "frequencyPerWeekMin": 1,
+        "frequencyPerWeekMax": 2
+      },
+      "howTo": {
+        "setup": "15-35 m target boxes scaled to ability.",
+        "steps": [
+          "Drive/loft pass into target zone with both feet as appropriate."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-009"
+    },
+    {
+      "drillId": "PAS-010",
+      "name": "Pressure receive-and-release",
+      "domain": "receiving",
+      "currentStatus": "draft",
+      "proposedAction": "Review existing authored instructions, dose and demo; publish only after content acceptance",
+      "requiresPartner": true,
+      "equipment": [
+        "ball",
+        "cones"
+      ],
+      "dose": {
+        "restBetweenSetsSecondsMin": null,
+        "restBetweenSetsSecondsMax": null,
+        "frequencyPerWeekMin": 1,
+        "repsMax": 25,
+        "doseText": "4-8 sets x 15-25 s",
+        "repsMin": 15,
+        "frequencyPerWeekMax": 2,
+        "restSecondsMax": 60,
+        "frequencyText": "2x/week",
+        "repUnit": "seconds",
+        "restSecondsMin": 60,
+        "setsMax": 8,
+        "perSide": false,
+        "doseNote": null,
+        "familiarizationReps": null,
+        "setsMin": 4,
+        "restScope": "sets",
+        "frequencyNote": null,
+        "restText": "60 s between sets"
+      },
+      "howTo": {
+        "setup": "Receiver between passer and passive/live defender.",
+        "steps": [
+          "Check away, receive with pressure, and release pass/escape through safe option."
+        ]
+      },
+      "adminUrl": "https://posetek.net/admin/drills/PAS-010"
+    }
+  ]
+}

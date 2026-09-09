@@ -9,6 +9,7 @@ import { Link, useParams } from "react-router-dom";
 import { db } from "../../../lib/firebase";
 import { loadCoachRoster, saveCoachRating } from "../lib/accounts";
 import type { CoachRow, PlayerRow } from "../lib/accounts";
+import PlayerRosterRow from "./PlayerRosterRow";
 
 export default function CoachDetail() {
   const { coachId = "" } = useParams();
@@ -115,20 +116,12 @@ export default function CoachDetail() {
         {roster.length === 0 && <p className="admin-empty">No athletes on this roster yet.</p>}
         <div className="admin-rows">
           {roster.map(player => (
-            <Link key={player.id} className="admin-row" to={`/admin/accounts/player/${player.id}`}>
-              <div className="admin-row-copy">
-                <strong>{player.name}</strong>
-                <span className="admin-row-meta">
-                  <span>{player.email || "no email on file"}</span>
-                  {player.raw?.position && <span className="admin-chip">{String(player.raw.position)}</span>}
-                  {typeof player.raw?.maxDrillDifficulty === "number" && (
-                    <span className="admin-chip accent">Own cap {player.raw.maxDrillDifficulty}</span>
-                  )}
-                  {!player.registered && <span className="admin-chip">awaiting signup</span>}
-                </span>
-              </div>
-              <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-            </Link>
+            <PlayerRosterRow key={player.id} player={player}>
+              {player.raw?.position && <span className="admin-chip">{String(player.raw.position)}</span>}
+              {typeof player.raw?.maxDrillDifficulty === "number" && (
+                <span className="admin-chip accent">Own cap {player.raw.maxDrillDifficulty}</span>
+              )}
+            </PlayerRosterRow>
           ))}
         </div>
       </section>

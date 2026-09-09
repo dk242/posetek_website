@@ -1,0 +1,2078 @@
+{
+  "method": "Fixed captured inputs and published catalog; independent model verdicts stubbed. No production writes.",
+  "results": [
+    {
+      "position": "CB",
+      "engines": {
+        "current": {
+          "status": "complete",
+          "elapsedMs": 140,
+          "passedWeeks": 0,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 78,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 15,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 25,
+            "speed": 17,
+            "agility": 5,
+            "plyometrics": 20,
+            "strength": 5,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 6,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -6,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 19,
+                  "differenceMinutes": 1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 24,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -15,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 30,
+                  "actualMinutes": 44,
+                  "differenceMinutes": 14,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 20,
+                  "actualMinutes": 18,
+                  "differenceMinutes": -2,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 6,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -6,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 19,
+                  "differenceMinutes": 1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 24,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -15,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 30,
+                  "actualMinutes": 44,
+                  "differenceMinutes": 14,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 20,
+                  "actualMinutes": 18,
+                  "differenceMinutes": -2,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "cohort_too_small",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            }
+          },
+          "curriculum": null
+        },
+        "personalized": {
+          "status": "complete",
+          "elapsedMs": 2406,
+          "passedWeeks": 2,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 2,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 15,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 20,
+            "speed": 22,
+            "agility": 5,
+            "plyometrics": 20,
+            "strength": 5,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 24,
+                  "actualMinutes": 24,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 24,
+                  "actualMinutes": 23,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 26,
+                  "actualMinutes": 26,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 24,
+                  "actualMinutes": 24,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 24,
+                  "actualMinutes": 23,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 26,
+                  "actualMinutes": 26,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 6,
+                  "actualMinutes": 6,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "no_qualifying_athlete_protocol",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            },
+            "evidencePolicy": {
+              "windowDays": 180,
+              "minSessions": 2,
+              "minTrialsPerSession": 3,
+              "protocol": "explicit matching protocolId",
+              "unknownProtocol": "unavailable"
+            }
+          },
+          "curriculum": [
+            {
+              "domain": "ballMastery",
+              "publishedDrills": 3,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 3
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "dribbling",
+              "publishedDrills": 11,
+              "eligibleDrills": 10,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 4,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 2
+              },
+              "status": "available"
+            },
+            {
+              "domain": "passing",
+              "publishedDrills": 1,
+              "eligibleDrills": 1,
+              "excludedReasons": {
+                "not_published": 7,
+                "partner_unavailable": 7
+              },
+              "status": "available"
+            },
+            {
+              "domain": "receiving",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "not_published": 2,
+                "partner_unavailable": 2
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "shooting",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 1,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "speed",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 5,
+                "age_ineligible": 1,
+                "equipment_unavailable": 3,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "agility",
+              "publishedDrills": 6,
+              "eligibleDrills": 5,
+              "excludedReasons": {
+                "age_ineligible": 1,
+                "not_published": 6,
+                "partner_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "plyometrics",
+              "publishedDrills": 12,
+              "eligibleDrills": 9,
+              "excludedReasons": {
+                "not_published": 2,
+                "age_ineligible": 1,
+                "equipment_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "strength",
+              "publishedDrills": 10,
+              "eligibleDrills": 3,
+              "excludedReasons": {
+                "equipment_unavailable": 7,
+                "partner_unavailable": 3,
+                "not_published": 2,
+                "age_ineligible": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "games",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 8
+              },
+              "status": "unavailable"
+            }
+          ]
+        }
+      },
+      "changedPrescription": true
+    },
+    {
+      "position": "GK",
+      "engines": {
+        "current": {
+          "status": "complete",
+          "elapsedMs": 63,
+          "passedWeeks": 0,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 128,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 15,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 15,
+            "speed": 16,
+            "agility": 14,
+            "plyometrics": 19,
+            "strength": 8,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 17,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -17,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 42,
+                  "differenceMinutes": 24,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 23,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -14,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 22,
+                  "differenceMinutes": 4,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 19,
+                  "actualMinutes": 18,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 9,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -3,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 17,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -17,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 18,
+                  "actualMinutes": 42,
+                  "differenceMinutes": 24,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 23,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -14,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 22,
+                  "differenceMinutes": 4,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 19,
+                  "actualMinutes": 18,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 9,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -3,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "cohort_too_small",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            }
+          },
+          "curriculum": null
+        },
+        "personalized": {
+          "status": "complete",
+          "elapsedMs": 312,
+          "passedWeeks": 2,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 0,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 14,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 15,
+            "speed": 21,
+            "agility": 14,
+            "plyometrics": 15,
+            "strength": 8,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 9,
+                  "actualMinutes": 9,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 9,
+                  "actualMinutes": 9,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "no_qualifying_athlete_protocol",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            },
+            "evidencePolicy": {
+              "windowDays": 180,
+              "minSessions": 2,
+              "minTrialsPerSession": 3,
+              "protocol": "explicit matching protocolId",
+              "unknownProtocol": "unavailable"
+            }
+          },
+          "curriculum": [
+            {
+              "domain": "ballMastery",
+              "publishedDrills": 3,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 3
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "dribbling",
+              "publishedDrills": 11,
+              "eligibleDrills": 10,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 4,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 2
+              },
+              "status": "available"
+            },
+            {
+              "domain": "passing",
+              "publishedDrills": 1,
+              "eligibleDrills": 1,
+              "excludedReasons": {
+                "not_published": 7,
+                "partner_unavailable": 7
+              },
+              "status": "available"
+            },
+            {
+              "domain": "receiving",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "not_published": 2,
+                "partner_unavailable": 2
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "shooting",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 1,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "speed",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 5,
+                "age_ineligible": 1,
+                "equipment_unavailable": 3,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "agility",
+              "publishedDrills": 6,
+              "eligibleDrills": 5,
+              "excludedReasons": {
+                "age_ineligible": 1,
+                "not_published": 6,
+                "partner_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "plyometrics",
+              "publishedDrills": 12,
+              "eligibleDrills": 9,
+              "excludedReasons": {
+                "not_published": 2,
+                "age_ineligible": 1,
+                "equipment_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "strength",
+              "publishedDrills": 10,
+              "eligibleDrills": 3,
+              "excludedReasons": {
+                "equipment_unavailable": 7,
+                "partner_unavailable": 3,
+                "not_published": 2,
+                "age_ineligible": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "games",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 8
+              },
+              "status": "unavailable"
+            }
+          ]
+        }
+      },
+      "changedPrescription": true
+    },
+    {
+      "position": "DM",
+      "engines": {
+        "current": {
+          "status": "complete",
+          "elapsedMs": 62,
+          "passedWeeks": 0,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 84,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 25,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 15,
+            "speed": 14,
+            "agility": 11,
+            "plyometrics": 16,
+            "strength": 6,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 13,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -13,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 30,
+                  "actualMinutes": 42,
+                  "differenceMinutes": 12,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 19,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -10,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 22,
+                  "differenceMinutes": 4,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 17,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 7,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 13,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -13,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 30,
+                  "actualMinutes": 42,
+                  "differenceMinutes": 12,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 15,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 19,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -10,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 22,
+                  "differenceMinutes": 4,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 17,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 7,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "cohort_too_small",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            }
+          },
+          "curriculum": null
+        },
+        "personalized": {
+          "status": "complete",
+          "elapsedMs": 360,
+          "passedWeeks": 2,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 0,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 25,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 15,
+            "speed": 14,
+            "agility": 11,
+            "plyometrics": 16,
+            "strength": 6,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 13,
+                  "actualMinutes": 13,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 30,
+                  "actualMinutes": 30,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 19,
+                  "actualMinutes": 19,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 7,
+                  "actualMinutes": 7,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 13,
+                  "actualMinutes": 13,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 30,
+                  "actualMinutes": 30,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 19,
+                  "actualMinutes": 19,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 18,
+                  "actualMinutes": 18,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 17,
+                  "actualMinutes": 17,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "strength",
+                  "targetMinutes": 7,
+                  "actualMinutes": 7,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "no_qualifying_athlete_protocol",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            },
+            "evidencePolicy": {
+              "windowDays": 180,
+              "minSessions": 2,
+              "minTrialsPerSession": 3,
+              "protocol": "explicit matching protocolId",
+              "unknownProtocol": "unavailable"
+            }
+          },
+          "curriculum": [
+            {
+              "domain": "ballMastery",
+              "publishedDrills": 3,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 3
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "dribbling",
+              "publishedDrills": 11,
+              "eligibleDrills": 10,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 4,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 2
+              },
+              "status": "available"
+            },
+            {
+              "domain": "passing",
+              "publishedDrills": 1,
+              "eligibleDrills": 1,
+              "excludedReasons": {
+                "not_published": 7,
+                "partner_unavailable": 7
+              },
+              "status": "available"
+            },
+            {
+              "domain": "receiving",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "not_published": 2,
+                "partner_unavailable": 2
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "shooting",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 1,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "speed",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 5,
+                "age_ineligible": 1,
+                "equipment_unavailable": 3,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "agility",
+              "publishedDrills": 6,
+              "eligibleDrills": 5,
+              "excludedReasons": {
+                "age_ineligible": 1,
+                "not_published": 6,
+                "partner_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "plyometrics",
+              "publishedDrills": 12,
+              "eligibleDrills": 9,
+              "excludedReasons": {
+                "not_published": 2,
+                "age_ineligible": 1,
+                "equipment_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "strength",
+              "publishedDrills": 10,
+              "eligibleDrills": 3,
+              "excludedReasons": {
+                "equipment_unavailable": 7,
+                "partner_unavailable": 3,
+                "not_published": 2,
+                "age_ineligible": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "games",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 8
+              },
+              "status": "unavailable"
+            }
+          ]
+        }
+      },
+      "changedPrescription": true
+    },
+    {
+      "position": "ST",
+      "engines": {
+        "current": {
+          "status": "complete",
+          "elapsedMs": 62,
+          "passedWeeks": 0,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 28,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 20,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 40,
+            "speed": 12,
+            "agility": 2,
+            "plyometrics": 12,
+            "strength": 1,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 17,
+                  "actualMinutes": 16,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 14,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -8,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 50,
+                  "actualMinutes": 52,
+                  "differenceMinutes": 2,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 14,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -3,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 17,
+                  "actualMinutes": 16,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 14,
+                  "actualMinutes": 6,
+                  "differenceMinutes": -8,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 50,
+                  "actualMinutes": 52,
+                  "differenceMinutes": 2,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 14,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -3,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "cohort_too_small",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            }
+          },
+          "curriculum": null
+        },
+        "personalized": {
+          "status": "complete",
+          "elapsedMs": 297,
+          "passedWeeks": 2,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 2,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 20,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 40,
+            "speed": 12,
+            "agility": 2,
+            "plyometrics": 12,
+            "strength": 1,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 17,
+                  "actualMinutes": 16,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 14,
+                  "actualMinutes": 14,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 50,
+                  "actualMinutes": 50,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 14,
+                  "actualMinutes": 14,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 17,
+                  "actualMinutes": 16,
+                  "differenceMinutes": -1,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 14,
+                  "actualMinutes": 14,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 50,
+                  "actualMinutes": 50,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 14,
+                  "actualMinutes": 14,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "no_qualifying_athlete_protocol",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            },
+            "evidencePolicy": {
+              "windowDays": 180,
+              "minSessions": 2,
+              "minTrialsPerSession": 3,
+              "protocol": "explicit matching protocolId",
+              "unknownProtocol": "unavailable"
+            }
+          },
+          "curriculum": [
+            {
+              "domain": "ballMastery",
+              "publishedDrills": 3,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 3
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "dribbling",
+              "publishedDrills": 11,
+              "eligibleDrills": 10,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 4,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 2
+              },
+              "status": "available"
+            },
+            {
+              "domain": "passing",
+              "publishedDrills": 1,
+              "eligibleDrills": 1,
+              "excludedReasons": {
+                "not_published": 7,
+                "partner_unavailable": 7
+              },
+              "status": "available"
+            },
+            {
+              "domain": "receiving",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "not_published": 2,
+                "partner_unavailable": 2
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "shooting",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 1,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "speed",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 5,
+                "age_ineligible": 1,
+                "equipment_unavailable": 3,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "agility",
+              "publishedDrills": 6,
+              "eligibleDrills": 5,
+              "excludedReasons": {
+                "age_ineligible": 1,
+                "not_published": 6,
+                "partner_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "plyometrics",
+              "publishedDrills": 12,
+              "eligibleDrills": 9,
+              "excludedReasons": {
+                "not_published": 2,
+                "age_ineligible": 1,
+                "equipment_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "strength",
+              "publishedDrills": 10,
+              "eligibleDrills": 3,
+              "excludedReasons": {
+                "equipment_unavailable": 7,
+                "partner_unavailable": 3,
+                "not_published": 2,
+                "age_ineligible": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "games",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 8
+              },
+              "status": "unavailable"
+            }
+          ]
+        }
+      },
+      "changedPrescription": true
+    },
+    {
+      "position": "FB",
+      "engines": {
+        "current": {
+          "status": "complete",
+          "elapsedMs": 62,
+          "passedWeeks": 0,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 118,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 25,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 20,
+            "speed": 20,
+            "agility": 7,
+            "plyometrics": 13,
+            "strength": 2,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 8,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -8,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 31,
+                  "actualMinutes": 38,
+                  "differenceMinutes": 7,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -5,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 16,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -7,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 25,
+                  "actualMinutes": 44,
+                  "differenceMinutes": 19,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 24,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -13,
+                  "toleranceMinutes": 5,
+                  "met": false
+                }
+              ]
+            },
+            {
+              "passed": false,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 8,
+                  "actualMinutes": 0,
+                  "differenceMinutes": -8,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 31,
+                  "actualMinutes": 38,
+                  "differenceMinutes": 7,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -5,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 16,
+                  "actualMinutes": 9,
+                  "differenceMinutes": -7,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 25,
+                  "actualMinutes": 44,
+                  "differenceMinutes": 19,
+                  "toleranceMinutes": 5,
+                  "met": false
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 24,
+                  "actualMinutes": 11,
+                  "differenceMinutes": -13,
+                  "toleranceMinutes": 5,
+                  "met": false
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "cohort_too_small",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            }
+          },
+          "curriculum": null
+        },
+        "personalized": {
+          "status": "complete",
+          "elapsedMs": 282,
+          "passedWeeks": 2,
+          "weeks": 2,
+          "totalAbsoluteDomainErrorMinutes": 0,
+          "focusSplit": {
+            "ballMastery": 0,
+            "dribbling": 20,
+            "passing": 13,
+            "receiving": 0,
+            "shooting": 20,
+            "speed": 25,
+            "agility": 7,
+            "plyometrics": 13,
+            "strength": 2,
+            "games": 0
+          },
+          "allocation": [
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 8,
+                  "actualMinutes": 8,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 24,
+                  "actualMinutes": 24,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 31,
+                  "actualMinutes": 31,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            },
+            {
+              "passed": true,
+              "policyVersion": "personalized-v1",
+              "domains": [
+                {
+                  "domain": "agility",
+                  "targetMinutes": 8,
+                  "actualMinutes": 8,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "dribbling",
+                  "targetMinutes": 25,
+                  "actualMinutes": 25,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "passing",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "plyometrics",
+                  "targetMinutes": 16,
+                  "actualMinutes": 16,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "shooting",
+                  "targetMinutes": 24,
+                  "actualMinutes": 24,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                },
+                {
+                  "domain": "speed",
+                  "targetMinutes": 31,
+                  "actualMinutes": 31,
+                  "differenceMinutes": 0,
+                  "toleranceMinutes": 5,
+                  "met": true
+                }
+              ]
+            }
+          ],
+          "modelCallsStubbed": 4,
+          "peer": {
+            "status": "unavailable",
+            "reason": "no_qualifying_athlete_protocol",
+            "cohort": {
+              "kind": "roster",
+              "size": 0
+            },
+            "evidencePolicy": {
+              "windowDays": 180,
+              "minSessions": 2,
+              "minTrialsPerSession": 3,
+              "protocol": "explicit matching protocolId",
+              "unknownProtocol": "unavailable"
+            }
+          },
+          "curriculum": [
+            {
+              "domain": "ballMastery",
+              "publishedDrills": 3,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 3
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "dribbling",
+              "publishedDrills": 11,
+              "eligibleDrills": 10,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 4,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 2
+              },
+              "status": "available"
+            },
+            {
+              "domain": "passing",
+              "publishedDrills": 1,
+              "eligibleDrills": 1,
+              "excludedReasons": {
+                "not_published": 7,
+                "partner_unavailable": 7
+              },
+              "status": "available"
+            },
+            {
+              "domain": "receiving",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "not_published": 2,
+                "partner_unavailable": 2
+              },
+              "status": "unavailable"
+            },
+            {
+              "domain": "shooting",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 11,
+                "age_ineligible": 1,
+                "equipment_unavailable": 1,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "speed",
+              "publishedDrills": 6,
+              "eligibleDrills": 6,
+              "excludedReasons": {
+                "not_published": 5,
+                "age_ineligible": 1,
+                "equipment_unavailable": 3,
+                "partner_unavailable": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "agility",
+              "publishedDrills": 6,
+              "eligibleDrills": 5,
+              "excludedReasons": {
+                "age_ineligible": 1,
+                "not_published": 6,
+                "partner_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "plyometrics",
+              "publishedDrills": 12,
+              "eligibleDrills": 9,
+              "excludedReasons": {
+                "not_published": 2,
+                "age_ineligible": 1,
+                "equipment_unavailable": 4
+              },
+              "status": "available"
+            },
+            {
+              "domain": "strength",
+              "publishedDrills": 10,
+              "eligibleDrills": 3,
+              "excludedReasons": {
+                "equipment_unavailable": 7,
+                "partner_unavailable": 3,
+                "not_published": 2,
+                "age_ineligible": 1
+              },
+              "status": "available"
+            },
+            {
+              "domain": "games",
+              "publishedDrills": 0,
+              "eligibleDrills": 0,
+              "excludedReasons": {
+                "Not supported by the executable v3 planner": 8
+              },
+              "status": "unavailable"
+            }
+          ]
+        }
+      },
+      "changedPrescription": true
+    }
+  ],
+  "duplicatePrescriptions": {
+    "current": [
+      [
+        "GK",
+        "DM"
+      ]
+    ],
+    "personalized": []
+  }
+}

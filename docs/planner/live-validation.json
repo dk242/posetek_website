@@ -1,0 +1,56 @@
+[
+  {
+    "position": "CB",
+    "status": "complete",
+    "elapsedMs": 24597,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.031134,
+    "activePlanUnchanged": true
+  },
+  {
+    "position": "GK",
+    "status": "complete",
+    "elapsedMs": 10332,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.034236,
+    "activePlanUnchanged": true
+  },
+  {
+    "position": "DM",
+    "status": "complete",
+    "elapsedMs": 10258,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.032502,
+    "activePlanUnchanged": true
+  },
+  {
+    "position": "ST",
+    "status": "complete",
+    "elapsedMs": 10092,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.030888,
+    "activePlanUnchanged": true
+  },
+  {
+    "position": "FB",
+    "status": "complete",
+    "elapsedMs": 8312,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.033876,
+    "activePlanUnchanged": true
+  },
+  {
+    "position": "GK",
+    "status": "complete",
+    "elapsedMs": 9645,
+    "allocationPassed": true,
+    "calls": 4,
+    "estimatedCostUsd": 0.034236,
+    "activePlanUnchanged": true
+  }
+]

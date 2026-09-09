@@ -1,0 +1,263 @@
+// Shared admin chrome and responsive surfaces. Nested portal/club pages inherit
+// these tokens only inside the admin root; their standalone routes stay intact.
+.pt-admin {
+  --lime: var(--admin-accent);
+  --green: var(--admin-accent);
+  --amber: var(--admin-warn);
+  --text: var(--admin-text);
+  --muted: var(--admin-dim);
+  --line: var(--admin-line);
+  --radius: var(--admin-card-radius);
+  --admin-tab-height: 76px;
+  color-scheme: dark;
+  font-size: 15px;
+  line-height: 1.5;
+
+  &.portal-body { background: linear-gradient(135deg, #041610, #092a20, #082417); }
+  &.portal-body::before { display: none; }
+  *, *::before, *::after { box-sizing: border-box; }
+  :where(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--admin-accent);
+    outline-offset: 3px;
+  }
+  :where(button, input, select, textarea) { font: inherit; }
+  :where(button, input)[disabled] { cursor: not-allowed; }
+  :where(p, strong, code, label) { overflow-wrap: anywhere; }
+  :where(input[type="checkbox"], input[type="radio"]) { accent-color: var(--admin-accent); }
+  select option { color: var(--admin-text); background: var(--admin-bar); }
+  .admin-sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0;
+    margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+
+  .admin-header {
+    height: auto;
+    min-height: 80px;
+    padding: 16px max(24px, env(safe-area-inset-right)) 16px max(24px, env(safe-area-inset-left));
+    gap: 16px;
+    background: var(--admin-bar);
+    // A filtered ancestor would contain the fixed mobile tab bar.
+    backdrop-filter: none;
+    z-index: 20;
+  }
+  .portal-brand { flex: 0 0 auto; gap: 10px; }
+  .portal-brand-mark {
+    width: 34px; height: 34px; border-radius: 8px;
+    box-shadow: none; background: linear-gradient(145deg, #7cff18, #8dfd2e);
+  }
+  .admin-wordmark { font-size: 17px; letter-spacing: 0.18em; }
+  .admin-header .portal-brand .admin-badge {
+    display: inline-flex; margin-left: 2px; padding: 3px 8px;
+    color: #041610; background: var(--admin-accent); border: 0;
+    font-size: 10px; font-weight: 900; letter-spacing: 0.1em;
+  }
+  .admin-header-right { margin-left: auto; gap: 12px; }
+  .admin-technique-link { gap: 6px; }
+  .admin-technique-link[aria-current="page"] { color: var(--admin-accent); background: rgba(124, 255, 24, 0.12); border-color: rgba(124, 255, 24, 0.25); }
+  .admin-who { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-nav { align-items: center; gap: 6px; flex-wrap: wrap; }
+  .admin-nav-short { display: none; }
+  .admin-nav-link {
+    padding: 0 12px; font-size: 13px; white-space: nowrap;
+    border-color: transparent; background: transparent;
+    &.active { background: rgba(124, 255, 24, 0.12); border-color: rgba(124, 255, 24, 0.25); color: var(--admin-accent); }
+  }
+  .admin-shell { width: 100%; padding: 32px 24px 80px; position: relative; }
+  .admin-heading { flex-wrap: wrap; }
+  .admin-heading > div:first-of-type { flex: 1 1 280px; min-width: 0; }
+  .admin-heading p { max-width: 80ch; font-size: 14px; }
+  .admin-heading h1 { letter-spacing: -0.035em; line-height: 1.2; font-weight: 800; }
+  .admin-heading-actions { gap: 8px; }
+  .eyebrow { color: var(--admin-accent); }
+  .admin-card h3 { font-size: 17px; margin-bottom: 16px; }
+  .admin-card, .admin-editor-main, .admin-picker, .admin-workout { min-width: 0; }
+  .admin-home-option { border-radius: var(--admin-card-radius); }
+
+  .quiet-button, .primary-cta, .icon-button {
+    margin: 0; min-height: 44px; border-radius: var(--admin-field-radius);
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: background 150ms ease, border-color 150ms ease;
+    flex-shrink: 0;
+    &:disabled { opacity: 0.5; }
+  }
+  .primary-cta { background: var(--admin-accent); color: #041610; font-weight: 750; padding: 10px 20px; }
+  .quiet-button:hover:not(:disabled), .icon-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.10); border-color: rgba(255, 255, 255, 0.24); }
+  .quiet-button.active:not(.admin-nav-link) { color: #041610; background: var(--admin-accent); border-color: var(--admin-accent); }
+  .quiet-button.small, .primary-cta.small { min-height: 36px; }
+  .admin-nav-link.active:hover { background: rgba(124, 255, 24, 0.18); color: var(--admin-accent); }
+  .search-field { min-height: 44px; height: auto; margin: 0; padding: 10px 14px; border-radius: var(--admin-field-radius); }
+  .search-field input { min-width: 0; font-size: 15px; }
+  .search-field:focus-within { border-color: var(--admin-accent); }
+  .admin-field input, .admin-field select, .admin-field textarea, .admin-toolbar select,
+  .rt-frame-field input, .rt-range-field input { border-radius: var(--admin-field-radius); min-height: 44px; min-width: 0; }
+  .admin-field input[type="checkbox"], .admin-field input[type="radio"] {
+    width: 18px; height: 18px; min-height: 18px; padding: 0; flex: 0 0 18px;
+  }
+  .admin-checks label { min-height: 44px; }
+  .admin-form, .admin-field-row { gap: 16px; }
+  .admin-list-row, .admin-field, .admin-field-row > * { min-width: 0; }
+  .admin-chip { padding: 4px 9px; font-size: 12px; letter-spacing: 0; }
+  .admin-chip.accent { background: rgba(124, 255, 24, 0.09); border-color: rgba(124, 255, 24, 0.25); }
+  .admin-chip.warn { background: rgba(255, 184, 71, 0.09); border-color: rgba(255, 184, 71, 0.25); }
+  .admin-chip.danger { background: rgba(248, 113, 113, 0.09); border-color: rgba(248, 113, 113, 0.3); }
+
+  .admin-row { border-radius: var(--admin-card-radius); padding: 16px; gap: 16px; }
+  .admin-row-copy { flex: 1; }
+  .admin-row-copy strong { font-size: 16px; }
+  .admin-row-meta { row-gap: 6px; font-size: 13px; overflow-wrap: anywhere; }
+  .admin-row-meta > span { min-width: 0; }
+  .admin-row-meta .admin-chip { white-space: normal; }
+  .admin-row-actions { flex-wrap: wrap; }
+  .admin-avatar {
+    display: grid; place-items: center; flex: 0 0 42px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(124, 255, 24, 0.12); border: 1px solid rgba(124, 255, 24, 0.2);
+    color: var(--admin-accent); font-size: 14px; font-weight: 750; letter-spacing: 0.03em;
+  }
+  .admin-org-logo {
+    width: 42px; height: 42px; flex: 0 0 42px;
+    object-fit: contain; padding: 4px; border-radius: 10px;
+    background: #f5f8f6;
+  }
+  .admin-org-head h3 { font-size: 19px; }
+  .admin-team-players { padding: 12px; gap: 12px; border-radius: 0 0 18px 18px; }
+  .admin-team.open .admin-team-toggle, .admin-team-players { border-color: rgba(124, 255, 24, 0.3); }
+  .admin-player-row.compact { padding: 16px; }
+  .admin-player-copy { flex: 1; min-width: 0; display: grid; gap: 8px; }
+  .admin-player-row .admin-row-link { border-radius: 4px; }
+  .admin-signup { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .admin-signup-code {
+    color: var(--admin-text); font: 600 14px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.06em; padding: 4px 8px; border-radius: 6px;
+    border: 1px solid var(--admin-line); background: rgba(0, 0, 0, 0.16);
+    user-select: all; max-width: 100%;
+  }
+  .admin-code-unavailable { color: var(--admin-dim); font-size: 13px; }
+  .admin-copy-code { color: var(--admin-accent); }
+  .admin-copy-error { flex-basis: 100%; color: var(--admin-warn); font-size: 13px; }
+  .admin-workout-actions { flex-wrap: wrap; }
+  .admin-block { padding: 16px 20px; }
+  .admin-block .admin-block-dose, .admin-picker-row .admin-picker-meta { font-size: 13px; }
+  .admin-picker-row .admin-picker-name { font-size: 14px; }
+  .admin-editor-block { flex-wrap: wrap; }
+  .admin-editor-block-copy { flex: 1 1 160px; }
+  .admin-editor-block-actions { flex-wrap: wrap; }
+  .admin-batch-bar { background: var(--admin-bar); padding: 16px; border-radius: 18px; }
+  .admin-dialog-backdrop { z-index: 100; }
+  .admin-dialog { padding: 24px; background: #0b241b; }
+  .rt-diff { overflow-wrap: anywhere; }
+  .rt-annotate-row { flex-wrap: wrap; }
+
+  // Shared result components use the portal tokens above.
+  .mobile-page-hero, .portal-card, .empty-card { background: var(--admin-panel); border-color: var(--admin-line); border-radius: var(--admin-card-radius); }
+  .mobile-page-hero h1 { font-size: clamp(26px, 3vw, 32px); }
+  .mobile-page-hero p, .portal-card > p { font-size: 14px; }
+  .admin-drill-tabs { flex-wrap: wrap; }
+  .admin-drill-tabs a { text-decoration: none; }
+
+  // The organization page is also used outside admin: keep these overrides local.
+  .pt-club {
+    color: var(--admin-text);
+    .club-shell { max-width: none; padding: 0; }
+    h1 { font-size: clamp(26px, 3vw, 32px); line-height: 1.2; letter-spacing: -0.035em; }
+    h2 { font-size: 20px; }
+    p, label, .club-team span, .club-staff span, .club-player span { color: var(--admin-dim); }
+    .club-card, .club-team, .club-edit { background: var(--admin-panel); border-color: var(--admin-line); border-radius: var(--admin-card-radius); }
+    .club-card { margin-top: 24px; padding: 24px; }
+    .club-team.selected { border-color: var(--admin-accent); box-shadow: inset 0 0 0 1px var(--admin-accent); }
+    input, select { background: rgba(255, 255, 255, 0.06); color: var(--admin-text); border-color: var(--admin-line); border-radius: var(--admin-field-radius); }
+    input:focus, select:focus, button:focus-visible, a:focus-visible { outline-color: var(--admin-accent); }
+    .club-staff, .club-player, .club-team-checks { border-color: var(--admin-line); }
+    .club-code code, .club-inline-link { color: var(--admin-accent); }
+    .club-message { background: rgba(124, 255, 24, 0.1); }
+    .club-message.error { background: rgba(248, 113, 113, 0.14); }
+  }
+
+  @media (min-width: 761px) and (max-width: 1250px) {
+    .admin-nav { order: 3; width: 100%; margin: 0; }
+    .admin-nav-link { flex: 1; }
+    .admin-header { position: relative; }
+  }
+  @media (max-width: 980px) {
+    .admin-picker { position: static; max-height: 440px; }
+  }
+  @media (max-width: 760px) {
+    .admin-header { min-height: 68px; padding: 12px 16px; flex-wrap: nowrap; gap: 8px; }
+    .portal-brand { gap: 8px; }
+    .admin-wordmark { font-size: 15px; letter-spacing: 0.12em; }
+    .admin-who, .admin-signout > span:last-child { display: none; }
+    .admin-signout { width: 44px; padding: 0; }
+    .admin-header-right { gap: 8px; }
+    .admin-technique-link { width: 44px; padding: 0; }
+    .admin-technique-link > span:last-child:not(.material-symbols-outlined) { display: none; }
+    .admin-nav {
+      position: fixed; inset: auto 0 0; z-index: 30; margin: 0;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px;
+      height: calc(var(--admin-tab-height) + env(safe-area-inset-bottom));
+      padding: 8px max(8px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+      background: var(--admin-bar); border-top: 1px solid var(--admin-line);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
+    }
+    .admin-nav-link {
+      min-width: 0; height: 60px; min-height: 44px; padding: 6px 0;
+      flex-direction: column; gap: 4px; border: 0; border-radius: 14px;
+      font-size: 11px; color: var(--admin-dim);
+      .material-symbols-outlined { font-size: 21px; }
+    }
+    .admin-nav-full { display: none; }
+    .admin-nav-short { display: inline; }
+    .admin-shell { padding: 24px 16px 48px; }
+    &.admin-ready .admin-shell { padding-bottom: calc(var(--admin-tab-height) + env(safe-area-inset-bottom) + 40px); }
+    .admin-heading { gap: 12px; margin-bottom: 24px; }
+    .admin-heading > div:first-of-type { flex-basis: 230px; }
+    .admin-heading-actions { margin-left: 0; width: 100%; }
+    .admin-heading-actions > .quiet-button, .admin-heading-actions > .primary-cta { flex: 1 1 auto; }
+    .admin-card, .admin-editor-main, .admin-home-option, .portal-card { padding: 20px; }
+    .admin-row, .admin-player-row.compact { padding: 12px; gap: 12px; }
+    .admin-player-row { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: start; }
+    .admin-avatar { width: 36px; height: 36px; flex-basis: 36px; font-size: 12px; }
+    .admin-player-row > .admin-row-actions { grid-column: 2; margin-left: 0; }
+    .admin-team-players { padding: 8px; }
+    .admin-signup { gap: 6px; }
+    .admin-signup .admin-chip { font-size: 11px; }
+    .admin-copy-code { min-height: 44px; }
+    .admin-row-actions .quiet-button.small { min-height: 44px; }
+    .admin-toolbar .search-field { min-width: 0; flex-basis: 100%; }
+    .admin-toolbar select { max-width: 100%; flex: 1; }
+    .admin-field-row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); }
+    .admin-list-row { flex-wrap: wrap; }
+    .admin-list-row input { flex: 1 1 160px; }
+    .admin-workout > header { padding: 16px; }
+    .admin-workout-actions { margin: 0; }
+    .admin-block { padding: 12px 16px; align-items: start; }
+    .admin-editor-block { padding: 12px; }
+    .admin-editor-block .admin-editor-block-actions { width: 100%; margin: 4px 0 0; justify-content: flex-end; }
+    .admin-batch-row { flex-wrap: wrap; gap: 12px; }
+    .admin-batch-row > .admin-row-copy { flex: 1 1 calc(100% - 40px); }
+    .admin-batch-row > .admin-row-actions { margin: 0 0 0 30px; }
+    .admin-batch-bar { bottom: calc(var(--admin-tab-height) + env(safe-area-inset-bottom) + 12px); flex-wrap: wrap; gap: 12px; }
+    .admin-batch-bar .primary-cta { flex: 1 1 auto; white-space: normal; }
+    .admin-dialog-backdrop { padding: 16px; }
+    .admin-dialog { padding: 20px; max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+    .admin-dialog-actions > button { flex: 1 1 auto; }
+    .rt-stage { min-height: 0; }
+    .rt-frame-chip { top: 44px; left: 12px; right: auto; max-width: calc(100% - 24px); font-size: 10px; }
+    .rt-stage .viewer-badge { top: 12px; left: 12px; }
+    .rt-frame-field { grid-template-columns: minmax(0, 1fr) 76px auto; }
+    .rt-frame-field > .quiet-button { grid-column: 1 / 3; }
+    .rt-transport { flex-wrap: wrap; }
+    .rt-playback { grid-template-columns: 1fr; }
+    .pt-club {
+      .club-shell { padding: 0; }
+      .club-card { padding: 20px; }
+      .club-heading, .club-section-title, .club-player { align-items: start; flex-wrap: wrap; }
+      .club-heading { gap: 12px; }
+      .club-title { min-width: 0; gap: 12px; }
+      .club-logo { width: 48px; height: 48px; }
+      .club-move { width: 100%; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
