@@ -63,7 +63,7 @@ function BodyProfileContent({ ctx }: { ctx: PortalContext }) {
     (async () => {
       const scans = await listBodyScans(ctx.playerId!);
       if (cancelled) return;
-      const countText = `${scans.length}/2 scans`;
+      const countText = `${scans.length}/${ctx.access === "athlete" || ctx.access === "preview" ? 3 : 2} scans`;
       if (!scans.length) {
         setScan(prev => ({ ...prev, phase: "none", statusText: "No body scans yet", countText }));
         return;
