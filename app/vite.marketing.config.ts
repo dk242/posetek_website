@@ -2,14 +2,16 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "node:url";
 
-// Build straight into the repo-root dist/ — Netlify and Firebase Hosting both
-// publish that directory. scripts/copy-legacy.mjs then adds the unported
-// legacy pages alongside the SPA bundle.
 export default defineConfig({
+  root: fileURLToPath(new URL("..", import.meta.url)),
+  base: "/marketing/",
+  publicDir: false,
   plugins: [react(), svelte({ configFile: false }), tailwindcss()],
   build: {
-    outDir: "../dist",
+    outDir: "marketing-dist",
     emptyOutDir: true,
+    assetsDir: "assets",
   },
 });

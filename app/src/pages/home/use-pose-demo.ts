@@ -98,8 +98,10 @@ export function createPoseDemoController(
   };
 
   const currentSequence = (): PoseSequence => data.sequences[state.sequenceIndex];
+  const currentFps = () => currentSequence().fps ?? data.fps;
+  const currentAspect = () => currentSequence().sourceAspectRatio ?? data.sourceAspectRatio;
   const project = (point: PosePoint | null | undefined): CanvasPoint | null =>
-    mapPoint(point, state.viewport, data.sourceAspectRatio);
+    mapPoint(point, state.viewport, currentAspect());
 
   function drawPath(points: (PosePoint | null)[], color: string, width: number, dashed?: number[]): void {
     const mappedPoints = points.map(project).filter(isCanvasPoint);
@@ -222,9 +224,9 @@ export function createPoseDemoController(
   }
 
   function updateDynamicLabels(sequence: PoseSequence): void {
-    const elapsed = elapsedSeconds(state.frame, data.fps);
+    const elapsed = elapsedSeconds(state.frame, currentFps());
     const phase = phaseForFrame(sequence, state.frame);
-    timer.textContent = timerText(state.frame, sequence, data.fps);
+    timer.textContent = timerText(state.frame, sequence, currentFps());
     phaseChip.textContent = phaseChipText(phase, elapsed);
     phaseChip.style.setProperty("--phase-color", phase.color);
     if (telemetryPhase && telemetryPhase.textContent !== phase.title) telemetryPhase.textContent = phase.title;
@@ -239,14 +241,22 @@ export function createPoseDemoController(
     context.setTransform(view.ratio, 0, 0, view.ratio, 0, 0);
     context.clearRect(0, 0, view.width, view.height);
     if (sequence.key === "broadJump") drawBroadJumpOverlay(sequence);
-    else drawChangeOfDirectionOverlay(sequence);
+    else if (sequence.key === "changeOfDirection") drawChangeOfDirectionOverlay(sequence);
     drawSkeleton(frame);
+    const ball = sequence.ball?.[state.frame];
+    if (ball) {
+      const center = project([ball.x,ball.y]);
+      if (center) {
+        context.beginPath(); context.arc(center.x,center.y,Math.max(3,ball.radius*view.scale),0,Math.PI*2);
+        context.fillStyle = "#b7f34a22"; context.fill(); context.strokeStyle = "#b7f34a"; context.lineWidth = 1.5; context.stroke();
+      }
+    }
     updateDynamicLabels(sequence);
   }
 
   function resizeCanvas(): void {
     const rect = canvas.getBoundingClientRect();
-    state.viewport = fitViewport(rect.width, rect.height, window.devicePixelRatio, data.sourceAspectRatio);
+    state.viewport = fitViewport(rect.width, rect.height, window.devicePixelRatio, currentAspect());
     const pixels = backingStoreSize(state.viewport);
     if (canvas.width !== pixels.width || canvas.height !== pixels.height) {
       canvas.width = pixels.width;
@@ -296,7 +306,7 @@ export function createPoseDemoController(
     // Title, label, metric grid, switcher state and telemetry flaps render from
     // React state (legacy rewrote those nodes here).
     onSequenceChange(state.sequenceIndex);
-    drawFrame();
+    resizeCanvas();
     if (autoplay) startAnimation();
   }
 
@@ -309,9 +319,9 @@ export function createPoseDemoController(
     const sequence = currentSequence();
     if (state.frame >= lastFrameIndex(sequence)) {
       state.endHold += delta;
-      if (state.endHold >= END_HOLD_MS) selectSequence(state.sequenceIndex + 1, false);
+      if (state.endHold >= END_HOLD_MS) selectSequence(state.sequenceIndex + (data.autoAdvance === false ? 0 : 1), false);
     } else {
-      const next = advanceFrame(state.frame, state.accumulator, delta, data.fps, lastFrameIndex(sequence));
+      const next = advanceFrame(state.frame, state.accumulator, delta, currentFps(), lastFrameIndex(sequence));
       state.accumulator = next.accumulator;
       if (next.advanced) {
         state.frame = next.frame;

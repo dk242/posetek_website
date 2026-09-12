@@ -1,0 +1,883 @@
+{
+  "deploymentId": "6aa4c3aaf800c80008dbe855",
+  "sourceCommit": "56cc905879eb42378189c85f207a6be104198524",
+  "url": "https://6aa4c3aaf800c80008dbe855--posetek.netlify.app",
+  "files": [
+    {
+      "path": "/sidekickview.html",
+      "sha": "f0618041333b340da892b511d9fe56b3dbcb1687",
+      "size": 324745,
+      "localPath": "SideKickView.html"
+    },
+    {
+      "path": "/staticjumppage.html",
+      "sha": "aa5c16d14c4bc931934ce38a1777fc79ec5374e9",
+      "size": 308710,
+      "localPath": "StaticJumpPage.html"
+    },
+    {
+      "path": "/assets/adminhome-ddx6drd_.js",
+      "sha": "dccc753573d80b3a43f2fad39f83a46ea2e2645c",
+      "size": 2793
+    },
+    {
+      "path": "/assets/adminpage-brrlheif.js",
+      "sha": "e2c3f870491332e2452a750e9cf2f5962169b2ca",
+      "size": 9867
+    },
+    {
+      "path": "/assets/adminpage-cq1_qbf-.css",
+      "sha": "47146748faf2094806f81c3f48d8b2f1c499bb9a",
+      "size": 33007
+    },
+    {
+      "path": "/assets/adminresults-dcpnouwq.js",
+      "sha": "38645b512adc1082230ccf68215ba9abb50be543",
+      "size": 2234
+    },
+    {
+      "path": "/assets/analysisworkspace-bpufc1gj.js",
+      "sha": "a863519530fdfb16e993aa4478bf7bc449f1672e",
+      "size": 31172
+    },
+    {
+      "path": "/assets/analysisworkspace-ddsfxjhz.css",
+      "sha": "34c3eaeaa85b25ea024e21ef55ab960bc010394a",
+      "size": 4493
+    },
+    {
+      "path": "/assets/athleteevidencebadges-bbvpnr0r.js",
+      "sha": "09c814478642bde75542481d4b89f2e60f735843",
+      "size": 6078
+    },
+    {
+      "path": "/assets/athleteevidencebadges-bfl0ejx6.css",
+      "sha": "aabcadae48d8c2060992f22dcaff8adb44998b74",
+      "size": 7773
+    },
+    {
+      "path": "/assets/athleteportalpage-cenklmgj.css",
+      "sha": "4cbdf33af952580f93794a4843732bd22b3a1cdc",
+      "size": 29204
+    },
+    {
+      "path": "/assets/athleteportalpage-ck6pgcp-.js",
+      "sha": "39a59f90adac4542799e42a027d7a25f92179a5c",
+      "size": 229869
+    },
+    {
+      "path": "/assets/athletestats-dignmqro.css",
+      "sha": "e9385bb9336198dc8198536871ccfa7dd3a1ed3c",
+      "size": 11969
+    },
+    {
+      "path": "/assets/athletestats-_d0wsv1y.js",
+      "sha": "1afefcdc47477ce483e5dca84dd4959fcacf76b0",
+      "size": 13985
+    },
+    {
+      "path": "/assets/coachdashboardpage-bc_e8vul.css",
+      "sha": "f8fa6d42c1a18e1a2d6950d0261cb5b8d98f0812",
+      "size": 10496
+    },
+    {
+      "path": "/assets/coachdashboardpage-cua8h_mp.js",
+      "sha": "f530249010e4ceb154931e25982368a0d70e9102",
+      "size": 36978
+    },
+    {
+      "path": "/assets/coachdetail-c1bxue3c.js",
+      "sha": "747bede287cffe1661a06069d92062664ed10a46",
+      "size": 3668
+    },
+    {
+      "path": "/assets/drilldashboard-bj6vkkih.js",
+      "sha": "673005c6d971f78dcb0be4dfe13c820c56e1d540",
+      "size": 4634
+    },
+    {
+      "path": "/assets/drilldetail-apa_xx4h.js",
+      "sha": "68900554a84823831b0f5230066dd4ddac35151b",
+      "size": 5685
+    },
+    {
+      "path": "/assets/drillform-def0njay.js",
+      "sha": "e45eca4565e95b39775fb7274db07105b0af5cc1",
+      "size": 17540
+    },
+    {
+      "path": "/assets/drilllibrary-blz-buba.js",
+      "sha": "28fc4d56bbd3952f67907e047f85dd0baf9df8f8",
+      "size": 5011
+    },
+    {
+      "path": "/assets/drillsharepage-cwtdml-s.css",
+      "sha": "24b38adb3b6673b0417d2259de0c85c84b1d47bb",
+      "size": 16477
+    },
+    {
+      "path": "/assets/drillsharepage-ggr8--kg.js",
+      "sha": "5411c0b1a774e33401759777af5cdbf42c2be527",
+      "size": 38684
+    },
+    {
+      "path": "/assets/generateprograms-3h2-j59w.js",
+      "sha": "b581ab9021806ca31e922ceea2df50b7b4f20937",
+      "size": 11831
+    },
+    {
+      "path": "/assets/homepage-dk_fyemj.js",
+      "sha": "7569cd6b933f1c302389962e5b5785a297dc24a1",
+      "size": 231569
+    },
+    {
+      "path": "/assets/homepage-tqmcfxv1.css",
+      "sha": "a691daa2c4884fd3973a36d9072779aa1c8448b8",
+      "size": 36229
+    },
+    {
+      "path": "/assets/landingpage-cbyilqkk.css",
+      "sha": "456acd8036725e0190cafc2afd9c42ea66c857c0",
+      "size": 31806
+    },
+    {
+      "path": "/assets/landingpage-d-ww1g0f.js",
+      "sha": "6c86625431e78099a2798d27cb6702ffdc0ad3ce",
+      "size": 25245
+    },
+    {
+      "path": "/assets/monitoraccounts-bkkovf7l.js",
+      "sha": "0a4881eddb21e290f4c91876af30cf40452800e2",
+      "size": 6547
+    },
+    {
+      "path": "/assets/notfoundpage-bhp3j_wx.css",
+      "sha": "77fb13604cc8a59ac75e1426bf65cb145fc5d9b8",
+      "size": 1095
+    },
+    {
+      "path": "/assets/notfoundpage-dpv7yf4d.js",
+      "sha": "9602c223c17e47df0327942f27f9c3cf6d05391e",
+      "size": 1345
+    },
+    {
+      "path": "/assets/organizationpage-c9uqwjum.js",
+      "sha": "73c02cfcc09eddb19c897c72969b19f451ca8b12",
+      "size": 15419
+    },
+    {
+      "path": "/assets/personalizedprograms-xsjsit8o.js",
+      "sha": "66d32369b99c9aaefc4207fabfc33324ab649cb3",
+      "size": 20406
+    },
+    {
+      "path": "/assets/playerdetail-ciotllan.js",
+      "sha": "5a84dff7181675fe4fb93b1783cdd270617047f5",
+      "size": 18270
+    },
+    {
+      "path": "/assets/playerrosterrow-cif8ajoh.js",
+      "sha": "5865a2bd4ff4fa5c6b19d18981c5b8805ebbb505",
+      "size": 2995
+    },
+    {
+      "path": "/assets/privacypage-c7hsosrt.js",
+      "sha": "ab75d8aaa1e0265c4e6ff3a764d9fad5b5a468d2",
+      "size": 8583
+    },
+    {
+      "path": "/assets/privacypage-cb2bhueg.css",
+      "sha": "c60585e8d2e70c84b8d7fb5f089415e5312381b6",
+      "size": 3463
+    },
+    {
+      "path": "/assets/reptools-c1z7wpl0.js",
+      "sha": "464f49e69a2d6aaaf5b427f7296245ef29146034",
+      "size": 36183
+    },
+    {
+      "path": "/assets/rosterpage-bv0vqnbm.js",
+      "sha": "fa83c9a6f5e564a49c2a0016d2833ac0a45f015c",
+      "size": 12402
+    },
+    {
+      "path": "/assets/staffinvitepage-bewtxhoa.js",
+      "sha": "4edeff93c46d6b5a77036aee82e4a153e806fa11",
+      "size": 4695
+    },
+    {
+      "path": "/assets/workouteditor-sslbmfgq.js",
+      "sha": "66ec0d4f5908b7feb4de91c9d8ba67fca51b7b4b",
+      "size": 40125
+    },
+    {
+      "path": "/assets/accounts-bneewpvs.js",
+      "sha": "4508c0584e00da90456d6192cc85e66574c74254",
+      "size": 6798
+    },
+    {
+      "path": "/assets/auto-d22yvyyl.js",
+      "sha": "408b2456c3b64ecc806872c0d5ea37cf0a6637b7",
+      "size": 202222
+    },
+    {
+      "path": "/assets/catalog-by4rojnu.js",
+      "sha": "74d46f099c55fbc3f3830cfaf6fa3fd0aa171aa0",
+      "size": 5072
+    },
+    {
+      "path": "/assets/data-cjq21rdg.js",
+      "sha": "192e2f4098d842e9e88510462796c943aa942ef5",
+      "size": 9046
+    },
+    {
+      "path": "/assets/drillv2-cco2ryez.js",
+      "sha": "5ebcd6141ab99212a3f17d05651ac684a3fbde57",
+      "size": 4540
+    },
+    {
+      "path": "/assets/firebase-cuzwzjkv.js",
+      "sha": "f1c7156095bba5473db9f10fa0abb4a43ea1fd44",
+      "size": 764743
+    },
+    {
+      "path": "/assets/identity-bw64wvvm.js",
+      "sha": "90604209413125633f41c7aad7bae20052b75637",
+      "size": 947
+    },
+    {
+      "path": "/assets/identity-dcndfmzb.js",
+      "sha": "e16ec0b6e98591b0655d287438cdbaa4ac9b0d22",
+      "size": 1357
+    },
+    {
+      "path": "/assets/index-ch95k1n7.js",
+      "sha": "e4ca39e8ecd3476a26f24ff29121822499969d7f",
+      "size": 233333
+    },
+    {
+      "path": "/assets/index-ckzndren.css",
+      "sha": "ad26abe353655acadbc41c359445b73f837c0005",
+      "size": 798
+    },
+    {
+      "path": "/assets/legacy-roster-bopdureo.js",
+      "sha": "c95348c05c755b86de20007ef44ce79d3bfa6e00",
+      "size": 328
+    },
+    {
+      "path": "/assets/loaders-ujlz4czi.js",
+      "sha": "f84fdc11a82f4418a11aee34e4b7f11a166213a5",
+      "size": 17192
+    },
+    {
+      "path": "/assets/organization-csazi_mq.css",
+      "sha": "d604a98958f7b5acf701dfef62d6a43f3c3c85e1",
+      "size": 3339
+    },
+    {
+      "path": "/assets/organization-data-oz5sfxbs.js",
+      "sha": "0550d8204374b516e06ce04abfcfcef76475b41c",
+      "size": 1535
+    },
+    {
+      "path": "/assets/planjobs-19ahjmb3.js",
+      "sha": "b52d4792d60ba1397478fadb45c20fe3c75ada2b",
+      "size": 1476
+    },
+    {
+      "path": "/assets/planv3-nohkhj0d.js",
+      "sha": "b4b7facde0fe0341add56287f8098e9a89c305c5",
+      "size": 6507
+    },
+    {
+      "path": "/assets/pose-portal-bl__fjgj.css",
+      "sha": "763655b8c8072e734afa4aef4f402a477b3e0268",
+      "size": 34005
+    },
+    {
+      "path": "/assets/reptoolsdata-dd0pfkqg.js",
+      "sha": "3b523538ced92f7bf7565b592bb53809187bb981",
+      "size": 18090
+    },
+    {
+      "path": "/assets/results-dfo07ssh.js",
+      "sha": "d639763197c901aaa6e6d3afad61fa9be645679c",
+      "size": 772
+    },
+    {
+      "path": "/assets/rolldown-runtime-hepw80vl.js",
+      "sha": "7c0f2d77a936f54545e89a0f7e138f91c7932b53",
+      "size": 716
+    },
+    {
+      "path": "/assets/training-jey8eent.js",
+      "sha": "122aa9ea9e8182bfe639ce1d46122ac5234de42d",
+      "size": 9733
+    },
+    {
+      "path": "/assets/types-ctuiavjh.js",
+      "sha": "1cc162ac8239d158ecc93ba5123c6d5d509e64e1",
+      "size": 2252
+    },
+    {
+      "path": "/assets/use-body-background-ccm7tai-.js",
+      "sha": "10107e5e9cd5c6666e793c59356028e572cca135",
+      "size": 278
+    },
+    {
+      "path": "/assets/use-theme-color-m5q249oh.js",
+      "sha": "20becb96c23bfb4515c2be28df25a3ab9bf6c74b",
+      "size": 409
+    },
+    {
+      "path": "/athlete-benchmarks.js",
+      "sha": "5b1458304ee5b3ea384151b014bb0fb1e4fd7698",
+      "size": 2551,
+      "localPath": "athlete-benchmarks.js"
+    },
+    {
+      "path": "/athlete-drill-view.css",
+      "sha": "e8abac1e111140952e2f384151a0b83ffe026406",
+      "size": 17383,
+      "localPath": "athlete-drill-view.css"
+    },
+    {
+      "path": "/athlete-drill-view.js",
+      "sha": "23e210b942dbc49ef24096b417300add5e9941ff",
+      "size": 59115,
+      "localPath": "athlete-drill-view.js"
+    },
+    {
+      "path": "/athlete-mobile-pages.js",
+      "sha": "bc4e3d7f3f1701f374e19610f72aafba6abc74aa",
+      "size": 52764,
+      "localPath": "athlete-mobile-pages.js"
+    },
+    {
+      "path": "/athlete-portal.js",
+      "sha": "65b2901430d1471a8cc077ffe33a417ab34ee988",
+      "size": 33056,
+      "localPath": "athlete-portal.js"
+    },
+    {
+      "path": "/athlete-stats-view.css",
+      "sha": "09cf1ce940058a1cad3c05e341648e644455265f",
+      "size": 11975,
+      "localPath": "athlete-stats-view.css"
+    },
+    {
+      "path": "/athlete-stats-view.js",
+      "sha": "05384976c2ac9391dbfb982667af80519c9272e2",
+      "size": 20410,
+      "localPath": "athlete-stats-view.js"
+    },
+    {
+      "path": "/backkickview.html",
+      "sha": "d8e6bba8c55538462cac7ee59197e390cd4528dd",
+      "size": 124769,
+      "localPath": "backKickView.html"
+    },
+    {
+      "path": "/backfill-session-summaries.html",
+      "sha": "152247adec12c59735e02c1dd0813d5a1bc03098",
+      "size": 31504,
+      "localPath": "backfill-session-summaries.html"
+    },
+    {
+      "path": "/banner-6x3.html",
+      "sha": "3eed6663ca72dec682b4648e65797a36cfdbc503",
+      "size": 11094,
+      "localPath": "banner-6x3.html"
+    },
+    {
+      "path": "/bookperformancetest.html",
+      "sha": "3fe2a90fc5b9556ea3f7cb885f7c6692ea8e375a",
+      "size": 30599,
+      "localPath": "bookPerformanceTest.html"
+    },
+    {
+      "path": "/coach-roster.js",
+      "sha": "f0c7624b9d80b341d329bf52dcade0109fa36401",
+      "size": 9701,
+      "localPath": "coach-roster.js"
+    },
+    {
+      "path": "/convention-qr.html",
+      "sha": "3ea77fef17ea66937826f63d50ae05dcd0c2efde",
+      "size": 14445,
+      "localPath": "convention-qr.html"
+    },
+    {
+      "path": "/drilllist.html",
+      "sha": "5f1bff9ad81a5c3a464a9ff7da6a26481f8ea9b1",
+      "size": 25231,
+      "localPath": "drillList.html"
+    },
+    {
+      "path": "/drillcreation.html",
+      "sha": "ae35c4489fe37249044d749e1ccb6ded496c4e3e",
+      "size": 35175,
+      "localPath": "drillcreation.html"
+    },
+    {
+      "path": "/edge-session-posetek-carousel.html",
+      "sha": "1b9d2dad5e7b40a24aab743f73f412143a5001cc",
+      "size": 43694,
+      "localPath": "edge-session-posetek-carousel.html"
+    },
+    {
+      "path": "/failuredashboard.html",
+      "sha": "1a56a556350b290d8e0ec4a0150d821260a5a2e4",
+      "size": 35108,
+      "localPath": "failureDashboard.html"
+    },
+    {
+      "path": "/favicon.svg",
+      "sha": "3f5bb8f3a6a05b7ca68a62581d2dd5bc88812caf",
+      "size": 9522
+    },
+    {
+      "path": "/feed.html",
+      "sha": "f854bc9377084617a487eac1f988aecd0929c7eb",
+      "size": 30072,
+      "localPath": "feed.html"
+    },
+    {
+      "path": "/feedbackform.html",
+      "sha": "022010d500058ab4897242d9b2fa6ab1fb6741f8",
+      "size": 56180,
+      "localPath": "feedbackForm.html"
+    },
+    {
+      "path": "/firebase-identity.js",
+      "sha": "424347fb20dae4953c88457aead1422b1ab0b679",
+      "size": 2099,
+      "localPath": "firebase-identity.js"
+    },
+    {
+      "path": "/freerecordpage.html",
+      "sha": "9cdb9ed1e5ec46aa9be20d4ca6c80a973e71169c",
+      "size": 152703,
+      "localPath": "freeRecordPage.html"
+    },
+    {
+      "path": "/fusionclinic.html",
+      "sha": "ad337d37c632e9ba05a9f851575559338ff16dd3",
+      "size": 91048,
+      "localPath": "fusionclinic.html"
+    },
+    {
+      "path": "/hypothesis_athleticismsubscription.html",
+      "sha": "ef8f7ec8357fc05804811bbae323995814aa0e94",
+      "size": 69266,
+      "localPath": "hypothesis_athleticismSubscription.html"
+    },
+    {
+      "path": "/hypothesis_athleticismsubscription_signup.html",
+      "sha": "ffa26fd3f00e6024566aca2a33aa1d13051c9fa3",
+      "size": 36795,
+      "localPath": "hypothesis_athleticismSubscription_signup.html"
+    },
+    {
+      "path": "/hypothesis_kickinganalysis.html",
+      "sha": "61d7812345f651517355e60aa1dbd505f85e05df",
+      "size": 70469,
+      "localPath": "hypothesis_kickingAnalysis.html"
+    },
+    {
+      "path": "/hypothesis_kickinganalysissubscription.html",
+      "sha": "457c15aa9fbb5c539f75cc5118a6c686ff954cf4",
+      "size": 76658,
+      "localPath": "hypothesis_kickingAnalysisSubscription.html"
+    },
+    {
+      "path": "/hypothesis_kickinganalysissubscription_signup.html",
+      "sha": "31acba4c71cd6cc98a2c7ddf7030923144dda24b",
+      "size": 36838,
+      "localPath": "hypothesis_kickingAnalysisSubscription_signup.html"
+    },
+    {
+      "path": "/hypothesis_kickingcoach.html",
+      "sha": "ab99f050fde2a67d54a37063b70e921e1294c8e5",
+      "size": 59036,
+      "localPath": "hypothesis_kickingCoach.html"
+    },
+    {
+      "path": "/hypothesis_performancetesting.html",
+      "sha": "f9145e7cf09250717371dc0e4396ba44ca9c744a",
+      "size": 61826,
+      "localPath": "hypothesis_performanceTesting.html"
+    },
+    {
+      "path": "/hypothesis_quantificationtracking.html",
+      "sha": "c18e05c58f9a16e642e476c6994732f94f1fe752",
+      "size": 57211,
+      "localPath": "hypothesis_quantificationTracking.html"
+    },
+    {
+      "path": "/hypothesis_trainingsession.html",
+      "sha": "2d0d1b503300e332d15d3b48f5fa168875651518",
+      "size": 75345,
+      "localPath": "hypothesis_trainingSession.html"
+    },
+    {
+      "path": "/hypothesis_trainingsessionkick.html",
+      "sha": "b5336050c61064daf45ed73d908067560df845f0",
+      "size": 84686,
+      "localPath": "hypothesis_trainingSessionKick.html"
+    },
+    {
+      "path": "/icons.svg",
+      "sha": "f9897ac25e13de9ea601d2f1ac5d9353dfbefcda",
+      "size": 5031
+    },
+    {
+      "path": "/images/dylan.png",
+      "sha": "99ba253f376e6570f30c2958f399f3d9027fa644",
+      "size": 8736,
+      "localPath": "images/Dylan.png"
+    },
+    {
+      "path": "/images/nolan.png",
+      "sha": "bdcbc0abcbd87b9c5e45b23abb82070edb85b001",
+      "size": 33371,
+      "localPath": "images/Nolan.png"
+    },
+    {
+      "path": "/images/readme.md",
+      "sha": "e85b404ccdb9011cc67046beeec4da196e2fc99c",
+      "size": 233,
+      "localPath": "images/README.md"
+    },
+    {
+      "path": "/images/sprintanalysis.png",
+      "sha": "9fcaeb820446ba6b236bd47426a3ff01f2601cc4",
+      "size": 1769715,
+      "localPath": "images/SprintAnalysis.png"
+    },
+    {
+      "path": "/images/analysiskick.png",
+      "sha": "cc31c8492ad1c26dacab9ca0eb2eb5f08d3762cb",
+      "size": 1331381,
+      "localPath": "images/analysiskick.PNG"
+    },
+    {
+      "path": "/images/appkickrecording.png",
+      "sha": "5346dc8dcc133edd29e3d824c81b160e9d76660f",
+      "size": 1634590,
+      "localPath": "images/appKickRecording.png"
+    },
+    {
+      "path": "/images/backswing.png",
+      "sha": "4e96e8aed873016c538f9a859a142145aecb9e97",
+      "size": 1054845,
+      "localPath": "images/backswing.png"
+    },
+    {
+      "path": "/images/bing_generated_qrcode.png",
+      "sha": "1ce7314757df159ef0f66bcccebce929c72b2517",
+      "size": 2099,
+      "localPath": "images/bing_generated_qrcode.png"
+    },
+    {
+      "path": "/images/contact.png",
+      "sha": "31cb3e72cc3794910a991c7de49ef743272ace66",
+      "size": 1107657,
+      "localPath": "images/contact.png"
+    },
+    {
+      "path": "/images/developmentplan.png",
+      "sha": "ad46923fc316914d6e7682536041d1f5191f1ca6",
+      "size": 184321,
+      "localPath": "images/developmentplan.PNG"
+    },
+    {
+      "path": "/images/goalstanford.mp4",
+      "sha": "523453a52ed3b4f31e140b1d5782efff03389b3a",
+      "size": 1594582,
+      "localPath": "images/goalStanford.mp4"
+    },
+    {
+      "path": "/images/graphpose.png",
+      "sha": "e7d1358407872ee1675528fd3e277ebb67d16ee3",
+      "size": 70895,
+      "localPath": "images/graphpose.PNG"
+    },
+    {
+      "path": "/images/https_www_tiktok_com_pose_tek.png",
+      "sha": "d01ad25b7075a91879b64442fcf63dbdae360aff",
+      "size": 52337,
+      "localPath": "images/https_www_tiktok_com_pose_tek.png"
+    },
+    {
+      "path": "/images/jump track.mov",
+      "sha": "e82d6ee7f2e417c440c978429329d6accefddb69",
+      "size": 7887026,
+      "localPath": "images/jump track.mov"
+    },
+    {
+      "path": "/images/jumpanalysismetrics.png",
+      "sha": "a3a47b83bb6f8793c9d7c7f738cca8bc3e0d04e9",
+      "size": 535943,
+      "localPath": "images/jumpAnalysisMetrics.png"
+    },
+    {
+      "path": "/images/jumpposerawvid.png",
+      "sha": "11c84ae5a95918071d6d003b3d90f12965390fe2",
+      "size": 2645219,
+      "localPath": "images/jumpPoseRawVid.png"
+    },
+    {
+      "path": "/images/jumppower.png",
+      "sha": "d6f7d9ad6ec6a5c9a3f06158940f332b40ca560a",
+      "size": 1887235,
+      "localPath": "images/jumpPower.png"
+    },
+    {
+      "path": "/images/jumpanalysis.png",
+      "sha": "90dc68e6db9f49436a653612291a73853c7d21b2",
+      "size": 1290974,
+      "localPath": "images/jumpanalysis.PNG"
+    },
+    {
+      "path": "/images/kick analysis video.mov",
+      "sha": "54468127442195fcd5f619c0f3e9d209fcacba49",
+      "size": 3309399,
+      "localPath": "images/kick analysis video.mov"
+    },
+    {
+      "path": "/images/kick overlay video.mov",
+      "sha": "87be35bedbc94a1cc9e5a661482d1c7b3c19874d",
+      "size": 5621615,
+      "localPath": "images/kick overlay video.mov"
+    },
+    {
+      "path": "/images/kickanalysis.png",
+      "sha": "ccad029d2b1a8c0446ed53ccf9fcf887c2c2cd69",
+      "size": 667998,
+      "localPath": "images/kickanalysis.png"
+    },
+    {
+      "path": "/images/leaderboard.png",
+      "sha": "54c8bc488c0529f058aa6c67410fffb242744d96",
+      "size": 213275,
+      "localPath": "images/leaderboard.PNG"
+    },
+    {
+      "path": "/images/logo-export.html",
+      "sha": "1744e5d2b58ea528b66547759ce6aba7f439044a",
+      "size": 3673,
+      "localPath": "images/logo-export.html"
+    },
+    {
+      "path": "/images/logo.svg",
+      "sha": "2286e80dc1d2c44f8cbd3a8598b0fd9a97f37308",
+      "size": 568,
+      "localPath": "images/logo.svg"
+    },
+    {
+      "path": "/images/markersetup.png",
+      "sha": "fa22e4178821e56c63ef7725f09020b6ad63cae6",
+      "size": 2374653,
+      "localPath": "images/markerSetup.png"
+    },
+    {
+      "path": "/images/player profile image.png",
+      "sha": "7785d816072da256b8db59eed87c7748d01a9038",
+      "size": 1544163,
+      "localPath": "images/player profile image.png"
+    },
+    {
+      "path": "/images/pose_strike.png",
+      "sha": "4e378ad897b32ca6f8010f450b1943be3f9a57b6",
+      "size": 7263690,
+      "localPath": "images/pose_strike.png"
+    },
+    {
+      "path": "/images/pose_tek_qr.png",
+      "sha": "15c4e914b7a66bbd28f3675f5d7bcd7d8a880e89",
+      "size": 1876124,
+      "localPath": "images/pose_tek_qr.png"
+    },
+    {
+      "path": "/images/posejump.png",
+      "sha": "bc55412aabc9171b3b528d095d780da58ffdee8c",
+      "size": 552416,
+      "localPath": "images/posejump.png"
+    },
+    {
+      "path": "/images/postestimation.png",
+      "sha": "b476e11f97be5a0341ebd0807bb81ea781b8b753",
+      "size": 1019839,
+      "localPath": "images/postestimation.png"
+    },
+    {
+      "path": "/images/profilepose.png",
+      "sha": "3a2e8a260ffe7930ed39792d3f1082eeb9db54a8",
+      "size": 125009,
+      "localPath": "images/profilepose.PNG"
+    },
+    {
+      "path": "/images/progressovertime.png",
+      "sha": "01dcca19ddce7ccda1defcc3fa9017660497814a",
+      "size": 653489,
+      "localPath": "images/progressOverTime.png"
+    },
+    {
+      "path": "/images/soccer-ball.png",
+      "sha": "affe0f34bf29cfa5eeb2b6d4cafd901819edee78",
+      "size": 146504,
+      "localPath": "images/soccer-ball.png"
+    },
+    {
+      "path": "/images/sprintbreakdown.png",
+      "sha": "6954c2234f196ce32cb7b33ad80a2e2611b2af1a",
+      "size": 519163,
+      "localPath": "images/sprintBreakdown.png"
+    },
+    {
+      "path": "/images/sprinting.png",
+      "sha": "c01c8c04f10dd64cff48289cc33982c91861c9b0",
+      "size": 163157,
+      "localPath": "images/sprinting.PNG"
+    },
+    {
+      "path": "/images/stats.png",
+      "sha": "f231d5f458ed664e9446a9a7ed289c28354f7d55",
+      "size": 136806,
+      "localPath": "images/stats.png"
+    },
+    {
+      "path": "/images/tripod.png",
+      "sha": "9ceeb3b8272f8a661d753bb1f03de47ecb88e498",
+      "size": 26184,
+      "localPath": "images/tripod.png"
+    },
+    {
+      "path": "/index.html",
+      "sha": "37af20da10988898cab4c53f9c58e60e752c2aec",
+      "size": 1243
+    },
+    {
+      "path": "/kickai-theme.css",
+      "sha": "0ef28a6728cc480e2dfdeef7e1a5e026a09ce1c5",
+      "size": 20574,
+      "localPath": "kickai-theme.css"
+    },
+    {
+      "path": "/kickinganalysis_upload.html",
+      "sha": "901b9527de5f0d953040380f3bc67c21e7346a40",
+      "size": 59127,
+      "localPath": "kickingAnalysis_upload.html"
+    },
+    {
+      "path": "/kickingview.html",
+      "sha": "7d03cad11b24ca50fdd574abd651909ceedd1c9d",
+      "size": 201717,
+      "localPath": "kickingview.html"
+    },
+    {
+      "path": "/landing-pose-demo-data.js",
+      "sha": "cdc2f1fa0c01a49402508236fa83ee566f6fbe55",
+      "size": 218511,
+      "localPath": "landing-pose-demo-data.js"
+    },
+    {
+      "path": "/landing-pose-demo.js",
+      "sha": "76ac4735aafda559bf66872d3f714dad83c3c03a",
+      "size": 15539,
+      "localPath": "landing-pose-demo.js"
+    },
+    {
+      "path": "/leaderboard.html",
+      "sha": "14fa1af63513188c9534df6382d70be128e1e075",
+      "size": 66391,
+      "localPath": "leaderboard.html"
+    },
+    {
+      "path": "/pose-portal.css",
+      "sha": "469782bd74f5c028e33a61c6b83353b9a27b79f0",
+      "size": 31421,
+      "localPath": "pose-portal.css"
+    },
+    {
+      "path": "/premiumcheckout.js",
+      "sha": "648745508655f9f5553f3cdf15c9d3ed8fc28f68",
+      "size": 1723,
+      "localPath": "premiumCheckout.js"
+    },
+    {
+      "path": "/premiuminfo.html",
+      "sha": "534c93f3de82e1c3f1fef42ed2ec9c928eac0454",
+      "size": 17924,
+      "localPath": "premiumInfo.html"
+    },
+    {
+      "path": "/questaddplayer.html",
+      "sha": "789e7b303f731d8d826f6e961dbd335ec277bb6f",
+      "size": 29005,
+      "localPath": "questAddPlayer.html"
+    },
+    {
+      "path": "/questleaderboardresultspage.html",
+      "sha": "87c13b586bf549257812014a3f52a77dfc86c04b",
+      "size": 59644,
+      "localPath": "questLeaderboardResultsPage.html"
+    },
+    {
+      "path": "/questsearchplayer.html",
+      "sha": "1d7b2484e92edd284b7a04a08f1c0c65dd85e13e",
+      "size": 33993,
+      "localPath": "questSearchPlayer.html"
+    },
+    {
+      "path": "/questviewbiomechanics.html",
+      "sha": "ddcf0b12786b509d76c01306259595ec60036b35",
+      "size": 330987,
+      "localPath": "questViewBiomechanics.html"
+    },
+    {
+      "path": "/sessions.html",
+      "sha": "adb56184dbe8862442b5cda22dc4283abfee8002",
+      "size": 63867,
+      "localPath": "sessions.html"
+    },
+    {
+      "path": "/sessionsexpanded.html",
+      "sha": "85f7d4cc98fa55911cc22e94736eae316774dfe5",
+      "size": 34023,
+      "localPath": "sessionsexpanded.html"
+    },
+    {
+      "path": "/signupform.html",
+      "sha": "454437fd1d56097abe0e70daa1cc28657562a610",
+      "size": 22608,
+      "localPath": "signupForm.html"
+    },
+    {
+      "path": "/sprintpage.html",
+      "sha": "17c300247f9334f699edbbbb27ed7f3d9706c4a6",
+      "size": 193918,
+      "localPath": "sprintPage.html"
+    },
+    {
+      "path": "/subscriptionwaitlist.html",
+      "sha": "6d3dd5aceec952b5b8e630ef6bc923a966eee846",
+      "size": 150119,
+      "localPath": "subscriptionWaitlist.html"
+    },
+    {
+      "path": "/user-badge.js",
+      "sha": "6a6856802c5be746acffa0d8a0d33e0203c6c1c1",
+      "size": 5900,
+      "localPath": "user-badge.js"
+    },
+    {
+      "path": "/videopage.html",
+      "sha": "ec290b4fb6208f9b3c9ab62ec4c1261dbdbc10a0",
+      "size": 66248,
+      "localPath": "videopage.html"
+    }
+  ]
+}

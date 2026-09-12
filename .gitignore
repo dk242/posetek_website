@@ -5,6 +5,7 @@ firebase-debug.log*
 node_modules/
 /dist/
 /production-dist/
+/marketing-dist/
 .DS_Store
 
 firestore-debug.log*

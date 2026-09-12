@@ -1,6 +1,6 @@
 [build]
-  command = "npm --prefix app ci && npm --prefix app run build"
-  publish = "dist"
+  command = "npm --prefix app ci && node scripts/build-production.mjs"
+  publish = "production-dist"
 
 # Vite 8 and TypeScript 6 need a current Node; the site's default runtime was
 # older, which failed every build since the React port with "exit code 2".
@@ -36,6 +36,7 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The public homepage is an isolated entry. Existing app routes use application.html.
 # SPA fallback: files that exist in dist/ (unported legacy pages, assets) are
 # served directly; everything else — including the ported legacy URLs like
 # /profile.html that are intentionally absent from dist/ — is handled by the
@@ -43,5 +44,10 @@
 # 404 route for everything unknown.
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/application.html"
   status = 200
+
+[[headers]]
+  for = "/marketing/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

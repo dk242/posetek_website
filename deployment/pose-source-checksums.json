@@ -1,0 +1,15 @@
+{
+  "dribbling-context.json": "7cb515ad7fee1b01c8343774d86cce5c5e51e9e908ecb60c45587e0e5f5d370b",
+  "dribbling-metadata.json": "4ca5cb1115414707d8d6a7aa62d5043700e4e9091187d2989dba2728a770dab9",
+  "dribbling-pose.json": "80e81ef5a512070b2e883d846d1cc6e2ceddc9d5b2158a3f042c8ac56f9d1264",
+  "jump-context.json": "60ffac353f61bb184a1803e1b0ceb6e627b0ff7033b813310557fd42b19c367a",
+  "jump-metadata.json": "eb31f0051520ac3c570fde850fd50b83accd3383b33032e97bac13678ffeb669",
+  "jump-pose.json": "7b43590b7b4567645c6052183e2bb65bd2a672ee9f69a94add0cd9f2d3b4b291",
+  "shooting-ball.json": "682f6a01c346d55bee688571107aa51acb721cd19767097efcc12baf4755f99c",
+  "shooting-context.json": "8704ae39246f72279b2d42c0af122d8afe51471e7ae745f564a143790ce5bb6b",
+  "shooting-metadata.json": "d8d8a041e75a0b4eabe509edf0a14f9aed6b05b561c7cc077c3119645ee59ca3",
+  "shooting-pose.json": "2d00bae3821e80b53fd20730941a05c102facf06f635c2b9cb27057afc6c5f5e",
+  "sprint-context.json": "ebe8f934644ca9f3449ad29a32decf63bf012dacd13a2fcd714ee2781039a51f",
+  "sprint-metadata.json": "cce2c6a222bd91b8b4e019b00e5fed25b7f41b9ba27f02ba974587202e958003",
+  "sprint-pose.json": "5992c602699d78dcf30177b579ea787ad5861cbeaee9d7393b9d76f3be6959e4"
+}

@@ -9,23 +9,38 @@
     "lint": "oxlint",
     "test": "vitest run",
     "preview": "vite preview",
-    "check:player-parity": "node ../scripts/check-player-parity.mjs"
+    "check:player-parity": "node ../scripts/check-player-parity.mjs",
+    "build:marketing": "vite build --config vite.marketing.config.ts",
+    "check:svelte": "svelte-check --tsconfig ./tsconfig.app.json"
   },
   "dependencies": {
+    "@threlte/core": "^8.6.0",
+    "@threlte/extras": "^9.21.1",
     "chart.js": "^4.5.1",
+    "clsx": "^2.1.1",
     "firebase": "^12.18.0",
+    "motion": "^13.2.0",
+    "next-themes": "^0.4.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "react-router-dom": "^7.18.2",
+    "svelte": "^5.57.0",
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.0.4",
     "oxlint": "^1.75.0",
     "sass": "^1.103.1",
+    "svelte-check": "^4.7.6",
+    "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
     "vitest": "^4.1.11"

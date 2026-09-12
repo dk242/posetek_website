@@ -286,16 +286,16 @@ describe("overlay geometry", () => {
 });
 
 describe("bundled demo data", () => {
-  it("is the mediapipe33 recording the legacy page shipped", () => {
+  it("contains all six mediapipe33 recordings in test-card order", () => {
     expect(isPoseDemoData(DATA)).toBe(true);
     expect(DATA.fps).toBe(60);
     expect(DATA.sourceAspectRatio).toBeCloseTo(SIXTEEN_NINE, 12);
-    expect(DATA.sequences.map(item => item.key)).toEqual(["changeOfDirection", "broadJump"]);
+    expect(DATA.sequences.map(item => item.key)).toEqual(["sprint", "jump", "broadJump", "dribbling", "changeOfDirection", "shooting"]);
     DATA.sequences.forEach(item => item.frames.forEach(frame => expect(frame).toHaveLength(33)));
   });
 
-  it("reproduces the legacy static markup for the first sequence", () => {
-    const first = DATA.sequences[0];
+  it("preserves the existing change-of-direction recording and results", () => {
+    const first = DATA.sequences.find(item => item.key === "changeOfDirection")!;
     expect(first.title).toBe("Change of Direction");
     expect(first.label).toBe("Agility · recorded rep");
     expect(lastFrameIndex(first)).toBe(281); // <input max="281">
@@ -306,7 +306,7 @@ describe("bundled demo data", () => {
   });
 
   it("carries the broad-jump overlays the canvas needs", () => {
-    const jump = DATA.sequences[1];
+    const jump = DATA.sequences.find(item => item.key === "broadJump")!;
     expect(jump.overlays).toBeDefined();
     expect(jump.overlays?.com).toHaveLength(jump.frames.length);
     expect(jump.overlays?.foot).toHaveLength(jump.frames.length);

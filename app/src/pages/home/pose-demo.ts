@@ -44,6 +44,11 @@ export interface PoseSequence {
   /** `[label, value]` pairs rendered into the metric grid. */
   metrics: string[][];
   overlays?: PoseOverlays;
+  fps?: number;
+  sourceAspectRatio?: number;
+  previewFrame?: number;
+  phases?: (PosePhase & { from: number })[];
+  ball?: ({ x: number; y: number; radius: number } | null)[];
 }
 
 export interface PoseDemoData {
@@ -52,6 +57,7 @@ export interface PoseDemoData {
   fps: number;
   sourceAspectRatio: number;
   sequences: PoseSequence[];
+  autoAdvance?: boolean;
 }
 
 export interface PoseViewport {
@@ -185,9 +191,13 @@ export function phaseForBroadJump(sequence: PoseSequence, frameIndex: number): P
 
 /** Phase lookup dispatch used by `updateDynamicLabels`. */
 export function phaseForFrame(sequence: PoseSequence, frameIndex: number): PosePhase {
-  return sequence.key === "broadJump"
-    ? phaseForBroadJump(sequence, frameIndex)
-    : phaseForChangeOfDirection(sequence, frameIndex);
+  if (sequence.phases?.length) {
+    const phase = [...sequence.phases].reverse().find(phase => phase.from <= frameIndex) || sequence.phases[0];
+    return { title: phase.title, color: phase.color };
+  }
+  if (sequence.key === "broadJump") return phaseForBroadJump(sequence, frameIndex);
+  if (sequence.key === "changeOfDirection") return phaseForChangeOfDirection(sequence, frameIndex);
+  return { title: "Recorded movement", color: "#b7f34a" };
 }
 
 /** Legacy change-of-direction hip-trail ranges (inclusive frame bounds, one color per phase). */
@@ -253,8 +263,13 @@ export function wrapSequenceIndex(index: number, count: number): number {
  */
 export function restingFrame(sequence: PoseSequence, reducedMotion: boolean, autoplay: boolean): number {
   if (!reducedMotion || autoplay) return 0;
-  return marker(sequence, sequence.key === "broadJump" ? "takeoff" : "turn");
+  if (sequence.previewFrame !== undefined) return clampFrame(sequence.previewFrame, lastFrameIndex(sequence));
+  const frame = marker(sequence, sequence.key === "broadJump" ? "takeoff" : "turn");
+  return Number.isFinite(frame) ? frame : Math.floor(Math.max(0,lastFrameIndex(sequence)) / 2);
 }
+
+/** A new object is issued for every Watch rep click, including repeated drills. */
+export interface PoseDemoRequest { key: string }
 
 export interface PoseTelemetry {
   drill: string;
@@ -264,6 +279,10 @@ export interface PoseTelemetry {
 
 /** The telemetry board's drill/result cells for a sequence (legacy `selectSequence`). */
 export function telemetryFor(sequence: PoseSequence): PoseTelemetry {
+  if (sequence.key !== "broadJump" && sequence.key !== "changeOfDirection") {
+    const [resultLabel = "Result", result = "—"] = sequence.metrics[0] || [];
+    return { drill: sequence.title, result, resultLabel };
+  }
   const isBroadJump = sequence.key === "broadJump";
   return {
     drill: isBroadJump ? "Broad jump" : "Agility",

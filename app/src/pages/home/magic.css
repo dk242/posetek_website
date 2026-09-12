@@ -1,0 +1,10 @@
+/* No Preflight. Prefixing keeps registry utilities off the application UI. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(pt);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(pt);
+@source "../../components/magicui";
+
+.pt-home {
+  --color-background: #0a211a;
+  --color-border: #254036;
+}

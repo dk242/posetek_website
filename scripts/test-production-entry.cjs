@@ -1,10 +1,10 @@
-// Check the unified production entry, deep links, assets, and signed-out UI.
+// Check the isolated homepage, preserved application, deep links, and assets.
 // Authenticated editing/activation requires a separate authorized account pass.
 const fs = require('node:fs'), path = require('node:path'), http = require('node:http'), assert = require('node:assert/strict');
 const httpOnly = process.argv.includes('--http-only');
-const root = path.resolve(__dirname, '..'), dist = path.join(root, 'dist');
+const root = path.resolve(__dirname, '..'), dist = path.join(root, 'production-dist');
 const out = path.join(root, 'app/node_modules/.cache/planner-entry-tests');
-const cases = ['/admin', '/admin/', '/admin/programs', '/admin/programs/personalized?orgId=club&players=p',
+const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/admin/programs', '/admin/programs/personalized?orgId=club&players=p',
   '/admin/organizations', '/admin/accounts', '/admin/accounts/coach/c', '/admin/accounts/player/p',
   '/admin/accounts/player/p/plan/a/workout/w', '/admin/drills', '/admin/drills/d/edit',
   '/admin/analysis', '/admin/analysis/', '/admin/accounts/player/p/results',
@@ -13,7 +13,8 @@ const cases = ['/admin', '/admin/', '/admin/programs', '/admin/programs/personal
 (async () => {
   fs.mkdirSync(out, { recursive: true });
   const config = fs.readFileSync(path.join(root, 'netlify.toml'), 'utf8');
-  assert.match(config, /publish = "dist"/);
+  assert.match(config, /publish = "production-dist"/);
+  assert.match(config, /to = "\/application.html"/);
   assert.ok(!config.includes('/personalized-app/'), 'Obsolete split-entry rewrite remains');
   let server, browser, base = process.argv.slice(2).find(arg => !arg.startsWith('--'));
   const results = [];
@@ -21,14 +22,33 @@ const cases = ['/admin', '/admin/', '/admin/programs', '/admin/programs/personal
     if (!base) {
       server = http.createServer((req, res) => {
         const pathname = new URL(req.url, 'http://local').pathname;
-        let file = path.resolve(dist, '.' + pathname);
+        let file = path.resolve(dist, '.' + (pathname === '/' ? '/index.html' : pathname));
         if (!file.startsWith(dist + path.sep) && file !== dist) { res.writeHead(400); res.end(); return; }
-        if (!fs.existsSync(file) || !fs.statSync(file).isFile()) file = path.join(dist, 'index.html');
+        if (!fs.existsSync(file) || !fs.statSync(file).isFile()) file = path.join(dist, 'application.html');
         res.setHeader('Content-Type', { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.svg': 'image/svg+xml', '.png': 'image/png' }[path.extname(file)] || 'application/octet-stream');
         res.end(fs.readFileSync(file));
       });
       await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
       base = 'http://127.0.0.1:' + server.address().port;
+    }
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, 'deployment/homepage-baseline.json'), 'utf8'));
+    const hash = bytes => require('node:crypto').createHash('sha1').update(bytes).digest('hex');
+    for (const file of manifest.files) {
+      let bytes = fs.readFileSync(path.join(dist, file.path === '/index.html' ? 'application.html' : file.path.slice(1)));
+      if (file.path === '/index.html') bytes = bytes.toString('utf8').replace(/\n<!-- homepage-navigation:start -->[\s\S]*?<!-- homepage-navigation:end -->\n/g, '');
+      assert.equal(hash(bytes), file.sha, 'Preserved file changed: ' + file.path);
+    }
+    for (const route of ['/', '/index.html']) {
+      const response = await fetch(base + route), html = await response.text();
+      assert.equal(response.status, 200, route);
+      assert.ok(html.includes('<!-- posetek-marketing-entry -->'), 'Marketing homepage missing: ' + route);
+      const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
+      assert.ok(scripts.some(src => src.startsWith('/marketing/assets/')), 'Marketing bundle missing');
+      for (const src of scripts) {
+        const asset = await fetch(base + src);
+        assert.equal(asset.status, 200, src);
+        assert.match(asset.headers.get('content-type'), /javascript/, src);
+      }
     }
     let entry;
     for (const route of cases) {
@@ -39,6 +59,7 @@ const cases = ['/admin', '/admin/', '/admin/programs', '/admin/programs/personal
       entry ??= script;
       assert.equal(script, entry, 'Different app served: ' + route);
       assert.ok(!html.includes('personalized-planner-entry:start'));
+      assert.ok(html.includes('/marketing/home-navigation.js'), 'Home navigation bridge missing: ' + route);
     }
     let assets = 0;
     for (const file of fs.readdirSync(path.join(dist, 'assets')).filter(file => /\.(js|css)$/.test(file))) {
@@ -70,7 +91,7 @@ const cases = ['/admin', '/admin/', '/admin/programs', '/admin/programs/personal
       await page.close();
     }
     }
-    const report = { base, routes: cases.length, assets, results, browserChecks: httpOnly ? 'not exercised' : 'passed', authenticatedWorkflows: 'not exercised' };
+    const report = { base, homepageRoutes: 2, preservedFiles: manifest.files.length, applicationRoutes: cases.length, assets, results, browserChecks: httpOnly ? 'checked separately in CUA' : 'passed', authenticatedWorkflows: 'not exercised' };
     fs.writeFileSync(path.join(out, 'production-entry-test-report.json'), JSON.stringify(report, null, 2) + '\n');
     console.log(JSON.stringify(report, null, 2));
   } finally { await browser?.close(); server?.close(); }
