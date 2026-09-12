@@ -49,6 +49,35 @@ test("legacy code field is honored for fresh invitations and codes are matched c
   assert.equal(db.snapshot("players/quest").code, undefined);
 });
 
+test("a canonical uppercase invitation is redeemable however the athlete types it", async () => {
+  for (const typed of ["PLR7K9Q", "plr7k9q", "  Plr7K9q  "]) {
+    const { db, admission } = harness({ "players/canonical": { ...unclaimed, signupCode: "PLR7K9Q" } });
+    await admission.redeemPlayerSignupCode({ uid: "athlete", code: typed });
+    assert.equal(db.snapshot("players/canonical").userUID, "athlete", `typed as ${JSON.stringify(typed)}`);
+  }
+});
+
+// Regression guard for the first TestFlight cohort's onboarding blocker. `findPlayerByCode`
+// matches with case-sensitive Firestore equality on [typed, typed.toUpperCase()], so an
+// invitation stored with a lowercase letter is reachable only if the athlete reproduces its
+// exact casing — which the iOS signup field, uppercasing every keystroke, made impossible.
+// The fix is upstream: every issuer mints from INVITATION_ALPHABET, which is uppercase-only.
+// This test exists so a mixed-case issuer can never be reintroduced silently.
+test("an invitation stored outside the uppercase alphabet is not reachable by a normal typist", async () => {
+  const { admission } = harness({ "players/mixed": { ...unclaimed, signupCode: "aQ3zKp" } });
+  await assert.rejects(admission.redeemPlayerSignupCode({ uid: "athlete", code: "AQ3ZKP" }), { code: "not-found" });
+  await assert.rejects(admission.redeemPlayerSignupCode({ uid: "athlete", code: "aq3zkp" }), { code: "not-found" });
+});
+
+test("every code this module mints is uppercase, so casing can never block redemption", () => {
+  for (let seed = 0; seed < 32; seed += 1) {
+    const scoped = createAdmission({ db: new FakeFirestore({}), FieldValue, HttpsError, randomInt: (max) => seed % max });
+    const code = scoped.invitationCode("PLR", 4);
+    assert.equal(code, code.toUpperCase(), `minted code ${code} must be uppercase`);
+    assert.match(code, /^PLR[A-Z0-9]{4}$/);
+  }
+});
+
 test("redemption is rate limited per caller", async () => {
   const { admission } = harness({});
   for (let attempt = 0; attempt < RATE_LIMIT.attempts; attempt += 1) {
