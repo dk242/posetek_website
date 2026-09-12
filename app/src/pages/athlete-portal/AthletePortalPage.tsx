@@ -22,6 +22,7 @@ import TrainingView from "./views/TrainingView";
 import LeaderboardsView from "./views/LeaderboardsView";
 import { PortalLoading } from "./views/shared";
 import type { PortalContext } from "./views/shared";
+import PlayerExperience from "./player/PlayerExperience";
 
 const NAV_ITEMS = [
   { view: "home", icon: "home", title: "Athlete Home", subtitle: "Skill chart and breakdown" },
@@ -219,6 +220,10 @@ export default function AthletePortalPage() {
   );
 
   const activeDrill = drillByKey(drill);
+
+  if (phase === 'ready' && (access === 'athlete' || access === 'preview')) {
+    return <PlayerExperience key={playerId} ctx={ctx} initialReps={reps} />;
+  }
 
   return (
     <div className="pt-pose portal-body athlete-body">

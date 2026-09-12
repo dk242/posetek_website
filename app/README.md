@@ -1,3 +1,7 @@
+# PoseTek web application
+
+Player architecture and mobile parity checks: [Player experience](../docs/PLAYER_EXPERIENCE.md).
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
