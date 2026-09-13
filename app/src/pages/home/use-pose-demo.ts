@@ -61,6 +61,7 @@ export interface PoseDemoController {
   scrub(value: string): void;
   /** Legacy `[data-pose-drill]` click. */
   selectDrill(key: string): void;
+  stepSequence(direction: -1 | 1): void;
   destroy(): void;
 }
 
@@ -304,7 +305,7 @@ export function createPoseDemoController(
   }
 
   function updatePlayControl(): void {
-    playIcon.textContent = state.playing ? "Ⅱ" : "▶";
+    playIcon.dataset.playing = String(state.playing);
     playButton.setAttribute("aria-label", state.playing ? "Pause pose playback" : "Play pose playback");
     playButton.setAttribute("aria-pressed", String(state.playing));
   }
@@ -332,7 +333,11 @@ export function createPoseDemoController(
   }
 
   function selectSequence(index: number, autoplay: boolean): void {
-    state.sequenceIndex = wrapSequenceIndex(index, data.sequences.length);
+    const nextIndex = wrapSequenceIndex(index, data.sequences.length);
+    if (nextIndex !== state.sequenceIndex && !reducedMotionQuery.matches) {
+      canvas.animate?.([{ opacity: .35, transform: "translateX(8px)" }, { opacity: 1, transform: "translateX(0)" }], { duration: 260, easing: "ease-out" });
+    }
+    state.sequenceIndex = nextIndex;
     state.accumulator = 0;
     state.endHold = 0;
     const sequence = currentSequence();
@@ -434,6 +439,10 @@ export function createPoseDemoController(
       state.userPaused = reducedMotionQuery.matches;
       selectSequence(index, !state.userPaused);
     },
+    stepSequence(direction) {
+      stopAnimation();
+      selectSequence(state.sequenceIndex + direction, !state.userPaused);
+    },
     destroy() {
       if (state.animationId) cancelAnimationFrame(state.animationId);
       state.animationId = 0;
@@ -503,5 +512,6 @@ export function usePoseDemo(data: PoseDemoData, refs: PoseDemoRefs) {
     togglePlay: () => controllerRef.current?.togglePlay(),
     scrub: (event: FormEvent<HTMLInputElement>) => controllerRef.current?.scrub(event.currentTarget.value),
     selectDrill: (key: string) => controllerRef.current?.selectDrill(key),
+    stepSequence: (direction: -1 | 1) => controllerRef.current?.stepSequence(direction),
   };
 }

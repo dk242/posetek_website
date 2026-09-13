@@ -1,17 +1,9 @@
-/** Neutral standing illustration in MediaPipe's 33-landmark order. */
+import capturedPose from "./shooting-pose.json";
+/** A captured mid-swing frame. Depth is MediaPipe's estimate, not calibrated 3D. */
 export type Point3 = readonly [number, number, number];
-export const STANDING_POSE: readonly Point3[] = [
-  [0,1.96,.17], [-.025,1.985,.155], [-.048,1.985,.145], [-.075,1.979,.12],
-  [.025,1.985,.155], [.048,1.985,.145], [.075,1.979,.12], [-.105,1.965,.04], [.105,1.965,.04],
-  [-.028,1.924,.14], [.028,1.924,.14],
-  [-.24,1.69,0], [.24,1.69,0], [-.31,1.39,.015], [.31,1.39,.015],
-  [-.32,1.09,.07], [.32,1.09,.07], [-.35,1.025,.055], [.35,1.025,.055],
-  [-.32,1.015,.09], [.32,1.015,.09], [-.29,1.065,.105], [.29,1.065,.105],
-  [-.16,1.06,0], [.16,1.06,0], [-.17,.59,.025], [.17,.59,.025],
-  [-.18,.12,0], [.18,.12,0], [-.18,.055,-.065], [.18,.055,-.065],
-  [-.20,.055,.17], [.20,.055,.17],
-];
-export const BALL_POSITION: Point3 = [.46,.137,.24];
+export const SHOOTING_POSE: readonly Point3[] = capturedPose.points.map(([x,y,z])=>[x,y,z]);
+export const BALL_POSITION: Point3 = [capturedPose.ballPosition[0],capturedPose.ballPosition[1],capturedPose.ballPosition[2]];
+export const BALL_RADIUS = capturedPose.ballRadius;
 export const POSE_EDGES: readonly (readonly [number, number])[] = [
   [0,1],[1,2],[2,3],[3,7],[0,4],[4,5],[5,6],[6,8],[9,10],
   [11,12],[11,13],[13,15],[15,17],[15,19],[15,21],[17,19],

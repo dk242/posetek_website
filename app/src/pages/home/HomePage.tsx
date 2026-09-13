@@ -75,7 +75,7 @@ export default function HomePage() {
       <main id="main-content">
         <section className="hero shell" id="top" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow hero-enter"><span className="status-dot" />For coaches, clubs, and players</p>
+            <p className="eyebrow hero-enter"><span className="status-dot" />For clubs, coaches, and player’s</p>
             <h1 id="hero-title" className="hero-enter" style={{ "--enter-delay": "80ms" } as CSSProperties}>What should your players train next?<em>Start with evidence.</em></h1>
             <p className="hero-description hero-enter" style={{ "--enter-delay": "160ms" } as CSSProperties}>Six performance tests. One athlete profile.<br />A focused plan for what comes next.</p>
             <div className="hero-actions hero-enter" style={{ "--enter-delay": "240ms" } as CSSProperties}><a className="button-primary" href="/bookPerformanceTest.html">Book a performance test <Arrow /></a><a className="button-text" href="#tests">Explore the system <Arrow down /></a></div>
@@ -83,7 +83,6 @@ export default function HomePage() {
           <div className="hero-art">
             <div className="art-coordinate" aria-hidden="true">PT / PERFORMANCE SYSTEM<br /><span>33 KEYPOINTS / FULL PERSPECTIVE</span></div>
             <PitchVisual />
-            <div className="art-caption"><span className="status-dot" />Every player has a next step.<span className="art-cross" aria-hidden="true">+</span></div>
           </div>
           <div className="hero-index" aria-label="PoseTek capabilities"><span><strong>06</strong>Performance tests</span><span><strong>33</strong>Tracked joints</span><span><strong>01</strong>Connected system</span><a href="#tests" aria-label="Explore the six tests"><Arrow down /></a></div>
         </section>

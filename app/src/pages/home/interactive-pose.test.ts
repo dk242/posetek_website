@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { phaseForFrame, restingFrame, telemetryFor, totalSeconds, type PoseDemoData, type PoseSequence } from "./pose-demo";
-import { POSE_EDGES, STANDING_POSE } from "./pitch/pose-model";
+import { POSE_EDGES, SHOOTING_POSE } from "./pitch/pose-model";
 import thumbnails from "./pose-thumbnails.json";
 import recordings from "./pose-recordings.json";
 import data from "./landing-pose-demo-data.json";
 
 describe("interactive pose", () => {
   it("draws 33 finite landmarks with valid, nonzero bone connections", () => {
-    expect(STANDING_POSE).toHaveLength(33);
-    expect(STANDING_POSE.every(point => point.length === 3 && point.every(Number.isFinite))).toBe(true);
+    expect(SHOOTING_POSE).toHaveLength(33);
+    expect(SHOOTING_POSE.every(point => point.length === 3 && point.every(Number.isFinite))).toBe(true);
     for (const [a,b] of POSE_EDGES) {
-      expect(STANDING_POSE[a]).toBeDefined(); expect(STANDING_POSE[b]).toBeDefined();
-      expect(STANDING_POSE[a]).not.toEqual(STANDING_POSE[b]);
+      expect(SHOOTING_POSE[a]).toBeDefined(); expect(SHOOTING_POSE[b]).toBeDefined();
+      expect(SHOOTING_POSE[a]).not.toEqual(SHOOTING_POSE[b]);
     }
   });
   it("only links cards to recordings that are actually bundled", () => {
@@ -19,7 +19,7 @@ describe("interactive pose", () => {
   });
   it("keeps all six clips finite, playable and within their recorded timing", () => {
     const clips: PoseDemoData = data;
-    expect(clips.autoAdvance).toBe(false);
+    expect(clips.autoAdvance).toBe(true);
     for (const sequence of clips.sequences) {
       const fps = sequence.fps ?? clips.fps;
       expect(fps).toBeGreaterThan(0);

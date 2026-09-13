@@ -5,10 +5,10 @@
   import { DoubleSide, Spherical, Vector3 } from 'three';
   import type { OrbitControls as Controls } from 'three/addons/controls/OrbitControls.js';
   import type { Writable } from 'svelte/store';
-  import { BALL_POSITION, type PitchView } from './pose-model';
+  import { BALL_POSITION, BALL_RADIUS, type PitchView } from './pose-model';
   import { createBall } from './ball';
   import PoseRig from './PoseRig.svelte';
-  let { view, onReady, onInteract, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onAngle: (angle: number) => void } = $props();
+  let { view, onReady, onInteract, onInteractionEnd, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onInteractionEnd: () => void; onAngle: (angle: number) => void } = $props();
   const { invalidate } = useThrelte();
   const ball = createBall();
   let controls = $state<Controls>();
@@ -42,12 +42,12 @@
 <T.PerspectiveCamera makeDefault position={[2.5,2.05,3.6]} fov={34}>
   <OrbitControls bind:ref={controls} target={[0,1,.2]} autoRotate={$view.rotating} autoRotateSpeed={.65}
     enableDamping={false} enableZoom={false} enablePan={false} rotateSpeed={.65}
-    minPolarAngle={.45} maxPolarAngle={1.55} onstart={onInteract} onchange={changed} />
+    minPolarAngle={.45} maxPolarAngle={1.55} onstart={onInteract} onend={onInteractionEnd} onchange={changed} />
 </T.PerspectiveCamera>
 <T.AmbientLight intensity={2.5} />
 <T.DirectionalLight position={[3,6,4]} intensity={4} color="#dbffac" />
 <PoseRig />
-<T.Group position={[...BALL_POSITION]} scale={.137}>
+<T.Group position={[...BALL_POSITION]} scale={BALL_RADIUS / 1.47}>
   <T.Mesh geometry={ball.hexagons}><T.MeshStandardMaterial color="#b9d58a" roughness={.65} side={DoubleSide} /></T.Mesh>
   <T.Mesh geometry={ball.pentagons}><T.MeshStandardMaterial color="#11261a" roughness={.7} side={DoubleSide} /></T.Mesh>
   <T.LineSegments geometry={ball.edges}><T.LineBasicMaterial color="#b7f34a" transparent opacity={.6} /></T.LineSegments>

@@ -1,3 +1,4 @@
+import { TacticalIcon } from "./TacticalIcon";
 import { useEffect, useRef } from "react";
 import { elapsedSeconds, lastFrameIndex, phaseChipText, phaseForFrame, timerText, type PoseDemoData, type PoseDemoRequest } from "./pose-demo";
 import { usePoseDemo } from "./use-pose-demo";
@@ -25,7 +26,7 @@ export function PoseDemo({ requestedDrill }: { requestedDrill?: PoseDemoRequest 
   const timerRef = useRef<HTMLElement>(null);
   const phaseChipRef = useRef<HTMLSpanElement>(null);
   const telemetryPhaseRef = useRef<HTMLElement>(null);
-  const { sequenceIndex, togglePlay, scrub, selectDrill } = usePoseDemo(POSE_DATA, {
+  const { sequenceIndex, togglePlay, scrub, selectDrill, stepSequence } = usePoseDemo(POSE_DATA, {
     canvas: canvasRef,
     playButton: playButtonRef,
     playIcon: playIconRef,
@@ -42,9 +43,13 @@ export function PoseDemo({ requestedDrill }: { requestedDrill?: PoseDemoRequest 
 
 
 return (
-          <div className="performance-stage reveal" aria-label="PoseTek performance analysis demo">
+          <div className="performance-stage reveal" role="region" aria-roledescription="carousel" aria-label="PoseTek performance analysis demo">
             <div className="session-mock">
-              <div className="session-head"><span className="mini-mark">P</span><span><strong id="poseDrillTitle">{sequence.title}</strong><small id="poseSessionLabel">Recorded pose · identity removed</small></span><span className="sample-label">Recorded demo</span></div>
+              <div className="session-head"><span className="mini-mark">P</span><span><strong id="poseDrillTitle">{sequence.title}</strong><small id="poseSessionLabel">Recorded pose · identity removed</small></span><div className="pose-carousel-nav" aria-label="Recording carousel controls">
+                <button type="button" onClick={()=>stepSequence(-1)} aria-label="Previous recording"><TacticalIcon kind="previous"/></button>
+                <span className="pose-carousel-count" aria-label={`Recording ${sequenceIndex+1} of ${POSE_DATA.sequences.length}`}>{String(sequenceIndex+1).padStart(2,"0")} / {String(POSE_DATA.sequences.length).padStart(2,"0")}</span>
+                <button type="button" onClick={()=>stepSequence(1)} aria-label="Next recording"><TacticalIcon kind="next"/></button>
+              </div></div>
               <div className="pose-drill-switcher" role="group" aria-label="Choose a recorded pose demo" style={{ gridTemplateColumns: `repeat(${Math.min(3, DRILL_BUTTONS.length)}, minmax(0, 1fr))` }}>
                 {DRILL_BUTTONS.map(button => {
                   const active = sequence.key === button.key;
@@ -78,7 +83,7 @@ return (
                     aria-pressed={false}
                     onClick={togglePlay}
                   >
-                    <span id="posePlayIcon" ref={playIconRef} aria-hidden="true">▶</span>
+                    <span id="posePlayIcon" ref={playIconRef} data-playing="false" aria-hidden="true"><TacticalIcon kind="play"/><TacticalIcon kind="pause"/></span>
                   </button>
                   <input
                     className="pose-scrubber"

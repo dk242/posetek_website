@@ -101,7 +101,7 @@ const added = await Promise.all(Object.entries(config).map(([key, options]) => p
 const all = [...data.sequences.filter(s => !config[s.key]), ...added];
 const order = ['sprint', 'jump', 'broadJump', 'dribbling', 'changeOfDirection', 'shooting'];
 data.version = 3;
-data.autoAdvance = false;
+data.autoAdvance = true;
 data.sequences = order.map(key => all.find(s => s.key === key));
 if (data.sequences.some(s => !s)) throw new Error('All six recordings are required');
 await writeFile(output, JSON.stringify(data) + '\n');
