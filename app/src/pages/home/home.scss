@@ -406,3 +406,11 @@
   .pt-home *, .pt-home *::before, .pt-home *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .pt-home .hero-enter { opacity: 1; transform: none; }
 }
+
+.pt-home {
+  .tactical-icon { width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; transition: transform .24s ease; }
+  .exercise-arrow .tactical-icon { width: 34px; height: 34px; color: var(--lime); }
+  .test-card-footer a { display: inline-flex; align-items: center; gap: 5px; }
+  .test-card-footer a:hover .tactical-icon, .test-card-footer a:focus-visible .tactical-icon { transform: scale(1.12); }
+  .exercise-list li:hover .tactical-icon { transform: translateY(-2px); }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { POSE_EDGES, STRIKE_POSE, type OrbitAction, type PitchHandle, type PitchView } from "./pitch/pose-model";
+import { BALL_POSITION, POSE_EDGES, STANDING_POSE, type OrbitAction, type PitchHandle, type PitchView } from "./pitch/pose-model";
 
 export function PitchVisual() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -71,11 +71,11 @@ export function PitchVisual() {
         const keys: Record<string, OrbitAction> = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Home: "reset" };
         if (ready && keys[event.key]) { event.preventDefault(); command(keys[event.key]); }
       }}>
-      <svg className="pitch-static" viewBox="0 0 540 440" fill="none" role="img" aria-label="Illustrated soccer strike with 33 pose landmarks">
+      <svg className="pitch-static" viewBox="0 0 540 440" fill="none" role="img" aria-label="Standing soccer pose with 33 landmarks">
         <g stroke="#315f40" opacity=".55"><path d="M50 360 265 300 500 360 275 430zM100 345l220 66M155 331l220 66M210 316l220 66M104 377l215-61M160 395l215-61M217 412l215-61"/><ellipse cx="275" cy="363" rx="110" ry="34"/></g>
-        <g stroke="#a3eada" strokeWidth="1.8">{POSE_EDGES.map(([a,b]) => { const p=point(STRIKE_POSE[a]),q=point(STRIKE_POSE[b]); return <path key={`${a}-${b}`} d={`M${p[0]} ${p[1]}L${q[0]} ${q[1]}`}/>; })}</g>
-        <g fill="#d2ff70">{STRIKE_POSE.map((p,i)=>{ const [x,y]=point(p); return <circle key={i} cx={x} cy={y} r={2.7}/>; })}</g>
-        <circle cx="382" cy="350" r="22" fill="#c2d795" stroke="#b7f34a"/><path d="m382 337 12 9-5 14h-15l-5-14zM382 337v-9M394 346l9-3M389 360l6 7M374 360l-6 7M369 346l-9-3" stroke="#13291c" strokeWidth="2"/>
+        <g stroke="#a3eada" strokeWidth="1.8">{POSE_EDGES.map(([a,b]) => { const p=point(STANDING_POSE[a]),q=point(STANDING_POSE[b]); return <path key={`${a}-${b}`} d={`M${p[0]} ${p[1]}L${q[0]} ${q[1]}`}/>; })}</g>
+        <g fill="#d2ff70">{STANDING_POSE.map((p,i)=>{ const [x,y]=point(p); return <circle key={i} cx={x} cy={y} r={2.7}/>; })}</g>
+        <g transform={`translate(${point(BALL_POSITION)[0]-382} ${point(BALL_POSITION)[1]-350})`}><circle cx="382" cy="350" r="18" fill="#c2d795" stroke="#b7f34a"/><path d="m382 337 12 9-5 14h-15l-5-14zM382 337v-9M394 346l9-3M389 360l6 7M374 360l-6 7M369 346l-9-3" stroke="#13291c" strokeWidth="2"/></g>
       </svg>
       <div ref={hostRef} className="pitch-scene" aria-hidden="true" />
     </div>

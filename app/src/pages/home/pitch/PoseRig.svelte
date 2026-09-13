@@ -3,9 +3,9 @@
   import { onDestroy } from 'svelte';
   import { CylinderGeometry, Matrix4, SphereGeometry, MeshBasicMaterial, InstancedMesh, Vector3, Quaternion } from 'three';
   import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-  import { POSE_EDGES, STRIKE_POSE } from './pose-model';
+  import { POSE_EDGES, STANDING_POSE } from './pose-model';
   const tubes = POSE_EDGES.map(([a,b]) => {
-    const start = new Vector3(...STRIKE_POSE[a]), end = new Vector3(...STRIKE_POSE[b]);
+    const start = new Vector3(...STANDING_POSE[a]), end = new Vector3(...STANDING_POSE[b]);
     const direction = end.clone().sub(start);
     const tube = new CylinderGeometry(.006,.006,direction.length(),6);
     tube.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0),direction.normalize()));
@@ -18,7 +18,7 @@
   const pointMaterial = new MeshBasicMaterial({ color: '#d2ff70' });
   function placePoints(mesh: InstancedMesh) {
     const matrix = new Matrix4();
-    STRIKE_POSE.forEach(([x,y,z], index) => { matrix.makeTranslation(x,y,z); mesh.setMatrixAt(index, matrix); });
+    STANDING_POSE.forEach(([x,y,z], index) => { matrix.makeTranslation(x,y,z); mesh.setMatrixAt(index, matrix); });
     mesh.instanceMatrix.needsUpdate = true;
   }
   onDestroy(() => { bones.dispose(); pointGeometry.dispose(); pointMaterial.dispose(); });

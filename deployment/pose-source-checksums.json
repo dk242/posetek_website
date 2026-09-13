@@ -11,5 +11,9 @@
   "shooting-pose.json": "2d00bae3821e80b53fd20730941a05c102facf06f635c2b9cb27057afc6c5f5e",
   "sprint-context.json": "ebe8f934644ca9f3449ad29a32decf63bf012dacd13a2fcd714ee2781039a51f",
   "sprint-metadata.json": "cce2c6a222bd91b8b4e019b00e5fed25b7f41b9ba27f02ba974587202e958003",
-  "sprint-pose.json": "5992c602699d78dcf30177b579ea787ad5861cbeaee9d7393b9d76f3be6959e4"
+  "sprint-pose.json": "5992c602699d78dcf30177b579ea787ad5861cbeaee9d7393b9d76f3be6959e4",
+  "jump-com.json": "3fd61d53b5e7af62a06b33f323fd0ff348b9398223701d12e780736481614495",
+  "jump-height.json": "41fa17e50c534fc35b4632c1259237d355ab48bc79eca1c46cae0c2de8328fd3",
+  "jump-events.json": "c616452ded4907e7fd18f194d272cf7aa588c1b40ee37bee217d67175a1ddc89",
+  "dribbling-ball.json": "1865e1f71089f010cdc7ec84b4136abd9572c23e26109b4d8c258edd9055243a"
 }

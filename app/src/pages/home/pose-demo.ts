@@ -48,6 +48,15 @@ export interface PoseSequence {
   sourceAspectRatio?: number;
   previewFrame?: number;
   phases?: (PosePhase & { from: number })[];
+  verticalJump?: {
+    com: (PosePoint | null)[];
+    heightMeters: number[];
+    baselineY: number;
+    groundY: number;
+    peakMeters: number;
+    takeoff: number;
+    apex: number;
+  };
   ball?: ({ x: number; y: number; radius: number } | null)[];
 }
 

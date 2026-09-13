@@ -1,3 +1,45 @@
+# September 13 pose refinements
+
+The current homepage uses a neutral standing 33-landmark hero with a resting ball,
+retaining Threlte rotation and keyboard controls. All six card snapshots now come
+from corresponding recording frames, with a separate lightweight snapshot bundle.
+All four added clips preserve native source coordinates; the existing broad-jump
+and agility framing remains intact. No dynamic camera crop or recentering remains.
+
+Vertical jump uses the saved torso-midpoint COM track, chest offsets, and events
+(82 load, 99 mid, 124 takeoff, 158 highest). Negative source chest-offset Y means
+upward displacement; downward countermovement is clamped to zero for the rise label.
+The calibrated artifact peaks at 0.554633 m (21.8 in), superseding the older 18.4 in
+context summary. The athlete's stored records were not modified.
+
+Dribbling uses 225 sampled frames from the existing source rep. A ball track was
+derived locally from the original video using template matching and frame-by-frame
+contact-sheet review, with manual corrections at contacts and marker crossings.
+Frames 559, 603, 607, and 935 have no published ball point because it is obscured.
+Trails break at these gaps. Source video and review images remain in ignored cache;
+only the verified coordinates are bundled. The source checksum manifest now also
+pins the derived ball track and three jump measurement files.
+
+Watch-rep and training glyphs are replaced with inline SVG field-diagram icons.
+Magic UI card effects, reduced-motion handling, and the existing theme are retained.
+
+Validation: 53 homepage tests and 6 navigation tests pass; TypeScript builds;
+Svelte reports 0 errors/warnings; scoped lint and diff whitespace checks pass.
+Browser checks cover all six selectors, pause, timeline endpoints, standing hero
+rotation, recorded card previews, mobile jump labels and dribble track, desktop
+training icons, and 390px/768px overflow checks. No preview console errors observed.
+Reduced-motion behavior is covered by logic tests and CSS/code review; device-level
+motion settings and physical touch were not simulated.
+
+Preview: https://6aa6fb7f2ef630cd2c973b1b--posetek.netlify.app
+HTTP verification: 2 homepage routes, 22 application routes, 63 assets, and all
+157 preserved application file checksums passed. No application-baseline changes.
+
+The notes below describe the preceding release; cropping and illustrated-card
+notes there have been superseded by this refinement.
+
+---
+
 # Interactive homepage — September 11, 2026
 
 Validated preview: https://6aa4dfe93dd49238c055a835--posetek.netlify.app

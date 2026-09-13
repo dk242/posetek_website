@@ -65,7 +65,6 @@ export interface PoseDemoController {
 }
 
 const isPoint = (point: PosePoint | null): point is PosePoint => Boolean(point);
-const isCanvasPoint = (point: CanvasPoint | null): point is CanvasPoint => point !== null;
 
 /**
  * Wires the demo exactly like the legacy IIFE did. Returns null (and does
@@ -104,8 +103,6 @@ export function createPoseDemoController(
     mapPoint(point, state.viewport, currentAspect());
 
   function drawPath(points: (PosePoint | null)[], color: string, width: number, dashed?: number[]): void {
-    const mappedPoints = points.map(project).filter(isCanvasPoint);
-    if (mappedPoints.length < 2) return;
     context.save();
     if (dashed) context.setLineDash(dashed);
     context.strokeStyle = color;
@@ -113,8 +110,14 @@ export function createPoseDemoController(
     context.lineCap = "round";
     context.lineJoin = "round";
     context.beginPath();
-    context.moveTo(mappedPoints[0].x, mappedPoints[0].y);
-    mappedPoints.slice(1).forEach(point => context.lineTo(point.x, point.y));
+    let connected = false;
+    points.forEach(point => {
+      const mapped = project(point);
+      if (!mapped) { connected = false; return; }
+      if (connected) context.lineTo(mapped.x, mapped.y);
+      else context.moveTo(mapped.x, mapped.y);
+      connected = true;
+    });
     context.stroke();
     context.restore();
   }
@@ -174,6 +177,36 @@ export function createPoseDemoController(
     context.font = "700 11px 'IBM Plex Mono', monospace";
     context.textAlign = "center";
     context.fillText(label, centerX, labelY + 1);
+    context.restore();
+  }
+
+  function drawVerticalJumpOverlay(sequence: PoseSequence): void {
+    const overlay = sequence.verticalJump;
+    if (!overlay) return;
+    const point = overlay.com[state.frame];
+    const center = project(point);
+    if (!point || !center) return;
+    const baseline = project([point[0], overlay.baselineY])!;
+    drawPath([[.12,overlay.groundY],[.88,overlay.groundY]], "#71d39b66", 1);
+    drawPath([[.35,overlay.baselineY],[.72,overlay.baselineY]], "#66d6e855", 1, [4,4]);
+    const trail = trailRange(state.frame);
+    drawPath(overlay.com.slice(trail.start,trail.end), "#66d6e8", 2);
+    context.save();
+    context.strokeStyle = "#66d6e8"; context.fillStyle = "#66d6e8"; context.lineWidth = 1.5;
+    context.beginPath(); context.arc(center.x,center.y,4,0,Math.PI*2); context.fill();
+    const x = center.x + 20;
+    context.beginPath(); context.moveTo(x,baseline.y); context.lineTo(x,center.y);
+    context.moveTo(x-4,baseline.y); context.lineTo(x+4,baseline.y);
+    context.moveTo(x-4,center.y); context.lineTo(x+4,center.y); context.stroke();
+    const label = `COM rise ${(overlay.heightMeters[state.frame]/.0254).toFixed(1)} in`;
+    const peak = `Peak ${(overlay.peakMeters/.0254).toFixed(1)} in`;
+    context.font = "600 10px 'IBM Plex Mono', monospace";
+    const width = Math.max(context.measureText(label).width,context.measureText(peak).width)+16;
+    const labelX = Math.max(8,Math.min(x+10,state.viewport.width-width-8));
+    const labelY = Math.max(40,Math.min(center.y-14,state.viewport.height-72));
+    context.fillStyle = "#071b16ee"; context.fillRect(labelX,labelY-15,width,38);
+    context.fillStyle = "#bdeff0"; context.fillText(label,labelX+8,labelY);
+    context.fillStyle = "#b7f34a"; context.fillText(peak,labelX+8,labelY+15);
     context.restore();
   }
 
@@ -243,12 +276,17 @@ export function createPoseDemoController(
     if (sequence.key === "broadJump") drawBroadJumpOverlay(sequence);
     else if (sequence.key === "changeOfDirection") drawChangeOfDirectionOverlay(sequence);
     drawSkeleton(frame);
+    if (sequence.verticalJump) drawVerticalJumpOverlay(sequence);
+    if (sequence.ball) {
+      const trail = trailRange(state.frame);
+      drawPath(sequence.ball.slice(trail.start,trail.end).map(p=>p ? [p.x,p.y] : null), "#ffc969", 1.5);
+    }
     const ball = sequence.ball?.[state.frame];
     if (ball) {
       const center = project([ball.x,ball.y]);
       if (center) {
         context.beginPath(); context.arc(center.x,center.y,Math.max(3,ball.radius*view.scale),0,Math.PI*2);
-        context.fillStyle = "#b7f34a22"; context.fill(); context.strokeStyle = "#b7f34a"; context.lineWidth = 1.5; context.stroke();
+        context.fillStyle = "#b7f34a22"; context.fill(); context.strokeStyle = "#ffc969"; context.lineWidth = 1.5; context.stroke();
       }
     }
     updateDynamicLabels(sequence);

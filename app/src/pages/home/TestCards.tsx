@@ -1,3 +1,4 @@
+import { TacticalIcon } from "./TacticalIcon";
 import { useState, type CSSProperties } from "react";
 import { MagicCard } from "../../components/magicui/magic-card";
 import { PoseThumbnail } from "./PoseThumbnail";
@@ -23,9 +24,9 @@ export function TestCards({ onWatch }: { onWatch: (key: string) => void }) {
           <h3>{test.name}</h3>
           <span className="test-summary">{test.copy}</span>
           <PoseThumbnail kind={test.key}/>
-          <span className="test-preview-hint">{pinned === test.key ? "Pose selected" : "Explore pose"}<span aria-hidden="true">↗</span></span>
+          <span className="test-preview-hint">{pinned === test.key ? "Pose selected" : "Explore pose"}<TacticalIcon kind="explore"/></span>
         </button>
-        <div className="test-card-footer"><span>{test.metric}</span>{recordings.includes(test.key) ? <a href="#how-it-works" aria-label={`Watch ${test.name} pose recording`} onClick={()=>onWatch(test.key)}>Watch rep <span aria-hidden="true">↗</span></a> : <small>Action preview</small>}</div>
+        <div className="test-card-footer"><span>{test.metric}</span>{recordings.includes(test.key) ? <a href="#how-it-works" aria-label={`Watch ${test.name} pose recording`} onClick={()=>onWatch(test.key)}>Watch rep <TacticalIcon kind="play"/></a> : <small>Action preview</small>}</div>
       </article>
     </MagicCard>)}
   </div>;

@@ -5,7 +5,7 @@
   import { DoubleSide, Spherical, Vector3 } from 'three';
   import type { OrbitControls as Controls } from 'three/addons/controls/OrbitControls.js';
   import type { Writable } from 'svelte/store';
-  import type { PitchView } from './pose-model';
+  import { BALL_POSITION, type PitchView } from './pose-model';
   import { createBall } from './ball';
   import PoseRig from './PoseRig.svelte';
   let { view, onReady, onInteract, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onAngle: (angle: number) => void } = $props();
@@ -47,7 +47,7 @@
 <T.AmbientLight intensity={2.5} />
 <T.DirectionalLight position={[3,6,4]} intensity={4} color="#dbffac" />
 <PoseRig />
-<T.Group position={[.64,.20,1.19]} scale={.137}>
+<T.Group position={[...BALL_POSITION]} scale={.137}>
   <T.Mesh geometry={ball.hexagons}><T.MeshStandardMaterial color="#b9d58a" roughness={.65} side={DoubleSide} /></T.Mesh>
   <T.Mesh geometry={ball.pentagons}><T.MeshStandardMaterial color="#11261a" roughness={.7} side={DoubleSide} /></T.Mesh>
   <T.LineSegments geometry={ball.edges}><T.LineBasicMaterial color="#b7f34a" transparent opacity={.6} /></T.LineSegments>
