@@ -15,7 +15,8 @@ function CoachDemo({ active = true, onOpenWorkout }) {
     let [documentVisible, setDocumentVisible] = (0, React.useState)(true);
     let headingId = (0, React.useId)();
     let question = coachQuestions[selectedQuestion];
-    let answerWords = question.answer.split(` `);
+    const summaryAnswer = question.answer.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
+    let answerWords = summaryAnswer.split(` `);
     return (0, React.useEffect)(() => {
         let e = () => setDocumentVisible(!document.hidden);
         return e(), document.addEventListener(`visibilitychange`, e), () => document.removeEventListener(`visibilitychange`, e);
@@ -159,7 +160,7 @@ function CoachDemo({ active = true, onOpenWorkout }) {
                                                 }), (0, jsxRuntime.jsxs)(`p`, {
                                                     children: [
                                                         (0, jsxRuntime.jsx)(`span`, {
-                                                            className: `pd-sr-only`, children: question.answer
+                                                            className: `pd-sr-only`, children: summaryAnswer
                                                         }), (0, jsxRuntime.jsxs)(`span`, {
                                                             "aria-hidden": `true`, children: [
                                                                 answerWords.slice(0, visibleWords).join(` `), visibleWords < answerWords.length && (0, jsxRuntime.jsx)(`i`, {
@@ -168,8 +169,8 @@ function CoachDemo({ active = true, onOpenWorkout }) {
                                                             ]
                                                         })
                                                     ]
-                                                }), (0, jsxRuntime.jsxs)(`div`, {
-                                                    className: `pd-evidence`, children: [
+                                                }), (0, jsxRuntime.jsxs)(`details`, {
+                                                    className: `pd-evidence`, children: [(0, jsxRuntime.jsx)(`summary`, {children: `Why this recommendation?`}), (0, jsxRuntime.jsx)(`p`, {children: question.answer}),
                                                         (0, jsxRuntime.jsx)(TacticalIcon, {
                                                             kind: `explore`
                                                         }), question.evidence

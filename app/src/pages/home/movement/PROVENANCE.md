@@ -39,3 +39,7 @@ This is a presentation change only: all 33 landmarks remain in every original
 frame, all data hashes are unchanged, and projection, calibration, telemetry,
 overlays, selected frames and playback behavior are preserved. No source video,
 trajectory smoothing, generated motion, or external rendering service is used.
+
+## Homepage cleanup — September 16, 2026
+
+The next revision supersedes the unchanged-projection statement above: framing.ts fits the full recorded rep, ball and available markers uniformly in source-image coordinates. The canvas follows its responsive card. The original data, calibration, timestamps and measurements remain unchanged.

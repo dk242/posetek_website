@@ -38,8 +38,8 @@ describe("recorded hero pose sequence", () => {
   it("provides each selected pose and its body/skeleton description without WebGL", () => {
     for (const pose of HERO_POSES) {
       const markup = renderToStaticMarkup(<PoseFallback pose={pose} />);
-      expect(markup).toContain(`${pose.label}: illustrative athlete with recorded tracking skeleton`);
-      expect(markup).toContain('<image href="');
+      expect(markup).toContain(`${pose.label}: recorded tracking skeleton`);
+      expect(markup).not.toContain('<image');
       expect(markup).toContain('preserveAspectRatio="xMidYMid slice"');
       expect(markup).not.toMatch(/NaN|undefined/);
       const skeleton = renderToStaticMarkup(<PoseFallback pose={pose} layer="skeleton" />);

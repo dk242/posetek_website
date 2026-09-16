@@ -51,3 +51,7 @@ root: `node app/src/pages/home/technique/recover-technique.mjs`. It overwrites o
 the generated component, data JSON and CSS in this directory; it is not a build
 or deployment step. Do not run it as setup: it would replace the intentional
 guided-walkthrough edits with the historical recovered component.
+
+## Unified comparison — September 16, 2026
+
+Professional phases now overlay the recorded player using the contact plant-foot anchor and one uniform torso scale, following the mobile fallback approach. Source main was verified at 98d8a051f0580785b70610f5c1a29a5246e08bfb. The same transform and camera apply to the saved phases; original data is unchanged. No follow-through reference is invented. Measurements appear only at their saved frame, with optional detailed inspection.

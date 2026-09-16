@@ -84,10 +84,10 @@ export default function HomePage() {
           <a className="brand" href="#top" aria-label="PoseTek home"><span className="brand-mark">P<span /></span><span>POSETEK</span></a>
           <div className="nav-links" id="navLinks">
             <a href="#tests" onClick={() => setMenuOpen(false)}>Tests</a>
-            <a href="#technique" onClick={() => setMenuOpen(false)}>Technique</a>
             <a href="#profile" onClick={() => setMenuOpen(false)}>Athlete profile</a>
             <a href="#training" onClick={() => setMenuOpen(false)}>Training</a>
             <a href="#ai-coach" onClick={() => setMenuOpen(false)}>AI Coach</a>
+            <a href="#technique" onClick={() => setMenuOpen(false)}>Technique</a>
             <a className="mobile-signin" href="/signin">Sign in <Arrow /></a>
           </div>
           <div className="nav-actions"><a className="nav-login" href="/signin">Sign in</a><a className="nav-cta" href="/bookPerformanceTest.html">Book a test <Arrow /></a></div>
@@ -99,7 +99,7 @@ export default function HomePage() {
         <section className="hero shell" id="top" aria-labelledby="hero-title">
           <div className="hero-copy">
             <p className="eyebrow hero-enter"><span className="status-dot" />For clubs, coaches, and players</p>
-            <h1 id="hero-title" className="hero-enter" style={{ "--enter-delay": "80ms" } as CSSProperties}>What should your players train next?<em>Start with evidence.</em></h1>
+            <h1 id="hero-title" className="hero-enter" style={{ "--enter-delay": "80ms" } as CSSProperties}>What should the player train next?<em>Start with evidence.</em></h1>
             <p className="hero-description hero-enter" style={{ "--enter-delay": "160ms" } as CSSProperties}>Six performance tests. One athlete profile.<br />Understand how a player moves, find their focus,<br className="desktop-break" /> and turn evidence into their next training session.</p>
             <div className="hero-actions hero-enter" style={{ "--enter-delay": "240ms" } as CSSProperties}>
               <a className="hero-explore" href="#tests"><span className="hero-explore-label">See your game differently<span className="hero-explore-track" aria-hidden="true" /></span><span className="hero-explore-orbit" aria-hidden="true"><Arrow down /></span></a>
@@ -122,25 +122,19 @@ export default function HomePage() {
               <LazyHomepageDemo load={loadMovement} demoProps={{ requestedDrill, onDrillChange: setSelectedDrill, hideChoices: true }} forceLoad={!!requestedDrill} kind="movement" label="Recorded movement analysis" />
             </div>
           </div>
-          <div className="demo-caption"><span>Recorded reps · Six tests · Frame-by-frame playback</span><a className="button-text" href="#technique">Look closer at technique <Arrow down /></a></div>
-        </section>
-
-        <section className="technique-section shell section" id="technique" aria-labelledby="technique-title">
-          <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">02 / Technique analysis</p><h2 id="technique-title">The rep. The detail.<br /><em>The difference.</em></h2></div><p className="section-description">Pause at key moments. Compare technique. Find a clear coaching focus.</p></BlurFade>
-          <LazyHomepageDemo load={loadTechnique} demoProps={{}} kind="technique" label="Recorded technique analysis" />
-          <div className="demo-caption"><span>Explore the recorded kick · Select a joint · Compare phases</span><a className="button-text" href="#profile">Put it in perspective <Arrow down /></a></div>
+          <div className="demo-caption"><span>Recorded reps · Six tests · Frame-by-frame playback</span><a className="button-text" href="#profile">Put it in perspective <Arrow down /></a></div>
         </section>
 
         <section className="profile-section section" id="profile" aria-labelledby="profile-title">
           <div className="profile-layout shell">
-            <BlurFade inView blur="3px" direction="up" offset={10} className="profile-copy"><p className="eyebrow">03 / One profile. The whole picture.</p><h2 id="profile-title">Put performance<br /><em>in perspective.</em></h2><p>Bring results together, compare benchmarks, and identify what to train next.</p><div className="profile-benefits"><span><i />Explore five skill areas</span><span><i />Review drill-specific results</span><span><i />Track progress over time</span></div><a className="button-text" href="#training">Find the next step <Arrow down /></a></BlurFade>
+            <BlurFade inView blur="3px" direction="up" offset={10} className="profile-copy"><p className="eyebrow">02 / One profile. The whole picture.</p><h2 id="profile-title">Put performance<br /><em>in perspective.</em></h2><p>Bring results together, compare benchmarks, and identify what to train next.</p><div className="profile-benefits"><span><i />Explore five skill areas</span><span><i />Review drill-specific results</span><span><i />Track progress over time</span></div><a className="button-text" href="#training">Find the next step <Arrow down /></a></BlurFade>
             <AthleteProfile />
           </div>
         </section>
 
         <section className="workout-section section" id="training" aria-labelledby="training-title">
           <div className="shell">
-            <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">04 / Workout planner</p><h2 id="training-title" tabIndex={-1}>Turn results into<br /><em>a focused plan.</em></h2></div><p className="section-description">Turn your focus into guided drills that fit your time and energy.</p></BlurFade>
+            <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">03 / Workout planner</p><h2 id="training-title" tabIndex={-1}>Turn results into<br /><em>a focused plan.</em></h2></div><p className="section-description">Turn your focus into guided drills that fit your time and energy.</p></BlurFade>
             <LazyHomepageDemo load={loadWorkout} demoProps={{ initialRequest: workoutRequest.text, requestId: workoutRequest.id }} forceLoad={!!workoutRequest.text} kind="workout" label="Interactive workout planner" />
             <div className="demo-caption"><span>Sample workout · Set your focus · Try a guided session</span><a className="button-text" href="#retest">Close the loop <Arrow down /></a></div>
           </div>
@@ -148,9 +142,15 @@ export default function HomePage() {
 
         <section className="coach-section retest-section shell section" id="ai-coach" aria-labelledby="retest-title">
           <span id="retest" className="section-anchor" />
-          <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">05 / Retest with AI Coach</p><h2 id="retest-title">Train. Retest.<br /><em>See what changes.</em></h2></div><p className="section-description">Repeat the tests. Understand what changed. Choose your next training focus.</p></BlurFade>
+          <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">04 / Retest with AI Coach</p><h2 id="retest-title">Train. Retest.<br /><em>See what changes.</em></h2></div><p className="section-description">Repeat the tests. Understand what changed. Choose your next training focus.</p></BlurFade>
           <LazyHomepageDemo load={loadCoach} demoProps={{ onOpenWorkout: openWorkout }} kind="coach" label="AI Coach sample conversation" />
-          <div className="demo-caption"><span>Sample athlete · Previous and latest results · Your next training focus</span><a className="button-text" href="/bookPerformanceTest.html">Establish your baseline <Arrow /></a></div>
+          <div className="demo-caption"><span>Sample athlete · Previous and latest results · Your next training focus</span><a className="button-text" href="#technique">Look closer at technique <Arrow down /></a></div>
+        </section>
+
+        <section className="technique-section shell section" id="technique" aria-labelledby="technique-title">
+          <BlurFade inView blur="3px" direction="up" offset={10} className="section-heading"><div><p className="eyebrow">05 / Technique analysis</p><h2 id="technique-title">The rep. The detail.<br /><em>The difference.</em></h2></div><p className="section-description">Pause at key moments. Compare technique. Find a clear coaching focus.</p></BlurFade>
+          <LazyHomepageDemo load={loadTechnique} demoProps={{}} kind="technique" label="Recorded technique analysis" />
+          <div className="demo-caption"><span>One kick · One cue at a time · Compare the same moment</span><a className="button-text" href="/bookPerformanceTest.html">Establish your baseline <Arrow /></a></div>
         </section>
 
         <section className="closing section" aria-labelledby="closing-title"><div className="shell closing-content"><p className="eyebrow">Your next step starts here</p><h2 id="closing-title">Make the next<br /><em>session count.</em></h2><p>One connected system for coaches, clubs, and players.</p><div className="closing-actions"><a className="button-primary" href="/bookPerformanceTest.html">Book a performance test <Arrow /></a><a className="button-text" href="/signin">Coach sign in <Arrow /></a></div><span className="closing-watermark" aria-hidden="true">PT</span></div></section>

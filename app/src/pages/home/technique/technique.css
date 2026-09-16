@@ -455,3 +455,15 @@
   }
 
 }
+
+.pt-home .technique-canvases { display:block; position:relative; }
+.pt-home .technique-stage { width:100%; height:auto; aspect-ratio:600/340; }
+.pt-home .technique-ghost { opacity:.65; pointer-events:none; }
+.pt-home .technique-ghost .technique-bones line { stroke:#6cd8e4; stroke-dasharray:5 4; }
+.pt-home .technique-ghost .technique-joint-dot { fill:#6cd8e4; }
+.pt-home .technique-overlay-legend { display:flex; flex-wrap:wrap; gap:16px; padding:10px 16px; font-size:11px; color:#b7f34a; }
+.pt-home .technique-overlay-legend span + span { color:#6cd8e4; }
+.pt-home .technique-details { margin-top:20px; border-top:1px solid var(--line); padding-top:14px; }
+.pt-home .technique-details summary { cursor:pointer; color:#c3d4c8; min-height:36px; }
+.pt-home .technique-inspector .technique-cue { font-size:15px; line-height:1.6; margin-block:18px; }
+.pt-home .technique-stage .technique-svg-caption { display:none; }

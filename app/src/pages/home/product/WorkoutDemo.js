@@ -23,6 +23,7 @@ function WorkoutDemo({ active = true, initialRequest = ``, requestId = 0 }) {
     let [choices, setChoices] = (0, React.useState)({
         minutes: initialRequest ? 20 : 30, energy: `normal`, focus: focusFromRequest(initialRequest)
     });
+    const [selectedDrillIndex, setSelectedDrillIndex] = React.useState(0);
     let [choosingFocus, setChoosingFocus] = (0, React.useState)(!!initialRequest);
     let [preparationStep, setPreparationStep] = (0, React.useState)(0);
     let [state, dispatch] = (0, React.useReducer)(workoutReducer, choices, choices => ({ ...initialWorkoutState, step: `review`, workout: createDemoWorkout(choices) }));
@@ -342,11 +343,11 @@ Your focus.` : workout?.title
                                                 ]
                                             })
                                         ]
-                                    }), (0, jsxRuntime.jsx)(`div`, {
+                                    }), (0, jsxRuntime.jsx)(DemoPitch, { drillId: workout.drills[Math.min(selectedDrillIndex, workout.drills.length - 1)].id, focus: workout.choices.focus }), (0, jsxRuntime.jsx)(`div`, {
                                         className: `pd-proposal-list`, children: workout.drills.map((e, t) => (0, jsxRuntime.jsx)(MagicCard, {
                                             className: `pd-drill-card`, gradientFrom: `#b7f34a`, gradientTo: `#4bd7e8`, gradientColor: `#b7f34a12`, gradientOpacity: .4, children: (0, jsxRuntime.jsxs)(`div`, {
                                                 className: `pd-drill-row`, children: [
-                                                    (0, jsxRuntime.jsx)(DemoPitch, { drillId: e.id, focus: e.focus, className: `pd-drill-preview` }),
+                                                    (0, jsxRuntime.jsx)(`button`, { type: `button`, className: `pd-drill-select`, "aria-label": `View ${e.title || e.name}`, "aria-pressed": selectedDrillIndex === t, onClick: () => setSelectedDrillIndex(t), children: `View drill` }),
                                                     (0, jsxRuntime.jsxs)(`span`, {
                                                         className: `pd-drill-order`, children: [
                                                             `0`, t + 1

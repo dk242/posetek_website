@@ -139,3 +139,20 @@
     .hero-explore:is(:hover, :focus-visible) .hero-explore-orbit .arrow { translate: none; }
   }
 }
+
+/* Revision: let the canvas follow the card, never establish its intrinsic width. */
+.pt-home .assessment-replay .movement-viewer,
+.pt-home .assessment-replay .session-video { min-width: 0; width: 100%; box-sizing: border-box; }
+.pt-home .assessment-replay .session-video { position: relative; }
+.pt-home .assessment-replay #landingPoseCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pt-home .movement-summary { grid-template-columns: minmax(0,185px) minmax(0,1fr); }
+.pt-home .movement-demo .session-metrics { min-width: 0; }
+@media(max-width:570px) {
+ .pt-home .test-choice { min-height: 52px; padding: 10px; }
+ .pt-home .test-choice p { display:none; }
+ .pt-home .test-choices { gap: 7px; }
+ .pt-home .movement-summary { grid-template-columns:minmax(0,1fr); }
+ .pt-home .movement-demo .pose-time { min-width:0; font-size:8px; }
+}
+
+@media(max-width:570px) { .pt-home .test-choice-copy { display:none; } }

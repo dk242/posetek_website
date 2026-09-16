@@ -2,11 +2,13 @@
 import * as React from "react";
 import { TacticalIcon } from "../TacticalIcon";
 import { POSE_EDGES } from "../pitch/pose-model";
-import { techniqueData, projectRecordedFrames, nearestPhase, metricForJoint, formatMeasurement } from "./technique-model";
+import { techniqueData, alignReference, projectRecordedFrames, nearestPhase, metricForJoint, formatMeasurement } from "./technique-model";
 import "./technique.css";
 import { walkthroughSteps, initialWalkthrough, nextWalkthrough } from "./walkthrough";
 
-var projection = projectRecordedFrames(techniqueData.frames);
+const contact = techniqueData.phases.find(phase => phase.key === 'contact');
+const alignedReferences = Object.fromEntries(techniqueData.phases.filter(phase => phase.referencePose).map(phase => [phase.key, alignReference(phase.referencePose, techniqueData.frames[contact.index], contact.referencePose)]));
+var projection = projectRecordedFrames([...techniqueData.frames, ...Object.values(alignedReferences)]);
 var lastFrame = techniqueData.frames.length - 1;
 var initialPhase = techniqueData.phases.find(e => e.key === `contact`) ?? techniqueData.phases[0];
 var initialMetric = techniqueData.focusAreas[0]?.metricIds.map(e => initialPhase.metrics.find(t => t.id === e)).find(Boolean) ?? initialPhase.metrics[0];
@@ -51,7 +53,8 @@ function TechniqueDemo({ active = true }) {
   let [focusIndex, setFocusIndex] = React.useState(null);
   let [playing, setPlaying] = React.useState(false);
   let [visible, setVisible] = React.useState(false);
-  let [showReference, setShowReference] = React.useState(false);
+  let [showReference, setShowReference] = React.useState(true);
+  let [detailsOpen, setDetailsOpen] = React.useState(false);
   let [walkthrough, setWalkthrough] = React.useState(initialWalkthrough);
   let guidedStep = walkthroughSteps[walkthrough.step];
   let selectedMetric = phase.metrics.find(e => e.id === selectedMetricId) ?? phase.metrics[0];
@@ -61,7 +64,7 @@ function TechniqueDemo({ active = true }) {
   let sourceFrame = techniqueData.startFrame + frameIndex * techniqueData.step;
   let ball = techniqueData.ball[frameIndex];
   let ballPoint = ball ? projection.point([ball.x, ball.y]) : null;
-  let referencePose = showReference && isSnapshot && phase.referencePose ? phase.referencePose : null;
+  let referencePose = showReference && isSnapshot && phase.referencePose ? alignedReferences[phase.key] : null;
   let referenceProjection = referencePose ? projectRecordedFrames([referencePose]) : null;
   React.useEffect(() => {
     let e = rootRef.current;
@@ -166,7 +169,7 @@ function TechniqueDemo({ active = true }) {
   }
   return <div ref={rootRef} className={`technique-demo`} data-playing={playing}>
     <div className="technique-guide">
-      <div aria-live="polite"><span className="technique-mini-label">GUIDED ANALYSIS · ¼ SPEED</span><strong>{walkthrough.status === "idle" ? "One kick. Three phases. Four coaching stops." : walkthrough.status === "finished" ? "Review complete. Put the cues into practice." : (walkthrough.status === "approaching" ? "Next: " : "Pause " + (walkthrough.step + 1) + " / " + walkthroughSteps.length + " · ") + guidedStep.title}</strong></div>
+      <div aria-live="polite"><span className="technique-mini-label">GUIDED ANALYSIS · ¼ SPEED</span><strong>{walkthrough.status === "idle" ? "See one kick, one cue at a time." : walkthrough.status === "finished" ? "Review complete. Put the cues into practice." : (walkthrough.status === "approaching" ? "Next: " : "Pause " + (walkthrough.step + 1) + " / " + walkthroughSteps.length + " · ") + guidedStep.title}</strong></div>
       {walkthrough.status === "idle" || walkthrough.status === "finished" ? <button type="button" onClick={startWalkthrough}>{walkthrough.status === "idle" ? "Start walkthrough" : "Replay walkthrough"}<TacticalIcon kind="play" /></button> : walkthrough.status === "paused" ? <button type="button" onClick={continueWalkthrough}>{walkthrough.step === walkthroughSteps.length - 1 ? "Finish review" : "Continue"}<TacticalIcon kind="next" /></button> : <button type="button" onClick={() => setPlaying(!playing)}>{playing ? "Pause walkthrough" : "Resume walkthrough"}<TacticalIcon kind={playing ? "pause" : "play"} /></button>}
     </div>
     <div className={`technique-workspace`}>
@@ -179,7 +182,7 @@ function TechniqueDemo({ active = true }) {
           {playing ? `¼ SPEED` : isSnapshot ? phase.title.toUpperCase() : `FRAME EXPLORER`}
         </span>
       </div>
-      <div className={`technique-canvases${referencePose ? ` is-comparing` : ``}`}>
+      <div className="technique-canvases">
         <svg className={`technique-stage`} viewBox={`0 0 600 340`} role={`group`} aria-label={`Recorded kick at frame ${sourceFrame}`}>
           <defs>
             <pattern id={`${instanceId}-grid`} width={`40`} height={`40`} patternUnits={`userSpaceOnUse`}>
@@ -193,12 +196,13 @@ function TechniqueDemo({ active = true }) {
           <rect width={`600`} height={`340`} fill={`url(#${instanceId}-grid)`} />
           <ellipse cx={`300`} cy={`170`} rx={`240`} ry={`160`} fill={`url(#${instanceId}-light)`} />
           <path className={`technique-corners`} d={`M20 40V20H40M560 20H580V40M580 300V320H560M40 320H20V300`} />
-          <PoseSkeleton points={techniqueData.frames[frameIndex]} highlighted={highlightedJoints} projection={projection} phase={isSnapshot ? phase : void 0} selectedId={selectedMetric?.id} onJoint={e => {
+          {referencePose && <g className="technique-ghost" aria-label="Static professional reference aligned to the player"><PoseSkeleton points={referencePose} highlighted={[]} projection={projection} /></g>}
+          <PoseSkeleton points={techniqueData.frames[frameIndex]} highlighted={highlightedJoints} projection={projection} phase={isSnapshot ? phase : void 0} selectedId={selectedMetric?.id} onJoint={detailsOpen ? e => {
             let t = metricForJoint(phase, e, selectedMetricId);
             if (t) {
               selectMetric(t.id);
             }
-          }} />
+          } : undefined} />
           {ballPoint && ball && <g className={`technique-ball`}>
             <circle cx={ballPoint[0]} cy={ballPoint[1]} r={ball.radius * projection.scale} />
             <path d={`M${ballPoint[0] - 3} ${ballPoint[1] - 3}l6 0 2 5-5 3-5-3z`} />
@@ -207,18 +211,7 @@ function TechniqueDemo({ active = true }) {
             {isSnapshot ? `SELECT A JOINT TO INSPECT` : `SCRUB TO EXPLORE THE MOVEMENT`}
           </text>
         </svg>
-        {referencePose && referenceProjection && <div className={`technique-reference`}>
-          <span>
-            {`PRO REFERENCE · `}
-            {phase.title}
-          </span>
-          <svg viewBox={`0 0 600 340`} role={`img`} aria-label={`Static professional reference, ${phase.title}`}>
-            <PoseSkeleton points={referencePose} highlighted={[]} projection={referenceProjection} />
-          </svg>
-          <small>
-            {`Static phase · independent view`}
-          </small>
-        </div>}
+        <div className="technique-overlay-legend"><span>● Player</span>{referencePose && <span>● Pro reference · saved phase</span>}</div>
       </div>
       <div className={`technique-playback`}>
         <button type={`button`} className={`technique-play`} aria-label={playing ? `Pause technique playback` : `Play technique at quarter speed`} onClick={() => {
@@ -272,83 +265,16 @@ function TechniqueDemo({ active = true }) {
         </button>)}
       </div>
     </div>
-    <aside className={`technique-inspector`} aria-label={`Kick measurements and coaching cues`}>
-      <div className={`technique-inspector-top`}>
-        <span>
-          {`THE DETAILS THAT MATTER`}
-        </span>
-        <TacticalIcon kind={`explore`} />
-      </div>
-      <label className={`technique-measurement-select`} htmlFor={`${instanceId}-metric`}>
-        {`Inspect a measurement`}
-        <select id={`${instanceId}-metric`} value={selectedMetric?.id} onChange={e => selectMetric(e.target.value)} aria-label="Inspect a measurement">
-          {phase.metrics.map(e => <option value={e.id} key={e.id}>
-            {e.label}
-          </option>)}
-        </select>
-      </label>
-      {selectedMetric && <div className={`technique-measurement`} aria-live={`polite`}>
-        <div>
-          <small>
-            {`RECORDED KICK`}
-          </small>
-          <strong>
-            {formatMeasurement(selectedMetric.value, selectedMetric.unit)}
-          </strong>
-        </div>
-        {selectedMetric.reference !== null && <div className={`technique-reference-value`}>
-          <small>
-            {`PRO REFERENCE`}
-          </small>
-          <strong>
-            {formatMeasurement(selectedMetric.reference, selectedMetric.unit)}
-          </strong>
-        </div>}
-      </div>}
-      <div className={`technique-measurement-note`}>
-        <span>
-          {phase.title}
-          {` snapshot · frame `}
-          {phase.sourceFrame}
-        </span>
-        {!isSnapshot && <button type={`button`} onClick={() => {
-          setPlaying(false);
-          setFrameIndex(phase.index);
-        }}>
-          {`View frame `}
-          <span aria-hidden={`true`}>
-            {`↗`}
-          </span>
-        </button>}
-      </div>
-      <div className={`technique-focus-list`}>
-        <span className={`technique-mini-label`}>
-          {`FROM THE SAVED ANALYSIS`}
-        </span>
-        {techniqueData.focusAreas.map((e, t) => <button type={`button`} className={focusIndex === t ? `is-selected` : ``} onClick={() => selectFocusArea(t)} aria-pressed={focusIndex === t} key={e.title}>
-          <span>
-            {`0`}
-            {t + 1}
-          </span>
-          <strong>
-            {e.title}
-          </strong>
-          <span aria-hidden={`true`}>
-            {`↗`}
-          </span>
-        </button>)}
-      </div>
-      <p className={`technique-cue`} aria-live={`polite`}>
-        {(walkthrough.status === "paused" ? guidedStep.cue : focusArea?.cue) ?? `Choose a focus area to pause at its exact frame and see the coaching cue.`}
-      </p>
-      <button type={`button`} className={`technique-compare`} disabled={!phase.referencePose} aria-pressed={showReference} onClick={() => {
-        setPlaying(false);
-        setFrameIndex(phase.index);
-        setShowReference(!showReference);
-      }}>
-        <TacticalIcon kind={`compare`} />
-        {phase.referencePose ? showReference ? `Hide reference phase` : `Compare reference phase` : `No reference for this phase`}
-      </button>
+    <aside className="technique-inspector" aria-label="Kick measurements and coaching cues">
+      <span className="technique-mini-label">{isSnapshot ? phase.title : 'Watch the movement'}</span>
+      <p className="technique-cue" aria-live="polite">{isSnapshot ? (walkthrough.status === 'paused' ? guidedStep.cue : focusArea?.cue ?? 'Compare the same moment. Look for the highlighted joint.') : 'Play the walkthrough to pause at the moments that matter.'}</p>
+      {isSnapshot && selectedMetric && <div className="technique-measurement" aria-live="polite"><div><small>{selectedMetric.label}</small><strong>{formatMeasurement(selectedMetric.value, selectedMetric.unit)}</strong></div>{selectedMetric.reference !== null && <div className="technique-reference-value"><small>Reference</small><strong>{formatMeasurement(selectedMetric.reference, selectedMetric.unit)}</strong></div>}</div>}
+      {isSnapshot && <button type="button" className="technique-compare" disabled={!phase.referencePose} aria-pressed={showReference} onClick={() => setShowReference(!showReference)}>{phase.referencePose ? showReference ? 'Hide reference' : 'Show reference' : 'No reference saved for this phase'}</button>}
+      <details className="technique-details" onToggle={event => setDetailsOpen(event.currentTarget.open)}><summary>Explore details</summary>
+        <label className="technique-measurement-select" htmlFor={instanceId + '-metric'}>Inspect a measurement<select id={instanceId + '-metric'} value={selectedMetric?.id} onChange={e => selectMetric(e.target.value)}>{phase.metrics.map(metric => <option key={metric.id} value={metric.id}>{metric.label}</option>)}</select></label>
+        <div className="technique-focus-list">{techniqueData.focusAreas.map((focus,index) => <button key={focus.title} type="button" aria-pressed={focusIndex === index} onClick={() => selectFocusArea(index)}>{focus.title}</button>)}</div>
+        <p className="technique-measurement-note">Select a highlighted joint to inspect its saved measurement. Measurements appear only at their recorded frame.</p>
+      </details>
     </aside>
   </div>;
 }

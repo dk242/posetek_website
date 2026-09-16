@@ -1,0 +1,60 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aaafde5fa78fbd0fffdbf1e",
+  "state": "ready",
+  "publishedAt": "2026-09-16T20:38:15.094Z",
+  "publishedLocal": "September 16, 2026, 1:38:15 PM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aaafde5fa78fbd0fffdbf1e--posetek.netlify.app",
+  "releaseMethod": "Reviewed manual Netlify draft promoted unchanged; matching source committed with [skip netlify] to retain the verified release",
+  "changes": [
+    "Hero question: What should the player train next?",
+    "Skeleton-only 3D viewer with fine tracking, manual orbit and automatic resumption",
+    "Six recorded camera playbacks uniformly fit complete reps and available calibration markers on mobile and desktop",
+    "Training diagrams use Setup, Movement and Finish with optional animation",
+    "Technique is last, with aligned saved professional poses and one coaching cue at a time",
+    "Supporting copy and AI Coach evidence use progressive disclosure; profile component and data unchanged"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "guardActive": true,
+    "result": "byte-for-byte unchanged",
+    "recordedData": "Original hero landmarks, six recorded sequences, saved reference phases, measurements and calibration unchanged"
+  },
+  "publishedInventory": {
+    "fileCount": 194,
+    "matchedProductionDistFiles": 193,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homepageTests": 113,
+    "navigationAndBaselineTests": 11,
+    "finalProductUiRecheck": "7 passed after final diagram timing refinement",
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed; lazy 3D chunk size warning remains",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "homepageAssets": 21,
+      "result": "passed; asset bytes and complete published inventory match production output"
+    },
+    "browser": "Desktop and 820/390/320px layouts; all six recordings and available markers; three skeleton poses; keyboard rotation and automatic resumption; all four technique walkthrough stops and phase-limited overlays; all five drill diagrams, manual steps and optional animation; sample workout timer; expandable Coach evidence. Hosted draft rendered without console errors or warnings.",
+    "reducedMotionAndFallback": "Unit/source checks cover gating and skeleton fallback. Reduced-motion and WebGL-failure states were not forced in the browser.",
+    "authenticatedWorkflows": "not exercised"
+  },
+  "limitations": [
+    "Hero depth remains estimated from recorded landmarks, not calibrated volumetric capture",
+    "Full-rep framing makes athletes smaller in long travelling recordings; proportions and full motion take priority over cropping",
+    "ArUco markers exist only for Sprint, Dribbling and Shooting",
+    "Professional technique overlays use saved Backswing and Contact phases with uniform scale and plant-foot anchoring; no invented follow-through reference"
+  ],
+  "decisions": "deployment/HOMEPAGE_CLEANUP_2026-09-16.md",
+  "rollback": {
+    "deployId": "6aaa57d3fe77d22f67611c42",
+    "url": "https://6aaa57d3fe77d22f67611c42--posetek.netlify.app"
+  }
+}

@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { HERO_POSES, HERO_HOLD_MS, heroPose, nextHeroPose, shouldAnimateHero, type HeroLayer, type HeroPoseId, type OrbitAction, type PitchHandle, type PitchView } from "./latest-hero/pose-model";
 import { PoseFallback } from "./latest-hero/PoseFallback";
-import { TacticalIcon } from "./TacticalIcon";
-import { MHR_LICENSE_URL } from "./latest-hero/mhr-attribution";
 import "./latest-hero/hero-viewer.css";
 
 export function PitchVisual() {
@@ -11,8 +9,8 @@ export function PitchVisual() {
   const handle = useRef<PitchHandle | null>(null);
   const interactionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [selected, setSelected] = useState<HeroPoseId>("shooting");
-  const [layer, setLayer] = useState<HeroLayer>("body");
-  const [cycling, setCycling] = useState(true);
+  const layer: HeroLayer = "skeleton";
+  const cycling = true;
   const [interacting, setInteracting] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [active, setActive] = useState(false);
@@ -33,7 +31,7 @@ export function PitchVisual() {
     handle.current?.update(view.current);
     interactionEnd();
   };
-  const selectPose = (id: HeroPoseId) => { setSelected(id); setCycling(false); };
+  const selectPose = (id: HeroPoseId) => { interactionStart(); setSelected(id); interactionEnd(); };
 
   useEffect(() => {
     view.current = { ...view.current, pose: selected, layer, reducedMotion, rotating };
@@ -99,10 +97,6 @@ export function PitchVisual() {
   return <div ref={wrapperRef} className="pitch-visual hero-pose-viewer" data-renderer={ready ? "webgl" : "static"} data-pose={selected} data-layer={layer} data-rotating={rotating}>
     <div className="hero-viewer-heading"><span><i aria-hidden="true" />Movement in 3D</span><span className="hero-viewer-count">0{HERO_POSES.findIndex(item => item.id === selected) + 1}<span> / 03</span></span></div>
     <div className="hero-pose-caption" aria-live={cycling && !reducedMotion ? "off" : "polite"}><strong>{pose.label}</strong><span>{pose.detail}</span></div>
-    <div className="hero-layer-controls" role="group" aria-label="Viewer layers">
-      <button type="button" aria-pressed={layer === "body"} onClick={() => { setLayer("body"); setCycling(false); }}>Body + pose</button>
-      <button type="button" aria-pressed={layer === "skeleton"} onClick={() => { setLayer("skeleton"); setCycling(false); }}>Pose only</button>
-    </div>
     <div className="pose-explorer" role="group" aria-label={`${failed ? 'Static' : 'Interactive'} reconstructed ${pose.label.toLowerCase()} pose`} aria-describedby="pose-explorer-help" tabIndex={0}
       onKeyDown={event => {
         if (event.ctrlKey || event.metaKey || event.altKey) return;
@@ -112,11 +106,11 @@ export function PitchVisual() {
       <PoseFallback pose={pose} layer={layer} />
       <div ref={hostRef} className="pitch-scene" aria-hidden="true" />
     </div>
-    <div className="hero-view-tools"><span className="hero-orbit-hint"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="m18 5 4 6-6 1M5 8l-3 3"/></svg>{failed ? 'Static preview' : 'Drag to rotate'}</span><div role="group" aria-label="Camera views">{([['front', 'Front'], ['side', 'Side'], ['reset', 'Reset']] as const).map(([action, label]) => <button key={action} type="button" disabled={!ready || failed} onClick={() => { setCycling(false); command(action); }} aria-label={`${label} camera view`}>{label}</button>)}</div></div>
+    <div className="hero-view-tools"><span className="hero-orbit-hint"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="m18 5 4 6-6 1M5 8l-3 3"/></svg>{failed ? 'Static preview' : 'Drag to rotate'}</span></div>
     <div className="hero-pose-controls">
       <div className="hero-pose-choices" role="group" aria-label="Choose a 3D pose">{HERO_POSES.map((item, index) => <button type="button" key={item.id} aria-pressed={selected === item.id} onClick={() => selectPose(item.id)}><span aria-hidden="true">0{index + 1}</span><span>{item.label}</span><i aria-hidden="true" /></button>)}</div>
-      <button className="hero-cycle-toggle" type="button" disabled={reducedMotion || failed} aria-label={reducedMotion ? "Automatic motion disabled" : failed ? "Static pose preview" : cycling ? "Pause pose cycle" : "Resume pose cycle"} onClick={() => setCycling(value => !value)}><TacticalIcon kind={cycling && !reducedMotion && !failed ? "pause" : "play"} /></button>
+
     </div>
-    <span className="pose-explorer-help" id="pose-explorer-help"><span>{failed ? "Select a pose to explore" : "Arrow keys rotate · Home resets"}</span><span>Illustrative body · Recorded pose <a href={MHR_LICENSE_URL} target="_blank" rel="noreferrer" aria-label="Body model credits: Meta MHR, Apache 2.0">Credits ↗</a></span></span>
+    <span className="pose-explorer-help" id="pose-explorer-help"><span>{failed ? "Select a pose to explore" : "Arrow keys rotate · Home resets"}</span><span>Recorded landmarks · Estimated depth</span></span>
   </div>;
 }

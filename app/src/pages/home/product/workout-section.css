@@ -2,3 +2,24 @@
 .pt-home .workout-demo .pd-workout-main .pd-heading h4 {
   scroll-margin-top: 110px;
 }
+
+.pt-home .drill-explainer { min-width:0; border:1px solid #355344; border-radius:10px; background:#091e16; padding:16px; margin-block:16px; }
+.pt-home .drill-explainer-title { display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+.pt-home .drill-explainer-title strong { color:#eff8ed; font-size:16px; }
+.pt-home .drill-explainer-title span { color:#92aa9b; font-size:10px; }
+.pt-home .drill-explainer .drill-diagram { display:block; width:100%; height:auto; max-height:340px; margin:10px 0; }
+.pt-home .drill-legend { display:flex; flex-wrap:wrap; gap:12px; color:#b3c7b9; font-size:10px; }
+.pt-home .drill-legend span:first-child { color:#6cd8e4; }
+.pt-home .drill-step-tabs { display:flex; gap:6px; margin-top:18px; }
+.pt-home .drill-step-tabs button,.pt-home .drill-play,.pt-home .pd-drill-select { background:transparent; border:1px solid #42604d; border-radius:5px; padding:10px; min-height:44px; color:#d6e6d8; cursor:pointer; font-size:12px; }
+.pt-home .drill-step-tabs button { flex:1; }
+.pt-home .drill-step-tabs button[aria-pressed=true],.pt-home .pd-drill-select[aria-pressed=true] { color:#b7f34a; border-color:#b7f34a; background:#b7f34a0d; }
+.pt-home .drill-step-cue { font-size:14px; line-height:1.6; color:#d3e2d6; min-height:44px; margin:14px 0; }
+.pt-home .drill-play { border:0; color:#b7f34a; padding-left:0; }
+.pt-home .pd-session-scene { display:flex; flex-direction:column; }
+.pt-home .pd-session-scene .drill-explainer { width:100%; box-sizing:border-box; }
+.pt-home .pd-session-scene .pd-timer { position:relative; inset:auto; margin:10px auto; }
+.pt-home .pd-evidence { display:block; }
+.pt-home .pd-evidence summary { cursor:pointer; min-height:36px; }
+.pt-home .pd-evidence p { margin-top:10px; line-height:1.6; }
+@media(max-width:570px) { .pt-home .drill-explainer { padding:10px; } .pt-home .drill-explainer-title { flex-direction:column; gap:4px; } .pt-home .pd-proposal-list .pd-drill-row { grid-template-columns:80px 20px minmax(0,1fr); gap:8px; } }

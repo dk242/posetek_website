@@ -4,10 +4,10 @@ Shared source repository: [dk242/posetek_website](https://github.com/dk242/poset
 Public website: [posetek.net](https://posetek.net).
 
 This repository includes the scrolling homepage, all nine annotation updates,
-and the athletic male viewer refinement published September 16, 2026 as
-deployment `6aaa57d3fe77d22f67611c42`.
+and the clearer pose, training and technique experience published September 16,
+2026 as deployment `6aaafde5fa78fbd0fffdbf1e`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json).
+[the latest production receipt](deployment/HOMEPAGE_CLEANUP_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Feed source available:** the complete feed feature stack is now committed:

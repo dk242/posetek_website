@@ -38,7 +38,24 @@ The homepage production build still enforces and preserves its 171-file applicat
 baseline. A future application release needs a separate full application review
 and deliberate baseline reconciliation.
 
-### Current revision: athletic male anatomy and finer tracking
+### Current revision: clearer poses, training and technique
+
+Deployment `6aaafde5fa78fbd0fffdbf1e` was published September 16, 2026 at
+1:38:15 PM PDT (20:38:15.094 UTC). The reviewed draft was promoted unchanged.
+Read `deployment/HOMEPAGE_CLEANUP_PRODUCTION.json` and
+`deployment/HOMEPAGE_CLEANUP_2026-09-16.md` for checks, references and rollback.
+
+The hero asks “What should the player train next?” and shows skeletons only,
+with manual rotation and automatic resumption. Mesh, visible camera presets and
+pause controls are removed. All six recorded camera playbacks fit uniformly within
+their cards, including full-rep motion and real calibration markers where present.
+Training uses Setup / Movement / Finish diagrams; AI Coach explanations expand
+on request. Technique is the final feature section, with a professional pose
+overlaid at saved phases and one cue at a time. The player profile component and
+data remain unchanged; its section number is now 02. Application assets remain
+the guarded 171-file baseline, and recovered feed source is preserved.
+
+### Previous revision: athletic male anatomy and finer tracking
 
 Deployment `6aaa57d3fe77d22f67611c42` was published to https://posetek.net on
 September 16, 2026 at 1:52:03 AM PDT (08:52:03.048 UTC). The validated draft was

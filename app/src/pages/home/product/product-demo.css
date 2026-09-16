@@ -986,3 +986,8 @@
   transition:none!important;
   animation:none!important}
 }
+
+/* Shared so direct AI Coach entry does not depend on loading Training first. */
+.pt-home .pd-evidence { display:block; }
+.pt-home .pd-evidence summary { cursor:pointer; min-height:36px; }
+.pt-home .pd-evidence p { margin-top:10px; line-height:1.6; }

@@ -1,3 +1,4 @@
+import { recordingBounds, fitRecording } from "./framing";
 // Recovered from the accepted 2026-09-15 deployment; see PROVENANCE.md.
 // Recorded data and playback logic are preserved; rendering refinements are documented.
 // Shared React is imported from npm.
@@ -221,7 +222,7 @@ function createMovementController(e, t, n, r = !0) {
     function ce(e) { let n = secondsAtFrame(N.frame, F()), r = phaseForFrame(e, N.frame); y.textContent = timerText(N.frame, e, F()), T.textContent = phaseLabel(r, n), T.style.setProperty(`--phase-color`, r.color), k && k.textContent !== r.title && (k.textContent = r.title); let i = measurementForFrame(e, N.frame, F()); t.measurementLabel && (t.measurementLabel.textContent = i.label), t.measurementValue && (t.measurementValue.textContent = i.value), t.measurementUnit && (t.measurementUnit.textContent = i.unit), t.measurementCaption && (t.measurementCaption.textContent = i.caption), _.value = String(N.frame), _.style.setProperty(`--pose-progress`, `${100 * N.frame / Math.max(1, lastFrame(e))}%`), _.setAttribute(`aria-valuetext`, scrubberLabel(r, n)); }
     function U() {
         let e = P(), t = e.frames[N.frame] || e.frames[0], n = N.viewport;
-        if (j.setTransform(n.ratio, 0, 0, n.ratio, 0, 0), j.clearRect(0, 0, n.width, n.height), j.save(), j.beginPath(), j.rect(n.offsetX, n.offsetY, n.scale * I(), n.scale), j.clip(), B(e), e.key === `broadJump` ? V(e) : e.key === `changeOfDirection` && oe(e), se(t), e.verticalJump && H(e), e.ball) {
+        if (j.setTransform(n.ratio, 0, 0, n.ratio, 0, 0), j.clearRect(0, 0, n.width, n.height), j.save(), j.beginPath(), j.rect(0, 0, n.width, n.height), j.clip(), B(e), e.key === `broadJump` ? V(e) : e.key === `changeOfDirection` && oe(e), se(t), e.verticalJump && H(e), e.ball) {
             let t = trailWindow(N.frame);
             z(e.ball.slice(t.start, t.end).map(e => e ? [e.x, e.y] : null), `#ffc969`, 1.5);
         }
@@ -232,7 +233,7 @@ function createMovementController(e, t, n, r = !0) {
         }
         j.restore(), ce(e);
     }
-    function W() { let e = i.getBoundingClientRect(); N.viewport = fitViewport(e.width, e.height, window.devicePixelRatio, I()); let t = canvasSize(N.viewport); (i.width !== t.width || i.height !== t.height) && (i.width = t.width, i.height = t.height), U(); }
+    function W() { let e = i.getBoundingClientRect(); N.viewport = fitRecording(e.width, e.height, window.devicePixelRatio, recordingBounds(P(), I())); let t = canvasSize(N.viewport); (i.width !== t.width || i.height !== t.height) && (i.width = t.width, i.height = t.height), U(); }
     function G() { d.dataset.playing = String(N.playing), o.setAttribute(`aria-label`, N.playing ? `Pause pose playback` : `Play pose playback`), o.setAttribute(`aria-pressed`, String(N.playing)); }
     function K() { N.animationId && cancelAnimationFrame(N.animationId), N.animationId = 0, N.playing = !1, N.lastTimestamp = 0, G(); }
     function q() { !N.animationId && N.playing && N.visible && N.active && !document.hidden && (N.animationId = requestAnimationFrame(le)); }

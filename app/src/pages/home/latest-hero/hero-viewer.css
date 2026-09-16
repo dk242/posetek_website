@@ -81,3 +81,7 @@
 @media (prefers-reduced-motion: reduce) {
   .pt-home .hero-pose-viewer *, .pt-home .hero-pose-viewer *::before, .pt-home .hero-pose-viewer *::after { transition: none !important; }
 }
+
+.pt-home .hero-pose-viewer .pose-explorer { top: 100px; }
+.pt-home .hero-pose-choices { width:100%; }
+@media(max-width:570px) { .pt-home .hero-pose-viewer .pose-explorer { inset:100px 0 146px; } }
