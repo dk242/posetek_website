@@ -6,6 +6,28 @@ business document is included.
 
 ## Readiness and source provenance
 
+### Confirmed application source gap: live feed
+
+On September 16, 2026, the user reported that the app engineer could not find
+the live website feed source. GitHub main at `3f7ecd2` has only an older root
+`feed.html` mockup and no feed route in `app/src/App.tsx`. The public application
+instead serves `/feed` and `/feed.html` through `FeedPage-Cm50ZtLq.js`; its client,
+CSS and router bundles match the preserved September 15 deployment byte-for-byte.
+
+The original authored feed source was not found in fetched website branches or
+history, either named alternate checkout, or the local Codex worktrees search.
+The published client references 14 social Firebase callables whose implementations
+are also absent from this repository's `functions/` directory. The checkout used
+to publish the feed still needs to supply its frontend, backend, integration,
+rules/indexes, and tests. Public client assets cannot recover server-only code.
+
+The earlier shared-repository handoff synchronized the recovered homepage; it did
+not establish complete application source parity. The 171-file preservation build
+keeps the live feed working without its original source being committed. See
+[`docs/FEED_SOURCE_HANDOFF.md`](docs/FEED_SOURCE_HANDOFF.md) for exact evidence,
+public code links, and the remaining handoff requirements. Do not use root
+`feed.html` as the current feed implementation for mobile iteration.
+
 ### Current revision: athletic male anatomy and finer tracking
 
 Deployment `6aaa57d3fe77d22f67611c42` was published to https://posetek.net on

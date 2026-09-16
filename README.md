@@ -9,6 +9,11 @@ Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
 [the latest production receipt](deployment/ANNOTATION_UPDATE_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
+**Feed source status:** the current live feed's authored frontend and social
+backend are not yet in this repository. Root `feed.html` is an older mockup.
+See [the feed source handoff](docs/FEED_SOURCE_HANDOFF.md) for verified live-code
+links, the missing modules, and the source recovery needed for app development.
+
 ## Set up a fresh clone
 
 Use Node.js 22.18 or later in the Node 22 release line and npm 10. Run from the
