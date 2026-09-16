@@ -1,0 +1,58 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aaa45aa0d612bd628335ecf",
+  "state": "ready",
+  "publishedAt": "2026-09-16T07:34:12.757Z",
+  "publishedLocal": "September 16, 2026, 12:34:12 AM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aaa45aa0d612bd628335ecf--posetek.netlify.app",
+  "releaseMethod": "Validated manual Netlify draft promoted unchanged; matching source and documentation committed to GitHub with [skip netlify] to retain the verified release",
+  "changes": [
+    "Single expressive hero exploration link; booking retained in header and closing section",
+    "Three recorded held poses with translucent illustrative athlete bodies, six-second cycling and 450 ms crossfades",
+    "Manual pose selection, pause/resume, keyboard and drag orbit, reduced-motion support and offscreen suspension",
+    "Consistent section navigation, shorter supporting copy, recorded-kick labels and focus-specific workout context"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "guardActive": true,
+    "result": "byte-for-byte unchanged"
+  },
+  "publishedInventory": {
+    "fileCount": 194,
+    "matchedProductionDistFiles": 193,
+    "platformGeneratedConfigFiles": 1,
+    "pathComparison": "Netlify inventory normalizes path casing; authored asset URLs separately verified over HTTP"
+  },
+  "verification": {
+    "homepageTests": 97,
+    "navigationAndBaselineTests": 11,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "homepageAssets": 21,
+      "result": "passed; all requested asset bytes match local production output"
+    },
+    "browser": "Desktop, 820px, 390px and 320px layouts; manual and automatic pose changes; pause; pointer and keyboard orbit; offscreen suspension and selected-pose restoration; initial camera framing with a pose selected before lazy mount; exploration link; workout focus and hosted lazy demos. Hosted preview and live smoke passed without console errors or warnings.",
+    "reducedMotionAndFallback": "Unit tests cover motion gating and all SVG pose fallbacks; reduced-motion and WebGL-failure states were reviewed in source, not forced in the browser",
+    "authenticatedWorkflows": "not exercised in final release QA"
+  },
+  "poseProvenance": {
+    "document": "app/src/pages/home/latest-hero/PROVENANCE.md",
+    "sprintSourceFrame": 312,
+    "jumpSourceFrame": 158,
+    "method": "MediaPipe world-landmark inference from authorized recordings with temporal median and uniform display scale; estimated depth, not a calibrated body scan",
+    "body": "Procedural illustrative geometry follows the recorded skeleton; no recovered likeness",
+    "privateSourceAssets": "excluded from source control and public output"
+  },
+  "rollback": {
+    "deployId": "6aaa2d81f7a768e5e5799ae1",
+    "url": "https://6aaa2d81f7a768e5e5799ae1--posetek.netlify.app"
+  }
+}

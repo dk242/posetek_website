@@ -107,3 +107,35 @@
 .pt-home .assessment-replay .movement-demo .session-mock { grid-template-columns: minmax(0, 1fr); }
 .pt-home .assessment-replay .movement-demo .session-video { height: clamp(260px, 30vw, 365px); }
 @media (max-width: 570px) { .pt-home .assessment-replay .movement-demo .session-video { height: 240px; } }
+
+// Hero exploration CTA and the five-destination navigation, September 16 revision.
+.pt-home {
+  .hero-explore { display: inline-flex; align-items: center; gap: 24px; min-height: 58px; max-width: 100%; color: var(--ink); }
+  .hero-explore-label { position: relative; padding-block: 9px 14px; font-size: clamp(15px, 1.5vw, 20px); font-weight: 500; letter-spacing: -.025em; text-wrap: balance; }
+  .hero-explore-track { position: absolute; inset: auto 0 3px; height: 1px; background: #466542; }
+  .hero-explore-track::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 34%; background: var(--lime); transition: width 200ms ease-out; }
+  .hero-explore-track::after { content: ''; position: absolute; left: 34%; top: -2px; width: 5px; height: 5px; border-radius: 50%; background: var(--lime); transition: left 200ms ease-out; }
+  .hero-explore-orbit { display: grid; place-items: center; flex: 0 0 52px; width: 52px; height: 52px; border: 1px solid #5c803e; border-radius: 50%; color: var(--lime); transition: border-color 150ms ease-out, background-color 150ms ease-out; }
+  .hero-explore-orbit .arrow { transition: translate 150ms ease-out; }
+  .hero-explore:is(:hover, :focus-visible) .hero-explore-track::before { width: 100%; }
+  .hero-explore:is(:hover, :focus-visible) .hero-explore-track::after { left: calc(100% - 5px); }
+  .hero-explore:is(:hover, :focus-visible) .hero-explore-orbit { border-color: var(--lime); background: #b7f34a0d; }
+  .hero-explore:is(:hover, :focus-visible) .hero-explore-orbit .arrow { translate: 0 3px; }
+  .nav-links a { white-space: nowrap; }
+
+  @media (min-width: 801px) and (max-width: 1050px) {
+    .nav-shell { gap: 18px; }
+    .nav-links { gap: 15px; }
+    .nav-links a { font-size: 11px; }
+    .nav-actions { gap: 14px; }
+  }
+  @media (max-width: 570px) {
+    .hero-explore { gap: 18px; }
+    .hero-explore-label { font-size: 17px; }
+    .hero-explore-orbit { flex-basis: 46px; width: 46px; height: 46px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-explore-track::before, .hero-explore-track::after, .hero-explore-orbit, .hero-explore-orbit .arrow { transition: none; }
+    .hero-explore:is(:hover, :focus-visible) .hero-explore-orbit .arrow { translate: none; }
+  }
+}

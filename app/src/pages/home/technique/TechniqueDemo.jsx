@@ -166,7 +166,7 @@ function TechniqueDemo({ active = true }) {
   }
   return <div ref={rootRef} className={`technique-demo`} data-playing={playing}>
     <div className="technique-guide">
-      <div aria-live="polite"><span className="technique-mini-label">GUIDED ANALYSIS · ¼ SPEED</span><strong>{walkthrough.status === "idle" ? "One kick. Four moments to understand." : walkthrough.status === "finished" ? "Review complete. Put the cues into practice." : (walkthrough.status === "approaching" ? "Next: " : "Pause " + (walkthrough.step + 1) + " / " + walkthroughSteps.length + " · ") + guidedStep.title}</strong></div>
+      <div aria-live="polite"><span className="technique-mini-label">GUIDED ANALYSIS · ¼ SPEED</span><strong>{walkthrough.status === "idle" ? "One kick. Three phases. Four coaching stops." : walkthrough.status === "finished" ? "Review complete. Put the cues into practice." : (walkthrough.status === "approaching" ? "Next: " : "Pause " + (walkthrough.step + 1) + " / " + walkthroughSteps.length + " · ") + guidedStep.title}</strong></div>
       {walkthrough.status === "idle" || walkthrough.status === "finished" ? <button type="button" onClick={startWalkthrough}>{walkthrough.status === "idle" ? "Start walkthrough" : "Replay walkthrough"}<TacticalIcon kind="play" /></button> : walkthrough.status === "paused" ? <button type="button" onClick={continueWalkthrough}>{walkthrough.step === walkthroughSteps.length - 1 ? "Finish review" : "Continue"}<TacticalIcon kind="next" /></button> : <button type="button" onClick={() => setPlaying(!playing)}>{playing ? "Pause walkthrough" : "Resume walkthrough"}<TacticalIcon kind={playing ? "pause" : "play"} /></button>}
     </div>
     <div className={`technique-workspace`}>
@@ -290,7 +290,7 @@ function TechniqueDemo({ active = true }) {
       {selectedMetric && <div className={`technique-measurement`} aria-live={`polite`}>
         <div>
           <small>
-            {`YOUR KICK`}
+            {`RECORDED KICK`}
           </small>
           <strong>
             {formatMeasurement(selectedMetric.value, selectedMetric.unit)}

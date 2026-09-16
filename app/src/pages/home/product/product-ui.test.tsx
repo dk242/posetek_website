@@ -10,7 +10,7 @@ describe("recovered demo integration", () => {
     expect(html).not.toContain("How much time do you have?");
     expect(html).toContain("Figure-8 dribble");
     expect(html).toContain("Interactive demo");
-    expect(html).toContain("Sample active plan");
+    expect(html).toContain("Sample training focus");
     expect(html).toContain("Customize");
     expect(html).toContain("Start sample workout");
   });
@@ -20,6 +20,19 @@ describe("recovered demo integration", () => {
     expect(html).toContain("20 min available");
     expect(html).toContain("Start sample workout");
     expect(html).not.toContain("How much time do you have?");
+  });
+  it.each([
+    ["Help me work on my dribbling", "Build your ball control", "Figure-8 dribble"],
+    ["Help me work on my passing", "Find your passing rhythm", "Wall pass rhythm"],
+    ["Help me work on my shooting", "Develop your shooting", "One-step laces strike"],
+  ])("keeps sample context aligned with the request: %s", (request, context, drill) => {
+    const html = renderToStaticMarkup(<WorkoutDemo initialRequest={request} />);
+    expect(html).toContain(context);
+    expect(html).toContain(drill);
+    expect(html).toContain("One session · Two guided drills");
+    expect(html).not.toContain("Week 2 of 4");
+    expect(html).not.toContain("Sample active plan");
+    if (!request.includes("dribbling")) expect(html).not.toContain("Build your ball control");
   });
   it("renders the full sample answer and all three question controls without tab gating", () => {
     const html = renderToStaticMarkup(<CoachDemo onOpenWorkout={() => undefined} />);

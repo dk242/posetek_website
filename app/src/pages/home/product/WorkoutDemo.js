@@ -99,9 +99,14 @@ function WorkoutDemo({ active = true, initialRequest = ``, requestId = 0 }) {
     let currentSegment = workout?.segments[state.segment];
     let currentDrill = currentSegment && workout?.drills[currentSegment.drill];
     let totalSets = workout?.drills.reduce((e, t) => e + t.sets, 0) || 0;
-    let stepLabels = [`Your day`, `Your workout`, `Your session`, `Your progress`];
+    let stepLabels = [`Your day`, `Your workout`, `Your session`, `Your summary`];
     let activeStep = state.step === `preparing` ? 1 : [`intake`, `review`, `training`, `summary`].indexOf(state.step);
     let focus = workout?.choices.focus || choices.focus;
+    let focusContext = {
+        dribbling: `Build your ball control`,
+        passing: `Find your passing rhythm`,
+        shooting: `Develop your shooting`
+    }[focus];
     let updateChoice = (e, t) => setChoices(n => ({
         ...n, [e]: t
     }));
@@ -145,13 +150,11 @@ Your focus.` : workout?.title
                             }), (0, jsxRuntime.jsxs)(`div`, {
                                 className: `pd-plan-context`, children: [
                                     (0, jsxRuntime.jsx)(`span`, {
-                                        className: `pd-tiny-label`, children: `Sample active plan`
+                                        className: `pd-tiny-label`, children: `Sample training focus`
                                     }), (0, jsxRuntime.jsx)(`strong`, {
-                                        children: `Build your ball control`
+                                        children: focusContext
                                     }), (0, jsxRuntime.jsx)(`span`, {
-                                        children: `Week 2 of 4`
-                                    }), (0, jsxRuntime.jsx)(`div`, {
-                                        className: `pd-plan-progress`, children: (0, jsxRuntime.jsx)(`i`, {})
+                                        children: `One session · Two guided drills`
                                     })
                                 ]
                             }), (0, jsxRuntime.jsx)(`p`, {
@@ -173,7 +176,7 @@ Your focus.` : workout?.title
                                                     })
                                                 ]
                                             }), (0, jsxRuntime.jsx)(`span`, {
-                                                className: `pd-step-index`, children: choosingFocus ? `03 / 03` : `01 / 03`
+                                                className: `pd-step-index`, children: choosingFocus ? `02 / 02` : `01 / 02`
                                             })
                                         ]
                                     }), initialRequest && (0, jsxRuntime.jsxs)(`div`, {
@@ -182,7 +185,7 @@ Your focus.` : workout?.title
                                                 kind: `control`
                                             }), (0, jsxRuntime.jsxs)(`span`, {
                                                 children: [
-                                                    `From your coach: `,
+                                                    `From the AI Coach sample: `,
                                                     initialRequest
                                                 ]
                                             })
@@ -204,7 +207,7 @@ Your focus.` : workout?.title
                                                     (0, jsxRuntime.jsxs)(`fieldset`, {
                                                         children: [
                                                             (0, jsxRuntime.jsx)(`legend`, {
-                                                                children: `Choose a sample request for your coach`
+                                                                children: `Choose a training focus`
                                                             }), (0, jsxRuntime.jsx)(`div`, {
                                                                 className: `pd-options pd-focus`, children: [`dribbling`, `passing`, `shooting`].map(e => (0, jsxRuntime.jsx)(`button`, {
                                                                     type: `button`, "aria-pressed": choices.focus === e, onClick: () => updateChoice(`focus`, e), children: e
@@ -215,7 +218,7 @@ Your focus.` : workout?.title
                                                         focus: choices.focus, className: `pd-focus-preview`
                                                     }), (0, jsxRuntime.jsxs)(`p`, {
                                                         className: `pd-focus-request`, children: [
-                                                            `“A `, choices.minutes, `-minute `, choices.focus, ` session, with `, choices.energy === `low` ? `light` : choices.energy === `high` ? `fresh` : `normal`, ` energy today.”`
+                                                            `“`, choices.minutes, ` minutes available for `, choices.focus, `, with `, choices.energy === `low` ? `low` : choices.energy === `high` ? `high` : `normal`, ` energy today.”`
                                                         ]
                                                     })
                                                 ]
@@ -527,7 +530,7 @@ Your focus.` : workout?.title
                                                     (0, jsxRuntime.jsx)(`strong`, {
                                                         children: workout.drills.length
                                                     }), (0, jsxRuntime.jsx)(`span`, {
-                                                        children: `drills completed`
+                                                        children: `drills in this sample`
                                                     })
                                                 ]
                                             }), (0, jsxRuntime.jsxs)(`div`, {
@@ -554,7 +557,7 @@ Your focus.` : workout?.title
                                                         })
                                                     ]
                                                 }), (0, jsxRuntime.jsx)(`span`, {
-                                                    children: `Complete`
+                                                    children: state.skippedTime ? `Reviewed` : `Demo complete`
                                                 })
                                             ]
                                         }, e.id))
@@ -563,7 +566,7 @@ Your focus.` : workout?.title
                                             (0, jsxRuntime.jsx)(TacticalIcon, {
                                                 kind: `retest`
                                             }), (0, jsxRuntime.jsx)(`p`, {
-                                                children: `A clear session, a completed plan, and a next step you can come back to.`
+                                                children: `Review the drills, then build your next sample around what you want to practice.`
                                             })
                                         ]
                                     }), (0, jsxRuntime.jsxs)(`button`, {

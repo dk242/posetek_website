@@ -1,10 +1,48 @@
 # PoseTek website project context
 
-Reviewed on September 15, 2026. This guide summarizes the available repository and
+Reviewed on September 16, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
 ## Readiness and source provenance
+
+### Current revision: three-pose hero and coherent homepage copy
+
+Deployment `6aaa45aa0d612bd628335ecf` is live at https://posetek.net, published
+September 16, 2026 at 12:34:12 AM PDT (07:34:12.757 UTC). The validated draft was
+promoted unchanged. See `deployment/HERO_REVISION_PRODUCTION.json` for checks and
+rollback. All 193 local output files match the published inventory, including
+the 171 unchanged application/public files. The established scrolling layout
+and green/lime visual system remain the design reference, with Refero motion
+and copy guidance.
+
+The hero now has one exploration action, **“See your game differently,”** with a
+circular downward arrow and a tracking line that responds to hover and focus.
+The large hero booking button was removed; booking remains in the header and
+closing section. Header navigation follows the section order: Tests, Technique,
+Athlete profile, Training, AI Coach.
+
+The viewer cycles Shooting → Sprint → Vertical jump at six-second intervals,
+with a 450 ms crossfade. Shooting retains the prior reconstruction; sprint and
+jump use derived world landmarks from the authorized recordings, verified
+against source frames 312 and 158 respectively. Each skeleton has a translucent
+illustrative body, not a likeness or calibrated body scan. Only shooting includes
+a ball. Public assets contain derived coordinates and technical provenance;
+private source recordings, account identifiers and access URLs remain excluded.
+See `app/src/pages/home/latest-hero/PROVENANCE.md` for reconstruction details.
+
+Manual pose selection pauses the cycle. Pause/Resume controls automatic cycling
+and rotation; dragging and keyboard orbit remain available. Reduced motion
+disables automatic motion and crossfades. Hidden/offscreen scenes suspend work,
+interrupted drags reset on teardown, and the static fallback supports all poses.
+
+Supporting copy now consistently explains testing → review → profile → training
+→ retesting. Technique distinguishes three phases from four coaching stops and
+labels its saved measurements “Recorded kick.” Workout context follows the
+selected focus, identifies each independent two-drill sample, and distinguishes
+available time from actual sample duration. Fixed week/progress claims were
+removed; skipped demonstrations no longer claim completed drills. Sample profile
+and AI Coach measurements and answers are unchanged.
 
 ### Shared repository handoff
 
@@ -28,16 +66,16 @@ the pinned deployment. Their exact tracked originals are now recorded as
 Verification without the local baseline cache resolved all 171 preserved files
 from those 25 tracked sources and 146 pinned downloads, with zero mismatches.
 
-### Current release: nine annotations implemented
+### Historical release: nine annotations implemented
 
-Deployment `6aaa2d81f7a768e5e5799ae1` is live at https://posetek.net, published
+Deployment `6aaa2d81f7a768e5e5799ae1` was published to https://posetek.net on
 September 15, 2026 at 10:50:58 PM PDT (September 16, 05:50:58.892 UTC).
 The validated draft was promoted unchanged. See
 `deployment/ANNOTATION_UPDATE_PRODUCTION.json` for verification and rollback.
 All 171 application/public files remain unchanged; all 193 local output files
 match the published inventory, plus one Netlify-generated metadata file.
 
-The current order is Hero → journey bar → six tests with one shared replay →
+The release established Hero → journey bar → six tests with one shared replay →
 guided technique → athlete profile → ready-made workout → AI Coach/retesting →
 booking. Copy is concise. The hero says “players”; only the keypoints art label
 was removed, preserving the separate tracked-joints metric.
@@ -184,8 +222,9 @@ organize results into Speed, Shooting, Power, Control, and Agility.
 
 The established visual identity uses dark green, lime accents, condensed
 athletic headings, Inter body copy, and IBM Plex Mono for technical labels.
-Booking a performance test is the primary public action; sign-in serves returning
-users. Use concise, evidence-based copy. Sample athlete scores and training plans
+The hero invites visitors to explore the system; booking remains available in
+the header and closing section, and sign-in serves returning users. Use concise,
+evidence-based copy. Sample athlete scores and training plans
 must stay labeled as samples; do not turn them into customer outcome claims.
 Experimental `hypothesis_*` page pricing and older offers are not verified current
 commercial terms.
@@ -203,7 +242,7 @@ commercial terms.
 | `app/src/pages/home/movement/` | Recovered current movement controller, six exact recordings, telemetry, tests, and provenance |
 | `app/src/pages/home/technique/` | Recovered current technique panel, 71 frames, phase measurements, references, and tests |
 | `app/src/pages/home/product/` | Recovered current workout/coach UI, typed reducer/sample data, tests, and recovery tooling |
-| `app/src/pages/home/PitchVisual.tsx`, `latest-hero/` | Current reconstructed shooting hero, Svelte/Threlte/Three renderer and fallback |
+| `app/src/pages/home/PitchVisual.tsx`, `latest-hero/` | Shooting/sprint/jump hero, derived landmarks, illustrative bodies, cycle/orbit controls, Svelte/Threlte/Three renderer and static fallbacks |
 | `app/src/pages/home/LazyPoseDemo.tsx`, `PoseDemo.tsx`, `use-pose-demo.ts`, `pitch/` | Earlier implementation reference; not the main page's active demo/hero imports |
 | `app/src/pages/home/pose-*.json`, `landing-pose-demo-data.json` | Earlier recording data used by existing cards/tests; newer playback data lives in `movement/` |
 | `app/src/App.tsx` | Application routes and legacy aliases |
@@ -224,9 +263,10 @@ pages, not a single self-contained `index.html`. Future references to editing
 - Retain keyboard controls, focus behavior, reduced-motion support, rendering
   suspension when hidden/offscreen, and the hero's render-failure fallback.
 - Keep recorded measurements, units, frames, and checksum provenance intact.
-  The current hero is the September 15 world-landmark reconstruction with estimated
-  depth, not a calibrated 3D body scan. Earlier frame-464 source notes describe the
-  prior hero; `latest-hero/PROVENANCE.md` and its data supersede them here.
+  The hero retains the September 15 shooting reconstruction and adds source-derived
+  sprint/jump world landmarks with estimated depth and illustrative bodies, not
+  calibrated body scans. Earlier frame-464 source notes describe the prior hero;
+  `latest-hero/PROVENANCE.md` and its data supersede them here.
 - Preserve sample labels and the distinction between recorded data and illustrative
   content. Keep private video, account identifiers, and download URLs out of
   public bundles.
