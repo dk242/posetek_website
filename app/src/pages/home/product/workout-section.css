@@ -1,0 +1,4 @@
+/* Standalone scrolling-section adaptation; the deployed demo CSS is separate. */
+.pt-home .workout-demo .pd-workout-main .pd-heading h4 {
+  scroll-margin-top: 110px;
+}

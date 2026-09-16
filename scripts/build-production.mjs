@@ -13,12 +13,20 @@ const manifest = JSON.parse(await readFile(join(root, "deployment/homepage-basel
 const cache = join(app, "node_modules/.cache/homepage-baseline", manifest.deploymentId);
 const hash = bytes => createHash("sha1").update(bytes).digest("hex");
 const injected = /\n<!-- homepage-navigation:start -->[\s\S]*?<!-- homepage-navigation:end -->\n/g;
-const entry = manifest.files.find(file => file.path === "/index.html");
-const live = await fetch("https://posetek.net/", { signal: AbortSignal.timeout(30000) });
+const applicationPath = manifest.applicationPath ?? "/index.html";
+const preserveApplicationEntry = applicationPath === "/application.html";
+if (applicationPath !== "/index.html" && !preserveApplicationEntry) throw new Error("Unsupported baseline application path");
+const entry = manifest.files.find(file => file.path === applicationPath);
+if (!entry) throw new Error("Baseline application entry is missing: " + applicationPath);
+if (preserveApplicationEntry && manifest.files.some(file => file.path === "/index.html" || file.path.startsWith("/marketing/assets/"))) {
+  throw new Error("Preservation baseline overlaps the marketing output");
+}
+const outputPath = file => !preserveApplicationEntry && file.path === "/index.html" ? "/application.html" : file.path;
+const live = await fetch("https://posetek.net" + (preserveApplicationEntry ? applicationPath : "/"), { signal: AbortSignal.timeout(30000) });
 if (!live.ok) throw new Error("Could not verify production before building");
 const liveHtml = await live.text();
 let current = liveHtml;
-if (liveHtml.includes("<!-- posetek-marketing-entry -->")) {
+if (!preserveApplicationEntry && liveHtml.includes("<!-- posetek-marketing-entry -->")) {
   const response = await fetch("https://posetek.net/application.html", { signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error("Could not verify preserved application");
   current = (await response.text()).replace(injected, "");
@@ -69,25 +77,27 @@ await Promise.all(Array.from({ length: 6 }, async () => {
     }
     await mkdir(dirname(cached), { recursive: true });
     await writeFile(cached, bytes);
-    const target = contained(output, file.path === "/index.html" ? "/application.html" : file.path);
+    const target = contained(output, outputPath(file));
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, bytes);
   }
 }));
 
-const shellPath = join(output, "application.html");
-const applicationHtml = await readFile(shellPath, "utf8");
-if (!applicationHtml.includes("</body>")) throw new Error("Unexpected application shell");
-await writeFile(shellPath, applicationHtml.replace("</body>", '\n<!-- homepage-navigation:start -->\n<script src="/marketing/home-navigation.js" defer></script>\n<!-- homepage-navigation:end -->\n</body>'));
+if (!preserveApplicationEntry) {
+  const shellPath = join(output, "application.html");
+  const applicationHtml = await readFile(shellPath, "utf8");
+  if (!applicationHtml.includes("</body>")) throw new Error("Unexpected application shell");
+  await writeFile(shellPath, applicationHtml.replace("</body>", '\n<!-- homepage-navigation:start -->\n<script src="/marketing/home-navigation.js" defer></script>\n<!-- homepage-navigation:end -->\n</body>'));
+}
 const marketingHtml = await readFile(join(root, "marketing-dist/index.html"), "utf8");
 if (!marketingHtml.includes("<!-- posetek-marketing-entry -->")) throw new Error("Missing marketing entry marker");
 await writeFile(join(output, "index.html"), marketingHtml);
 await cp(join(root, "marketing-dist/assets"), join(output, "marketing/assets"), { recursive: true });
-await cp(join(root, "deployment/home-navigation.js"), join(output, "marketing/home-navigation.js"));
+if (!preserveApplicationEntry) await cp(join(root, "deployment/home-navigation.js"), join(output, "marketing/home-navigation.js"));
 
 for (const file of manifest.files) {
-  const bytes = await readFile(contained(output, file.path === "/index.html" ? "/application.html" : file.path));
-  const original = file.path === "/index.html" ? bytes.toString("utf8").replace(injected, "") : bytes;
-  if (hash(original) !== file.sha) throw new Error("Preservation verification failed: " + file.path);
+  const bytes = await readFile(contained(output, outputPath(file)));
+  const original = !preserveApplicationEntry && file.path === "/index.html" ? bytes.toString("utf8").replace(injected, "") : bytes;
+  if (hash(original) !== file.sha || Buffer.byteLength(original) !== file.size) throw new Error("Preservation verification failed: " + file.path);
 }
 console.log(`[production] Verified ${manifest.files.length} preserved application files from ${manifest.deploymentId}; added isolated homepage.`);

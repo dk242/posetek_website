@@ -1,0 +1,65 @@
+<script lang="ts">
+  import { T, useThrelte } from '@threlte/core';
+  import { OrbitControls } from '@threlte/extras';
+  import { onMount, onDestroy } from 'svelte';
+  import { DoubleSide, Spherical, Vector3 } from 'three';
+  import type { OrbitControls as Controls } from 'three/addons/controls/OrbitControls.js';
+  import type { Writable } from 'svelte/store';
+  import { BALL_POSITION, BALL_RADIUS, SUPPORT_FOOT, type PitchView } from './pose-model';
+  import { createBall } from '../pitch/ball';
+  import PoseRig from './PoseRig.svelte';
+  let { view, onReady, onInteract, onInteractionEnd, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onInteractionEnd: () => void; onAngle: (angle: number) => void } = $props();
+  const { invalidate } = useThrelte();
+  const ball = createBall();
+  let controls = $state<Controls>();
+  let lastCommand = 0;
+  let lastNotice = 0;
+  function changed() {
+    const now = performance.now();
+    if (controls && now - lastNotice > 200) { onAngle(controls.getAzimuthalAngle()); lastNotice = now; }
+  }
+  $effect(() => {
+    const { command, action } = $view;
+    if (!controls || command === lastCommand) return;
+    lastCommand = command;
+    if (action === 'reset') {
+      controls.target.set(0,1,.05); controls.object.position.set(2.3,1.85,3.9);
+    } else {
+      const offset = controls.object.position.clone().sub(controls.target);
+      const orbit = new Spherical().setFromVector3(offset);
+      if (action === 'left') orbit.theta -= Math.PI / 8;
+      if (action === 'right') orbit.theta += Math.PI / 8;
+      if (action === 'up') orbit.phi = Math.max(.45, orbit.phi - .15);
+      if (action === 'down') orbit.phi = Math.min(1.55, orbit.phi + .15);
+      controls.object.position.copy(new Vector3().setFromSpherical(orbit).add(controls.target));
+    }
+    controls.update(); invalidate();
+  });
+  onMount(() => { const id = requestAnimationFrame(onReady); return () => cancelAnimationFrame(id); });
+  onDestroy(() => { ball.hexagons.dispose(); ball.pentagons.dispose(); ball.edges.dispose(); });
+</script>
+
+<T.PerspectiveCamera makeDefault position={[2.3,1.85,3.9]} fov={34}>
+  <OrbitControls bind:ref={controls} target={[0,1,.05]} autoRotate={$view.rotating} autoRotateSpeed={.65}
+    enableDamping={false} enableZoom={false} enablePan={false} rotateSpeed={.65}
+    minPolarAngle={.45} maxPolarAngle={1.55} onstart={onInteract} onend={onInteractionEnd} onchange={changed} />
+</T.PerspectiveCamera>
+<T.AmbientLight intensity={.85} />
+<T.DirectionalLight position={[3,6,4]} intensity={3.2} color="#e5ffc0" />
+<T.DirectionalLight position={[-4,2,-3]} intensity={2.1} color="#78e0d1" />
+<PoseRig />
+<T.Group position={[...BALL_POSITION]} scale={BALL_RADIUS / 1.47}>
+  <T.Mesh geometry={ball.hexagons}><T.MeshStandardMaterial color="#b9d58a" roughness={.65} side={DoubleSide} /></T.Mesh>
+  <T.Mesh geometry={ball.pentagons}><T.MeshStandardMaterial color="#11261a" roughness={.7} side={DoubleSide} /></T.Mesh>
+  <T.LineSegments geometry={ball.edges}><T.LineBasicMaterial color="#b7f34a" transparent opacity={.6} /></T.LineSegments>
+</T.Group>
+<T.Mesh position={[SUPPORT_FOOT[0],.003,SUPPORT_FOOT[2]]} rotation.x={-Math.PI / 2} scale={[.12,.2,1]}>
+  <T.CircleGeometry args={[1,32]} />
+  <T.MeshBasicMaterial color="#020c07" transparent opacity={.55} depthWrite={false} />
+</T.Mesh>
+<T.Mesh position={[BALL_POSITION[0],.004,BALL_POSITION[2]]} rotation.x={-Math.PI / 2}>
+  <T.CircleGeometry args={[BALL_RADIUS * .8,32]} />
+  <T.MeshBasicMaterial color="#020c07" transparent opacity={.6} depthWrite={false} />
+</T.Mesh>
+<T.GridHelper args={[6,24,'#3d6444','#153c2c']} />
+<T.Mesh rotation.x={-Math.PI / 2} position.y={.005}><T.RingGeometry args={[1.39,1.4,96]} /><T.MeshBasicMaterial color="#77a551" transparent opacity={.5} side={DoubleSide} /></T.Mesh>

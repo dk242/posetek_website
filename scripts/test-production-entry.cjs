@@ -32,10 +32,16 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
       base = 'http://127.0.0.1:' + server.address().port;
     }
     const manifest = JSON.parse(fs.readFileSync(path.join(root, 'deployment/homepage-baseline.json'), 'utf8'));
+    const applicationPath = manifest.applicationPath ?? '/index.html';
+    const preserveApplicationEntry = applicationPath === '/application.html';
+    assert.ok(applicationPath === '/index.html' || preserveApplicationEntry, 'Unsupported baseline application path');
+    assert.ok(manifest.files.some(file => file.path === applicationPath), 'Baseline application entry missing');
+    if (preserveApplicationEntry) assert.ok(!manifest.files.some(file => file.path === '/index.html' || file.path.startsWith('/marketing/assets/')), 'Preservation baseline overlaps marketing output');
     const hash = bytes => require('node:crypto').createHash('sha1').update(bytes).digest('hex');
     for (const file of manifest.files) {
-      let bytes = fs.readFileSync(path.join(dist, file.path === '/index.html' ? 'application.html' : file.path.slice(1)));
-      if (file.path === '/index.html') bytes = bytes.toString('utf8').replace(/\n<!-- homepage-navigation:start -->[\s\S]*?<!-- homepage-navigation:end -->\n/g, '');
+      let bytes = fs.readFileSync(path.join(dist, !preserveApplicationEntry && file.path === '/index.html' ? 'application.html' : file.path.slice(1)));
+      if (!preserveApplicationEntry && file.path === '/index.html') bytes = bytes.toString('utf8').replace(/\n<!-- homepage-navigation:start -->[\s\S]*?<!-- homepage-navigation:end -->\n/g, '');
+      assert.equal(typeof bytes === 'string' ? Buffer.byteLength(bytes) : bytes.length, file.size, 'Preserved file size changed: ' + file.path);
       assert.equal(hash(bytes), file.sha, 'Preserved file changed: ' + file.path);
     }
     for (const route of ['/', '/index.html']) {

@@ -1,0 +1,457 @@
+.pt-home .technique-demo {
+  background:#071b14;
+  border:1px solid #294334;
+  border-radius:12px;
+  grid-template-columns:minmax(0,1.65fr) minmax(270px,1fr);
+  min-height:438px;
+  display:grid;
+  overflow:hidden
+}
+.pt-home .technique-workspace {
+  background:linear-gradient(155deg,#0b231a,#051710);
+  flex-direction:column;
+  min-width:0;
+  display:flex
+}
+.pt-home .technique-stage-header {
+  letter-spacing:.1em;
+  color:#9cb9a7;
+  border-bottom:1px solid #244032;
+  justify-content:space-between;
+  align-items:center;
+  height:44px;
+  padding:0 22px;
+  font:9px IBM Plex Mono,monospace;
+  display:flex
+}
+.pt-home .technique-stage-header span:first-child {
+  color:#d9ebdf;
+  align-items:center;
+  gap:8px;
+  display:flex
+}
+.pt-home .technique-stage-header i {
+  background:#b7f34a;
+  border-radius:50%;
+  width:5px;
+  height:5px;
+  box-shadow:0 0 10px #b7f34a77
+}
+.pt-home .technique-canvases {
+  flex:1;
+  min-height:0;
+  display:flex;
+  position:relative
+}
+.pt-home .technique-stage {
+  flex:1;
+  width:100%;
+  min-width:0;
+  height:310px
+}
+.pt-home .technique-corners {
+  fill:none;
+  stroke:#6b9359;
+  stroke-width:1px
+}
+.pt-home .technique-svg-caption {
+  fill:#799a85;
+  letter-spacing:1.2px;
+  font:9px IBM Plex Mono,monospace
+}
+.pt-home .technique-bones line {
+  stroke:#8cbaa7;
+  stroke-width:2px;
+  stroke-linecap:round
+}
+.pt-home .technique-bones line.is-highlighted {
+  stroke:#c2ff58;
+  stroke-width:4px;
+  filter:drop-shadow(0 0 5px #b7f34a55)
+}
+.pt-home .technique-joint-dot {
+  fill:#c6e4a6
+}
+.pt-home .technique-joint-ring {
+  fill:#b7f34a12;
+  stroke:#b7f34a88;
+  stroke-width:1px
+}
+.pt-home .technique-joint.is-highlighted .technique-joint-dot {
+  fill:#d2ff76;
+  filter:drop-shadow(0 0 5px #b7f34aaa)
+}
+.pt-home .technique-hit-area {
+  fill:#0000;
+  stroke:none
+}
+.pt-home .technique-joint.is-interactive {
+  cursor:pointer
+}
+.pt-home .technique-joint:focus-visible {
+  outline:none
+}
+.pt-home .technique-joint:focus-visible .technique-hit-area,.pt-home .technique-joint.is-interactive:hover .technique-hit-area {
+  fill:#b7f34a20;
+  stroke:#b7f34a;
+  stroke-width:1px
+}
+.pt-home .technique-ball circle {
+  fill:#d2e6ac;
+  stroke:#b7f34a;
+  stroke-width:1.5px
+}
+.pt-home .technique-ball path {
+  fill:#183629
+}
+.pt-home .technique-reference {
+  border-left:1px solid #284937;
+  flex-direction:column;
+  flex:1;
+  justify-content:center;
+  min-width:0;
+  display:flex;
+  position:relative
+}
+.pt-home .technique-reference svg {
+  width:100%;
+  height:250px
+}
+.pt-home .technique-reference>span,.pt-home .technique-reference>small {
+  color:#a7c2b3;
+  font:8px IBM Plex Mono,monospace;
+  position:absolute;
+  top:12px;
+  left:14px;
+  right:10px
+}
+.pt-home .technique-reference>small {
+  color:#759681;
+  top:auto;
+  bottom:12px
+}
+.pt-home .technique-canvases.is-comparing .technique-stage {
+  width:50%
+}
+.pt-home .technique-reference .technique-bones line {
+  stroke:#73aaa7
+}
+.pt-home .technique-reference .technique-joint-dot {
+  fill:#90d8cc
+}
+.pt-home .technique-playback {
+  border-top:1px solid #1f3a2b;
+  align-items:center;
+  gap:13px;
+  height:46px;
+  padding:0 18px;
+  display:flex
+}
+.pt-home .technique-play {
+  color:#c7ef84;
+  background:0 0;
+  border:0;
+  flex:0 0 30px;
+  height:34px;
+  padding:0
+}
+.pt-home .technique-play svg {
+  width:30px;
+  height:30px
+}
+.pt-home .technique-scrubber {
+  flex:1;
+  position:relative
+}
+.pt-home .technique-scrubber input {
+  accent-color:#b7f34a;
+  cursor:pointer;
+  z-index:1;
+  width:100%;
+  height:20px;
+  display:block;
+  position:relative
+}
+.pt-home .technique-ticks {
+  height:5px;
+  position:absolute;
+  bottom:-3px;
+  left:8px;
+  right:8px
+}
+.pt-home .technique-ticks span {
+  background:#73915f;
+  width:1px;
+  height:5px;
+  position:absolute
+}
+.pt-home .technique-frame {
+  color:#d1e7d9;
+  text-align:right;
+  min-width:39px;
+  font:11px IBM Plex Mono,monospace
+}
+.pt-home .technique-frame small {
+  color:#83a58e;
+  letter-spacing:.06em;
+  font-size:7px;
+  display:block
+}
+.pt-home .technique-phase-tabs {
+  border-top:1px solid #294334;
+  min-height:44px;
+  display:flex
+}
+.pt-home .technique-phase-tabs button {
+  color:#acc3b5;
+  background:#0b2118;
+  border:0;
+  border-right:1px solid #294334;
+  flex:1;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:9px 7px;
+  font-size:10px;
+  display:flex
+}
+.pt-home .technique-phase-tabs button:last-child {
+  border-right:0
+}
+.pt-home .technique-phase-tabs button>span {
+  color:#71915f;
+  font:8px IBM Plex Mono,monospace
+}
+.pt-home .technique-phase-tabs button[aria-pressed=true] {
+  color:#d2ff85;
+  background:#172f1b;
+  box-shadow:inset 0 -2px #b7f34a
+}
+.pt-home .technique-phase-tabs button:hover {
+  background:#16311e
+}
+.pt-home .technique-inspector {
+  border-left:1px solid #294334;
+  flex-direction:column;
+  gap:9px;
+  min-width:0;
+  padding:18px 20px;
+  display:flex
+}
+.pt-home .technique-inspector-top {
+  color:#94b384;
+  letter-spacing:.08em;
+  justify-content:space-between;
+  align-items:center;
+  font:8px IBM Plex Mono,monospace;
+  display:flex
+}
+.pt-home .technique-inspector-top svg {
+  color:#b7f34a;
+  width:20px;
+  height:20px
+}
+.pt-home .technique-measurement-select {
+  color:#92b2a0;
+  font-size:9px;
+  display:block
+}
+.pt-home .technique-measurement-select select {
+  color:#e4eee5;
+  cursor:pointer;
+  background:#0d271c;
+  border:1px solid #37543b;
+  border-radius:5px;
+  width:100%;
+  margin-top:5px;
+  padding:7px;
+  font:600 11px Inter,sans-serif;
+  display:block
+}
+.pt-home .technique-measurement {
+  align-items:baseline;
+  gap:25px;
+  display:flex
+}
+.pt-home .technique-measurement small {
+  letter-spacing:.06em;
+  color:#9fbd9d;
+  margin-bottom:4px;
+  font:8px IBM Plex Mono,monospace;
+  display:block
+}
+.pt-home .technique-measurement strong {
+  color:#c5ff72;
+  font:600 31px/1 Barlow Condensed,sans-serif
+}
+.pt-home .technique-measurement .technique-reference-value strong {
+  color:#85bfb1;
+  font-size:28px
+}
+.pt-home .technique-reference-value small {
+  color:#749e90
+}
+.pt-home .technique-measurement-note {
+  color:#8dae96;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  font:8px IBM Plex Mono,monospace;
+  display:flex
+}
+.pt-home .technique-measurement-note button {
+  color:#c3eb94;
+  white-space:nowrap;
+  background:0 0;
+  border:0;
+  padding:0;
+  font-size:9px
+}
+.pt-home .technique-mini-label {
+  letter-spacing:.08em;
+  color:#799a85;
+  margin-bottom:7px;
+  font:8px IBM Plex Mono,monospace;
+  display:block
+}
+.pt-home .technique-focus-list {
+  border-top:1px solid #254132;
+  padding-top:9px
+}
+.pt-home .technique-focus-list button {
+  text-align:left;
+  color:#a7c2b3;
+  background:0 0;
+  border:1px solid #0000;
+  border-radius:5px;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  padding:7px;
+  font-size:10px;
+  display:flex
+}
+.pt-home .technique-focus-list button>span:first-child {
+  color:#72965c;
+  font:8px IBM Plex Mono,monospace
+}
+.pt-home .technique-focus-list button>span:last-child {
+  color:#b4d591;
+  margin-left:auto;
+  font-size:15px
+}
+.pt-home .technique-focus-list button.is-selected {
+  color:#dcf5c1;
+  background:#173420;
+  border-color:#3b5a2b
+}
+.pt-home .technique-focus-list button:hover {
+  background:#173420
+}
+.pt-home .technique-cue {
+  color:#afcbb9;
+  min-height:3em;
+  font-size:11px;
+  line-height:1.5
+}
+.pt-home .technique-compare {
+  color:#c5eba0;
+  background:#102b1c;
+  border:1px solid #466237;
+  border-radius:5px;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+  min-height:32px;
+  margin-top:auto;
+  padding:6px;
+  font-size:10px;
+  display:flex
+}
+.pt-home .technique-compare svg {
+  width:20px;
+  height:20px
+}
+.pt-home .technique-compare:disabled {
+  cursor:default;
+  color:#789482;
+  background:0 0;
+  border-color:#2b4332
+}
+.pt-home .technique-compare[aria-pressed=true] {
+  background:#203b1d;
+  border-color:#80a441
+}
+@media (width<=760px) {
+  .pt-home .technique-demo {
+    grid-template-columns:1fr
+  }
+  .pt-home .technique-stage {
+    height:230px
+  }
+  .pt-home .technique-inspector {
+    border-top:1px solid #294334;
+    border-left:0;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    padding:14px 16px;
+    display:grid
+  }
+  .pt-home .technique-inspector-top,.pt-home .technique-measurement-note,.pt-home .technique-cue,.pt-home .technique-compare {
+    grid-column:1/-1
+  }
+  .pt-home .technique-measurement-select {
+    align-self:center
+  }
+  .pt-home .technique-measurement {
+    justify-content:flex-end;
+    gap:15px
+  }
+  .pt-home .technique-measurement strong {
+    font-size:29px
+  }
+  .pt-home .technique-measurement .technique-reference-value strong {
+    font-size:25px
+  }
+  .pt-home .technique-focus-list {
+    flex-wrap:wrap;
+    grid-column:1/-1;
+    gap:6px;
+    padding-top:10px;
+    display:flex
+  }
+  .pt-home .technique-focus-list .technique-mini-label {
+    flex:0 0 100%;
+    margin-bottom:0
+  }
+  .pt-home .technique-focus-list button {
+    flex:1;
+    min-width:130px;
+    padding:7px 5px
+  }
+  .pt-home .technique-cue {
+    min-height:0
+  }
+  .pt-home .technique-inspector-top {
+    font-size:7px
+  }
+  .pt-home .technique-reference svg {
+    height:215px
+  }
+
+}
+@media (prefers-reduced-motion:no-preference) {
+  .pt-home .technique-focus-list button,.pt-home .technique-phase-tabs button,.pt-home .technique-compare {
+    transition:background .18s,border-color .18s
+  }
+  .pt-home .technique-joint-ring {
+    animation:2.5s ease-in-out infinite technique-pulse
+  }
+  @keyframes technique-pulse {
+    50% {
+      stroke-opacity:.35
+    }
+
+  }
+
+}

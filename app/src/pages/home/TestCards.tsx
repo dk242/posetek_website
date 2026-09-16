@@ -1,8 +1,5 @@
 import { TacticalIcon } from "./TacticalIcon";
-import { useState, type CSSProperties } from "react";
-import { MagicCard } from "../../components/magicui/magic-card";
-import { PoseThumbnail } from "./PoseThumbnail";
-import recordings from "./pose-recordings.json";
+import { type CSSProperties } from "react";
 
 const TESTS = [
   { key: "sprint", name: "Sprint", type: "Speed", color: "#6cd8e4", copy: "Acceleration. Top speed. Every stride.", metric: "Time · velocity · acceleration" },
@@ -13,21 +10,12 @@ const TESTS = [
   { key: "shooting", name: "Shooting", type: "Technique", color: "#ff9c8f", copy: "Explore the movement behind the strike.", metric: "Velocity · angle · mechanics" },
 ];
 
-export function TestCards({ onWatch }: { onWatch: (key: string) => void }) {
-  const [pinned, setPinned] = useState<string | null>(null);
-  return <div className="test-grid compact-tests">
-    {TESTS.map((test, index) => <MagicCard key={test.key} className="test-card" gradientColor="#b7f34112" gradientFrom={test.color} gradientTo="#284b38" gradientSize={240} gradientOpacity={.4}>
-      <article className={pinned === test.key ? "pose-pinned" : ""} style={{ "--test-color": test.color } as CSSProperties}>
-        <button className="test-preview-toggle" type="button" aria-label={`Preview ${test.name} pose`} aria-pressed={pinned === test.key}
-          onClick={() => setPinned(pinned === test.key ? null : test.key)} onKeyDown={event=>{ if(event.key === "Escape") setPinned(null); }}>
-          <span className="test-top"><span className="test-type">{test.type}</span><span className="test-number">0{index+1}</span></span>
-          <h3>{test.name}</h3>
-          <span className="test-summary">{test.copy}</span>
-          <PoseThumbnail kind={test.key}/>
-          <span className="test-preview-hint">{pinned === test.key ? "Pose selected" : "Explore pose"}<TacticalIcon kind="explore"/></span>
-        </button>
-        <div className="test-card-footer"><span>{test.metric}</span>{recordings.includes(test.key) ? <a href="#how-it-works" aria-label={`Watch ${test.name} pose recording`} onClick={()=>onWatch(test.key)}>Watch rep <TacticalIcon kind="play"/></a> : <small>Action preview</small>}</div>
-      </article>
-    </MagicCard>)}
+export function TestCards({ onWatch, selectedDrill }: { onWatch: (key: string) => void; selectedDrill: string }) {
+  return <div className="test-choices" role="group" aria-label="Choose a performance test">
+    {TESTS.map((test, index) => <button key={test.key} type="button" className="test-choice" aria-pressed={selectedDrill === test.key} onClick={() => onWatch(test.key)} style={{ "--test-color": test.color } as CSSProperties}>
+      <span className="test-choice-index">0{index + 1}</span>
+      <span><strong>{test.name}</strong><span className="test-choice-copy">{test.copy}</span></span>
+      <TacticalIcon kind="play" />
+    </button>)}
   </div>;
 }

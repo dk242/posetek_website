@@ -1,0 +1,59 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aa9fd38c6863f74b02380e9",
+  "state": "ready",
+  "publishedAt": "2026-09-16T02:25:58.402Z",
+  "publishedLocal": "September 15, 2026, 7:25:58 PM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aa9fd38c6863f74b02380e9--posetek.netlify.app",
+  "method": "Verified manual draft promoted with Netlify restoreSiteDeploy",
+  "previousProductionDeployId": "6aa9b6f0d8faf6177db8fd97",
+  "source": {
+    "baseCommit": "c5af2e9",
+    "workingTree": "Uncommitted scrolling homepage implementation; no GitHub push performed",
+    "originalSeptember15Source": "Unavailable; current demos recovered with source provenance"
+  },
+  "applicationPreservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "preservedFiles": 171,
+    "totalBytes": 58681957,
+    "sha1AndSizeMatched": true,
+    "applicationEntrySha1": "0f2c8c4a359aa271bee04e191fbd44677545e729",
+    "navigationBridgeSha1": "c58d9fcd1561eabcd8ddc08bfaeb2d0baf0aadf9",
+    "guardActive": true
+  },
+  "publishedInventory": {
+    "fileCount": 195,
+    "matchedProductionDistFiles": 194,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homepageTests": 85,
+    "navigationTests": 6,
+    "productionBaselineTests": 5,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "assets": 74,
+      "result": "passed"
+    },
+    "draftBrowser": "AI Coach 20-minute dribbling handoff, workout creation, start and pause passed; no errors or warnings",
+    "liveBrowser": "Scrolling homepage, movement switch, technique phase, sign-in screen and booking calendar verified; no homepage errors or warnings; no account or booking form submitted",
+    "localResponsiveWidths": [390, 320],
+    "authenticatedWorkflows": "not exercised"
+  },
+  "configuration": {
+    "redirectRules": 1,
+    "headerRules": 5,
+    "effectiveBehavior": "Retained; /* falls back to /application.html without forcing existing assets",
+    "netlifyToml": "CLI-generated protected metadata checked separately from public application assets"
+  },
+  "rollback": {
+    "deployId": "6aa9b6f0d8faf6177db8fd97",
+    "url": "https://6aa9b6f0d8faf6177db8fd97--posetek.netlify.app"
+  }
+}

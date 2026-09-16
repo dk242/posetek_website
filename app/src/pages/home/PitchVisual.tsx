@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BALL_POSITION, POSE_EDGES, SHOOTING_POSE, type OrbitAction, type PitchHandle, type PitchView } from "./pitch/pose-model";
+import { BALL_POSITION, POSE_EDGES, SHOOTING_POSE, type OrbitAction, type PitchHandle, type PitchView } from "./latest-hero/pose-model";
 
 export function PitchVisual() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ export function PitchVisual() {
     setRotation(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const load = async () => {
       try {
-        const { mountPitch } = await import("./pitch/mount");
+        const { mountPitch } = await import("./latest-hero/mount");
         if (cancelled) return;
         handle.current = mountPitch(host, view.current,
           () => { if (!cancelled) setReady(true); },
@@ -73,12 +73,12 @@ export function PitchVisual() {
 
   const point = ([x,y,z]: readonly number[]) => [270 + x * 130 + z * 24, 360 - y * 132 + z * 12];
   return <div ref={wrapperRef} className="pitch-visual" data-renderer={ready ? "webgl" : "static"}>
-    <div className="pose-explorer" role="group" aria-label="Interactive 33-keypoint soccer pose" aria-describedby="pose-explorer-help" tabIndex={0}
+    <div className="pose-explorer" role="group" aria-label="Interactive reconstructed left-footed shooting pose" aria-describedby="pose-explorer-help" tabIndex={0}
       onKeyDown={event => {
         const keys: Record<string, OrbitAction> = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Home: "reset" };
         if (ready && keys[event.key]) { event.preventDefault(); command(keys[event.key]); }
       }}>
-      <svg className="pitch-static" viewBox="0 0 540 440" fill="none" role="img" aria-label="Recorded shooting pose with 33 landmarks">
+      <svg className="pitch-static" viewBox="0 0 540 440" fill="none" role="img" aria-label="World-landmark reconstruction of a recorded left-footed shot">
         <g stroke="#315f40" opacity=".55"><path d="M50 360 265 300 500 360 275 430zM100 345l220 66M155 331l220 66M210 316l220 66M104 377l215-61M160 395l215-61M217 412l215-61"/><ellipse cx="275" cy="363" rx="110" ry="34"/></g>
         <g stroke="#a3eada" strokeWidth="1.8">{POSE_EDGES.map(([a,b]) => { const p=point(SHOOTING_POSE[a]),q=point(SHOOTING_POSE[b]); return <path key={`${a}-${b}`} d={`M${p[0]} ${p[1]}L${q[0]} ${q[1]}`}/>; })}</g>
         <g fill="#d2ff70">{SHOOTING_POSE.map((p,i)=>{ const [x,y]=point(p); return <circle key={i} cx={x} cy={y} r={2.7}/>; })}</g>
@@ -86,6 +86,6 @@ export function PitchVisual() {
       </svg>
       <div ref={hostRef} className="pitch-scene" aria-hidden="true" />
     </div>
-    <span className="pose-explorer-help" id="pose-explorer-help">{failed ? "Recorded pose / 33 keypoints" : "Drag to explore / arrow keys to rotate"}</span>
+    <span className="pose-explorer-help" id="pose-explorer-help">{failed ? "Reconstructed shooting pose" : "Drag to explore / arrow keys to rotate"}</span>
   </div>;
 }

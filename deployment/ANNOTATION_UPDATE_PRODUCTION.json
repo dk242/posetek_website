@@ -1,0 +1,47 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aaa2d81f7a768e5e5799ae1",
+  "state": "ready",
+  "publishedAt": "2026-09-16T05:50:58.892Z",
+  "publishedLocal": "September 15, 2026, 10:50:58 PM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aaa2d81f7a768e5e5799ae1--posetek.netlify.app",
+  "releaseMethod": "Manual Netlify draft promoted unchanged; no GitHub push",
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "guardActive": true,
+    "result": "byte-for-byte unchanged"
+  },
+  "publishedInventory": {
+    "fileCount": 194,
+    "matchedProductionDistFiles": 193,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homepageTests": 87,
+    "navigationAndBaselineTests": 11,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "assets": 74,
+      "result": "passed"
+    },
+    "homepageAssets": "All 21 draft assets match byte-for-byte. Served entry differs only by Netlify pretty-URL rewrite of the noscript booking link; raw entry hash matches published inventory.",
+    "browser": "Desktop, 390px and 320px layouts; four exact guided stops, same-frame cues and references; workout customize/start/pause/rest/summary; AI Coach handoff. Hosted draft and live smoke passed with no errors or warnings.",
+    "authenticatedWorkflows": "not exercised"
+  },
+  "mobileReference": {
+    "repository": "athelyticsOG/posetek-mobile-app",
+    "branch": "main",
+    "commit": "98d8a051f0580785b70610f5c1a29a5246e08bfb"
+  },
+  "rollback": {
+    "deployId": "6aa9fd38c6863f74b02380e9",
+    "url": "https://6aa9fd38c6863f74b02380e9--posetek.netlify.app"
+  }
+}

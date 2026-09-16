@@ -1,0 +1,109 @@
+// The September 13 narrative with the September 15 demonstrations in scroll sections.
+.pt-home {
+  .journey-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 38px; border-block: 1px solid var(--line); }
+  .journey-nav a { display: flex; align-items: center; gap: 14px; padding: 22px 16px; border-right: 1px solid var(--line); }
+  .journey-nav a:first-child { padding-left: 0; }
+  .journey-nav a:last-child { border-right: 0; }
+  .journey-nav a > span { font: 9px "IBM Plex Mono", monospace; color: #91ac97; }
+  .journey-nav strong { font-size: 12px; font-weight: 500; }
+  .journey-nav .arrow { color: var(--lime); margin-left: auto; width: 17px; height: 17px; flex-basis: 17px; }
+  .journey-nav a:hover { color: var(--lime); }
+  .homepage-demo { min-width: 0; }
+  .homepage-demo-placeholder { min-height: 540px; border: 1px solid #355041; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; background: radial-gradient(ellipse at center, #1d4c3233, transparent 70%), #061710; }
+  .homepage-demo-technique .homepage-demo-placeholder { min-height: 650px; }
+  .homepage-demo-coach .homepage-demo-placeholder { min-height: 490px; }
+  .homepage-demo-placeholder p { color: var(--muted); font-size: 13px; }
+  .demo-loading-mark { font: 700 88px "Barlow Condensed", sans-serif; color: #42603b; margin-bottom: 24px; }
+  .demo-retry { background: transparent; border: 0; margin-top: 16px; }
+  .demo-caption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 28px; padding-top: 16px; }
+  .demo-caption > span { font: 9px/1.9 "IBM Plex Mono", monospace; color: #97b3a2; }
+  .demo-caption .button-text { font-size: 11px; min-height: 44px; gap: 10px; }
+  .demo-caption .arrow { width: 18px; height: 18px; }
+  .profile-section, .workout-section { background: #081c14; border-block: 1px solid var(--line); }
+  .profile-section .profile-layout { padding-top: 0; }
+  .profile-section h2 { font-size: clamp(44px, 4.3vw, 62px); }
+  .profile-section .profile-copy > p:not(.eyebrow) { max-width: 350px; }
+  .profile-copy .button-text { margin-top: 20px; justify-content: flex-start; font-size: 11px; gap: 10px; }
+  .retest-section .section-heading { margin-bottom: 0; }
+  .retest-section .development-loop { margin-top: 38px; }
+  #training-title:focus { outline: none; }
+  #training-title:focus-visible { outline: 2px solid var(--lime); outline-offset: 10px; }
+
+  @media (max-width: 1100px) {
+    .nav-shell { gap: 24px; }
+    .nav-links { gap: 20px; }
+    .nav-actions { gap: 20px; }
+  }
+  @media (max-width: 800px) {
+    .journey-nav a { padding: 18px 10px; gap: 8px; }
+    .journey-nav .arrow { display: none; }
+    .profile-section .profile-copy { display: block; }
+    .profile-section .profile-benefits { margin-top: 22px; }
+    .profile-section .profile-copy > p:not(.eyebrow) { margin-top: 22px; max-width: 500px; }
+  }
+  @media (max-width: 570px) {
+    .journey-nav { margin-top: 28px; }
+    .journey-nav a { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 8px; }
+    .journey-nav strong { font-size: 10px; }
+    .journey-nav a > span { font-size: 8px; }
+    .demo-caption { padding-top: 14px; gap: 2px; }
+    .demo-caption > span { font-size: 8px; }
+    .homepage-demo-placeholder { min-height: 540px; padding: 24px 18px; }
+    .homepage-demo-technique .homepage-demo-placeholder { min-height: 740px; }
+    .homepage-demo-coach .homepage-demo-placeholder { min-height: 680px; }
+    .homepage-demo-workout .homepage-demo-placeholder { min-height: 730px; }
+    .profile-section h2 { font-size: 48px; }
+    .nav-shell { gap: 13px; }
+  }
+  @media (max-width: 359px) {
+    .hero h1 { font-size: 50px; }
+    .nav-cta { white-space: nowrap; }
+    .nav-cta .arrow { display: none; }
+  }
+}
+.pt-home {
+  .assessment-workspace { display: grid; grid-template-columns: minmax(250px, .7fr) minmax(0, 1.8fr); gap: 24px; align-items: start; }
+  .test-choices { display: grid; gap: 8px; }
+  .test-choice { display: flex; align-items: center; gap: 14px; min-height: 87px; padding: 16px; border: 1px solid #31513d; border-radius: 9px; background: #0a2117; color: #e8f2e9; text-align: left; cursor: pointer; transition: border-color .2s, background .2s; }
+  .test-choice:hover, .test-choice[aria-pressed="true"] { border-color: var(--test-color); background: #163323; }
+  .test-choice:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .test-choice-index { color: var(--test-color); font: 10px "IBM Plex Mono", monospace; }
+  .test-choice strong { display: block; font-size: 15px; }
+  .test-choice-copy { display: block; color: #a8beb0; font-size: 11px; line-height: 1.5; margin-top: 5px; }
+  .test-choice .tactical-icon { flex: 0 0 22px; width: 22px; height: 22px; margin-left: auto; color: var(--test-color); }
+  .assessment-replay { min-width: 0; scroll-margin-top: 100px; }
+  .pose-drill-switcher[hidden] { display: none; }
+  .retest-section .section-heading { margin-bottom: 36px; }
+  .section-anchor { display: block; scroll-margin-top: 100px; }
+  .technique-guide { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 24px; background: #153021; border-bottom: 1px solid #38523b; }
+  .technique-guide strong { display: block; font-size: 15px; margin-top: 8px; }
+  .technique-guide button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #b7f34a; color: #11220c; border: 0; border-radius: 6px; padding: 12px 16px; min-height: 44px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+  .technique-guide .tactical-icon { width: 22px; height: 22px; }
+  .technique-compare .tactical-icon { width: 22px; height: 22px; flex: 0 0 22px; }
+  .pd-proposal-list .pd-drill-row { display: grid; grid-template-columns: 130px 22px minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px; }
+  .pd-drill-row > .tactical-icon { display: none; }
+  .pd-drill-row .pd-drill-preview { width: 130px; height: auto; margin: 0; }
+  .pd-drill-row .pd-drill-setup { color: #a8beb0; font-size: 11px; line-height: 1.5; margin: 7px 0 0; }
+  .drill-diagram .diagram-label { fill: #b8d0bd; font: 11px "IBM Plex Mono", monospace; }
+  .drill-diagram .diagram-target { fill: #d3f5a2; font: 9px sans-serif; }
+  .drill-diagram .diagram-legend { fill: #a9bdad; font: 10px sans-serif; }
+  @media (max-width: 900px) {
+    .assessment-workspace { grid-template-columns: 1fr; }
+    .test-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .test-choice { padding: 12px; gap: 9px; }
+    .test-choice .tactical-icon { display: none; }
+  }
+  @media (max-width: 570px) {
+    .test-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .test-choice { align-items: flex-start; min-height: 104px; }
+    .test-choice strong { font-size: 13px; }
+    .test-choice-index { padding-top: 3px; }
+    .technique-guide { flex-direction: column; align-items: stretch; padding: 18px; gap: 16px; }
+    .technique-guide strong { font-size: 14px; }
+    .pd-proposal-list .pd-drill-row { grid-template-columns: 20px minmax(0, 1fr); }
+    .pd-drill-row .pd-drill-preview { width: 100%; max-height: 190px; grid-column: 1 / -1; }
+  }
+}
+.pt-home .assessment-replay .movement-demo .session-mock { grid-template-columns: minmax(0, 1fr); }
+.pt-home .assessment-replay .movement-demo .session-video { height: clamp(260px, 30vw, 365px); }
+@media (max-width: 570px) { .pt-home .assessment-replay .movement-demo .session-video { height: 240px; } }

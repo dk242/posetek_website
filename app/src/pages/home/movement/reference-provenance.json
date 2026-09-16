@@ -1,0 +1,55 @@
+{
+  "deployment": "6aa9b6f0d8faf6177db8fd97",
+  "assets": {
+    "PoseDemo-oa1MzmqS.js": "85582793dde46de20b5893b5f207757e58cd2254cdd5c2104ad24d1f9dcee6be",
+    "PoseDemo-CqGXJyR9.css": "457d95468648a9000902df003af282154a06a9622fc3d100b125f4a95b443b86",
+    "index-B_aLIfan.js": "4e3192d2325bb3fcff49e3143f508eea5bfa886c2120e5e065f1476fec227f7e",
+    "mount-B0YcjNhI.js": "a834b7e62b572459c37ce0f18f0cc6e841d3703e82b2cfbbc34d8948b706a0bb"
+  },
+  "movementDataSha256": "1f49073ebe98e71630a6b33ecbdc540d0a07bc20a7ee36607f47a5f8c443663d",
+  "reconstructedPoseSha256": "d7646b38d0dd87630e36d7b8d792da265bbfa218b5c1ee94cf50b87cbdd12af1",
+  "sequences": [
+    {
+      "key": "sprint",
+      "frames": 75,
+      "fps": 29.9848556518555,
+      "calibratedMarkers": 2,
+      "telemetrySamples": 75
+    },
+    {
+      "key": "jump",
+      "frames": 71,
+      "fps": 30,
+      "calibratedMarkers": 0,
+      "telemetrySamples": 0
+    },
+    {
+      "key": "broadJump",
+      "frames": 83,
+      "fps": 60,
+      "calibratedMarkers": 0,
+      "telemetrySamples": 0
+    },
+    {
+      "key": "dribbling",
+      "frames": 225,
+      "fps": 29.98572158813475,
+      "calibratedMarkers": 2,
+      "telemetrySamples": 0
+    },
+    {
+      "key": "changeOfDirection",
+      "frames": 282,
+      "fps": 60,
+      "calibratedMarkers": 0,
+      "telemetrySamples": 0
+    },
+    {
+      "key": "shooting",
+      "frames": 91,
+      "fps": 60,
+      "calibratedMarkers": 1,
+      "telemetrySamples": 0
+    }
+  ]
+}
