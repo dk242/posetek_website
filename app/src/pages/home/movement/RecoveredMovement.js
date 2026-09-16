@@ -192,16 +192,6 @@ function createMovementController(e, t, n, r = !0) {
         j.lineCap = `round`;
         j.lineJoin = `round`;
 
-        // A quiet torso plane makes crossed limbs easier to read without a body model.
-        const torso = [11, 12, 24, 23].map(index => points[index]);
-        if (torso.every(Boolean)) {
-            j.beginPath();
-            torso.forEach((point, index) => index ? j.lineTo(point.x, point.y) : j.moveTo(point.x, point.y));
-            j.closePath();
-            j.fillStyle = `#b9dec010`;
-            j.fill();
-        }
-
         for (const detail of [false, true]) {
             j.beginPath();
             BODY_EDGES.forEach(([from, to]) => {
@@ -211,12 +201,8 @@ function createMovementController(e, t, n, r = !0) {
                 j.moveTo(start.x, start.y);
                 j.lineTo(end.x, end.y);
             });
-            // Crisp contrast against grids and trails, without a blurred glow.
-            j.strokeStyle = `#06170fed`;
-            j.lineWidth = detail ? 3.5 : 5.5;
-            j.stroke();
             j.strokeStyle = detail ? `#aacbbb` : `#edf6e8`;
-            j.lineWidth = detail ? 1.4 : 2.5;
+            j.lineWidth = detail ? 1 : 1.5;
             j.stroke();
         }
 
@@ -226,11 +212,7 @@ function createMovementController(e, t, n, r = !0) {
             if (index < 11 && ![0, 7, 8].includes(index)) return;
             const major = index >= 11 && !isDetail(index);
             j.beginPath();
-            j.arc(point.x, point.y, major ? 2.9 : 1.5, 0, Math.PI * 2);
-            j.fillStyle = `#06170f`;
-            j.fill();
-            j.beginPath();
-            j.arc(point.x, point.y, major ? 1.75 : .85, 0, Math.PI * 2);
+            j.arc(point.x, point.y, 1.5, 0, Math.PI * 2);
             j.fillStyle = major ? `#b7f34a` : index < 11 ? `#aacbbb` : `#dcebdc`;
             j.fill();
         });

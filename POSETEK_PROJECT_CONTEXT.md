@@ -6,7 +6,37 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Current revision: anatomical viewer and clearer recorded tracking
+### Current revision: athletic male anatomy and finer tracking
+
+Deployment `6aaa57d3fe77d22f67611c42` was published to https://posetek.net on
+September 16, 2026 at 1:52:03 AM PDT (08:52:03.048 UTC). The validated draft was
+promoted unchanged. All 197 local output files match the published inventory,
+including the 171 preserved application/public files. Release checks and rollback
+are recorded in `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json`.
+
+The user selected an **athletic male
+anatomical model** in neutral sage and confirmed that all three recorded hero
+poses must retain their existing coordinates. References inform body shape and
+presentation only; they do not replace recorded evidence.
+
+This revision refines the licensed MHR surface through a reproducible athletic
+male rest-shape profile, reduces the tracking line and joint sizes, and replaces
+the thick limb-based loading illustration with static renders of the fitted
+mesh. The body remains illustrative, not a likeness or calibrated scan.
+
+Recorded 2D pose strokes return to a fine treatment: 1.5 px primary lines,
+1 px detail lines and 1.5 px dots, with the heavy outlines and torso fill removed.
+Measurement overlays, data, playback and the improved phone metrics layout
+remain intact. The hero keeps the same controls, held-pose timing and camera
+persistence. Modified keyboard shortcuts retain their native browser behavior;
+the tablet controls and two-line keyboard hint have separate vertical space.
+
+Higgsfield installation was authorized and its install prompt confirmed, but
+connection completion is still pending. No Higgsfield output is used at this
+stage. The design decisions and public photo references are recorded in
+`deployment/VIEWER_DESIGN_REFERENCE.md`.
+
+### Historical release: anatomical viewer and clearer recorded tracking
 
 Deployment `6aaa4f0b04a11116d8495374` was published to https://posetek.net on
 September 16, 2026 at 1:12:19 AM PDT (08:12:19.763 UTC). The validated draft was

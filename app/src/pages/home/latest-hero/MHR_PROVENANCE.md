@@ -46,10 +46,45 @@ SAM 3D Body inference and must not be presented as a Meta-generated
 reconstruction of the athlete. It uses the properly licensed MHR template as
 the user-requested anatomical reference.
 
+## Athletic male display profile — September 16, 2026
+
+The current body uses the user-selected **anatomical athletic male** direction,
+versioned as `posetek-athletic-male-v1`. The neutral MHR template is preserved
+unchanged. `prepare-mhr-template.mjs` also produces
+`mhr-athletic-male-shape.json`: one combined rest-position delta from the
+inspected official MHR identity shapes `shape_c_0 = -0.6` and
+`shape_c_1 = -2.6`. These are art-direction coefficients, not estimated athlete
+identity parameters. No inference of the recorded person's sex, anatomy or
+body composition is performed.
+
+The preparation script maps the original FBX morph deltas onto welded vertices
+by their exact rounded rest positions and rejects ambiguous correspondences.
+The delta file pins the original FBX hash and a SHA-256 of the ordered neutral
+vertex positions. Tests verify both before accepting the profile, avoiding
+shape deltas being applied to a different vertex ordering. Its 14,697 numeric
+deltas add 70,645 source bytes; unneeded original morph tensors remain excluded.
+
+`athletic-male-profile.ts` applies that delta once, then adds deterministic,
+smooth rest-space contours: broader pectorals and upper back, fuller deltoids,
+a leaner waist, restrained glute/quadriceps/calf volume, and a slightly broader
+jaw. Contours blend through the original skin weights. The original 4,899
+vertices, 9,794 triangles, skeleton and weights remain intact; no new body
+parts or disconnected muscle geometry are added.
+
+After pose fitting, a bounded radial correction restores some volume lost to
+linear skinning at blended elbows and knees. It affects only the surface shared
+by the adjacent limb regions and never shifts a recorded landmark. It is a
+lightweight display correction, not Meta's neural pose-corrective model or a
+biomechanical measurement. Extreme poses can still exhibit template fitting
+limitations; no improved reconstruction accuracy is claimed.
+
 ## Geometry verification
 
 Tests validate finite outward-oriented geometry for all three poses, one
 connected manifold surface, normalized skin weights, preserved input points,
 rotation/translation/uniform-scale covariance, bounded complexity, hand/foot
-direction, and retained airborne jump clearance. The template does not add
-measurements or change any athlete scores.
+direction, and retained airborne jump clearance. Male-profile checks also
+validate exact source/vertex correspondence, deterministic rest-shape output,
+broader upper torso and reduced abdominal projection, and per-vertex covariance
+under full 3D rotation, translation and uniform scale for all three poses. The
+template does not add measurements or change any athlete scores.

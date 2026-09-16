@@ -24,6 +24,23 @@ let mesh;
 scene.traverse(object => { if (object.isSkinnedMesh && object.name === 'body_mesh') mesh = object; });
 if (!mesh || mesh.skeleton.bones.length !== 127) throw new Error('Expected the official MHR LOD3 body rig.');
 const geometry = mesh.geometry;
+// One inspected, art-directed identity combination. These coefficients describe
+// a display template, never the recorded athlete's identity or measurements.
+const maleShapeCoefficients = { shape_c_0: -.6, shape_c_1: -2.6 };
+const maleDeltaByPosition = new Map();
+const positionKey = values => values.map(n => +n.toFixed(5)).join(',');
+for (let vertex = 0; vertex < geometry.attributes.position.count; vertex++) {
+  const delta = [0, 0, 0];
+  for (const [name, coefficient] of Object.entries(maleShapeCoefficients)) {
+    const morph = geometry.morphAttributes.position[mesh.morphTargetDictionary[name]];
+    if (!morph || !geometry.morphTargetsRelative) throw new Error('Expected relative MHR identity shapes.');
+    for (let axis = 0; axis < 3; axis++) delta[axis] += morph.array[vertex * 3 + axis] * coefficient;
+  }
+  const key = positionKey(Array.from(geometry.attributes.position.array.slice(vertex * 3, vertex * 3 + 3)));
+  const previous = maleDeltaByPosition.get(key);
+  if (previous && previous.some((value, axis) => Math.abs(value - delta[axis]) > 1e-5)) throw new Error('Ambiguous MHR vertex/morph correspondence.');
+  maleDeltaByPosition.set(key, delta);
+}
 geometry.morphAttributes = {};
 geometry.deleteAttribute('normal');
 geometry.deleteAttribute('uv');
@@ -74,4 +91,20 @@ const template = {
   regions: names, positions, indices: Array.from(welded.index.array), skinRegions, skinWeights, joints,
 };
 fs.writeFileSync(output, JSON.stringify(template) + '\n');
+const maleDeltas = [];
+for (let vertex = 0; vertex < positions.length / 3; vertex++) {
+  const delta = maleDeltaByPosition.get(positionKey(positions.slice(vertex * 3, vertex * 3 + 3)));
+  if (!delta) throw new Error(`Missing exact morph correspondence at vertex ${vertex}.`);
+  maleDeltas.push(...delta.map(value => +value.toFixed(5)));
+}
+const maleProfile = {
+  version: 'posetek-athletic-male-v1',
+  sourceSha256: sha256,
+  vertexOrderSha256: createHash('sha256').update(JSON.stringify(positions)).digest('hex'),
+  coefficients: maleShapeCoefficients,
+  deltas: maleDeltas,
+};
+const maleOutput = path.join(root, 'app/src/pages/home/latest-hero/mhr-athletic-male-shape.json');
+fs.writeFileSync(maleOutput, JSON.stringify(maleProfile) + '\n');
 console.log(JSON.stringify({ output, sourceSha256: sha256, vertices: positions.length / 3, triangles: template.indices.length / 3, bytes: fs.statSync(output).size }, null, 2));
+console.log(JSON.stringify({ maleOutput, bytes: fs.statSync(maleOutput).size, vertexOrderSha256: maleProfile.vertexOrderSha256 }, null, 2));

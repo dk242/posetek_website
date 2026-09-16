@@ -1,0 +1,44 @@
+{
+  "generator": "scripts/render-hero-fallbacks.mjs",
+  "width": 1000,
+  "height": 400,
+  "sourceSha256": {
+    "app/src/pages/home/latest-hero/AthleteStage.svelte": "ff7a920c94db3d21073366afc8a46c5b2e7e8979759cb1d169814119a03005ee",
+    "app/src/pages/home/latest-hero/PoseFigure.svelte": "bb00636463f6b295547f4785f275b8c9e00c7da59fe3d12e69edb92ef5425ded",
+    "app/src/pages/home/latest-hero/PoseRig.svelte": "4ace118c3cea5cd7ec289d057ae69612ee28040e93026c2b549152c038e5c5c9",
+    "app/src/pages/home/latest-hero/Scene.svelte": "06194e9011ca8798f539209a261b5584ac37582e05fe9cf3a34851a2b89417b5",
+    "app/src/pages/home/latest-hero/athletic-male-profile.ts": "011a270036899a32eb1d22227ff4b8f85627991282a429bb9a4391c9c585102a",
+    "app/src/pages/home/latest-hero/body-geometry.ts": "62d571c347d4454c40275b74be608fa876dd2cd7e2409e8ae5bae7c2b360b208",
+    "app/src/pages/home/latest-hero/jump-pose.json": "67f005537cbe6c3001c8784b523fec85466cea5dcfac8ac5d4fcdd643d96c5f1",
+    "app/src/pages/home/latest-hero/mhr-athletic-male-shape.json": "b8e5a19e034d47a3a975a996ca3bfdffdf75368088c31006e42f5eae3d8ade67",
+    "app/src/pages/home/latest-hero/mhr-template.json": "395910fbafc3b47cf21f962d5bb339d6158a7bdbf4acfd956d2d6bf111727c60",
+    "app/src/pages/home/latest-hero/pose-model.ts": "41d03bdbf37e001a8716cc2f18fe2a4bcc72cf59e7068749192b15898be098fa",
+    "app/src/pages/home/latest-hero/shooting-pose.json": "e1a7642cb72b42dfe380b5555af5fc79a438cb08ebb3f424e2970cb52b94b3bb",
+    "app/src/pages/home/latest-hero/sprint-pose.json": "31b556e12d6b1c1d1d12407dccfcc01596c0fc4ee35632e6fc45ea12987cd913",
+    "app/src/pages/home/latest-hero/stage-camera.ts": "c38edb4c47d9174caa5339e17ae0c748d9fb71e335026d70df173ef4848ea3ba",
+    "app/src/pages/home/pitch/ball.ts": "480e1175ba2c57764eb4ff8c2c61906e560984f6445171689a854a825c6d2b6c",
+    "scripts/render-hero-fallbacks.mjs": "de085a656ecc167c4a6e0def5aad16a58f4e652464a077771007cdc9b4cf6cea"
+  },
+  "assets": [
+    {
+      "file": "shooting.png",
+      "bytes": 32396,
+      "sha256": "9743245c8a6362e7ad9d787eefe80923a583aa68afab01f37ae709733482c7d0"
+    },
+    {
+      "file": "sprint.png",
+      "bytes": 32319,
+      "sha256": "f06c1e5f9d13b467658fc9ba3dca1c8095de63f7cd1a868992983382f00a38fb"
+    },
+    {
+      "file": "jump.png",
+      "bytes": 33159,
+      "sha256": "73ddea93ea8ceae01496a2586d30a5f72a27a11f922b1a4230b87fd98ae39de1"
+    },
+    {
+      "file": "projection.json",
+      "bytes": 1927,
+      "sha256": "a5558a02b12328ee90b04b54af1d60f60a979511bcc06e01435003a00ed1070f"
+    }
+  ]
+}

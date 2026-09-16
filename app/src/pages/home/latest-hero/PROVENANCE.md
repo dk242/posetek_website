@@ -3,8 +3,8 @@
 ## Current anatomical renderer — September 16, 2026
 
 The recorded pose data below remains the source of truth. The current viewer
-fits Meta's continuous MHR LOD3 anatomical surface around those unchanged
-landmarks, replacing the earlier procedural body parts. See
+fits Meta's continuous MHR LOD3 anatomical surface, with the versioned athletic
+male display profile, around those unchanged landmarks. See
 [`MHR_PROVENANCE.md`](./MHR_PROVENANCE.md) for the pinned source, Apache license,
 preparation script, fitting method and limitations. This is an illustrative
 template fit, not SAM inference, an athlete likeness or a calibrated body scan.
@@ -14,7 +14,11 @@ field of view, 5.5 display-unit distance and front/side/reset viewpoints.
 `Scene.svelte` uses the studio lighting and `AthleteStage.svelte` stage; these
 supersede the historical camera, pitch grid and lighting described below.
 The **Body + pose** and **Pose only** layers retain visible recorded tracking.
-The non-WebGL fallback is static; the separate movement playback is unchanged.
+The static non-WebGL fallback uses pre-rendered views of the same fitted body,
+with thin SVG tracking at the matching reset-camera projection. Run
+`node scripts/render-hero-fallbacks.mjs` after changing body geometry, camera,
+lighting or pose sources; `--check` validates the committed source/asset hashes.
+The separate movement playback preserves its data and uses finer tracking lines.
 Camera state survives offscreen unmounts. Soft contact shadows retain a visible
 gap beneath the airborne jump.
 

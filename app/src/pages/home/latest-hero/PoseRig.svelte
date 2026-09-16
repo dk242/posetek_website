@@ -12,7 +12,7 @@
     const start = new Vector3(...points[a]), end = new Vector3(...points[b]);
     const direction = end.clone().sub(start);
     const hand = a >= 15 && a <= 22 && b >= 15 && b <= 22;
-    const radius = hand ? .003 : .0048;
+    const radius = hand ? .002 : .003;
     const tube = new CylinderGeometry(radius, radius, direction.length(), 8);
     const color = new Color(a % 2 === b % 2 ? a % 2 ? '#d8fba2' : '#c1f5e5' : '#ecf6d9');
     const colors = new Float32Array(tube.getAttribute('position').count * 3);
@@ -29,7 +29,7 @@
   function placePoints(mesh: InstancedMesh) {
     const matrix = new Matrix4();
     points.forEach(([x,y,z], index) => {
-      const radius = index < 11 ? .0035 : index > 16 && index < 23 ? .007 : .014;
+      const radius = index < 11 ? .0025 : index > 16 && index < 23 ? .005 : .009;
       matrix.makeScale(radius, radius, radius).setPosition(x,y,z);
       mesh.setMatrixAt(index, matrix);
       mesh.setColorAt(index, new Color(index > 10 && index % 2 === 0 ? '#c1f5e5' : '#ddffac'));
@@ -42,7 +42,7 @@
 </script>
 
 <T.Mesh geometry={body} visible={layer === 'body'} renderOrder={1}>
-  <T.MeshStandardMaterial color="#b8d3c2" transparent opacity={opacity * .88} roughness={.64} metalness={.06} depthWrite={opacity > .99} />
+  <T.MeshStandardMaterial color="#b8d3c2" transparent opacity={opacity * .97} roughness={.62} metalness={.02} depthWrite={opacity > .99} />
 </T.Mesh>
 <T.Mesh geometry={bones} renderOrder={3}>
   <T.MeshBasicMaterial vertexColors transparent {opacity} depthTest={false} depthWrite={false} toneMapped={false} />

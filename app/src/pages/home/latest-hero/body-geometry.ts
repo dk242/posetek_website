@@ -1,5 +1,6 @@
 import template from './mhr-template.json';
 import { BufferGeometry, Float32BufferAttribute, Matrix4, Vector3 } from 'three';
+import { createAthleticMaleRestSurface } from './athletic-male-profile';
 
 type Point3 = readonly [number, number, number];
 type Frame = { side: Vector3; up: Vector3; front: Vector3 };
@@ -7,6 +8,7 @@ const SOURCE_UP = new Vector3(0, 1, 0);
 const SOURCE_SIDE = new Vector3(1, 0, 0);
 const SOURCE_FRONT = new Vector3(0, 0, 1);
 const REST = template.joints as Record<string, number[]>;
+const ATHLETIC_REST_SURFACE = createAthleticMaleRestSurface();
 const joint = (name: string) => new Vector3(...REST[name] as [number, number, number]);
 const midpoint = (a: Vector3, b: Vector3) => a.clone().add(b).multiplyScalar(.5);
 function direction(value: Vector3, fallback: Vector3) {
@@ -51,6 +53,7 @@ export function createAthleteBody(points: readonly Point3[]): BufferGeometry {
   const legLength = (p[23].distanceTo(p[25]) + p[25].distanceTo(p[27]) + p[24].distanceTo(p[26]) + p[26].distanceTo(p[28])) / 2;
   const scale = (spine.length() + legLength) / 135.5; // MHR uses centimeters.
   const transforms: Record<string, Matrix4> = {};
+  const jointSupports: { upper: number; lower: number; source: Vector3; sourceAxis: Vector3; target: Vector3; targetAxis: Vector3 }[] = [];
   transforms.pelvis = fit(sourceHips, hips, sourceBody, pelvis, [p[23].distanceTo(p[24]) / joint('l_upleg').distanceTo(joint('r_upleg')), spine.length() / sourceSpine.length(), scale]);
   transforms.torso = fit(sourceHips, hips, sourceBody, body, [p[11].distanceTo(p[12]) / joint('l_uparm').distanceTo(joint('r_uparm')), spine.length() / sourceSpine.length(), scale]);
 
@@ -70,6 +73,19 @@ export function createAthleteBody(points: readonly Point3[]): BufferGeometry {
     limb(`${prefix}_lowarm`, `${prefix}_lowarm`, `${prefix}_wrist`, p[elbow], p[wrist]);
     limb(`${prefix}_upleg`, `${prefix}_upleg`, `${prefix}_lowleg`, p[hip], p[knee]);
     limb(`${prefix}_lowleg`, `${prefix}_lowleg`, `${prefix}_foot`, p[knee], p[ankle]);
+    for (const [upperName, jointName, endName, startIndex, jointIndex, endIndex] of [
+      [`${prefix}_uparm`, `${prefix}_lowarm`, `${prefix}_wrist`, shoulder, elbow, wrist],
+      [`${prefix}_upleg`, `${prefix}_lowleg`, `${prefix}_foot`, hip, knee, ankle],
+    ] as const) {
+      const sourceCenter = joint(jointName);
+      jointSupports.push({
+        upper: template.regions.indexOf(upperName), lower: template.regions.indexOf(jointName),
+        source: sourceCenter,
+        sourceAxis: direction(sourceCenter.clone().sub(joint(upperName)).normalize().add(joint(endName).sub(sourceCenter).normalize()), SOURCE_UP),
+        target: p[jointIndex],
+        targetAxis: direction(p[jointIndex].clone().sub(p[startIndex]).normalize().add(p[endIndex].clone().sub(p[jointIndex]).normalize()), body.up),
+      });
+    }
 
     // Pose's index/pinky points describe the hand base, not detailed finger joints.
     // Keep the neutral MHR finger articulation and use the recorded palm direction.
@@ -106,8 +122,9 @@ export function createAthleteBody(points: readonly Point3[]): BufferGeometry {
   const matrices = template.regions.map(name => transforms[name]);
   const positions = new Float32Array(template.positions.length);
   const original = new Vector3(), transformed = new Vector3(), sum = new Vector3();
+  const restRadial = new Vector3(), posedRadial = new Vector3();
   for (let vertex = 0; vertex < positions.length / 3; vertex++) {
-    original.fromArray(template.positions, vertex * 3);
+    original.fromArray(ATHLETIC_REST_SURFACE, vertex * 3);
     sum.set(0, 0, 0);
     let totalWeight = 0;
     for (let influence = 0; influence < 4; influence++) {
@@ -118,7 +135,31 @@ export function createAthleteBody(points: readonly Point3[]): BufferGeometry {
       sum.addScaledVector(transformed, weight);
       totalWeight += weight;
     }
-    sum.divideScalar(totalWeight).toArray(positions, vertex * 3);
+    sum.divideScalar(totalWeight);
+    // Linear blends can hollow elbows and knees. Restore only lost radial
+    // volume in vertices shared by the two adjacent limb regions. The bounded
+    // correction is invariant to pose translation/rotation/scale and does not
+    // move the recorded joint centers or add an unobserved joint measurement.
+    for (const support of jointSupports) {
+      let upperWeight = 0, lowerWeight = 0;
+      for (let influence = 0; influence < 4; influence++) {
+        const index = vertex * 4 + influence, region = template.skinRegions[index];
+        if (region === support.upper) upperWeight += template.skinWeights[index];
+        if (region === support.lower) lowerWeight += template.skinWeights[index];
+      }
+      if (upperWeight < .01 || lowerWeight < .01) continue;
+      restRadial.copy(original).sub(support.source);
+      restRadial.addScaledVector(support.sourceAxis, -restRadial.dot(support.sourceAxis));
+      posedRadial.copy(sum).sub(support.target);
+      posedRadial.addScaledVector(support.targetAxis, -posedRadial.dot(support.targetAxis));
+      const radius = posedRadial.length();
+      if (radius < 1e-8) continue;
+      const targetRadius = restRadial.length() * scale;
+      const sharedWeight = 4 * upperWeight * lowerWeight / ((upperWeight + lowerWeight) ** 2);
+      const correction = Math.max(0, Math.min(.35, targetRadius / radius - 1)) * sharedWeight * .8;
+      sum.addScaledVector(posedRadial, correction);
+    }
+    sum.toArray(positions, vertex * 3);
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));

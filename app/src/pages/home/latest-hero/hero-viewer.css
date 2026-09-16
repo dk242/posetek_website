@@ -53,10 +53,12 @@
 .pt-home .hero-pose-viewer .pose-explorer-help { font-size: 8px; }
 @media (min-width: 571px) and (max-width: 1000px) {
   .pt-home .hero-layer-controls { top: 104px; left: 18px; right: auto; }
-  .pt-home .hero-pose-viewer .pose-explorer { top: 151px; }
+  .pt-home .hero-pose-viewer .pose-explorer { top: 151px; bottom: 144px; }
   .pt-home .hero-orbit-hint { font-size: 8px; gap: 4px; }
-  .pt-home .hero-view-tools { left: 17px; right: 13px; gap: 4px; }
+  .pt-home .hero-view-tools { bottom: 108px; left: 17px; right: 13px; gap: 4px; }
   .pt-home .hero-view-tools button { padding-inline: 7px; }
+  .pt-home .hero-pose-controls { bottom: 48px; }
+  .pt-home .hero-pose-viewer .pose-explorer-help { flex-direction: column; gap: 3px; }
 }
 @media (max-width: 570px) {
   .pt-home .hero .hero-art { height: 582px; margin-top: 26px; }

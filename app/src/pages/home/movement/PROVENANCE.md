@@ -26,10 +26,11 @@ recovered module/data/CSS and pose JSON from the pinned local reference.
 
 ## September 16, 2026 rendering refinement
 
-The recorded 2D viewer now uses crisp dark outlines behind its limb strokes,
-subtler hand/foot edges, and larger primary joints. A faint shoulder/hip plane
-connects only the four supplied torso landmarks. Nose and ear points retain
-head orientation while dense eye/mouth dots are omitted from the presentation.
+Following visual review, the recorded 2D viewer uses thin 1.5 px primary limb
+strokes, 1 px hand/foot details and uniform 1.5 px landmark dots. The earlier
+heavy contrast outlines and torso fill were removed at the user's request.
+Nose and ear points retain head orientation while dense eye/mouth dots are
+omitted from the presentation.
 The green/lime hierarchy follows the approved PoseTek visual system and Refero
 craft guidance; existing overlay colors retain their measurement meanings.
 Playback has a 44 px hit target and explicit keyboard focus.

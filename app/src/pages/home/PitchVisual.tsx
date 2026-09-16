@@ -105,6 +105,7 @@ export function PitchVisual() {
     </div>
     <div className="pose-explorer" role="group" aria-label={`${failed ? 'Static' : 'Interactive'} reconstructed ${pose.label.toLowerCase()} pose`} aria-describedby="pose-explorer-help" tabIndex={0}
       onKeyDown={event => {
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
         const keys: Record<string, OrbitAction> = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Home: "reset" };
         if (ready && keys[event.key]) { event.preventDefault(); command(keys[event.key]); }
       }}>
