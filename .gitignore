@@ -9,3 +9,9 @@ node_modules/
 .DS_Store
 
 firestore-debug.log*
+storage-debug.log*
+# Local Firebase runtime configuration and secrets are never source deliverables.
+functions/.runtimeconfig.json
+functions/.secret.local
+functions/.env*
+!functions/.env.example

@@ -6,27 +6,37 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Confirmed application source gap: live feed
+### Feed stack recovered for the shared repository
 
-On September 16, 2026, the user reported that the app engineer could not find
-the live website feed source. GitHub main at `3f7ecd2` has only an older root
-`feed.html` mockup and no feed route in `app/src/App.tsx`. The public application
-instead serves `/feed` and `/feed.html` through `FeedPage-Cm50ZtLq.js`; its client,
-CSS and router bundles match the preserved September 15 deployment byte-for-byte.
+On September 16, 2026, the user requested the complete feed frontend/backend in
+`dk242/posetek_website` for the app engineer. At `3f7ecd2`, the repository had only
+an old feed mockup; homepage releases preserved the compiled live application
+without recovering its source. The initial diagnosis is retained at `2264401`.
 
-The original authored feed source was not found in fetched website branches or
-history, either named alternate checkout, or the local Codex worktrees search.
-The published client references 14 social Firebase callables whose implementations
-are also absent from this repository's `functions/` directory. The checkout used
-to publish the feed still needs to supply its frontend, backend, integration,
-rules/indexes, and tests. Public client assets cannot recover server-only code.
+The feed feature stack is now recovered and integrated. Editable React source
+in `app/src/pages/feed/` reconstructs the exact published component and styles,
+with named components, typed contracts for all 14 callables, and source provenance.
+Original frontend TSX/comments/history remain unavailable. No deployed React
+runtime is imported. The frontend builds without the ignored reference capture.
 
-The earlier shared-repository handoff synchronized the recovered homepage; it did
-not establish complete application source parity. The 171-file preservation build
-keeps the live feed working without its original source being committed. See
-[`docs/FEED_SOURCE_HANDOFF.md`](docs/FEED_SOURCE_HANDOFF.md) for exact evidence,
-public code links, and the remaining handoff requirements. Do not use root
-`feed.html` as the current feed implementation for mobile iteration.
+The original authored backend was recovered from deployed Google Cloud Functions
+source archives using the authorized Firebase account: 14 callables, four activity
+projection triggers, account deletion, invitation helpers, and original tests.
+Live Firestore/Storage rules and all 12 composite indexes are included. Credentials,
+runtime config, source archives, production settings and athlete data are excluded.
+The newer teammate admission tests and existing homepage changes are preserved.
+
+Both `/feed` and `/feed.html`, player entry/navigation, and staff/admin feed links
+are integrated. Root `feed.html` remains historical and is excluded from ordinary
+application output. Preview with the Vite dev server at `/feed?preview=1`; read
+[`docs/FEED_SOURCE_HANDOFF.md`](docs/FEED_SOURCE_HANDOFF.md) for setup, contracts,
+checks, provenance and the release boundary. The normal dev app uses its existing
+cloud Firebase configuration unless a developer explicitly changes it.
+
+The source handoff does not deploy frontend/backend or modify production data.
+The homepage production build still enforces and preserves its 171-file application
+baseline. A future application release needs a separate full application review
+and deliberate baseline reconciliation.
 
 ### Current revision: athletic male anatomy and finer tracking
 
@@ -442,9 +452,10 @@ Initial preparation verification (before the scrolling update):
 
 ## Context documents and precedence
 
-1. `deployment/ANNOTATION_UPDATE_PRODUCTION.json` and
-   `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md`: latest release receipt and the
-   nine requested updates; the current-release section above records decisions.
+1. `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json`: latest production receipt;
+   `deployment/VIEWER_DESIGN_REFERENCE.md` records the viewer design decisions.
+   `deployment/ANNOTATION_UPDATE_PRODUCTION.json` is the historical annotation
+   release; `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` records all nine requests.
 2. `deployment/SCROLLING_HOMEPAGE_UPDATE.md` and
    `deployment/SCROLLING_HOMEPAGE_PRODUCTION.json`: earlier scrolling direction,
    recovery boundaries, behavior adaptations, reconciliation, and release receipt.
@@ -459,6 +470,9 @@ Initial preparation verification (before the scrolling update):
    contracts when a requested change actually touches those features.
 8. `docs/planner/`, `app/PLANNER_PERSONALIZATION_PLAN.md`, and `deployments/`:
    feature plans and historical integration/validation receipts.
+9. `docs/FEED_SOURCE_HANDOFF.md`, `app/src/pages/feed/PROVENANCE.md`, and
+   `functions/SOCIAL_RECOVERY.md`: recovered feed stack, setup, contracts and
+   source provenance. This source handoff is not a production release.
 
 Earlier September 9 integration notes describe a unified build with no homepage
 bridge; the later homepage release notes and current build script supersede

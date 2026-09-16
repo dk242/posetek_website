@@ -16,7 +16,7 @@ const INVITATION_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const RATE_LIMIT = Object.freeze({ attempts: 10, windowMs: 15 * 60 * 1000 });
 const CANONICAL_UID_FIELDS = ["authenticationUID", "userUID"];
 
-function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
+function createAdmission({ db, FieldValue, HttpsError, randomInt, invitations }) {
   const pick = randomInt || ((max) => Math.floor(Math.random() * max));
 
   function invitationCode(prefix = "", length = 6) {
@@ -118,6 +118,10 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt }) {
     await enforceRateLimit(uid, "redeemPlayerSignupCode");
     if (await findOwnedPlayer(uid)) {
       throw new HttpsError("already-exists", "This account is already linked to an athlete profile.");
+    }
+    if (invitations) {
+      const claimed = await invitations.redeem(normalized, uid, normalizeEmail(email));
+      if (claimed) return claimed;
     }
     const candidate = await findPlayerByCode(normalized);
     if (!candidate || !playerSegment(candidate.id)) throw invalidInvitation();

@@ -3,16 +3,19 @@
 Shared source repository: [dk242/posetek_website](https://github.com/dk242/posetek_website).
 Public website: [posetek.net](https://posetek.net).
 
-This repository includes the scrolling homepage and all nine annotation updates
-published on September 15, 2026 as deployment `6aaa2d81f7a768e5e5799ae1`.
+This repository includes the scrolling homepage, all nine annotation updates,
+and the athletic male viewer refinement published September 16, 2026 as
+deployment `6aaa57d3fe77d22f67611c42`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/ANNOTATION_UPDATE_PRODUCTION.json).
+[the latest production receipt](deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
-**Feed source status:** the current live feed's authored frontend and social
-backend are not yet in this repository. Root `feed.html` is an older mockup.
-See [the feed source handoff](docs/FEED_SOURCE_HANDOFF.md) for verified live-code
-links, the missing modules, and the source recovery needed for app development.
+**Feed source available:** the complete feed feature stack is now committed:
+recovered editable React frontend, original deployed Firebase backend, typed API
+contracts, rules, indexes, navigation and tests. See [the feed development
+handoff](docs/FEED_SOURCE_HANDOFF.md) for setup and source locations. Run the Vite
+dev server and open `/feed?preview=1` for sample content. Root `feed.html` is an
+older mockup; use `app/src/pages/feed/` for iterations.
 
 ## Set up a fresh clone
 
@@ -46,6 +49,8 @@ use committed source and do not require the reference capture.
 | Public entry and metadata | `index.html` |
 | Application routes and screens | `app/src/App.tsx`, `app/src/pages/` |
 | Backend functions | `functions/` |
+| Feed frontend, API contracts and provenance | `app/src/pages/feed/` |
+| Feed backend and provenance | `functions/social.js`, `functions/social-projection.js`, `functions/SOCIAL_RECOVERY.md` |
 | Production assembly and verification | `scripts/`, `deployment/` |
 | Player behavior and data contracts | [docs/PLAYER_EXPERIENCE.md](docs/PLAYER_EXPERIENCE.md) |
 

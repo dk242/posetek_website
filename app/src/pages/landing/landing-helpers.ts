@@ -91,22 +91,22 @@ export function coachOrgStep2Copy(action: CoachOrgAction | null): CoachOrgStep2C
 }
 
 // MARK: - Post-auth destinations
-// Legacy went to coachesview.html / profile.html; those pages are ported, so the
-// SPA uses their clean routes with the legacy query strings intact.
+// Preserve the published role destinations and existing identity query strings.
+// Players enter the community feed; coaches keep their roster destination.
 
 /** legacy: coachesview.html?userType=coach */
 export function coachHomeRoute(): string {
   return "/roster?userType=coach";
 }
 
-/** legacy sign-in: profile.html?player=<id>&userType=player */
+/** Published player sign-in destination. */
 export function playerHomeRoute(playerId: string): string {
-  return "/athlete?player=" + encodeURIComponent(playerId) + "&userType=player";
+  return "/feed?player=" + encodeURIComponent(playerId) + "&userType=player";
 }
 
-/** legacy signup: profile.html?userType=player[&player=<id>] */
+/** Published player signup destination, with an optional resolved player ID. */
 export function playerSignupRoute(playerId: string | null | undefined): string {
-  return "/athlete?userType=player" + (playerId ? "&player=" + encodeURIComponent(playerId) : "");
+  return "/feed?userType=player" + (playerId ? "&player=" + encodeURIComponent(playerId) : "");
 }
 
 // MARK: - Admission callables (functions/admission.js) — payload shapes
@@ -145,6 +145,7 @@ export function playerIdFromRedeemResult(result: unknown): string | null {
 // same-origin result pages so an external URL cannot turn login into an open redirect.
 // (Allowlist copied byte-for-byte from kickai.html.)
 const RETURN_TO_ALLOWED = new Set([
+  "feed.html",
   "profile.html",
   "coachesview.html",
   "broadJumpPage.html",
@@ -159,6 +160,7 @@ const RETURN_TO_ALLOWED = new Set([
 // Clean SPA routes that alias the allowlisted legacy pages (see app/src/App.tsx).
 // Ported pages redirect signed-out visitors here with these as returnTo values.
 const RETURN_TO_ALLOWED_PATHS = new Set([
+  "/feed",
   "/athlete",
   "/roster",
   "/drills/broad-jump",

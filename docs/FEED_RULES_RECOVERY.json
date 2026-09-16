@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "recoveredOn": "2026-09-16",
+  "project": "kickai-69dd0",
+  "method": "Read-only Firebase Rules releases/rulesets and Firestore Admin index inventory; no deployment or data export",
+  "newlineNote": "Rule source was copied unchanged. Git may normalize CRLF/LF; normalizedLfSha256 hashes are independent of checkout line endings.",
+  "rules": [
+    {
+      "path": "firestore.rules",
+      "sourceRuleset": "projects/kickai-69dd0/rulesets/c06c8d87-62a0-448d-9313-8f1835ba731f",
+      "originalSourceSha256": "109b96f49d96a4d6cf068379b488810737c79de2adda7f8a39bf2d3bb086e095",
+      "normalizedLfSha256": "fa265620557d283494942e18fa982bdf11fcc0c02153494bdea827625633f723"
+    },
+    {
+      "path": "storage.rules",
+      "sourceRuleset": "projects/kickai-69dd0/rulesets/9f5bcd27-566c-4dd5-9563-36df068d55d3",
+      "originalSourceSha256": "5458449e5b9a8ed59cdaaac90bf6bc89bbd1546163eee6b075532fa555a42c15",
+      "normalizedLfSha256": "5458449e5b9a8ed59cdaaac90bf6bc89bbd1546163eee6b075532fa555a42c15"
+    }
+  ],
+  "indexes": {
+    "count": 12,
+    "allReady": true,
+    "retainedPreexisting": 4,
+    "config": "firestore.indexes.json",
+    "conversion": "Keep collection group, query scope and fields; omit implicit trailing __name__ field",
+    "sourceNames": [
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/aiConversations/indexes/CICAgNiav4AK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/kickingSessions/indexes/CICAgJim14AK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/drills/indexes/CICAgOjXh4EK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/llmJobs/indexes/CICAgJj7z4EK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/reps/indexes/CICAgJjF9oIK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/kickingSessions/indexes/CICAgJiUpoMK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/aiConversations/indexes/CICAgNi47oMK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/kickingSessions/indexes/CICAgOi3kJAK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/socialActivities/indexes/CICAgJjmiJEK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/llmUsage/indexes/CICAgJiUsZIK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/comments/indexes/CICAgNi4-ZIK",
+      "projects/kickai-69dd0/databases/(default)/collectionGroups/trainingPlans/indexes/CICAgJjFqZMK"
+    ]
+  },
+  "validation": {
+    "project": "demo-posetek-feed",
+    "config": "firebase.feed-test.json",
+    "assertionsPassed": 250,
+    "productionWrites": false
+  }
+}

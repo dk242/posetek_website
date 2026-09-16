@@ -9,7 +9,7 @@
 
 import { Suspense, lazy } from "react";
 import type { ReactNode } from "react";
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { sendAdminVerification } from "./lib/identity";
 import { useAdminSession } from "./lib/session";
@@ -81,6 +81,7 @@ export default function AdminPage() {
       <Suspense fallback={<div className="portal-loading"><span className="spinner" /><p>Loading…</p></div>}>
         <Routes>
           <Route index element={<AdminHome />} />
+          <Route path="feeds" element={<Navigate to="/feed" replace />} />
           <Route path="drills" element={<DrillLibrary />} />
           <Route path="drills/new" element={<DrillForm mode="create" />} />
           <Route path="drills/:drillId" element={<DrillDetail />} />

@@ -469,8 +469,9 @@ match /drillCatalogMeta/{docId} {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authenticationUID','updatedAt']);
       // Preserve the existing invitation signup protocol for an unowned profile.
       // It cannot take over an established owner or an existing memory workspace.
-      // Public invitation-code discovery is an existing non-AI limitation.
+      // Protected invitations must be claimed through the authenticated callable.
       allow update: if signedIn() && !isPosetekAdmin()
+        && resource.data.get('signupCodeVersion', 0) != 3
         && !('organizationId' in resource.data)
         && resource.data.get('authenticationUID', '') == '' && resource.data.get('userUID', '') == ''
         && resource.data.get('registered', true) == false
@@ -544,7 +545,7 @@ match /drillCatalogMeta/{docId} {
     }
 
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2']);
+      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';

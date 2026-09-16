@@ -6,6 +6,30 @@ const { playerSegment, storageFolderCandidates } = require("./athlete-storage-pa
 
 admin.initializeApp();
 const db = admin.firestore();
+const { createPlayerInvitations } = require("./player-invitations");
+const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+exports.ensurePlayerSignupInvitation = functions.https.onCall((data, context) => playerInvitations.ensure(data?.playerId, requireCaller(context), { rotate: data?.rotate === true }));
+exports.createCoachPlayer = functions.https.onCall((data, context) => playerInvitations.createCoachPlayer(data || {}, requireCaller(context)));
+exports.ensurePlayerInvitationOnWrite = functions.runWith({ failurePolicy: true }).firestore.document("players/{playerId}").onWrite((_, context) => playerInvitations.ensure(context.params.playerId));
+
+const { createSocial } = require("./social");
+const social = createSocial({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), HttpsError: functions.https.HttpsError });
+for (const [endpoint, handler] of Object.entries({
+  getSocialAdminDirectory: "adminDirectory", getSocialContext: "getContext", getSocialFeed: "getFeed", getSocialActivity: "getDetail",
+  saveSocialPreferences: "savePreferences", setSocialVisibility: "setVisibility", getSocialPeople: "people",
+  socialConnection: "connect", setSocialKudos: "kudos", getSocialComments: "comments", saveSocialComment: "comment",
+  reportSocialActivity: "report", moderateSocialActivity: "moderation", getSocialMedia: "media",
+})) exports[endpoint] = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => social[handler](data || {}, requireCaller(context)));
+// Re-read authoritative inputs in a transaction: duplicate and out-of-order
+// mobile/web writes cannot publish an older projection over a newer result.
+exports.projectSocialReps = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/reps/{repId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialWorkouts = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/workoutLogs/{logId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialSessions = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/trainingSessions/{sessionId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialPlayer = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+// Auth deletion can precede roster cleanup. Immediately make retained results
+// unavailable socially without deleting the club's original athlete records.
+exports.closeSocialAccount = functions.runWith({ failurePolicy: true }).auth.user().onDelete(user =>
+  db.collection("socialPreferences").doc(user.uid).set({ accountDeleted: true, audience: "private", automatic: false, videos: false }, { merge: true }));
 
 const { createAdmission } = require("./admission");
 const { createTeamLeaderboard } = require("./team-leaderboard");
@@ -16,7 +40,7 @@ const { createRepRevisions } = require("./rep-revisions");
 const { createAnalysisReviews } = require("./analysis-reviews");
 const analysisReviews = createAnalysisReviews({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubBranding = createClubBranding({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
-const clubs = createClubs({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+const clubs = createClubs({ invitations: playerInvitations, db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 // Admin rep tools (see rep-revisions.js): the only writer of athlete reps
 // outside the phone, gated on the same verified @posetek.net predicate the rules use.
 const repRevisions = createRepRevisions({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
@@ -30,6 +54,7 @@ const athleteShares = createAthleteShares({
 });
 const { athleteShareError, verifiedAthleteShare } = athleteShares;
 const admission = createAdmission({
+  invitations: playerInvitations,
   db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError,
   randomInt: (max) => crypto.randomInt(max),
 });

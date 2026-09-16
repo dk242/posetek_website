@@ -182,7 +182,7 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
     </>}
   </main>;
   if (admin) return <div className="pt-club">{body}</div>;
-  return <div className="pt-pose portal-body pt-club"><header className="portal-header"><Link className="portal-brand" to="/organization"><span className="portal-brand-mark">P</span>POSETEK</Link><Link className="quiet-button" to="/join">Claim invitation</Link><button className="quiet-button" onClick={() => { void auth.signOut().then(() => navigate("/signin")); }}>Sign out</button></header>{body}</div>;
+  return <div className="pt-pose portal-body pt-club"><header className="portal-header"><Link className="quiet-button" to={`/feed?organizationId=${encodeURIComponent(organizationId)}`}>Community feed</Link><Link className="portal-brand" to="/organization"><span className="portal-brand-mark">P</span>POSETEK</Link><Link className="quiet-button" to="/join">Claim invitation</Link><button className="quiet-button" onClick={() => { void auth.signOut().then(() => navigate("/signin")); }}>Sign out</button></header>{body}</div>;
 }
 function TeamChecks({ teams, selected, onChange }: { teams: ClubContext["teams"]; selected: string[]; onChange: (ids: string[]) => void }) {
   return <fieldset className="club-team-checks"><legend>Assigned teams</legend>{teams.map(team => <label key={team.id}><input type="checkbox" checked={selected.includes(team.id)} onChange={event => onChange(event.target.checked ? [...selected, team.id] : selected.filter(id => id !== team.id))} />{team.name}</label>)}{!teams.length && <p>Create a team first.</p>}</fieldset>;

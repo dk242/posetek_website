@@ -1,0 +1,4549 @@
+{
+  "cells": {
+    "senior|female": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 31.387863,
+        "mean": 31.387863,
+        "median": 31.387863,
+        "min": 31.387863,
+        "n": 0,
+        "percentiles": {
+          "p10": 31.387863,
+          "p25": 31.387863,
+          "p50": 31.387863,
+          "p75": 31.387863,
+          "p90": 31.387863
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.712068,
+        "mean": 1.712068,
+        "median": 1.712068,
+        "min": 1.712068,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.712068,
+          "p25": 1.712068,
+          "p50": 1.712068,
+          "p75": 1.712068,
+          "p90": 1.712068
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.243182,
+        "mean": 2.243182,
+        "median": 2.243182,
+        "min": 2.243182,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.243182,
+          "p25": 2.243182,
+          "p50": 2.243182,
+          "p75": 2.243182,
+          "p90": 2.243182
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.837273,
+        "mean": 1.837273,
+        "median": 1.837273,
+        "min": 1.837273,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.837273,
+          "p25": 1.837273,
+          "p50": 1.837273,
+          "p75": 1.837273,
+          "p90": 1.837273
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.999091,
+        "mean": 4.999091,
+        "median": 4.999091,
+        "min": 4.999091,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.999091,
+          "p25": 4.999091,
+          "p50": 4.999091,
+          "p75": 4.999091,
+          "p90": 4.999091
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.185682,
+        "mean": 1.185682,
+        "median": 1.185682,
+        "min": 1.185682,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.185682,
+          "p25": 1.185682,
+          "p50": 1.185682,
+          "p75": 1.185682,
+          "p90": 1.185682
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.683722,
+        "mean": 0.683722,
+        "median": 0.683722,
+        "min": 0.683722,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.683722,
+          "p25": 0.683722,
+          "p50": 0.683722,
+          "p75": 0.683722,
+          "p90": 0.683722
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.574318,
+        "mean": 2.574318,
+        "median": 2.574318,
+        "min": 2.574318,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.574318,
+          "p25": 2.574318,
+          "p50": 2.574318,
+          "p75": 2.574318,
+          "p90": 2.574318
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.474091,
+        "mean": 1.474091,
+        "median": 1.474091,
+        "min": 1.474091,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.474091,
+          "p25": 1.474091,
+          "p50": 1.474091,
+          "p75": 1.474091,
+          "p90": 1.474091
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.451818,
+        "mean": 6.451818,
+        "median": 6.451818,
+        "min": 6.451818,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.451818,
+          "p25": 6.451818,
+          "p50": 6.451818,
+          "p75": 6.451818,
+          "p90": 6.451818
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.403409,
+        "mean": 2.403409,
+        "median": 2.403409,
+        "min": 2.403409,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.403409,
+          "p25": 2.403409,
+          "p50": 2.403409,
+          "p75": 2.403409,
+          "p90": 2.403409
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.965455,
+        "mean": 1.965455,
+        "median": 1.965455,
+        "min": 1.965455,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.965455,
+          "p25": 1.965455,
+          "p50": 1.965455,
+          "p75": 1.965455,
+          "p90": 1.965455
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.804255,
+        "mean": 5.804255,
+        "median": 5.804255,
+        "min": 5.804255,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.804255,
+          "p25": 5.804255,
+          "p50": 5.804255,
+          "p75": 5.804255,
+          "p90": 5.804255
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.942769,
+        "mean": 5.942769,
+        "median": 5.942769,
+        "min": 5.942769,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.942769,
+          "p25": 5.942769,
+          "p50": 5.942769,
+          "p75": 5.942769,
+          "p90": 5.942769
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.428017,
+        "mean": 0.428017,
+        "median": 0.428017,
+        "min": 0.428017,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.428017,
+          "p25": 0.428017,
+          "p50": 0.428017,
+          "p75": 0.428017,
+          "p90": 0.428017
+        },
+        "scale": 0.9362,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "senior|male": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 35.668026,
+        "mean": 35.668026,
+        "median": 35.668026,
+        "min": 35.668026,
+        "n": 0,
+        "percentiles": {
+          "p10": 35.668026,
+          "p25": 35.668026,
+          "p50": 35.668026,
+          "p75": 35.668026,
+          "p90": 35.668026
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.945532,
+        "mean": 1.945532,
+        "median": 1.945532,
+        "min": 1.945532,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.945532,
+          "p25": 1.945532,
+          "p50": 1.945532,
+          "p75": 1.945532,
+          "p90": 1.945532
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.974,
+        "mean": 1.974,
+        "median": 1.974,
+        "min": 1.974,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.974,
+          "p25": 1.974,
+          "p50": 1.974,
+          "p75": 1.974,
+          "p90": 1.974
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.6168,
+        "mean": 1.6168,
+        "median": 1.6168,
+        "min": 1.6168,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.6168,
+          "p25": 1.6168,
+          "p50": 1.6168,
+          "p75": 1.6168,
+          "p90": 1.6168
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.3992,
+        "mean": 4.3992,
+        "median": 4.3992,
+        "min": 4.3992,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.3992,
+          "p25": 4.3992,
+          "p50": 4.3992,
+          "p75": 4.3992,
+          "p90": 4.3992
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.0434,
+        "mean": 1.0434,
+        "median": 1.0434,
+        "min": 1.0434,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.0434,
+          "p25": 1.0434,
+          "p50": 1.0434,
+          "p75": 1.0434,
+          "p90": 1.0434
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.601675,
+        "mean": 0.601675,
+        "median": 0.601675,
+        "min": 0.601675,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.601675,
+          "p25": 0.601675,
+          "p50": 0.601675,
+          "p75": 0.601675,
+          "p90": 0.601675
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.2654,
+        "mean": 2.2654,
+        "median": 2.2654,
+        "min": 2.2654,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.2654,
+          "p25": 2.2654,
+          "p50": 2.2654,
+          "p75": 2.2654,
+          "p90": 2.2654
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.2972,
+        "mean": 1.2972,
+        "median": 1.2972,
+        "min": 1.2972,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.2972,
+          "p25": 1.2972,
+          "p50": 1.2972,
+          "p75": 1.2972,
+          "p90": 1.2972
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.6776,
+        "mean": 5.6776,
+        "median": 5.6776,
+        "min": 5.6776,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.6776,
+          "p25": 5.6776,
+          "p50": 5.6776,
+          "p75": 5.6776,
+          "p90": 5.6776
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.115,
+        "mean": 2.115,
+        "median": 2.115,
+        "min": 2.115,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.115,
+          "p25": 2.115,
+          "p50": 2.115,
+          "p75": 2.115,
+          "p90": 2.115
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.7296,
+        "mean": 1.7296,
+        "median": 1.7296,
+        "min": 1.7296,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.7296,
+          "p25": 1.7296,
+          "p50": 1.7296,
+          "p75": 1.7296,
+          "p90": 1.7296
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.595745,
+        "mean": 6.595745,
+        "median": 6.595745,
+        "min": 6.595745,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.595745,
+          "p25": 6.595745,
+          "p50": 6.595745,
+          "p75": 6.595745,
+          "p90": 6.595745
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.753146,
+        "mean": 6.753146,
+        "median": 6.753146,
+        "min": 6.753146,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.753146,
+          "p25": 6.753146,
+          "p50": 6.753146,
+          "p75": 6.753146,
+          "p90": 6.753146
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.486383,
+        "mean": 0.486383,
+        "median": 0.486383,
+        "min": 0.486383,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.486383,
+          "p25": 0.486383,
+          "p50": 0.486383,
+          "p75": 0.486383,
+          "p90": 0.486383
+        },
+        "scale": 1.0638,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "senior|unspecified": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 33.527944,
+        "mean": 33.527944,
+        "median": 33.527944,
+        "min": 33.527944,
+        "n": 0,
+        "percentiles": {
+          "p10": 33.527944,
+          "p25": 33.527944,
+          "p50": 33.527944,
+          "p75": 33.527944,
+          "p90": 33.527944
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.8288,
+        "mean": 1.8288,
+        "median": 1.8288,
+        "min": 1.8288,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.8288,
+          "p25": 1.8288,
+          "p50": 1.8288,
+          "p75": 1.8288,
+          "p90": 1.8288
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.1,
+        "mean": 2.1,
+        "median": 2.1,
+        "min": 2.1,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.1,
+          "p25": 2.1,
+          "p50": 2.1,
+          "p75": 2.1,
+          "p90": 2.1
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.72,
+        "mean": 1.72,
+        "median": 1.72,
+        "min": 1.72,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.72,
+          "p25": 1.72,
+          "p50": 1.72,
+          "p75": 1.72,
+          "p90": 1.72
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.68,
+        "mean": 4.68,
+        "median": 4.68,
+        "min": 4.68,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.68,
+          "p25": 4.68,
+          "p50": 4.68,
+          "p75": 4.68,
+          "p90": 4.68
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.11,
+        "mean": 1.11,
+        "median": 1.11,
+        "min": 1.11,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.11,
+          "p25": 1.11,
+          "p50": 1.11,
+          "p75": 1.11,
+          "p90": 1.11
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.64008,
+        "mean": 0.64008,
+        "median": 0.64008,
+        "min": 0.64008,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.64008,
+          "p25": 0.64008,
+          "p50": 0.64008,
+          "p75": 0.64008,
+          "p90": 0.64008
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.41,
+        "mean": 2.41,
+        "median": 2.41,
+        "min": 2.41,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.41,
+          "p25": 2.41,
+          "p50": 2.41,
+          "p75": 2.41,
+          "p90": 2.41
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.38,
+        "mean": 1.38,
+        "median": 1.38,
+        "min": 1.38,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.38,
+          "p25": 1.38,
+          "p50": 1.38,
+          "p75": 1.38,
+          "p90": 1.38
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.04,
+        "mean": 6.04,
+        "median": 6.04,
+        "min": 6.04,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.04,
+          "p25": 6.04,
+          "p50": 6.04,
+          "p75": 6.04,
+          "p90": 6.04
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.25,
+        "mean": 2.25,
+        "median": 2.25,
+        "min": 2.25,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.25,
+          "p25": 2.25,
+          "p50": 2.25,
+          "p75": 2.25,
+          "p90": 2.25
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.84,
+        "mean": 1.84,
+        "median": 1.84,
+        "min": 1.84,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.84,
+          "p25": 1.84,
+          "p50": 1.84,
+          "p75": 1.84,
+          "p90": 1.84
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.2,
+        "mean": 6.2,
+        "median": 6.2,
+        "min": 6.2,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.2,
+          "p25": 6.2,
+          "p50": 6.2,
+          "p75": 6.2,
+          "p90": 6.2
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.347957,
+        "mean": 6.347957,
+        "median": 6.347957,
+        "min": 6.347957,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.347957,
+          "p25": 6.347957,
+          "p50": 6.347957,
+          "p75": 6.347957,
+          "p90": 6.347957
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.4572,
+        "mean": 0.4572,
+        "median": 0.4572,
+        "min": 0.4572,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.4572,
+          "p25": 0.4572,
+          "p50": 0.4572,
+          "p75": 0.4572,
+          "p90": 0.4572
+        },
+        "scale": 1.0,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u12|female": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 22.599261,
+        "mean": 22.599261,
+        "median": 22.599261,
+        "min": 22.599261,
+        "n": 0,
+        "percentiles": {
+          "p10": 22.599261,
+          "p25": 22.599261,
+          "p50": 22.599261,
+          "p75": 22.599261,
+          "p90": 22.599261
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.232689,
+        "mean": 1.232689,
+        "median": 1.232689,
+        "min": 1.232689,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.232689,
+          "p25": 1.232689,
+          "p50": 1.232689,
+          "p75": 1.232689,
+          "p90": 1.232689
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.11553,
+        "mean": 3.11553,
+        "median": 3.11553,
+        "min": 3.11553,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.11553,
+          "p25": 3.11553,
+          "p50": 3.11553,
+          "p75": 3.11553,
+          "p90": 3.11553
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.551768,
+        "mean": 2.551768,
+        "median": 2.551768,
+        "min": 2.551768,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.551768,
+          "p25": 2.551768,
+          "p50": 2.551768,
+          "p75": 2.551768,
+          "p90": 2.551768
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.943182,
+        "mean": 6.943182,
+        "median": 6.943182,
+        "min": 6.943182,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.943182,
+          "p25": 6.943182,
+          "p50": 6.943182,
+          "p75": 6.943182,
+          "p90": 6.943182
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.64678,
+        "mean": 1.64678,
+        "median": 1.64678,
+        "min": 1.64678,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.64678,
+          "p25": 1.64678,
+          "p50": 1.64678,
+          "p75": 1.64678,
+          "p90": 1.64678
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.949614,
+        "mean": 0.949614,
+        "median": 0.949614,
+        "min": 0.949614,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.949614,
+          "p25": 0.949614,
+          "p50": 0.949614,
+          "p75": 0.949614,
+          "p90": 0.949614
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.575442,
+        "mean": 3.575442,
+        "median": 3.575442,
+        "min": 3.575442,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.575442,
+          "p25": 3.575442,
+          "p50": 3.575442,
+          "p75": 3.575442,
+          "p90": 3.575442
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.047348,
+        "mean": 2.047348,
+        "median": 2.047348,
+        "min": 2.047348,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.047348,
+          "p25": 2.047348,
+          "p50": 2.047348,
+          "p75": 2.047348,
+          "p90": 2.047348
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 8.960859,
+        "mean": 8.960859,
+        "median": 8.960859,
+        "min": 8.960859,
+        "n": 0,
+        "percentiles": {
+          "p10": 8.960859,
+          "p25": 8.960859,
+          "p50": 8.960859,
+          "p75": 8.960859,
+          "p90": 8.960859
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.338068,
+        "mean": 3.338068,
+        "median": 3.338068,
+        "min": 3.338068,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.338068,
+          "p25": 3.338068,
+          "p50": 3.338068,
+          "p75": 3.338068,
+          "p90": 3.338068
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.729798,
+        "mean": 2.729798,
+        "median": 2.729798,
+        "min": 2.729798,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.729798,
+          "p25": 2.729798,
+          "p50": 2.729798,
+          "p75": 2.729798,
+          "p90": 2.729798
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.179064,
+        "mean": 4.179064,
+        "median": 4.179064,
+        "min": 4.179064,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.179064,
+          "p25": 4.179064,
+          "p50": 4.179064,
+          "p75": 4.179064,
+          "p90": 4.179064
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.278793,
+        "mean": 4.278793,
+        "median": 4.278793,
+        "min": 4.278793,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.278793,
+          "p25": 4.278793,
+          "p50": 4.278793,
+          "p75": 4.278793,
+          "p90": 4.278793
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.308172,
+        "mean": 0.308172,
+        "median": 0.308172,
+        "min": 0.308172,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.308172,
+          "p25": 0.308172,
+          "p50": 0.308172,
+          "p75": 0.308172,
+          "p90": 0.308172
+        },
+        "scale": 0.674,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u12|male": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 25.680979,
+        "mean": 25.680979,
+        "median": 25.680979,
+        "min": 25.680979,
+        "n": 0,
+        "percentiles": {
+          "p10": 25.680979,
+          "p25": 25.680979,
+          "p50": 25.680979,
+          "p75": 25.680979,
+          "p90": 25.680979
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.400783,
+        "mean": 1.400783,
+        "median": 1.400783,
+        "min": 1.400783,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.400783,
+          "p25": 1.400783,
+          "p50": 1.400783,
+          "p75": 1.400783,
+          "p90": 1.400783
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.741667,
+        "mean": 2.741667,
+        "median": 2.741667,
+        "min": 2.741667,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.741667,
+          "p25": 2.741667,
+          "p50": 2.741667,
+          "p75": 2.741667,
+          "p90": 2.741667
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.245556,
+        "mean": 2.245556,
+        "median": 2.245556,
+        "min": 2.245556,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.245556,
+          "p25": 2.245556,
+          "p50": 2.245556,
+          "p75": 2.245556,
+          "p90": 2.245556
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.11,
+        "mean": 6.11,
+        "median": 6.11,
+        "min": 6.11,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.11,
+          "p25": 6.11,
+          "p50": 6.11,
+          "p75": 6.11,
+          "p90": 6.11
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.449167,
+        "mean": 1.449167,
+        "median": 1.449167,
+        "min": 1.449167,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.449167,
+          "p25": 1.449167,
+          "p50": 1.449167,
+          "p75": 1.449167,
+          "p90": 1.449167
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.83566,
+        "mean": 0.83566,
+        "median": 0.83566,
+        "min": 0.83566,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.83566,
+          "p25": 0.83566,
+          "p50": 0.83566,
+          "p75": 0.83566,
+          "p90": 0.83566
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.146389,
+        "mean": 3.146389,
+        "median": 3.146389,
+        "min": 3.146389,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.146389,
+          "p25": 3.146389,
+          "p50": 3.146389,
+          "p75": 3.146389,
+          "p90": 3.146389
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.801667,
+        "mean": 1.801667,
+        "median": 1.801667,
+        "min": 1.801667,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.801667,
+          "p25": 1.801667,
+          "p50": 1.801667,
+          "p75": 1.801667,
+          "p90": 1.801667
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 7.885556,
+        "mean": 7.885556,
+        "median": 7.885556,
+        "min": 7.885556,
+        "n": 0,
+        "percentiles": {
+          "p10": 7.885556,
+          "p25": 7.885556,
+          "p50": 7.885556,
+          "p75": 7.885556,
+          "p90": 7.885556
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.9375,
+        "mean": 2.9375,
+        "median": 2.9375,
+        "min": 2.9375,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.9375,
+          "p25": 2.9375,
+          "p50": 2.9375,
+          "p75": 2.9375,
+          "p90": 2.9375
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.402222,
+        "mean": 2.402222,
+        "median": 2.402222,
+        "min": 2.402222,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.402222,
+          "p25": 2.402222,
+          "p50": 2.402222,
+          "p75": 2.402222,
+          "p90": 2.402222
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.748936,
+        "mean": 4.748936,
+        "median": 4.748936,
+        "min": 4.748936,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.748936,
+          "p25": 4.748936,
+          "p50": 4.748936,
+          "p75": 4.748936,
+          "p90": 4.748936
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.862265,
+        "mean": 4.862265,
+        "median": 4.862265,
+        "min": 4.862265,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.862265,
+          "p25": 4.862265,
+          "p50": 4.862265,
+          "p75": 4.862265,
+          "p90": 4.862265
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.350196,
+        "mean": 0.350196,
+        "median": 0.350196,
+        "min": 0.350196,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.350196,
+          "p25": 0.350196,
+          "p50": 0.350196,
+          "p75": 0.350196,
+          "p90": 0.350196
+        },
+        "scale": 0.766,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u12|unspecified": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 24.14012,
+        "mean": 24.14012,
+        "median": 24.14012,
+        "min": 24.14012,
+        "n": 0,
+        "percentiles": {
+          "p10": 24.14012,
+          "p25": 24.14012,
+          "p50": 24.14012,
+          "p75": 24.14012,
+          "p90": 24.14012
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.316736,
+        "mean": 1.316736,
+        "median": 1.316736,
+        "min": 1.316736,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.316736,
+          "p25": 1.316736,
+          "p50": 1.316736,
+          "p75": 1.316736,
+          "p90": 1.316736
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.916667,
+        "mean": 2.916667,
+        "median": 2.916667,
+        "min": 2.916667,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.916667,
+          "p25": 2.916667,
+          "p50": 2.916667,
+          "p75": 2.916667,
+          "p90": 2.916667
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.388889,
+        "mean": 2.388889,
+        "median": 2.388889,
+        "min": 2.388889,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.388889,
+          "p25": 2.388889,
+          "p50": 2.388889,
+          "p75": 2.388889,
+          "p90": 2.388889
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.5,
+        "mean": 6.5,
+        "median": 6.5,
+        "min": 6.5,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.5,
+          "p25": 6.5,
+          "p50": 6.5,
+          "p75": 6.5,
+          "p90": 6.5
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.541667,
+        "mean": 1.541667,
+        "median": 1.541667,
+        "min": 1.541667,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.541667,
+          "p25": 1.541667,
+          "p50": 1.541667,
+          "p75": 1.541667,
+          "p90": 1.541667
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.889,
+        "mean": 0.889,
+        "median": 0.889,
+        "min": 0.889,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.889,
+          "p25": 0.889,
+          "p50": 0.889,
+          "p75": 0.889,
+          "p90": 0.889
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.347222,
+        "mean": 3.347222,
+        "median": 3.347222,
+        "min": 3.347222,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.347222,
+          "p25": 3.347222,
+          "p50": 3.347222,
+          "p75": 3.347222,
+          "p90": 3.347222
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.916667,
+        "mean": 1.916667,
+        "median": 1.916667,
+        "min": 1.916667,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.916667,
+          "p25": 1.916667,
+          "p50": 1.916667,
+          "p75": 1.916667,
+          "p90": 1.916667
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 8.388889,
+        "mean": 8.388889,
+        "median": 8.388889,
+        "min": 8.388889,
+        "n": 0,
+        "percentiles": {
+          "p10": 8.388889,
+          "p25": 8.388889,
+          "p50": 8.388889,
+          "p75": 8.388889,
+          "p90": 8.388889
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.125,
+        "mean": 3.125,
+        "median": 3.125,
+        "min": 3.125,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.125,
+          "p25": 3.125,
+          "p50": 3.125,
+          "p75": 3.125,
+          "p90": 3.125
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.555556,
+        "mean": 2.555556,
+        "median": 2.555556,
+        "min": 2.555556,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.555556,
+          "p25": 2.555556,
+          "p50": 2.555556,
+          "p75": 2.555556,
+          "p90": 2.555556
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.464,
+        "mean": 4.464,
+        "median": 4.464,
+        "min": 4.464,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.464,
+          "p25": 4.464,
+          "p50": 4.464,
+          "p75": 4.464,
+          "p90": 4.464
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.570529,
+        "mean": 4.570529,
+        "median": 4.570529,
+        "min": 4.570529,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.570529,
+          "p25": 4.570529,
+          "p50": 4.570529,
+          "p75": 4.570529,
+          "p90": 4.570529
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.329184,
+        "mean": 0.329184,
+        "median": 0.329184,
+        "min": 0.329184,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.329184,
+          "p25": 0.329184,
+          "p50": 0.329184,
+          "p75": 0.329184,
+          "p90": 0.329184
+        },
+        "scale": 0.72,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u14|female": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 25.738048,
+        "mean": 25.738048,
+        "median": 25.738048,
+        "min": 25.738048,
+        "n": 0,
+        "percentiles": {
+          "p10": 25.738048,
+          "p25": 25.738048,
+          "p50": 25.738048,
+          "p75": 25.738048,
+          "p90": 25.738048
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.403896,
+        "mean": 1.403896,
+        "median": 1.403896,
+        "min": 1.403896,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.403896,
+          "p25": 1.403896,
+          "p50": 1.403896,
+          "p75": 1.403896,
+          "p90": 1.403896
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.735588,
+        "mean": 2.735588,
+        "median": 2.735588,
+        "min": 2.735588,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.735588,
+          "p25": 2.735588,
+          "p50": 2.735588,
+          "p75": 2.735588,
+          "p90": 2.735588
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.240576,
+        "mean": 2.240576,
+        "median": 2.240576,
+        "min": 2.240576,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.240576,
+          "p25": 2.240576,
+          "p50": 2.240576,
+          "p75": 2.240576,
+          "p90": 2.240576
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.096452,
+        "mean": 6.096452,
+        "median": 6.096452,
+        "min": 6.096452,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.096452,
+          "p25": 6.096452,
+          "p50": 6.096452,
+          "p75": 6.096452,
+          "p90": 6.096452
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.445953,
+        "mean": 1.445953,
+        "median": 1.445953,
+        "min": 1.445953,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.445953,
+          "p25": 1.445953,
+          "p50": 1.445953,
+          "p75": 1.445953,
+          "p90": 1.445953
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.833807,
+        "mean": 0.833807,
+        "median": 0.833807,
+        "min": 0.833807,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.833807,
+          "p25": 0.833807,
+          "p50": 0.833807,
+          "p75": 0.833807,
+          "p90": 0.833807
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 3.139412,
+        "mean": 3.139412,
+        "median": 3.139412,
+        "min": 3.139412,
+        "n": 0,
+        "percentiles": {
+          "p10": 3.139412,
+          "p25": 3.139412,
+          "p50": 3.139412,
+          "p75": 3.139412,
+          "p90": 3.139412
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.797672,
+        "mean": 1.797672,
+        "median": 1.797672,
+        "min": 1.797672,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.797672,
+          "p25": 1.797672,
+          "p50": 1.797672,
+          "p75": 1.797672,
+          "p90": 1.797672
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 7.868071,
+        "mean": 7.868071,
+        "median": 7.868071,
+        "min": 7.868071,
+        "n": 0,
+        "percentiles": {
+          "p10": 7.868071,
+          "p25": 7.868071,
+          "p50": 7.868071,
+          "p75": 7.868071,
+          "p90": 7.868071
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.930987,
+        "mean": 2.930987,
+        "median": 2.930987,
+        "min": 2.930987,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.930987,
+          "p25": 2.930987,
+          "p50": 2.930987,
+          "p75": 2.930987,
+          "p90": 2.930987
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.396896,
+        "mean": 2.396896,
+        "median": 2.396896,
+        "min": 2.396896,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.396896,
+          "p25": 2.396896,
+          "p50": 2.396896,
+          "p75": 2.396896,
+          "p90": 2.396896
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.759489,
+        "mean": 4.759489,
+        "median": 4.759489,
+        "min": 4.759489,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.759489,
+          "p25": 4.759489,
+          "p50": 4.759489,
+          "p75": 4.759489,
+          "p90": 4.759489
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.87307,
+        "mean": 4.87307,
+        "median": 4.87307,
+        "min": 4.87307,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.87307,
+          "p25": 4.87307,
+          "p50": 4.87307,
+          "p75": 4.87307,
+          "p90": 4.87307
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.350974,
+        "mean": 0.350974,
+        "median": 0.350974,
+        "min": 0.350974,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.350974,
+          "p25": 0.350974,
+          "p50": 0.350974,
+          "p75": 0.350974,
+          "p90": 0.350974
+        },
+        "scale": 0.7677,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u14|male": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 29.247781,
+        "mean": 29.247781,
+        "median": 29.247781,
+        "min": 29.247781,
+        "n": 0,
+        "percentiles": {
+          "p10": 29.247781,
+          "p25": 29.247781,
+          "p50": 29.247781,
+          "p75": 29.247781,
+          "p90": 29.247781
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.595336,
+        "mean": 1.595336,
+        "median": 1.595336,
+        "min": 1.595336,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.595336,
+          "p25": 1.595336,
+          "p50": 1.595336,
+          "p75": 1.595336,
+          "p90": 1.595336
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.407317,
+        "mean": 2.407317,
+        "median": 2.407317,
+        "min": 2.407317,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.407317,
+          "p25": 2.407317,
+          "p50": 2.407317,
+          "p75": 2.407317,
+          "p90": 2.407317
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.971707,
+        "mean": 1.971707,
+        "median": 1.971707,
+        "min": 1.971707,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.971707,
+          "p25": 1.971707,
+          "p50": 1.971707,
+          "p75": 1.971707,
+          "p90": 1.971707
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.364878,
+        "mean": 5.364878,
+        "median": 5.364878,
+        "min": 5.364878,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.364878,
+          "p25": 5.364878,
+          "p50": 5.364878,
+          "p75": 5.364878,
+          "p90": 5.364878
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.272439,
+        "mean": 1.272439,
+        "median": 1.272439,
+        "min": 1.272439,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.272439,
+          "p25": 1.272439,
+          "p50": 1.272439,
+          "p75": 1.272439,
+          "p90": 1.272439
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.73375,
+        "mean": 0.73375,
+        "median": 0.73375,
+        "min": 0.73375,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.73375,
+          "p25": 0.73375,
+          "p50": 0.73375,
+          "p75": 0.73375,
+          "p90": 0.73375
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.762683,
+        "mean": 2.762683,
+        "median": 2.762683,
+        "min": 2.762683,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.762683,
+          "p25": 2.762683,
+          "p50": 2.762683,
+          "p75": 2.762683,
+          "p90": 2.762683
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.581951,
+        "mean": 1.581951,
+        "median": 1.581951,
+        "min": 1.581951,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.581951,
+          "p25": 1.581951,
+          "p50": 1.581951,
+          "p75": 1.581951,
+          "p90": 1.581951
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.923902,
+        "mean": 6.923902,
+        "median": 6.923902,
+        "min": 6.923902,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.923902,
+          "p25": 6.923902,
+          "p50": 6.923902,
+          "p75": 6.923902,
+          "p90": 6.923902
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.579268,
+        "mean": 2.579268,
+        "median": 2.579268,
+        "min": 2.579268,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.579268,
+          "p25": 2.579268,
+          "p50": 2.579268,
+          "p75": 2.579268,
+          "p90": 2.579268
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.109268,
+        "mean": 2.109268,
+        "median": 2.109268,
+        "min": 2.109268,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.109268,
+          "p25": 2.109268,
+          "p50": 2.109268,
+          "p75": 2.109268,
+          "p90": 2.109268
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.408511,
+        "mean": 5.408511,
+        "median": 5.408511,
+        "min": 5.408511,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.408511,
+          "p25": 5.408511,
+          "p50": 5.408511,
+          "p75": 5.408511,
+          "p90": 5.408511
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.53758,
+        "mean": 5.53758,
+        "median": 5.53758,
+        "min": 5.53758,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.53758,
+          "p25": 5.53758,
+          "p50": 5.53758,
+          "p75": 5.53758,
+          "p90": 5.53758
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.398834,
+        "mean": 0.398834,
+        "median": 0.398834,
+        "min": 0.398834,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.398834,
+          "p25": 0.398834,
+          "p50": 0.398834,
+          "p75": 0.398834,
+          "p90": 0.398834
+        },
+        "scale": 0.8723,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u14|unspecified": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 27.492914,
+        "mean": 27.492914,
+        "median": 27.492914,
+        "min": 27.492914,
+        "n": 0,
+        "percentiles": {
+          "p10": 27.492914,
+          "p25": 27.492914,
+          "p50": 27.492914,
+          "p75": 27.492914,
+          "p90": 27.492914
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.499616,
+        "mean": 1.499616,
+        "median": 1.499616,
+        "min": 1.499616,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.499616,
+          "p25": 1.499616,
+          "p50": 1.499616,
+          "p75": 1.499616,
+          "p90": 1.499616
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.560976,
+        "mean": 2.560976,
+        "median": 2.560976,
+        "min": 2.560976,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.560976,
+          "p25": 2.560976,
+          "p50": 2.560976,
+          "p75": 2.560976,
+          "p90": 2.560976
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.097561,
+        "mean": 2.097561,
+        "median": 2.097561,
+        "min": 2.097561,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.097561,
+          "p25": 2.097561,
+          "p50": 2.097561,
+          "p75": 2.097561,
+          "p90": 2.097561
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.707317,
+        "mean": 5.707317,
+        "median": 5.707317,
+        "min": 5.707317,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.707317,
+          "p25": 5.707317,
+          "p50": 5.707317,
+          "p75": 5.707317,
+          "p90": 5.707317
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.353659,
+        "mean": 1.353659,
+        "median": 1.353659,
+        "min": 1.353659,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.353659,
+          "p25": 1.353659,
+          "p50": 1.353659,
+          "p75": 1.353659,
+          "p90": 1.353659
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.780585,
+        "mean": 0.780585,
+        "median": 0.780585,
+        "min": 0.780585,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.780585,
+          "p25": 0.780585,
+          "p50": 0.780585,
+          "p75": 0.780585,
+          "p90": 0.780585
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.939024,
+        "mean": 2.939024,
+        "median": 2.939024,
+        "min": 2.939024,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.939024,
+          "p25": 2.939024,
+          "p50": 2.939024,
+          "p75": 2.939024,
+          "p90": 2.939024
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.682927,
+        "mean": 1.682927,
+        "median": 1.682927,
+        "min": 1.682927,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.682927,
+          "p25": 1.682927,
+          "p50": 1.682927,
+          "p75": 1.682927,
+          "p90": 1.682927
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 7.365854,
+        "mean": 7.365854,
+        "median": 7.365854,
+        "min": 7.365854,
+        "n": 0,
+        "percentiles": {
+          "p10": 7.365854,
+          "p25": 7.365854,
+          "p50": 7.365854,
+          "p75": 7.365854,
+          "p90": 7.365854
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.743902,
+        "mean": 2.743902,
+        "median": 2.743902,
+        "min": 2.743902,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.743902,
+          "p25": 2.743902,
+          "p50": 2.743902,
+          "p75": 2.743902,
+          "p90": 2.743902
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.243902,
+        "mean": 2.243902,
+        "median": 2.243902,
+        "min": 2.243902,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.243902,
+          "p25": 2.243902,
+          "p50": 2.243902,
+          "p75": 2.243902,
+          "p90": 2.243902
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.084,
+        "mean": 5.084,
+        "median": 5.084,
+        "min": 5.084,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.084,
+          "p25": 5.084,
+          "p50": 5.084,
+          "p75": 5.084,
+          "p90": 5.084
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.205325,
+        "mean": 5.205325,
+        "median": 5.205325,
+        "min": 5.205325,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.205325,
+          "p25": 5.205325,
+          "p50": 5.205325,
+          "p75": 5.205325,
+          "p90": 5.205325
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.374904,
+        "mean": 0.374904,
+        "median": 0.374904,
+        "min": 0.374904,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.374904,
+          "p25": 0.374904,
+          "p50": 0.374904,
+          "p75": 0.374904,
+          "p90": 0.374904
+        },
+        "scale": 0.82,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u16|female": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 28.562955,
+        "mean": 28.562955,
+        "median": 28.562955,
+        "min": 28.562955,
+        "n": 0,
+        "percentiles": {
+          "p10": 28.562955,
+          "p25": 28.562955,
+          "p50": 28.562955,
+          "p75": 28.562955,
+          "p90": 28.562955
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.557982,
+        "mean": 1.557982,
+        "median": 1.557982,
+        "min": 1.557982,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.557982,
+          "p25": 1.557982,
+          "p50": 1.557982,
+          "p75": 1.557982,
+          "p90": 1.557982
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.465035,
+        "mean": 2.465035,
+        "median": 2.465035,
+        "min": 2.465035,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.465035,
+          "p25": 2.465035,
+          "p50": 2.465035,
+          "p75": 2.465035,
+          "p90": 2.465035
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.018981,
+        "mean": 2.018981,
+        "median": 2.018981,
+        "min": 2.018981,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.018981,
+          "p25": 2.018981,
+          "p50": 2.018981,
+          "p75": 2.018981,
+          "p90": 2.018981
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.493506,
+        "mean": 5.493506,
+        "median": 5.493506,
+        "min": 5.493506,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.493506,
+          "p25": 5.493506,
+          "p50": 5.493506,
+          "p75": 5.493506,
+          "p90": 5.493506
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.302947,
+        "mean": 1.302947,
+        "median": 1.302947,
+        "min": 1.302947,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.302947,
+          "p25": 1.302947,
+          "p50": 1.302947,
+          "p75": 1.302947,
+          "p90": 1.302947
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.751343,
+        "mean": 0.751343,
+        "median": 0.751343,
+        "min": 0.751343,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.751343,
+          "p25": 0.751343,
+          "p50": 0.751343,
+          "p75": 0.751343,
+          "p90": 0.751343
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.828921,
+        "mean": 2.828921,
+        "median": 2.828921,
+        "min": 2.828921,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.828921,
+          "p25": 2.828921,
+          "p50": 2.828921,
+          "p75": 2.828921,
+          "p90": 2.828921
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.61988,
+        "mean": 1.61988,
+        "median": 1.61988,
+        "min": 1.61988,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.61988,
+          "p25": 1.61988,
+          "p50": 1.61988,
+          "p75": 1.61988,
+          "p90": 1.61988
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 7.08991,
+        "mean": 7.08991,
+        "median": 7.08991,
+        "min": 7.08991,
+        "n": 0,
+        "percentiles": {
+          "p10": 7.08991,
+          "p25": 7.08991,
+          "p50": 7.08991,
+          "p75": 7.08991,
+          "p90": 7.08991
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.641109,
+        "mean": 2.641109,
+        "median": 2.641109,
+        "min": 2.641109,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.641109,
+          "p25": 2.641109,
+          "p50": 2.641109,
+          "p75": 2.641109,
+          "p90": 2.641109
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.15984,
+        "mean": 2.15984,
+        "median": 2.15984,
+        "min": 2.15984,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.15984,
+          "p25": 2.15984,
+          "p50": 2.15984,
+          "p75": 2.15984,
+          "p90": 2.15984
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.281872,
+        "mean": 5.281872,
+        "median": 5.281872,
+        "min": 5.281872,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.281872,
+          "p25": 5.281872,
+          "p50": 5.281872,
+          "p75": 5.281872,
+          "p90": 5.281872
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.40792,
+        "mean": 5.40792,
+        "median": 5.40792,
+        "min": 5.40792,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.40792,
+          "p25": 5.40792,
+          "p50": 5.40792,
+          "p75": 5.40792,
+          "p90": 5.40792
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.389495,
+        "mean": 0.389495,
+        "median": 0.389495,
+        "min": 0.389495,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.389495,
+          "p25": 0.389495,
+          "p50": 0.389495,
+          "p75": 0.389495,
+          "p90": 0.389495
+        },
+        "scale": 0.8519,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u16|male": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 32.457904,
+        "mean": 32.457904,
+        "median": 32.457904,
+        "min": 32.457904,
+        "n": 0,
+        "percentiles": {
+          "p10": 32.457904,
+          "p25": 32.457904,
+          "p50": 32.457904,
+          "p75": 32.457904,
+          "p90": 32.457904
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.770434,
+        "mean": 1.770434,
+        "median": 1.770434,
+        "min": 1.770434,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.770434,
+          "p25": 1.770434,
+          "p50": 1.770434,
+          "p75": 1.770434,
+          "p90": 1.770434
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.169231,
+        "mean": 2.169231,
+        "median": 2.169231,
+        "min": 2.169231,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.169231,
+          "p25": 2.169231,
+          "p50": 2.169231,
+          "p75": 2.169231,
+          "p90": 2.169231
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.776703,
+        "mean": 1.776703,
+        "median": 1.776703,
+        "min": 1.776703,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.776703,
+          "p25": 1.776703,
+          "p50": 1.776703,
+          "p75": 1.776703,
+          "p90": 1.776703
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.834286,
+        "mean": 4.834286,
+        "median": 4.834286,
+        "min": 4.834286,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.834286,
+          "p25": 4.834286,
+          "p50": 4.834286,
+          "p75": 4.834286,
+          "p90": 4.834286
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.146593,
+        "mean": 1.146593,
+        "median": 1.146593,
+        "min": 1.146593,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.146593,
+          "p25": 1.146593,
+          "p50": 1.146593,
+          "p75": 1.146593,
+          "p90": 1.146593
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.661182,
+        "mean": 0.661182,
+        "median": 0.661182,
+        "min": 0.661182,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.661182,
+          "p25": 0.661182,
+          "p50": 0.661182,
+          "p75": 0.661182,
+          "p90": 0.661182
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.489451,
+        "mean": 2.489451,
+        "median": 2.489451,
+        "min": 2.489451,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.489451,
+          "p25": 2.489451,
+          "p50": 2.489451,
+          "p75": 2.489451,
+          "p90": 2.489451
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.425495,
+        "mean": 1.425495,
+        "median": 1.425495,
+        "min": 1.425495,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.425495,
+          "p25": 1.425495,
+          "p50": 1.425495,
+          "p75": 1.425495,
+          "p90": 1.425495
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.239121,
+        "mean": 6.239121,
+        "median": 6.239121,
+        "min": 6.239121,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.239121,
+          "p25": 6.239121,
+          "p50": 6.239121,
+          "p75": 6.239121,
+          "p90": 6.239121
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.324176,
+        "mean": 2.324176,
+        "median": 2.324176,
+        "min": 2.324176,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.324176,
+          "p25": 2.324176,
+          "p50": 2.324176,
+          "p75": 2.324176,
+          "p90": 2.324176
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.900659,
+        "mean": 1.900659,
+        "median": 1.900659,
+        "min": 1.900659,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.900659,
+          "p25": 1.900659,
+          "p50": 1.900659,
+          "p75": 1.900659,
+          "p90": 1.900659
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.002128,
+        "mean": 6.002128,
+        "median": 6.002128,
+        "min": 6.002128,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.002128,
+          "p25": 6.002128,
+          "p50": 6.002128,
+          "p75": 6.002128,
+          "p90": 6.002128
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.145363,
+        "mean": 6.145363,
+        "median": 6.145363,
+        "min": 6.145363,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.145363,
+          "p25": 6.145363,
+          "p50": 6.145363,
+          "p75": 6.145363,
+          "p90": 6.145363
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.442609,
+        "mean": 0.442609,
+        "median": 0.442609,
+        "min": 0.442609,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.442609,
+          "p25": 0.442609,
+          "p50": 0.442609,
+          "p75": 0.442609,
+          "p90": 0.442609
+        },
+        "scale": 0.9681,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u16|unspecified": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 30.510429,
+        "mean": 30.510429,
+        "median": 30.510429,
+        "min": 30.510429,
+        "n": 0,
+        "percentiles": {
+          "p10": 30.510429,
+          "p25": 30.510429,
+          "p50": 30.510429,
+          "p75": 30.510429,
+          "p90": 30.510429
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.664208,
+        "mean": 1.664208,
+        "median": 1.664208,
+        "min": 1.664208,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.664208,
+          "p25": 1.664208,
+          "p50": 1.664208,
+          "p75": 1.664208,
+          "p90": 1.664208
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.307692,
+        "mean": 2.307692,
+        "median": 2.307692,
+        "min": 2.307692,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.307692,
+          "p25": 2.307692,
+          "p50": 2.307692,
+          "p75": 2.307692,
+          "p90": 2.307692
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.89011,
+        "mean": 1.89011,
+        "median": 1.89011,
+        "min": 1.89011,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.89011,
+          "p25": 1.89011,
+          "p50": 1.89011,
+          "p75": 1.89011,
+          "p90": 1.89011
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.142857,
+        "mean": 5.142857,
+        "median": 5.142857,
+        "min": 5.142857,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.142857,
+          "p25": 5.142857,
+          "p50": 5.142857,
+          "p75": 5.142857,
+          "p90": 5.142857
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.21978,
+        "mean": 1.21978,
+        "median": 1.21978,
+        "min": 1.21978,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.21978,
+          "p25": 1.21978,
+          "p50": 1.21978,
+          "p75": 1.21978,
+          "p90": 1.21978
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.703385,
+        "mean": 0.703385,
+        "median": 0.703385,
+        "min": 0.703385,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.703385,
+          "p25": 0.703385,
+          "p50": 0.703385,
+          "p75": 0.703385,
+          "p90": 0.703385
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.648352,
+        "mean": 2.648352,
+        "median": 2.648352,
+        "min": 2.648352,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.648352,
+          "p25": 2.648352,
+          "p50": 2.648352,
+          "p75": 2.648352,
+          "p90": 2.648352
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.516484,
+        "mean": 1.516484,
+        "median": 1.516484,
+        "min": 1.516484,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.516484,
+          "p25": 1.516484,
+          "p50": 1.516484,
+          "p75": 1.516484,
+          "p90": 1.516484
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.637363,
+        "mean": 6.637363,
+        "median": 6.637363,
+        "min": 6.637363,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.637363,
+          "p25": 6.637363,
+          "p50": 6.637363,
+          "p75": 6.637363,
+          "p90": 6.637363
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.472527,
+        "mean": 2.472527,
+        "median": 2.472527,
+        "min": 2.472527,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.472527,
+          "p25": 2.472527,
+          "p50": 2.472527,
+          "p75": 2.472527,
+          "p90": 2.472527
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.021978,
+        "mean": 2.021978,
+        "median": 2.021978,
+        "min": 2.021978,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.021978,
+          "p25": 2.021978,
+          "p50": 2.021978,
+          "p75": 2.021978,
+          "p90": 2.021978
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.642,
+        "mean": 5.642,
+        "median": 5.642,
+        "min": 5.642,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.642,
+          "p25": 5.642,
+          "p50": 5.642,
+          "p75": 5.642,
+          "p90": 5.642
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.776641,
+        "mean": 5.776641,
+        "median": 5.776641,
+        "min": 5.776641,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.776641,
+          "p25": 5.776641,
+          "p50": 5.776641,
+          "p75": 5.776641,
+          "p90": 5.776641
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.416052,
+        "mean": 0.416052,
+        "median": 0.416052,
+        "min": 0.416052,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.416052,
+          "p25": 0.416052,
+          "p50": 0.416052,
+          "p75": 0.416052,
+          "p90": 0.416052
+        },
+        "scale": 0.91,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u18|female": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 30.446227,
+        "mean": 30.446227,
+        "median": 30.446227,
+        "min": 30.446227,
+        "n": 0,
+        "percentiles": {
+          "p10": 30.446227,
+          "p25": 30.446227,
+          "p50": 30.446227,
+          "p75": 30.446227,
+          "p90": 30.446227
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.660706,
+        "mean": 1.660706,
+        "median": 1.660706,
+        "min": 1.660706,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.660706,
+          "p25": 1.660706,
+          "p50": 1.660706,
+          "p75": 1.660706,
+          "p90": 1.660706
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.312559,
+        "mean": 2.312559,
+        "median": 2.312559,
+        "min": 2.312559,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.312559,
+          "p25": 2.312559,
+          "p50": 2.312559,
+          "p75": 2.312559,
+          "p90": 2.312559
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.894096,
+        "mean": 1.894096,
+        "median": 1.894096,
+        "min": 1.894096,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.894096,
+          "p25": 1.894096,
+          "p50": 1.894096,
+          "p75": 1.894096,
+          "p90": 1.894096
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.153702,
+        "mean": 5.153702,
+        "median": 5.153702,
+        "min": 5.153702,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.153702,
+          "p25": 5.153702,
+          "p50": 5.153702,
+          "p75": 5.153702,
+          "p90": 5.153702
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.222352,
+        "mean": 1.222352,
+        "median": 1.222352,
+        "min": 1.222352,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.222352,
+          "p25": 1.222352,
+          "p50": 1.222352,
+          "p75": 1.222352,
+          "p90": 1.222352
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.704868,
+        "mean": 0.704868,
+        "median": 0.704868,
+        "min": 0.704868,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.704868,
+          "p25": 0.704868,
+          "p50": 0.704868,
+          "p75": 0.704868,
+          "p90": 0.704868
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.653936,
+        "mean": 2.653936,
+        "median": 2.653936,
+        "min": 2.653936,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.653936,
+          "p25": 2.653936,
+          "p50": 2.653936,
+          "p75": 2.653936,
+          "p90": 2.653936
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.519681,
+        "mean": 1.519681,
+        "median": 1.519681,
+        "min": 1.519681,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.519681,
+          "p25": 1.519681,
+          "p50": 1.519681,
+          "p75": 1.519681,
+          "p90": 1.519681
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.651359,
+        "mean": 6.651359,
+        "median": 6.651359,
+        "min": 6.651359,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.651359,
+          "p25": 6.651359,
+          "p50": 6.651359,
+          "p75": 6.651359,
+          "p90": 6.651359
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.477741,
+        "mean": 2.477741,
+        "median": 2.477741,
+        "min": 2.477741,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.477741,
+          "p25": 2.477741,
+          "p50": 2.477741,
+          "p75": 2.477741,
+          "p90": 2.477741
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.026242,
+        "mean": 2.026242,
+        "median": 2.026242,
+        "min": 2.026242,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.026242,
+          "p25": 2.026242,
+          "p50": 2.026242,
+          "p75": 2.026242,
+          "p90": 2.026242
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.630128,
+        "mean": 5.630128,
+        "median": 5.630128,
+        "min": 5.630128,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.630128,
+          "p25": 5.630128,
+          "p50": 5.630128,
+          "p75": 5.630128,
+          "p90": 5.630128
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.764486,
+        "mean": 5.764486,
+        "median": 5.764486,
+        "min": 5.764486,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.764486,
+          "p25": 5.764486,
+          "p50": 5.764486,
+          "p75": 5.764486,
+          "p90": 5.764486
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.415177,
+        "mean": 0.415177,
+        "median": 0.415177,
+        "min": 0.415177,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.415177,
+          "p25": 0.415177,
+          "p50": 0.415177,
+          "p75": 0.415177,
+          "p90": 0.415177
+        },
+        "scale": 0.9081,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u18|male": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 34.597985,
+        "mean": 34.597985,
+        "median": 34.597985,
+        "min": 34.597985,
+        "n": 0,
+        "percentiles": {
+          "p10": 34.597985,
+          "p25": 34.597985,
+          "p50": 34.597985,
+          "p75": 34.597985,
+          "p90": 34.597985
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.887166,
+        "mean": 1.887166,
+        "median": 1.887166,
+        "min": 1.887166,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.887166,
+          "p25": 1.887166,
+          "p50": 1.887166,
+          "p75": 1.887166,
+          "p90": 1.887166
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.035052,
+        "mean": 2.035052,
+        "median": 2.035052,
+        "min": 2.035052,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.035052,
+          "p25": 2.035052,
+          "p50": 2.035052,
+          "p75": 2.035052,
+          "p90": 2.035052
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.666804,
+        "mean": 1.666804,
+        "median": 1.666804,
+        "min": 1.666804,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.666804,
+          "p25": 1.666804,
+          "p50": 1.666804,
+          "p75": 1.666804,
+          "p90": 1.666804
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.535258,
+        "mean": 4.535258,
+        "median": 4.535258,
+        "min": 4.535258,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.535258,
+          "p25": 4.535258,
+          "p50": 4.535258,
+          "p75": 4.535258,
+          "p90": 4.535258
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.07567,
+        "mean": 1.07567,
+        "median": 1.07567,
+        "min": 1.07567,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.07567,
+          "p25": 1.07567,
+          "p50": 1.07567,
+          "p75": 1.07567,
+          "p90": 1.07567
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.620284,
+        "mean": 0.620284,
+        "median": 0.620284,
+        "min": 0.620284,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.620284,
+          "p25": 0.620284,
+          "p50": 0.620284,
+          "p75": 0.620284,
+          "p90": 0.620284
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.335464,
+        "mean": 2.335464,
+        "median": 2.335464,
+        "min": 2.335464,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.335464,
+          "p25": 2.335464,
+          "p50": 2.335464,
+          "p75": 2.335464,
+          "p90": 2.335464
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.33732,
+        "mean": 1.33732,
+        "median": 1.33732,
+        "min": 1.33732,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.33732,
+          "p25": 1.33732,
+          "p50": 1.33732,
+          "p75": 1.33732,
+          "p90": 1.33732
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 5.853196,
+        "mean": 5.853196,
+        "median": 5.853196,
+        "min": 5.853196,
+        "n": 0,
+        "percentiles": {
+          "p10": 5.853196,
+          "p25": 5.853196,
+          "p50": 5.853196,
+          "p75": 5.853196,
+          "p90": 5.853196
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.180412,
+        "mean": 2.180412,
+        "median": 2.180412,
+        "min": 2.180412,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.180412,
+          "p25": 2.180412,
+          "p50": 2.180412,
+          "p75": 2.180412,
+          "p90": 2.180412
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.783093,
+        "mean": 1.783093,
+        "median": 1.783093,
+        "min": 1.783093,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.783093,
+          "p25": 1.783093,
+          "p50": 1.783093,
+          "p75": 1.783093,
+          "p90": 1.783093
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.397872,
+        "mean": 6.397872,
+        "median": 6.397872,
+        "min": 6.397872,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.397872,
+          "p25": 6.397872,
+          "p50": 6.397872,
+          "p75": 6.397872,
+          "p90": 6.397872
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.550552,
+        "mean": 6.550552,
+        "median": 6.550552,
+        "min": 6.550552,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.550552,
+          "p25": 6.550552,
+          "p50": 6.550552,
+          "p75": 6.550552,
+          "p90": 6.550552
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.471791,
+        "mean": 0.471791,
+        "median": 0.471791,
+        "min": 0.471791,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.471791,
+          "p25": 0.471791,
+          "p50": 0.471791,
+          "p75": 0.471791,
+          "p90": 0.471791
+        },
+        "scale": 1.0319,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    },
+    "u18|unspecified": {
+      "ballSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 32.522106,
+        "mean": 32.522106,
+        "median": 32.522106,
+        "min": 32.522106,
+        "n": 0,
+        "percentiles": {
+          "p10": 32.522106,
+          "p25": 32.522106,
+          "p50": 32.522106,
+          "p75": 32.522106,
+          "p90": 32.522106
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "broadJumpDistance": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.773936,
+        "mean": 1.773936,
+        "median": 1.773936,
+        "min": 1.773936,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.773936,
+          "p25": 1.773936,
+          "p50": 1.773936,
+          "p75": 1.773936,
+          "p90": 1.773936
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "codOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.164948,
+        "mean": 2.164948,
+        "median": 2.164948,
+        "min": 2.164948,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.164948,
+          "p25": 2.164948,
+          "p50": 2.164948,
+          "p75": 2.164948,
+          "p90": 2.164948
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.773196,
+        "mean": 1.773196,
+        "median": 1.773196,
+        "min": 1.773196,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.773196,
+          "p25": 1.773196,
+          "p50": 1.773196,
+          "p75": 1.773196,
+          "p90": 1.773196
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 4.824742,
+        "mean": 4.824742,
+        "median": 4.824742,
+        "min": 4.824742,
+        "n": 0,
+        "percentiles": {
+          "p10": 4.824742,
+          "p25": 4.824742,
+          "p50": 4.824742,
+          "p75": 4.824742,
+          "p90": 4.824742
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "codTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.14433,
+        "mean": 1.14433,
+        "median": 1.14433,
+        "min": 1.14433,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.14433,
+          "p25": 1.14433,
+          "p50": 1.14433,
+          "p75": 1.14433,
+          "p90": 1.14433
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleBallControl": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.659876,
+        "mean": 0.659876,
+        "median": 0.659876,
+        "min": 0.659876,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.659876,
+          "p25": 0.659876,
+          "p50": 0.659876,
+          "p75": 0.659876,
+          "p90": 0.659876
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      },
+      "dribbleOutboundTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.484536,
+        "mean": 2.484536,
+        "median": 2.484536,
+        "min": 2.484536,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.484536,
+          "p25": 2.484536,
+          "p50": 2.484536,
+          "p75": 2.484536,
+          "p90": 2.484536
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleReturnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.42268,
+        "mean": 1.42268,
+        "median": 1.42268,
+        "min": 1.42268,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.42268,
+          "p25": 1.42268,
+          "p50": 1.42268,
+          "p75": 1.42268,
+          "p90": 1.42268
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTotalTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.226804,
+        "mean": 6.226804,
+        "median": 6.226804,
+        "min": 6.226804,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.226804,
+          "p25": 6.226804,
+          "p50": 6.226804,
+          "p75": 6.226804,
+          "p90": 6.226804
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "dribbleTurnTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 2.319588,
+        "mean": 2.319588,
+        "median": 2.319588,
+        "min": 2.319588,
+        "n": 0,
+        "percentiles": {
+          "p10": 2.319588,
+          "p25": 2.319588,
+          "p50": 2.319588,
+          "p75": 2.319588,
+          "p90": 2.319588
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintCompletionTime": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 1.896907,
+        "mean": 1.896907,
+        "median": 1.896907,
+        "min": 1.896907,
+        "n": 0,
+        "percentiles": {
+          "p10": 1.896907,
+          "p25": 1.896907,
+          "p50": 1.896907,
+          "p75": 1.896907,
+          "p90": 1.896907
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "s"
+      },
+      "sprintMaxAcceleration": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.014,
+        "mean": 6.014,
+        "median": 6.014,
+        "min": 6.014,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.014,
+          "p25": 6.014,
+          "p50": 6.014,
+          "p75": 6.014,
+          "p90": 6.014
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s^2"
+      },
+      "sprintMaxSpeed": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 6.157519,
+        "mean": 6.157519,
+        "median": 6.157519,
+        "min": 6.157519,
+        "n": 0,
+        "percentiles": {
+          "p10": 6.157519,
+          "p25": 6.157519,
+          "p50": 6.157519,
+          "p75": 6.157519,
+          "p90": 6.157519
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m/s"
+      },
+      "verticalJumpHeight": {
+        "athletes": 1,
+        "derivation": "scaled",
+        "max": 0.443484,
+        "mean": 0.443484,
+        "median": 0.443484,
+        "min": 0.443484,
+        "n": 0,
+        "percentiles": {
+          "p10": 0.443484,
+          "p25": 0.443484,
+          "p50": 0.443484,
+          "p75": 0.443484,
+          "p90": 0.443484
+        },
+        "scale": 0.97,
+        "sourceCell": "senior|unspecified",
+        "stddev": 0.0,
+        "unit": "m"
+      }
+    }
+  },
+  "generation": 2,
+  "provenance": {
+    "algorithmVersions": {
+      "appBuilds": [],
+      "notes": "Published D1 standards projected from senior anchors by the age/gender multipliers. Not measured data. Replaced by the first real collection run."
+    },
+    "athleteCount": 0,
+    "cohortPlayerDocIds_sha256": "",
+    "repDateRange": [],
+    "runId": "standards",
+    "toolVersion": "bench.py 0.1.0"
+  },
+  "publishedAt": "1970-01-01T00:00:00Z",
+  "schemaVersion": 1,
+  "tier": "d1"
+}

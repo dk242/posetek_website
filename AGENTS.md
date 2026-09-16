@@ -11,12 +11,19 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aaa2d81f7a768e5e5799ae1`, published
-September 15, 2026 at 10:50:58 PM PDT. It includes the scrolling homepage and all
-nine annotation updates. Read `deployment/ANNOTATION_UPDATE_PRODUCTION.json` for
-the current receipt, `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested
-changes, and `deployment/SCROLLING_HOMEPAGE_UPDATE.md` for recovery and earlier
-release decisions. Continue from the source included in this repository.
+The latest recorded production release is `6aaa57d3fe77d22f67611c42`, published
+September 16, 2026 at 1:52:03 AM PDT. It includes the scrolling homepage, all nine
+annotation updates, and the athletic male viewer refinement. Read
+`deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json` for the current receipt,
+`deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested annotations, and
+`deployment/SCROLLING_HOMEPAGE_UPDATE.md` for recovery and earlier release decisions.
+Continue from the source included in this repository.
+
+The feed feature stack is available in `app/src/pages/feed/` and `functions/`.
+Read `docs/FEED_SOURCE_HANDOFF.md` for setup, API contracts and provenance. The
+frontend is recovered editable JSX; the backend is original deployed source.
+Feed development uses the Vite app at `/feed?preview=1` and requires no reference
+capture. Source recovery did not deploy or change the application baseline.
 
 At the initial September 15 review, GitHub main was older than the live homepage.
 The user chose the deployed site as the reference. Recovered modules have provenance

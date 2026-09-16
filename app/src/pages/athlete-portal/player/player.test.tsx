@@ -142,12 +142,20 @@ describe('player route and preview rendering', () => {
   it('keeps legacy profile and saved session links meaningful', () => {
     expect(playerRoute('?view=profile').view).toBe('home');
     expect(playerRoute('?drill=sprint&session=session3&rep=r2')).toMatchObject({ view: 'drills', drill: 'sprint', session: 'session3', rep: 'r2' });
+    expect(playerRoute('?view=aiCoach').view).toBe('aiCoach');
+    expect(playerRoute('?view=feed').view).toBe('feed');
   });
   it.each(['home', 'aiCoach', 'training', 'leaderboards', 'drills'])('renders %s with five player tabs and no staff controls', view => {
     const data = previewData();
     const ctx = { ...data, notify: () => {}, allStatsReps: () => Object.values(data.reps).flat() };
     const html = renderToStaticMarkup(<MemoryRouter initialEntries={[`/athlete?preview=1&view=${view}`]}><PlayerExperience ctx={ctx} initialReps={data.reps} /></MemoryRouter>);
     expect(html).toContain('Player tabs'); expect(html).not.toContain('Coach view'); expect(html).toContain('no account changes');
+    const navigation = html.match(/<nav class="player-bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+    expect((navigation.match(/<button/g) || []).length).toBe(5);
+    expect(navigation).toContain('>Home</span>'); expect(navigation).toContain('>You</span>');
+    expect(navigation).not.toContain('AI Coach');
+    expect(html.includes('Ask your AI Coach')).toBe(view === 'home' || view === 'training');
+    if (view === 'aiCoach') expect(html).toContain('Your AI Coach');
     if (view === 'training') { expect(html).toContain('Next'); expect(html).toContain('Keep the ball close'); }
     if (view === 'home') expect(html).toContain('Your skill map');
   });

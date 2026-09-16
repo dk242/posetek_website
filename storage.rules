@@ -1,0 +1,128 @@
+// 2026-09-05 01A: admin demo uploads are separate from athlete test recordings.
+// Full ruleset must exclude isPosetekAdmin() on ALL athlete recording write
+// grants, including overlapping self/coach paths; catalog app-prefix grant stays.
+// 2026-09-05 01A: private immutable evaluation artifacts are admin-readable only.
+// Firebase STORAGE security rules — drill catalog media (2026-09-05, agent 01).
+// Contract: docs/DRILL_CATALOG_V2_CONTRACT.md §6.2, docs/ADMIN_IDENTITY_CONTRACT.md §1.1.
+//
+// Storage rules are a SEPARATE ruleset from Firestore's. This is the
+// reviewable copy of the one block the catalog needs; the rest of the Storage
+// ruleset (per-athlete `{playerDocId}/**` prefixes, `diagnostics/**`,
+// `failure_cases/**`) is owned by docs/plans/FIREBASE_RULES_LOCKDOWN_PLAN.md
+// B6 and is not restated here. Today the live Storage ruleset is a flat
+// `allow read, write: if request.auth != null` (KNOWN_ISSUES.md); this block
+// tightens `drillCatalogMedia/**` inside whatever ruleset replaces it.
+//
+// Trust boundary: any signed-in client may stream a clip (the app resolves
+// `storagePath` → downloadURL on the athlete's phone). Only a PoseTek admin
+// may write, and only under the `app` version segment — the portal's `3.4`
+// prefix is written by Dylan's publisher with a service account, which
+// bypasses rules, and must stay closed to clients so an in-app upload can
+// never overwrite a portal object (or vice versa).
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Same text as docs/rules/admin.rules — keep the two identical.
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
+    }
+    function isPosetekAdmin() {
+      return signedIn()
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.get('email', '') is string
+        && request.auth.token.get('email', '').lower().matches('^[a-z0-9._%+-]+@posetek\\.net$');
+    }
+    function validPlayerId(pid) {
+      return pid is string && pid.size() > 0
+        && !(pid in ['diagnostics', 'failure_cases', 'trainingPlanContexts',
+          'drillCatalogMedia', 'kicking-analysis', 'users', 'organizations',
+          'coaches', 'admins', 'config', 'ProfessionalOverlay', 'llmJobs', 'teams', 'clubStaffInvitations']);
+    }
+    function ownPlayer(pid, p) {
+      return p.get('authenticationUID', request.auth.uid) == request.auth.uid
+        && p.get('userUID', request.auth.uid) == request.auth.uid
+        && (p.get('authenticationUID', '') == request.auth.uid
+          || p.get('userUID', '') == request.auth.uid
+          || pid == request.auth.uid);
+    }
+    function legacyAssignedCoach(pid, p) {
+      let cid = p.get('coachDocId', request.auth.uid);
+      return p.get('coachUID', '') == request.auth.uid
+        || p.get('coachId', '') == request.auth.uid
+        || p.get('coachDocId', '') == request.auth.uid
+        || (cid is string && cid.size() > 0
+          && firestore.get(/databases/(default)/documents/coaches/$(cid)).data.get('userUID', '') == request.auth.uid
+          && firestore.get(/databases/(default)/documents/coaches/$(cid)).data.get('members', []).hasAny([pid]));
+    }
+    function clubStaff(p) {
+      let orgId = p.get('organizationId', '');
+      let member = firestore.get(/databases/(default)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data;
+      return orgId is string && orgId.size() > 0
+        && member.get('userUID', '') == request.auth.uid
+        && member.get('status', '') == 'active'
+        && (member.get('role', '') == 'manager'
+          || (member.get('role', '') == 'coach'
+            && p.get('teamId', '') is string && p.get('teamId', '').size() > 0
+            && member.get('teamIds', []).hasAny([p.teamId])));
+    }
+    function assignedCoach(pid, p) {
+      return ('organizationId' in p) ? clubStaff(p) : legacyAssignedCoach(pid, p);
+    }
+    function playerActor(pid) {
+      let p = firestore.get(/databases/(default)/documents/players/$(pid)).data;
+      // At most two distinct Firestore documents: player and the coach selected
+      // by its immutable back-pointer, or the authoritative club membership.
+      return signedIn() && !isPosetekAdmin() && validPlayerId(pid)
+        && p is map && (ownPlayer(pid, p) || assignedCoach(pid, p));
+    }
+    function migratedRoot(root) {
+      return firestore.exists(/databases/(default)/documents/players/$(root))
+        && 'organizationId' in firestore.get(/databases/(default)/documents/players/$(root)).data;
+    }
+    match /organizations/{organizationId}/branding/{fileName} {
+      allow read: if fileName.matches('^[A-Za-z0-9_-]+\\.png$');
+      allow write: if false;
+    }
+    // Immutable context overflow; gateway writes with Admin SDK. These may
+    // contain raw coach feedback and must be excluded from broad athlete reads.
+    match /trainingPlanContexts/{playerId}/{planId}/{fileName} {
+      allow read: if isPosetekAdmin();
+      allow write: if false;
+    }
+
+    // drillCatalogMedia/{version}/{DRILL_ID}/{slot}.{ext}
+    //   version: "3.4" (portal, service-account only) | "app" (in-app / web uploads)
+    //   slot:    primaryDemo | teachingDetail | errorCorrection | birdsEye
+    match /drillCatalogMedia/{version}/{drillId}/{fileName} {
+      allow read: if request.auth != null;
+
+      allow write: if isPosetekAdmin()
+        && version == 'app'
+        && fileName.matches('^(primaryDemo|teachingDetail|errorCorrection|birdsEye)\\.(mp4|mov|jpg|jpeg|png)$')
+        && request.resource != null
+        && request.resource.size <= 300 * 1024 * 1024
+        && (request.resource.contentType.matches('video/.*')
+            || request.resource.contentType.matches('image/.*'));
+      // Deleting an app upload is the same predicate with request.resource == null;
+      // allowed so a failed/retried capture can be cleaned up. Portal objects
+      // (`3.4`) are never client-deletable.
+      allow delete: if isPosetekAdmin() && version == 'app';
+    }
+
+    // Preserve existing authenticated recording/media flows, excluding the two
+    // namespaces whose authoring/privacy policy is defined above.
+    match /{root}/{rest=**} {
+      allow read: if request.auth != null
+        && !(root in ['trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
+        && (!migratedRoot(root) || isPosetekAdmin() || playerActor(root));
+      allow write: if request.auth != null
+        && !(root in ['trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
+        && (!migratedRoot(root) || playerActor(root))
+        && (!isPosetekAdmin() || root in ['diagnostics','failure_cases']);
+    }
+  }
+}

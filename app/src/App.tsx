@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const HomePage = lazy(() => import("./pages/home/HomePage"));
 const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
+const FeedPage = lazy(() => import("./pages/feed/FeedPage"));
 const OrganizationPage = lazy(() => import("./pages/organization/OrganizationPage"));
 const StaffInvitePage = lazy(() => import("./pages/staff-invite/StaffInvitePage"));
 const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
@@ -35,6 +36,9 @@ export default function App() {
 
           <Route path="/signin" element={<LandingPage />} />
           <Route path="/kickai.html" element={<LandingPage />} />
+
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/feed.html" element={<FeedPage />} />
 
           <Route path="/organization" element={<OrganizationPage />} />
           <Route path="/join" element={<StaffInvitePage />} />

@@ -82,14 +82,17 @@ class DocumentReference {
 }
 
 class Query {
-  constructor(db, path, filters = [], max = Infinity) { this.db = db; this.path = path; this.filters = filters; this.max = max; }
-  where(field, op, value) { return new Query(this.db, this.path, [...this.filters, [field, op, value]], this.max); }
-  limit(max) { return new Query(this.db, this.path, this.filters, max); }
+  constructor(db, path, filters = [], max = Infinity, orders = [], cursor = null) { this.db = db; this.path = path; this.filters = filters; this.max = max; this.orders = orders; this.cursor = cursor; }
+  where(field, op, value) { return new Query(this.db, this.path, [...this.filters, [field, op, value]], this.max, this.orders, this.cursor); }
+  limit(max) { return new Query(this.db, this.path, this.filters, max, this.orders, this.cursor); }
+  orderBy(field, direction = "asc") { return new Query(this.db, this.path, this.filters, this.max, [...this.orders, [field, direction]], this.cursor); }
+  startAfter(...values) { return new Query(this.db, this.path, this.filters, this.max, this.orders, values); }
   count() { const query = this; return { async get() { const result = await query.get(); return { data: () => ({ count: result.size }) }; } }; }
   matches(data) {
     return this.filters.every(([field, op, value]) => {
       const actual = data[field];
       if (op === "==") return actual === value;
+      if (op === "array-contains-any") return Array.isArray(actual) && value.some(v => actual.includes(v));
       if (op === "array-contains") return Array.isArray(actual) && actual.includes(value);
       throw new Error(`Unsupported operator ${op}`);
     });
@@ -99,10 +102,19 @@ class Query {
     for (const [path, data] of this.db.docs) {
       if (path.split("/").length !== this.path.split("/").length + 1 || !path.startsWith(this.path + "/")) continue;
       if (this.matches(data)) docs.push(new Snapshot(new DocumentReference(this.db, path), data));
-      if (docs.length >= this.max) break;
+
     }
     this.db.queries.push({ path: this.path, filters: this.filters });
-    return { docs, empty: docs.length === 0, size: docs.length };
+    const compare = (a, b) => {
+      for (let i = 0; i < this.orders.length; i++) {
+        const [field, direction] = this.orders[i], av = field === "__name__" ? a.id : a.data()[field], bv = Array.isArray(b) ? b[i] : field === "__name__" ? b.id : b.data()[field];
+        if (av !== bv) return (av < bv ? -1 : 1) * (direction === "desc" ? -1 : 1);
+      }
+      return 0;
+    };
+    docs.sort(compare);
+    const page = docs.filter(d => !this.cursor || compare(d, this.cursor) > 0).slice(0, this.max);
+    return { docs: page, empty: page.length === 0, size: page.length };
   }
 }
 

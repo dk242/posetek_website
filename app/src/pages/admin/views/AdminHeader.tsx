@@ -1,8 +1,9 @@
 import { Link, NavLink } from "react-router-dom";
 
 const SECTIONS = [
+  { path: "feeds", icon: "dynamic_feed", label: "Community feeds", short: "Feeds" },
   { path: "drills", icon: "library_books", label: "Drill library", short: "Drills" },
-  { path: "organizations", icon: "groups", label: "Organizations", short: "Organizations" },
+  { path: "organizations", icon: "groups", label: "Organizations", short: "Clubs" },
   { path: "accounts", icon: "supervisor_account", label: "Monitor accounts", short: "Accounts" },
   { path: "programs", icon: "auto_awesome", label: "Generate programs", short: "Programs" },
 ];

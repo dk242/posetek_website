@@ -211,6 +211,7 @@ export default function CoachDashboardPage() {
   return (
     <div className="pt-pose portal-body pt-coachdash">
       <header className="portal-header">
+        <Link className="quiet-button" to="/feed">Community feed</Link>
         <Link className="portal-brand" to="/dashboard" aria-label="PoseTek dashboard">
           <span className="portal-brand-mark">P</span>
           <span>POSETEK</span>

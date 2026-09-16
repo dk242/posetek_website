@@ -14,6 +14,7 @@ const dist = join(repoRoot, "dist");
 const PORTED = new Set([
   "index.html",
   "kickai.html",
+  "feed.html",
   "coachesview.html",
   "profile.html",
   "broadJumpPage.html",

@@ -4,34 +4,192 @@
       "collectionGroup": "kickingSessions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "playerId", "order": "ASCENDING" },
-        { "fieldPath": "kickType", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "playerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kickType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kickingSessions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "playerId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "playerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "kickingSessions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "playerId", "order": "ASCENDING" },
-        { "fieldPath": "kickType", "order": "ASCENDING" },
-        { "fieldPath": "maxVelocity", "order": "DESCENDING" }
+        {
+          "fieldPath": "playerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kickType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "maxVelocity",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "reps",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "repType", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "repType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aiConversations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "createdByUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "capability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastMessageAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "drills",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "assignedTo",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "llmJobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "playerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "capability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aiConversations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "capability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastMessageAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "socialActivities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "audiences",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "occurredAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "id",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "llmUsage",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "requestedByUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "capability",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "comments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "trainingPlans",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "generatedAt",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],

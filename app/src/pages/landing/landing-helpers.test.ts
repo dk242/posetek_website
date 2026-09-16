@@ -134,16 +134,16 @@ describe("post-auth destinations", () => {
     expect(coachHomeRoute()).toBe("/roster?userType=coach");
   });
 
-  it("sends a signed-in player to their profile with the encoded id first", () => {
-    expect(playerHomeRoute("abc123")).toBe("/athlete?player=abc123&userType=player");
-    expect(playerHomeRoute("a b/c")).toBe("/athlete?player=a%20b%2Fc&userType=player");
+  it("sends a signed-in player to the feed with the encoded id first", () => {
+    expect(playerHomeRoute("abc123")).toBe("/feed?player=abc123&userType=player");
+    expect(playerHomeRoute("a b/c")).toBe("/feed?player=a%20b%2Fc&userType=player");
   });
 
   it("builds the signup destination with userType first and an optional player id", () => {
-    expect(playerSignupRoute(null)).toBe("/athlete?userType=player");
-    expect(playerSignupRoute(undefined)).toBe("/athlete?userType=player");
-    expect(playerSignupRoute("")).toBe("/athlete?userType=player");
-    expect(playerSignupRoute("p 1")).toBe("/athlete?userType=player&player=p%201");
+    expect(playerSignupRoute(null)).toBe("/feed?userType=player");
+    expect(playerSignupRoute(undefined)).toBe("/feed?userType=player");
+    expect(playerSignupRoute("")).toBe("/feed?userType=player");
+    expect(playerSignupRoute("p 1")).toBe("/feed?userType=player&player=p%201");
   });
 });
 
@@ -254,6 +254,14 @@ describe("getSafeReturnToUrl", () => {
       `${ORIGIN}/drills/change-of-direction`,
     );
     expect(getSafeReturnToUrl(url("/drills/dribbling"), BASE, ORIGIN)).toBe(`${ORIGIN}/drills/dribbling`);
+  });
+
+  it("returns to a feed activity or connection after sign-in without accepting external feed URLs", () => {
+    for (const target of ["/feed?activity=session-123&organizationId=club", "/feed.html?connect=player-123"]) {
+      expect(getSafeReturnToUrl(url(target), BASE, ORIGIN)).toBe(ORIGIN + target);
+    }
+    expect(getSafeReturnToUrl(url("https://evil.example/feed?activity=session-123"), BASE, ORIGIN)).toBeNull();
+    expect(getSafeReturnToUrl(url("//evil.example/feed.html?connect=player-123"), BASE, ORIGIN)).toBeNull();
   });
 
   it("rejects clean routes that are not ported auth destinations", () => {

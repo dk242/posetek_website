@@ -5,12 +5,12 @@ import AdminHeader from "./AdminHeader";
 import AdminHome from "./AdminHome";
 
 describe("combined admin navigation", () => {
-  it("preserves the refreshed four-section header and technique-review shortcut", () => {
+  it("preserves the published five-section header and technique-review shortcut", () => {
     const html = renderToStaticMarkup(<MemoryRouter><AdminHeader ready email="admin@example.test" onSignOut={() => {}} /></MemoryRouter>);
-    for (const path of ["drills", "organizations", "accounts", "programs", "analysis"]) {
+    for (const path of ["feeds", "drills", "organizations", "accounts", "programs", "analysis"]) {
       expect(html).toContain(`href="/admin/${path}"`);
     }
-    expect((html.match(/class="admin-nav-short"/g) ?? []).length).toBe(4);
+    expect((html.match(/class="admin-nav-short"/g) ?? []).length).toBe(5);
     expect(html).toContain('aria-label="Technique review"');
   });
   it("offers both planners and the saved kick review workspace from home", () => {
@@ -23,6 +23,7 @@ describe("combined admin navigation", () => {
   it("does not expose ready-only navigation while signed out", () => {
     const html = renderToStaticMarkup(<MemoryRouter><AdminHeader ready={false} onSignOut={() => {}} /></MemoryRouter>);
     expect(html).not.toContain('href="/admin/analysis"');
+    expect(html).not.toContain('href="/admin/feeds"');
     expect(html).not.toContain('aria-label="Admin sections"');
   });
 });

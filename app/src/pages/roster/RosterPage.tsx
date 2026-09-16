@@ -341,6 +341,7 @@ export default function RosterPage() {
   return (
     <div className="pt-pose portal-body roster-body">
       <header className="portal-header">
+        <Link className="quiet-button" to="/feed">Community feed</Link>
         <Link
           className="portal-brand"
           to="/roster?userType=coach"

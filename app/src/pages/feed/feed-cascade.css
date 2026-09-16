@@ -1,0 +1,12 @@
+/* The deployed router loads feed.css BEFORE the shared portal theme. These
+   inherited values preserve that cascade even if another route already loaded
+   the shared theme before the feed was visited. Keep the selector specificity
+   equal to the portal rules: more-specific feed controls retain their styling. */
+.social-app {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.social-app button,
+.social-app input {
+  font: inherit;
+}

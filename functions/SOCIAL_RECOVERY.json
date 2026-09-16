@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 2,
+  "recoveredOn": "2026-09-16",
+  "project": "kickai-69dd0",
+  "region": "us-central1",
+  "sourceApi": "https://cloudfunctions.googleapis.com/v1/{name}:generateDownloadUrl",
+  "sourceType": "original deployed Firebase Gen 1 function source archives",
+  "selectedArchive": {
+    "endpoint": "socialConnection",
+    "versionId": "6",
+    "sha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f"
+  },
+  "functions": [
+    {
+      "name": "ensurePlayerInvitationOnWrite",
+      "versionId": "1",
+      "updatedAt": "2026-09-13T23:16:22.957998300Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461,
+      "eventTrigger": {
+        "eventType": "providers/cloud.firestore/eventTypes/document.write",
+        "resource": "projects/kickai-69dd0/databases/(default)/documents/players/{playerId}",
+        "service": "firestore.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "projectSocialWorkouts",
+      "versionId": "5",
+      "updatedAt": "2026-09-13T23:28:27.704Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f",
+      "archiveBytes": 177936,
+      "eventTrigger": {
+        "eventType": "providers/cloud.firestore/eventTypes/document.write",
+        "resource": "projects/kickai-69dd0/databases/(default)/documents/players/{playerId}/workoutLogs/{logId}",
+        "service": "firestore.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "projectSocialReps",
+      "versionId": "5",
+      "updatedAt": "2026-09-13T23:28:23.772Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f",
+      "archiveBytes": 177936,
+      "eventTrigger": {
+        "eventType": "providers/cloud.firestore/eventTypes/document.write",
+        "resource": "projects/kickai-69dd0/databases/(default)/documents/players/{playerId}/reps/{repId}",
+        "service": "firestore.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "reportSocialActivity",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:22.377Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialActivity",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:22.269Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "saveSocialPreferences",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:27.135Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "socialConnection",
+      "versionId": "6",
+      "updatedAt": "2026-09-13T23:28:15.159Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f",
+      "archiveBytes": 177936
+    },
+    {
+      "name": "closeSocialAccount",
+      "versionId": "1",
+      "updatedAt": "2026-09-13T20:38:04.884979130Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "dee1846240cc21a483445678628f85c2a6b0326b1dbaa5709754904b388880b7",
+      "archiveBytes": 171359,
+      "eventTrigger": {
+        "eventType": "providers/firebase.auth/eventTypes/user.delete",
+        "resource": "projects/kickai-69dd0",
+        "service": "firebaseauth.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "projectSocialSessions",
+      "versionId": "5",
+      "updatedAt": "2026-09-13T23:28:25.921Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f",
+      "archiveBytes": 177936,
+      "eventTrigger": {
+        "eventType": "providers/cloud.firestore/eventTypes/document.write",
+        "resource": "projects/kickai-69dd0/databases/(default)/documents/players/{playerId}/trainingSessions/{sessionId}",
+        "service": "firestore.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "ensurePlayerSignupInvitation",
+      "versionId": "1",
+      "updatedAt": "2026-09-13T23:16:05.529114345Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialContext",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:29.145Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "projectSocialPlayer",
+      "versionId": "5",
+      "updatedAt": "2026-09-13T23:28:26.641Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "70b05f59908ce52b4f8fb11b304fe3747f7e174eeac292a6e178608108b2007f",
+      "archiveBytes": 177936,
+      "eventTrigger": {
+        "eventType": "providers/cloud.firestore/eventTypes/document.write",
+        "resource": "projects/kickai-69dd0/databases/(default)/documents/players/{playerId}",
+        "service": "firestore.googleapis.com",
+        "failurePolicy": {
+          "retry": {}
+        }
+      }
+    },
+    {
+      "name": "getSocialAdminDirectory",
+      "versionId": "1",
+      "updatedAt": "2026-09-13T23:16:18.601350447Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "setSocialKudos",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:25.371Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "createCoachPlayer",
+      "versionId": "1",
+      "updatedAt": "2026-09-13T23:16:20.181556159Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialFeed",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:19.363Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "issueClubPlayerInvitation",
+      "versionId": "2",
+      "updatedAt": "2026-09-13T23:16:23.078Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "moderateSocialActivity",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:22.364Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "saveSocialComment",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:17:02.796Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialMedia",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:22.506Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialComments",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:29.464Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "getSocialPeople",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:16:24.929Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    },
+    {
+      "name": "setSocialVisibility",
+      "versionId": "4",
+      "updatedAt": "2026-09-13T23:17:02.559Z",
+      "runtime": "nodejs22",
+      "archiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "archiveBytes": 177461
+    }
+  ],
+  "files": [
+    {
+      "path": "index.js",
+      "originalSourceSha256": "db5d1078cc12117e7102a88c88bb1c2b10f2bd0e4837681798f9125272347631",
+      "integratedFileSha256": "db5d1078cc12117e7102a88c88bb1c2b10f2bd0e4837681798f9125272347631",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "admission.js",
+      "originalSourceSha256": "8f37981e0a7506a5954a36a888759073bb4a43d5861d8b08aee672f340b14288",
+      "integratedFileSha256": "8f37981e0a7506a5954a36a888759073bb4a43d5861d8b08aee672f340b14288",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "clubs.js",
+      "originalSourceSha256": "42c561f5916ac9036d63707513986400cd1b8cb996c8eacafb162a160694498b",
+      "integratedFileSha256": "42c561f5916ac9036d63707513986400cd1b8cb996c8eacafb162a160694498b",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "social.js",
+      "originalSourceSha256": "dabc95aa8f99840bbbf18d179b60eed045cb832b9cf69f3c90d0c1a3c70c0b1b",
+      "integratedFileSha256": "dabc95aa8f99840bbbf18d179b60eed045cb832b9cf69f3c90d0c1a3c70c0b1b",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "social-projection.js",
+      "originalSourceSha256": "14abdc010dc00cdc095f70922fab7efc773f583453c9e4a0d8ccc6714ee5cf8d",
+      "integratedFileSha256": "14abdc010dc00cdc095f70922fab7efc773f583453c9e4a0d8ccc6714ee5cf8d",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "social-benchmarks.json",
+      "originalSourceSha256": "7d9c5f217692731c10416b1ebbeb3adf9823917fbe573a5da55f8d4fe194351f",
+      "integratedFileSha256": "7d9c5f217692731c10416b1ebbeb3adf9823917fbe573a5da55f8d4fe194351f",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "social.test.js",
+      "originalSourceSha256": "b94818f0133f3afe60488546fe290445f5807eae8e2a84ce050a45dea1919ed1",
+      "integratedFileSha256": "b94818f0133f3afe60488546fe290445f5807eae8e2a84ce050a45dea1919ed1",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "player-invitations.js",
+      "originalSourceSha256": "36c3e431eee8d561682de52c189d6cba46133df4a7787266e473660582db690e",
+      "integratedFileSha256": "36c3e431eee8d561682de52c189d6cba46133df4a7787266e473660582db690e",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "player-invitations.test.js",
+      "originalSourceSha256": "169d905e344e1c0657bdb5d8f8a7a844a7220bf386d20b90d67e940fe9406c7b",
+      "integratedFileSha256": "169d905e344e1c0657bdb5d8f8a7a844a7220bf386d20b90d67e940fe9406c7b",
+      "integration": "byte-for-byte copy of selected source archive"
+    },
+    {
+      "path": "test-support/fake-firestore.js",
+      "originalSourceSha256": "ee1106cd2dabfb040dc1542789e6295accf19ca7711abfe38b61d131cab04dbd",
+      "integratedFileSha256": "ee1106cd2dabfb040dc1542789e6295accf19ca7711abfe38b61d131cab04dbd",
+      "integration": "byte-for-byte copy of selected source archive"
+    }
+  ],
+  "excluded": [
+    ".runtimeconfig.json",
+    "Firebase credentials and OAuth tokens",
+    "Signed source-download URLs"
+  ],
+  "notes": [
+    "Each file records separate originalSourceSha256 and integratedFileSha256 hashes. All ten integrated files are byte-for-byte copies of the selected latest source archive at recovery time.",
+    "Existing admission.test.js includes newer teammate tests and was preserved.",
+    "The latest recovered social.js differs from the earlier 734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f archive in one rebuild check supporting config.allOrganizations for a connected athlete. The latest source is live on socialConnection and all four social projection triggers.",
+    "closeSocialAccount remains version 1; its index.js handler body is unchanged in the latest recovered archive.",
+    "social-benchmarks.json is byte-for-byte identical to the already-tracked D1Benchmarks.json and contains published standards, not measured athlete records."
+  ],
+  "sourceVersionDifferences": [
+    {
+      "path": "admission.js",
+      "earlierArchiveSha256": "734c7f635366a061763f812d1c6bda3db94d55f278f43727cd8e40214a99c17f",
+      "earlierSourceSha256": "2ed4e85114307f0864955dee497d61f31b4525c41cf15d11589feb0860707b77",
+      "selectedSourceSha256": "8f37981e0a7506a5954a36a888759073bb4a43d5861d8b08aee672f340b14288",
+      "integratedFileSha256": "8f37981e0a7506a5954a36a888759073bb4a43d5861d8b08aee672f340b14288",
+      "difference": "The earlier getSocialFeed source archive contains an invitations.redeem(normalized, uid, normalizeEmail(email)) block inside attachPlayerByCode. The selected later socialConnection archive already removes this block. This is an upstream source-version difference, not a local integration omission.",
+      "compatibilityReason": "attachPlayerByCode attaches a player to a coach roster; it must not redeem the athlete signup identity for the coach. Its arguments contain no email binding, so the earlier block would also reference an undefined identifier. Selecting the later original archive preserves the existing roster-attachment behavior.",
+      "verification": [
+        "Direct ZIP-entry hash comparison confirmed integrated admission.js matches the selected source archive.",
+        "Existing coach-attachment and protected-invitation compatibility tests passed."
+      ],
+      "scope": "Archive contents do not prove that every unrelated export was deployed from that archive. The recovered feed exports have their own function/version/archive receipts above."
+    }
+  ]
+}

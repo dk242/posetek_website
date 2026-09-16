@@ -11,7 +11,7 @@ const MAX_TEAMS = 100;
 const MAX_STAFF = 100;
 const MAX_PLAYERS = 2000;
 
-function createClubs({ db, FieldValue, HttpsError, now = () => Date.now(), randomBytes = crypto.randomBytes }) {
+function createClubs({ invitations, db, FieldValue, HttpsError, now = () => Date.now(), randomBytes = crypto.randomBytes }) {
   const stamp = () => FieldValue.serverTimestamp();
   const fail = (code, message) => { throw new HttpsError(code, message); };
   const id = (value, label = "identifier") => playerSegment(value) ? value : fail("invalid-argument", `Enter a valid ${label}.`);
@@ -323,6 +323,10 @@ function createClubs({ db, FieldValue, HttpsError, now = () => Date.now(), rando
       if (state.players.length >= MAX_PLAYERS) fail("resource-exhausted", "The club player limit has been reached.");
       const player = { ...extra, firstName, lastName, organizationId: state.orgRef.id, teamId, registered: false, signupCode: code, signupCodeVersion: 2, sport: "Soccer", createdByUID: auth.uid, createdAt: stamp(), updatedAt: stamp() };
       state.players.push({ ...player, id: ref.id });
+      if (invitations) {
+        delete player.signupCode;
+        Object.assign(player, invitations.stage(tx, ref.id, player, code));
+      }
       tx.create(ref, player);
       syncProjections(tx, state);
     });
@@ -331,6 +335,7 @@ function createClubs({ db, FieldValue, HttpsError, now = () => Date.now(), rando
   async function issueClubPlayerInvitation(data, auth) {
     authRequired(auth);
     const playerId = id(data.playerId, "player");
+    if (invitations) return invitations.ensure(playerId, auth, { rotate: true });
     const code = `PLR-${randomBytes(16).toString("hex").toUpperCase()}`;
     await db.runTransaction(async (tx) => {
       const state = await readClub(tx, data.organizationId, auth, false);
