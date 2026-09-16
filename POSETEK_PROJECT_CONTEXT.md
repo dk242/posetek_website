@@ -38,7 +38,19 @@ The homepage production build still enforces and preserves its 171-file applicat
 baseline. A future application release needs a separate full application review
 and deliberate baseline reconciliation.
 
-### Current revision: clearer poses, training and technique
+### Current revision: showing the mobile application
+
+Deployment `6aab00ac8f7bad5e4a2afd2a` was published September 16, 2026 at
+1:50:04 PM PDT (20:50:04.855 UTC). The hero now explicitly identifies PoseTek as a
+mobile app and links to an upright phone beside the closing invitation. The phone
+shows an interactive sample workout, grounded in the mobile source at
+`98d8a051f0580785b70610f5c1a29a5246e08bfb`. It uses local sample data, prescribed
+duration labels, and manual set/rest progression; it is a web illustration, not a
+native screenshot or a saved workout. Existing demos and profile are unchanged.
+Read `deployment/MOBILE_APP_SHOWCASE.md` for design decisions and
+`deployment/MOBILE_APP_SHOWCASE_PRODUCTION.json` for validation and rollback.
+
+### Previous revision: clearer poses, training and technique
 
 Deployment `6aaafde5fa78fbd0fffdbf1e` was published September 16, 2026 at
 1:38:15 PM PDT (20:38:15.094 UTC). The reviewed draft was promoted unchanged.

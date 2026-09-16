@@ -1,0 +1,55 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aab00ac8f7bad5e4a2afd2a",
+  "state": "ready",
+  "publishedAt": "2026-09-16T20:50:04.855Z",
+  "publishedLocal": "September 16, 2026, 1:50:04 PM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aab00ac8f7bad5e4a2afd2a--posetek.netlify.app",
+  "releaseMethod": "Reviewed draft promoted unchanged; GitHub source updated with [skip netlify]",
+  "changes": [
+    "Hero copy identifies PoseTek as a connected mobile app and links to its showcase",
+    "Closing invitation pairs concise copy with an upright interactive phone",
+    "Phone workout illustration follows mobile source hierarchy, colors and set/rest actions using existing sample drill data"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "result": "byte-for-byte unchanged",
+    "existingDemos": "Hero pose, six recordings, profile, training, Coach and technique source unchanged"
+  },
+  "publishedInventory": {
+    "fileCount": 193,
+    "matchedProductionDistFiles": 192,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homepageTests": 113,
+    "navigationAndBaselineTests": 11,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed; existing lazy 3D chunk warning remains",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "homepageAssets": 20,
+      "result": "passed; homepage asset bytes and published inventory match local output"
+    },
+    "browser": "1440/820/390/320px layouts; hero jump link; all three sets and two rest states; completion and keyboard replay; 48px action at 320px; no horizontal overflow or captured console warnings/errors",
+    "authenticatedWorkflows": "not exercised"
+  },
+  "preview": {
+    "sourceCommit": "98d8a051f0580785b70610f5c1a29a5246e08bfb",
+    "kind": "Source-grounded interactive web illustration; not a native screenshot",
+    "data": "Existing sample DRB-006, 3 sets of 60 seconds, 45-second rest",
+    "timing": "Duration labels, manual step-through; no running clock or persistence",
+    "media": "Existing illustrative drill diagram; no private athlete media or generated screenshot"
+  },
+  "designDecisions": "deployment/MOBILE_APP_SHOWCASE.md",
+  "rollback": {
+    "deployId": "6aaafde5fa78fbd0fffdbf1e",
+    "url": "https://6aaafde5fa78fbd0fffdbf1e--posetek.netlify.app"
+  }
+}

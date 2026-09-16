@@ -7,11 +7,13 @@ import { BlurFade } from "../../components/magicui/blur-fade";
 import { LazyHomepageDemo } from "./LazyHomepageDemo";
 import { AthleteProfile } from "./AthleteProfile";
 import { PitchVisual } from "./PitchVisual";
+import { MobileAppPreview } from "./MobileAppPreview";
 import { injectClarity } from "./clarity";
 import { isHeaderScrolled, menuButtonLabel } from "./home-logic";
 import "./magic.css";
 import "./home.scss";
 import "./scrolling-home.scss";
+import "./mobile-app-preview.css";
 
 const loadMovement = () => import("./movement/MovementDemo").then(module => ({ default: module.MovementDemo }));
 const loadTechnique = () => import("./technique/TechniqueDemo");
@@ -100,10 +102,11 @@ export default function HomePage() {
           <div className="hero-copy">
             <p className="eyebrow hero-enter"><span className="status-dot" />For clubs, coaches, and players</p>
             <h1 id="hero-title" className="hero-enter" style={{ "--enter-delay": "80ms" } as CSSProperties}>What should the player train next?<em>Start with evidence.</em></h1>
-            <p className="hero-description hero-enter" style={{ "--enter-delay": "160ms" } as CSSProperties}>Six performance tests. One athlete profile.<br />Understand how a player moves, find their focus,<br className="desktop-break" /> and turn evidence into their next training session.</p>
+            <p className="hero-description hero-enter" style={{ "--enter-delay": "160ms" } as CSSProperties}>Six performance tests. One connected mobile app.<br />Understand how a player moves, find their focus,<br className="desktop-break" /> and turn evidence into their next training session.</p>
             <div className="hero-actions hero-enter" style={{ "--enter-delay": "240ms" } as CSSProperties}>
               <a className="hero-explore" href="#tests"><span className="hero-explore-label">See your game differently<span className="hero-explore-track" aria-hidden="true" /></span><span className="hero-explore-orbit" aria-hidden="true"><Arrow down /></span></a>
             </div>
+            <a className="hero-mobile-link" href="#mobile-app"><svg viewBox="0 0 16 22" fill="none" aria-hidden="true"><rect x="2" y="1" width="12" height="20" rx="3" stroke="currentColor" strokeWidth="1.3"/><path d="M6 4h4M6 18h4" stroke="currentColor" strokeLinecap="round"/></svg>Explore the PoseTek mobile app <span aria-hidden="true">↗</span></a>
           </div>
           <div className="hero-art">
             <div className="art-coordinate" aria-hidden="true">PT / PERFORMANCE SYSTEM</div>
@@ -153,7 +156,7 @@ export default function HomePage() {
           <div className="demo-caption"><span>One kick · One cue at a time · Compare the same moment</span><a className="button-text" href="/bookPerformanceTest.html">Establish your baseline <Arrow /></a></div>
         </section>
 
-        <section className="closing section" aria-labelledby="closing-title"><div className="shell closing-content"><p className="eyebrow">Your next step starts here</p><h2 id="closing-title">Make the next<br /><em>session count.</em></h2><p>One connected system for coaches, clubs, and players.</p><div className="closing-actions"><a className="button-primary" href="/bookPerformanceTest.html">Book a performance test <Arrow /></a><a className="button-text" href="/signin">Coach sign in <Arrow /></a></div><span className="closing-watermark" aria-hidden="true">PT</span></div></section>
+        <section className="closing section" id="mobile-app" aria-labelledby="closing-title"><div className="shell closing-content mobile-closing-layout"><div className="mobile-closing-copy"><p className="eyebrow">The PoseTek mobile app</p><h2 id="closing-title">Your next session.<br /><em>In your pocket.</em></h2><p>Review your results. Follow your plan. Take your next training step with you.</p><div className="closing-actions"><a className="button-primary" href="/bookPerformanceTest.html">Book a performance test <Arrow /></a><a className="button-text" href="/signin">Coach sign in <Arrow /></a></div></div><MobileAppPreview /></div></section>
       </main>
       <footer className="shell"><a className="brand" href="#top" aria-label="PoseTek home"><span className="brand-mark">P<span /></span><span>POSETEK</span></a><p>Start with evidence. Train what’s next.</p><div className="footer-links"><a href="/bookPerformanceTest.html">Book a test</a><a href="/signin">Sign in</a><a href="/privacy">Privacy</a><span>© 2026 PoseTek</span></div></footer>
     </div>

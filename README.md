@@ -4,10 +4,10 @@ Shared source repository: [dk242/posetek_website](https://github.com/dk242/poset
 Public website: [posetek.net](https://posetek.net).
 
 This repository includes the scrolling homepage, all nine annotation updates,
-and the clearer pose, training and technique experience published September 16,
-2026 as deployment `6aaafde5fa78fbd0fffdbf1e`.
+the clearer pose, training and technique experience, and the mobile app showcase
+published September 16, 2026 as deployment `6aab00ac8f7bad5e4a2afd2a`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/HOMEPAGE_CLEANUP_PRODUCTION.json).
+[the latest production receipt](deployment/MOBILE_APP_SHOWCASE_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Feed source available:** the complete feed feature stack is now committed:
