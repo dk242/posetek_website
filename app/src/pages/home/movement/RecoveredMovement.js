@@ -1,5 +1,6 @@
 // Recovered from the accepted 2026-09-15 deployment; see PROVENANCE.md.
-// Rendering and playback logic are preserved. Shared React is imported from npm.
+// Recorded data and playback logic are preserved; rendering refinements are documented.
+// Shared React is imported from npm.
 import * as React from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
 import { TacticalIcon as TacticalIcon } from '../TacticalIcon';
@@ -183,7 +184,58 @@ function createMovementController(e, t, n, r = !0) {
         let n = directionPhase(e, N.frame);
         j.fillStyle = n.color, j.beginPath(), j.arc(t.x, t.y, 4.5, 0, Math.PI * 2), j.fill(), j.strokeStyle = `#fff`, j.lineWidth = 1, j.stroke();
     }
-    function se(e) { j.save(), j.strokeStyle = `rgba(247,251,249,.96)`, j.lineWidth = 3, j.lineCap = `round`, j.lineJoin = `round`, j.beginPath(), BODY_EDGES.forEach(([t, n]) => { let r = L(landmark(e, t)), i = L(landmark(e, n)); !r || !i || (j.moveTo(r.x, r.y), j.lineTo(i.x, i.y)); }), j.stroke(), e.forEach(e => { let t = L(e); t && (j.fillStyle = `#b7f34a`, j.beginPath(), j.arc(t.x, t.y, 1.5, 0, Math.PI * 2), j.fill()); }), j.restore(); }
+    function se(frame) {
+        // Style the supplied landmarks only: no interpolation or inferred trajectory.
+        const points = frame.map(L);
+        const isDetail = index => index >= 17 && index <= 22 || index >= 29;
+        j.save();
+        j.lineCap = `round`;
+        j.lineJoin = `round`;
+
+        // A quiet torso plane makes crossed limbs easier to read without a body model.
+        const torso = [11, 12, 24, 23].map(index => points[index]);
+        if (torso.every(Boolean)) {
+            j.beginPath();
+            torso.forEach((point, index) => index ? j.lineTo(point.x, point.y) : j.moveTo(point.x, point.y));
+            j.closePath();
+            j.fillStyle = `#b9dec010`;
+            j.fill();
+        }
+
+        for (const detail of [false, true]) {
+            j.beginPath();
+            BODY_EDGES.forEach(([from, to]) => {
+                if ((isDetail(from) || isDetail(to)) !== detail) return;
+                const start = points[from], end = points[to];
+                if (!start || !end) return;
+                j.moveTo(start.x, start.y);
+                j.lineTo(end.x, end.y);
+            });
+            // Crisp contrast against grids and trails, without a blurred glow.
+            j.strokeStyle = `#06170fed`;
+            j.lineWidth = detail ? 3.5 : 5.5;
+            j.stroke();
+            j.strokeStyle = detail ? `#aacbbb` : `#edf6e8`;
+            j.lineWidth = detail ? 1.4 : 2.5;
+            j.stroke();
+        }
+
+        points.forEach((point, index) => {
+            if (!point) return;
+            // Retain nose/ear orientation; de-emphasize dense facial micro-landmarks.
+            if (index < 11 && ![0, 7, 8].includes(index)) return;
+            const major = index >= 11 && !isDetail(index);
+            j.beginPath();
+            j.arc(point.x, point.y, major ? 2.9 : 1.5, 0, Math.PI * 2);
+            j.fillStyle = `#06170f`;
+            j.fill();
+            j.beginPath();
+            j.arc(point.x, point.y, major ? 1.75 : .85, 0, Math.PI * 2);
+            j.fillStyle = major ? `#b7f34a` : index < 11 ? `#aacbbb` : `#dcebdc`;
+            j.fill();
+        });
+        j.restore();
+    }
     function ce(e) { let n = secondsAtFrame(N.frame, F()), r = phaseForFrame(e, N.frame); y.textContent = timerText(N.frame, e, F()), T.textContent = phaseLabel(r, n), T.style.setProperty(`--phase-color`, r.color), k && k.textContent !== r.title && (k.textContent = r.title); let i = measurementForFrame(e, N.frame, F()); t.measurementLabel && (t.measurementLabel.textContent = i.label), t.measurementValue && (t.measurementValue.textContent = i.value), t.measurementUnit && (t.measurementUnit.textContent = i.unit), t.measurementCaption && (t.measurementCaption.textContent = i.caption), _.value = String(N.frame), _.style.setProperty(`--pose-progress`, `${100 * N.frame / Math.max(1, lastFrame(e))}%`), _.setAttribute(`aria-valuetext`, scrubberLabel(r, n)); }
     function U() {
         let e = P(), t = e.frames[N.frame] || e.frames[0], n = N.viewport;

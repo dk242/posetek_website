@@ -34,8 +34,11 @@ describe("recorded hero pose sequence", () => {
   it("provides each selected pose and its body/skeleton description without WebGL", () => {
     for (const pose of HERO_POSES) {
       const markup = renderToStaticMarkup(<PoseFallback pose={pose} />);
-      expect(markup).toContain(`${pose.label}: translucent athlete with recorded tracking skeleton`);
+      expect(markup).toContain(`${pose.label}: illustrative athlete with recorded tracking skeleton`);
       expect(markup).not.toMatch(/NaN|undefined/);
+      const skeleton = renderToStaticMarkup(<PoseFallback pose={pose} layer="skeleton" />);
+      expect(skeleton).toContain(`${pose.label}: recorded tracking skeleton`);
+      expect(skeleton).toContain('stroke-opacity="0"');
     }
   });
 });

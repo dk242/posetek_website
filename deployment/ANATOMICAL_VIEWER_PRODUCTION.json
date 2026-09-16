@@ -1,0 +1,66 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aaa4f0b04a11116d8495374",
+  "state": "ready",
+  "publishedAt": "2026-09-16T08:12:19.763Z",
+  "publishedLocal": "September 16, 2026, 1:12:19 AM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aaa4f0b04a11116d8495374--posetek.netlify.app",
+  "releaseMethod": "Validated manual Netlify draft promoted unchanged; matching source and documentation committed to GitHub with [skip netlify] to retain the verified release",
+  "changes": [
+    "Meta MHR continuous anatomical template fitted locally to the unchanged recorded landmarks",
+    "Framed 3D stage with soft ground shadows, restrained lighting and improved tracking contrast",
+    "Body + pose and Pose only modes; Front, Side and Reset camera presets",
+    "Camera position and target persist across offscreen suspension",
+    "Clearer recorded 2D joints and limbs, a larger playback control and narrow-phone metrics layout"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "guardActive": true,
+    "result": "byte-for-byte unchanged",
+    "recordedData": "Existing 3D coordinates, source frames, 2D tracking, calibration and measurements unchanged"
+  },
+  "publishedInventory": {
+    "fileCount": 195,
+    "matchedProductionDistFiles": 194,
+    "platformGeneratedConfigFiles": 1,
+    "pathComparison": "Netlify inventory normalizes path casing; authored asset URLs separately verified over HTTP"
+  },
+  "verification": {
+    "homepageTests": 101,
+    "navigationAndBaselineTests": 11,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed; existing lazy 3D chunk size warning remains",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "homepageAssets": 22,
+      "result": "passed; all requested asset bytes match local production output"
+    },
+    "browser": "Desktop and 820/390/320px layouts; three held poses; body and pose-only layers; front, side and reset cameras; keyboard orbit; camera restored at the same 0.785 rad angle after offscreen unmount; automatic cycle advancement; recorded 2D playback and frame scrubbing; small-phone metric stacking. Hosted preview and live smoke checked without console errors or warnings.",
+    "reducedMotionAndFallback": "Unit tests cover motion gating and all SVG pose fallbacks; reduced-motion and WebGL-failure states reviewed in source, not forced in browser",
+    "authenticatedWorkflows": "not exercised"
+  },
+  "mesh": {
+    "source": "Meta Momentum Human Rig v1.0.1, LOD3 neutral surface",
+    "license": "Apache-2.0; attribution and full license emitted in the public viewer credits",
+    "vertices": 4899,
+    "triangles": 9794,
+    "templateBytes": 394920,
+    "templateGzipBytes": 113152,
+    "lazyViewerGzipBytesApproximate": 343240,
+    "provenance": "app/src/pages/home/latest-hero/MHR_PROVENANCE.md",
+    "limitations": "Illustrative anatomical template fitted to recorded landmarks, not SAM 3D inference, athlete likeness, measured finger articulation or a calibrated body scan",
+    "privateSourceAssets": "excluded from source control and public output"
+  },
+  "designReferences": "deployment/VIEWER_DESIGN_REFERENCE.md",
+  "higgsfield": "Discovered but not connected; no Higgsfield output used",
+  "rollback": {
+    "deployId": "6aaa45aa0d612bd628335ecf",
+    "url": "https://6aaa45aa0d612bd628335ecf--posetek.netlify.app"
+  }
+}

@@ -6,9 +6,45 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Current revision: three-pose hero and coherent homepage copy
+### Current revision: anatomical viewer and clearer recorded tracking
 
-Deployment `6aaa45aa0d612bd628335ecf` is live at https://posetek.net, published
+Deployment `6aaa4f0b04a11116d8495374` was published to https://posetek.net on
+September 16, 2026 at 1:12:19 AM PDT (08:12:19.763 UTC). The validated draft was
+promoted unchanged. All 194 local output files match the published inventory,
+including the 171 preserved application/public files. Release checks and rollback
+are recorded in `deployment/ANATOMICAL_VIEWER_PRODUCTION.json`.
+The reference lock and decision ledger are in
+[`deployment/VIEWER_DESIGN_REFERENCE.md`](deployment/VIEWER_DESIGN_REFERENCE.md).
+The approved scrolling structure, PoseTek green/lime identity, concise copy and
+preserved-application release guard remain in place.
+
+The hero now fits Meta's Apache-2.0 **Momentum Human Rig (MHR)** template locally
+to the existing recorded landmarks. Its neutral continuous anatomical surface
+has **4,899 vertices and 9,794 triangles**, replacing the earlier segmented
+illustrative body. This is template fitting, not SAM 3D image inference, the
+athlete's likeness, or a calibrated body scan. Attribution, retained license,
+input hashes and reproduction steps are documented in
+[`latest-hero/MHR_PROVENANCE.md`](app/src/pages/home/latest-hero/MHR_PROVENANCE.md).
+
+The framed viewer provides **Body + pose** and **Pose only** modes, Front/Side/
+Reset camera presets, drag and keyboard orbit, and camera persistence across
+offscreen suspension. A finite stage, soft ground shadows and restrained
+lighting make the figure's depth and airborne placement easier to see. The
+three existing held poses, coordinates, shooting ball and cycle timing remain
+unchanged. Reduced motion, visibility suspension and static fallbacks remain
+part of the viewer contract.
+
+Recorded 2D movement uses contrasting limb outlines, distinct primary joints,
+quieter hand/foot and facial details, and a faint torso plane from exact supplied
+landmarks. Playback has a larger target and explicit keyboard focus. Source
+coordinates, frames, projection, calibration, telemetry and playback behavior
+are unchanged; see
+[`movement/PROVENANCE.md`](app/src/pages/home/movement/PROVENANCE.md).
+Higgsfield was discovered but is not connected; no Higgsfield output is used.
+
+### Historical release: three-pose hero and coherent homepage copy
+
+Deployment `6aaa45aa0d612bd628335ecf` was published to https://posetek.net on
 September 16, 2026 at 12:34:12 AM PDT (07:34:12.757 UTC). The validated draft was
 promoted unchanged. See `deployment/HERO_REVISION_PRODUCTION.json` for checks and
 rollback. All 193 local output files match the published inventory, including

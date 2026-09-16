@@ -39,6 +39,7 @@ export const POSE_EDGES: readonly (readonly [number, number])[] = [
   [11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[29,31],[27,31],
   [24,26],[26,28],[28,30],[30,32],[28,32],
 ];
-export type OrbitAction = 'left' | 'right' | 'up' | 'down' | 'reset';
-export interface PitchView { pose: HeroPoseId; reducedMotion: boolean; rotating: boolean; command: number; action: OrbitAction; }
+export type OrbitAction = 'left' | 'right' | 'up' | 'down' | 'reset' | 'front' | 'side';
+export type HeroLayer = 'body' | 'skeleton';
+export interface PitchView { pose: HeroPoseId; layer: HeroLayer; reducedMotion: boolean; rotating: boolean; command: number; action: OrbitAction; camera?: { position: Point3; target: Point3 }; }
 export interface PitchHandle { update: (view: PitchView) => void; destroy: () => void; }

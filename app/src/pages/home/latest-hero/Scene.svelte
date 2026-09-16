@@ -2,14 +2,19 @@
   import { T, useThrelte } from '@threlte/core';
   import { OrbitControls } from '@threlte/extras';
   import { onMount, untrack } from 'svelte';
-  import { DoubleSide, Spherical, Vector3 } from 'three';
+  import { Spherical, Vector3 } from 'three';
   import type { OrbitControls as Controls } from 'three/addons/controls/OrbitControls.js';
   import { get, type Writable } from 'svelte/store';
-  import { HERO_FADE_MS, type HeroPoseId, type PitchView } from './pose-model';
+  import { HERO_FADE_MS, type HeroPoseId, type PitchView, type Point3 } from './pose-model';
   import PoseFigure from './PoseFigure.svelte';
-  let { view, onReady, onInteract, onInteractionEnd, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onInteractionEnd: () => void; onAngle: (angle: number) => void } = $props();
+  import AthleteStage from './AthleteStage.svelte';
+  import { STAGE_TARGET, STAGE_FOV, stageCameraPosition } from './stage-camera';
+  let { view, onReady, onInteract, onInteractionEnd, onAngle }: { view: Writable<PitchView>; onReady: () => void; onInteract: () => void; onInteractionEnd: () => void; onAngle: (angle: number, position: Point3, target: Point3) => void } = $props();
   const { invalidate } = useThrelte();
-  let current = $state<HeroPoseId>(untrack(() => get(view).pose));
+  const initialView = untrack(() => get(view));
+  const initialPosition: [number, number, number] = initialView.camera ? [...initialView.camera.position] : stageCameraPosition('reset');
+  const initialTarget: [number, number, number] = [...(initialView.camera?.target ?? STAGE_TARGET)];
+  let current = $state<HeroPoseId>(initialView.pose);
   const selectedPose = $derived($view.pose);
   const reducedMotion = $derived($view.reducedMotion);
   let previous = $state<HeroPoseId | null>(null);
@@ -38,24 +43,29 @@
     });
   });
   let controls = $state<Controls>();
-  let lastCommand = 0;
-  let lastNotice = 0;
+  // Incoming commands describe already-applied interactions. Replay only a new
+  // command; the saved camera restores the result of every prior drag and key.
+  let lastCommand = initialView.command;
   function changed() {
-    const now = performance.now();
-    if (controls && now - lastNotice > 200) { onAngle(controls.getAzimuthalAngle()); lastNotice = now; }
+    if (!controls) return;
+    const { x, y, z } = controls.object.position;
+    const { x: tx, y: ty, z: tz } = controls.target;
+    onAngle(controls.getAzimuthalAngle(), [x, y, z], [tx, ty, tz]);
   }
+  function interactionEnded() { changed(); onInteractionEnd(); }
   $effect(() => {
     const { command, action } = $view;
     if (!controls || command === lastCommand) return;
     lastCommand = command;
-    if (action === 'reset') {
-      controls.target.set(0,1.35,.05); controls.object.position.set(2.8,2.25,4.85);
+    if (action === 'reset' || action === 'front' || action === 'side') {
+      controls.target.set(...STAGE_TARGET);
+      controls.object.position.set(...stageCameraPosition(action));
     } else {
       const offset = controls.object.position.clone().sub(controls.target);
       const orbit = new Spherical().setFromVector3(offset);
       if (action === 'left') orbit.theta -= Math.PI / 8;
       if (action === 'right') orbit.theta += Math.PI / 8;
-      if (action === 'up') orbit.phi = Math.max(.45, orbit.phi - .15);
+      if (action === 'up') orbit.phi = Math.max(.75, orbit.phi - .15);
       if (action === 'down') orbit.phi = Math.min(1.55, orbit.phi + .15);
       controls.object.position.copy(new Vector3().setFromSpherical(orbit).add(controls.target));
     }
@@ -64,22 +74,22 @@
   onMount(() => {
     // A pose can be selected before the lazy scene loads with rotation paused.
     // Aim at the configured target without relying on the first auto-rotate tick.
-    const id = requestAnimationFrame(() => { controls?.update(); invalidate(); onReady(); });
+    const id = requestAnimationFrame(() => { controls?.update(); changed(); invalidate(); onReady(); });
     return () => cancelAnimationFrame(id);
   });
 
 </script>
 
-<T.PerspectiveCamera makeDefault position={[2.8,2.25,4.85]} fov={34}>
-  <OrbitControls bind:ref={controls} target={[0,1.35,.05]} autoRotate={$view.rotating} autoRotateSpeed={.65}
+<T.PerspectiveCamera makeDefault position={initialPosition} fov={STAGE_FOV}>
+  <OrbitControls bind:ref={controls} target={initialTarget} autoRotate={$view.rotating} autoRotateSpeed={.42}
     enableDamping={false} enableZoom={false} enablePan={false} rotateSpeed={.65}
-    minPolarAngle={.45} maxPolarAngle={1.55} onstart={onInteract} onend={onInteractionEnd} onchange={changed} />
+    minPolarAngle={.75} maxPolarAngle={1.55} onstart={onInteract} onend={interactionEnded} onchange={changed} />
 </T.PerspectiveCamera>
-<T.AmbientLight intensity={.85} />
-<T.DirectionalLight position={[3,6,4]} intensity={3.2} color="#e5ffc0" />
-<T.DirectionalLight position={[-4,2,-3]} intensity={2.1} color="#78e0d1" />
+<T.HemisphereLight args={['#e8f6e7', '#244135', 1.3]} />
+<T.DirectionalLight position={[-3,5,4]} intensity={2.6} color="#f0ffde" />
+<T.DirectionalLight position={[3,2,-3]} intensity={2.1} color="#a6e4d8" />
+<T.DirectionalLight position={[4,1,3]} intensity={.5} color="#b3cebf" />
 {#each (previous ? [previous, current] : [current]) as poseId (poseId)}
-  <PoseFigure id={poseId} opacity={poseId === current ? blend : 1 - blend} />
+  <PoseFigure id={poseId} opacity={poseId === current ? blend : 1 - blend} layer={$view.layer} />
 {/each}
-<T.GridHelper args={[6,24,'#3d6444','#153c2c']} />
-<T.Mesh rotation.x={-Math.PI / 2} position.y={.005}><T.RingGeometry args={[1.39,1.4,96]} /><T.MeshBasicMaterial color="#77a551" transparent opacity={.5} side={DoubleSide} /></T.Mesh>
+<AthleteStage />

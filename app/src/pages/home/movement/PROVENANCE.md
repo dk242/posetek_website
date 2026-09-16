@@ -23,3 +23,18 @@ The JavaScript is recovered output, not the unavailable original TypeScript.
 The typed React wrapper is `MovementDemo.tsx`. The accepted demo CSS remains
 scoped to `.pt-home`. Run the extractor only deliberately: it overwrites the
 recovered module/data/CSS and pose JSON from the pinned local reference.
+
+## September 16, 2026 rendering refinement
+
+The recorded 2D viewer now uses crisp dark outlines behind its limb strokes,
+subtler hand/foot edges, and larger primary joints. A faint shoulder/hip plane
+connects only the four supplied torso landmarks. Nose and ear points retain
+head orientation while dense eye/mouth dots are omitted from the presentation.
+The green/lime hierarchy follows the approved PoseTek visual system and Refero
+craft guidance; existing overlay colors retain their measurement meanings.
+Playback has a 44 px hit target and explicit keyboard focus.
+
+This is a presentation change only: all 33 landmarks remain in every original
+frame, all data hashes are unchanged, and projection, calibration, telemetry,
+overlays, selected frames and playback behavior are preserved. No source video,
+trajectory smoothing, generated motion, or external rendering service is used.

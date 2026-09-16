@@ -1,11 +1,36 @@
 # Recorded hero poses and illustrative athlete body
 
-## Shooting reconstruction baseline
+## Current anatomical renderer — September 16, 2026
 
-The maintained Svelte renderer reproduces deployment
+The recorded pose data below remains the source of truth. The current viewer
+fits Meta's continuous MHR LOD3 anatomical surface around those unchanged
+landmarks, replacing the earlier procedural body parts. See
+[`MHR_PROVENANCE.md`](./MHR_PROVENANCE.md) for the pinned source, Apache license,
+preparation script, fitting method and limitations. This is an illustrative
+template fit, not SAM inference, an athlete likeness or a calibrated body scan.
+
+`stage-camera.ts` defines the shared camera target `[0, 1.4, .02]`, 34 degree
+field of view, 5.5 display-unit distance and front/side/reset viewpoints.
+`Scene.svelte` uses the studio lighting and `AthleteStage.svelte` stage; these
+supersede the historical camera, pitch grid and lighting described below.
+The **Body + pose** and **Pose only** layers retain visible recorded tracking.
+The non-WebGL fallback is static; the separate movement playback is unchanged.
+Camera state survives offscreen unmounts. Soft contact shadows retain a visible
+gap beneath the airborne jump.
+
+Shooting → Sprint → Vertical jump still holds each pose for six seconds with
+a 450 ms crossfade. Manual selection, Pause/Resume, reduced motion, keyboard
+orbit and the lightweight non-WebGL fallback remain supported. Only Shooting
+includes the existing ball. The installed Svelte/Threlte/Three dependencies
+render the scene; no recovered deployment runtime is imported.
+
+## Historical shooting renderer and reconstruction baseline
+
+The initial recovered Svelte renderer reproduced deployment
 `6aa9b6f0d8faf6177db8fd97`, rather than the earlier checked-in September 13 pose.
 The exact data in `shooting-pose.json` was extracted from `index-B_aLIfan.js`.
-The renderer changes were recovered from `mount-B0YcjNhI.js`:
+The following historical renderer settings were recovered from
+`mount-B0YcjNhI.js`; current presentation is documented above:
 
 - Camera `[2.3, 1.85, 3.9]`, target `[0, 1, .05]`, 34 degree field of view.
 - Same world-landmark reconstruction and estimated ball position and radius.
@@ -14,10 +39,10 @@ The renderer changes were recovered from `mount-B0YcjNhI.js`:
 - Same ball geometry, pitch grid and ring, orbit limits, rotation speed, commands,
   on-demand canvas, error boundary, resource disposal and context-loss fallback.
 
-`../PitchVisual.tsx` retains idle loading, offscreen and hidden-document unmount,
+That renderer retained idle loading, offscreen and hidden-document unmount,
 reduced motion, pointer rotation suspension/resume and arrow-key/Home controls.
-The renderer uses installed Svelte/Threlte/Three dependencies. The full deployed
-entry and its bundled React/Svelte/Three runtimes are not imported.
+It used installed Svelte/Threlte/Three dependencies. The full deployed entry
+and its bundled React/Svelte/Three runtimes were not imported.
 
 The original object includes reconstruction provenance and checksums. The
 reconstruction has estimated world depth; it is not a calibrated 3D body scan.
@@ -70,17 +95,19 @@ python scripts/prepare-held-hero-poses.py
 Source video, source-pose and inferred-world checksums accompany each asset.
 The original shooting reconstruction and its provenance remain unchanged.
 
-## Three-pose presentation — September 16, 2026
+## Historical first three-pose presentation — September 16, 2026
 
-The hero now holds Shooting, Sprint and Vertical jump for six seconds each,
-with a 450 ms crossfade. The shared camera is `[2.8, 2.25, 4.85]`, targeting
+This first three-pose release held Shooting, Sprint and Vertical jump for six
+seconds each, with a 450 ms crossfade. Its shared camera was
+`[2.8, 2.25, 4.85]`, targeting
 `[0, 1.35, .05]` at 34 degrees, to include the jump's airborne clearance.
 
-`body-geometry.ts` creates a translucent, anatomically proportioned surface
-around each recorded skeleton. Its torso, pelvis, limbs, head, hands and feet
-are illustrative geometry, not a recovered body scan or a likeness. The visible
-label states “Illustrative body · Recorded pose.” Tracking bones and joints
-render above the surface. Only Shooting includes a ball.
+At that release, `body-geometry.ts` assembled translucent procedural torso,
+pelvis, limb, head, hand and foot parts around each recorded skeleton. These
+were illustrative geometry, not a recovered body scan or likeness. The label
+stated “Illustrative body · Recorded pose.” Tracking bones and joints rendered
+above the surface. The current MHR surface supersedes those procedural parts;
+the recorded skeleton and Shooting ball remain unchanged.
 
 Manual selection pauses cycling. Pause/Resume governs both automatic cycling
 and rotation; orbit input briefly suspends motion. Reduced-motion preference
