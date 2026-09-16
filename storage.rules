@@ -1,6 +1,6 @@
-// 2026-09-05 01A: admin demo uploads are separate from athlete test recordings.
-// Full ruleset must exclude isPosetekAdmin() on ALL athlete recording write
-// grants, including overlapping self/coach paths; catalog app-prefix grant stays.
+// 2026-09-16: verified admins may record (create/update, never delete) under an
+// existing athlete's `{playerDocId}/**` prefix. Supersedes the 2026-09-05 01A
+// admin recording exclusion; catalog app-prefix grant stays.
 // 2026-09-05 01A: private immutable evaluation artifacts are admin-readable only.
 // Firebase STORAGE security rules — drill catalog media (2026-09-05, agent 01).
 // Contract: docs/DRILL_CATALOG_V2_CONTRACT.md §6.2, docs/ADMIN_IDENTITY_CONTRACT.md §1.1.
@@ -123,6 +123,8 @@ service firebase.storage {
         && !(root in ['trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
         && (!migratedRoot(root) || playerActor(root))
         && (!isPosetekAdmin() || root in ['diagnostics','failure_cases']);
+      allow create, update: if isPosetekAdmin() && validPlayerId(root)
+        && firestore.exists(/databases/(default)/documents/players/$(root));
     }
   }
 }

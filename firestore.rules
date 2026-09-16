@@ -95,6 +95,11 @@ match /players/{playerId} {
 match /players/{playerId}/{subcollection}/{document=**} {
   allow read: if isPosetekAdmin() && !(subcollection in ["coachWorkspace", "coachMemories", "aiConversations"]);
 }
+// Staff test recording into an existing athlete's recording spine; never delete.
+match /players/{playerId}/{recording}/{recordId} {
+  allow create, update: if isPosetekAdmin() && recording in ['reps', 'sessions', 'trainingSessions']
+    && exists(/databases/$(database)/documents/players/$(playerId));
+}
 match /coaches/{coachId} {
   allow read: if isPosetekAdmin();
   allow update: if isPosetekAdmin()
@@ -139,6 +144,7 @@ match /players/{playerId} {
     && positionIsValid() && profileValuesAreValid()
     && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['position'])
         || !('position' in resource.data));
+  allow update: if isPosetekAdmin() && changesOnly(['stats', 'best_reps', 'updatedAt']);
 }
 match /players/{playerId}/privateProfile/coachFeedback {
   function ownCoach() { return coachOf(playerId); }
