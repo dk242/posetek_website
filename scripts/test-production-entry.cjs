@@ -1,4 +1,4 @@
-// Check the isolated homepage, preserved application, deep links, and assets.
+// Check the isolated marketing pages, preserved application, deep links, and assets.
 // Authenticated editing/activation requires a separate authorized account pass.
 const fs = require('node:fs'), path = require('node:path'), http = require('node:http'), assert = require('node:assert/strict');
 const httpOnly = process.argv.includes('--http-only');
@@ -15,6 +15,11 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
   const config = fs.readFileSync(path.join(root, 'netlify.toml'), 'utf8');
   assert.match(config, /publish = "production-dist"/);
   assert.match(config, /to = "\/application.html"/);
+  for (const route of ['/coaches', '/coaches/']) {
+    const rule = `from = "${route}"\n  to = "/coaches/index.html"\n  status = 200`;
+    assert.ok(config.replace(/\r\n/g, '\n').includes(rule), 'Coaches rewrite missing: ' + route);
+    assert.ok(config.indexOf(`from = "${route}"`) < config.indexOf('from = "/*"'), 'Coaches rewrite must precede app fallback');
+  }
   assert.ok(!config.includes('/personalized-app/'), 'Obsolete split-entry rewrite remains');
   let server, browser, base = process.argv.slice(2).find(arg => !arg.startsWith('--'));
   const results = [];
@@ -22,10 +27,11 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
     if (!base) {
       server = http.createServer((req, res) => {
         const pathname = new URL(req.url, 'http://local').pathname;
-        let file = path.resolve(dist, '.' + (pathname === '/' ? '/index.html' : pathname));
+        const route = ['/coaches', '/coaches/'].includes(pathname) ? '/coaches/index.html' : pathname === '/' ? '/index.html' : pathname;
+        let file = path.resolve(dist, '.' + route);
         if (!file.startsWith(dist + path.sep) && file !== dist) { res.writeHead(400); res.end(); return; }
         if (!fs.existsSync(file) || !fs.statSync(file).isFile()) file = path.join(dist, 'application.html');
-        res.setHeader('Content-Type', { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.svg': 'image/svg+xml', '.png': 'image/png' }[path.extname(file)] || 'application/octet-stream');
+        res.setHeader('Content-Type', { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.mp4': 'video/mp4' }[path.extname(file)] || 'application/octet-stream');
         res.end(fs.readFileSync(file));
       });
       await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -37,6 +43,7 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
     assert.ok(applicationPath === '/index.html' || preserveApplicationEntry, 'Unsupported baseline application path');
     assert.ok(manifest.files.some(file => file.path === applicationPath), 'Baseline application entry missing');
     if (preserveApplicationEntry) assert.ok(!manifest.files.some(file => file.path === '/index.html' || file.path.startsWith('/marketing/assets/')), 'Preservation baseline overlaps marketing output');
+    assert.ok(!manifest.files.some(file => file.path === '/coaches' || file.path.startsWith('/coaches/')), 'Preservation baseline overlaps coaches output');
     const hash = bytes => require('node:crypto').createHash('sha1').update(bytes).digest('hex');
     for (const file of manifest.files) {
       let bytes = fs.readFileSync(path.join(dist, !preserveApplicationEntry && file.path === '/index.html' ? 'application.html' : file.path.slice(1)));
@@ -44,10 +51,20 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
       assert.equal(typeof bytes === 'string' ? Buffer.byteLength(bytes) : bytes.length, file.size, 'Preserved file size changed: ' + file.path);
       assert.equal(hash(bytes), file.sha, 'Preserved file changed: ' + file.path);
     }
-    for (const route of ['/', '/index.html']) {
+    const marketingPages = [
+      { routes: ['/', '/index.html'], marker: '<!-- posetek-marketing-entry -->' },
+      { routes: ['/coaches', '/coaches/', '/coaches/index.html'], marker: '<!-- posetek-coaches-entry -->' },
+    ];
+    for (const { routes, marker } of marketingPages) for (const route of routes) {
       const response = await fetch(base + route), html = await response.text();
       assert.equal(response.status, 200, route);
-      assert.ok(html.includes('<!-- posetek-marketing-entry -->'), 'Marketing homepage missing: ' + route);
+      assert.ok(html.includes(marker), 'Marketing page missing: ' + route);
+      if (marker.includes('coaches')) {
+        assert.match(html, /<title>[^<]*coach[^<]*<\/title>/i, 'Coaches title missing');
+        assert.match(html, /<meta\s+name="description"\s+content="[^"]+"/, 'Coaches description missing');
+        assert.match(html, /<link\s+rel="canonical"\s+href="https:\/\/posetek\.net\/coaches"/, 'Coaches canonical missing');
+        assert.ok(!html.includes('<!-- posetek-marketing-entry -->'), 'Player entry rendered at coaches route');
+      }
       const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
       assert.ok(scripts.some(src => src.startsWith('/marketing/assets/')), 'Marketing bundle missing');
       for (const src of scripts) {
@@ -97,7 +114,7 @@ const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/ad
       await page.close();
     }
     }
-    const report = { base, homepageRoutes: 2, preservedFiles: manifest.files.length, applicationRoutes: cases.length, assets, results, browserChecks: httpOnly ? 'checked separately in CUA' : 'passed', authenticatedWorkflows: 'not exercised' };
+    const report = { base, homepageRoutes: 2, coachesRoutes: 3, preservedFiles: manifest.files.length, applicationRoutes: cases.length, assets, results, browserChecks: httpOnly ? 'checked separately in CUA' : 'passed', authenticatedWorkflows: 'not exercised' };
     fs.writeFileSync(path.join(out, 'production-entry-test-report.json'), JSON.stringify(report, null, 2) + '\n');
     console.log(JSON.stringify(report, null, 2));
   } finally { await browser?.close(); server?.close(); }

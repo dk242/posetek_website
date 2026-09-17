@@ -1,0 +1,210 @@
+.pt-coaches {
+  .coach-micro { font:500 9px/1.6 "IBM Plex Mono",monospace; letter-spacing:.07em; color:#9fbaaa; }
+  .coach-mini-logo { display:grid; place-items:center; background:var(--lime); color:#092214; width:25px; height:25px; border-radius:3px; font-size:17px; font-weight:900; flex-shrink:0; }
+  .coach-hero { padding-top:160px; display:grid; grid-template-columns:1fr 1.04fr; gap:44px; align-items:center; }
+  .coach-hero-copy { padding:20px 0; }
+  .coach-hero-copy .eyebrow { display:flex; gap:10px; align-items:center; }
+  .coach-hero h1 { font-size:clamp(58px,5.4vw,78px); max-width:630px; text-wrap:balance; }
+  .coach-hero-description { color:#b7c8be; font-size:15px; line-height:1.85; margin:28px 0; }
+  .coach-hero-note { display:block; color:#839e8e; font-size:11px; margin-top:25px; }
+  .coach-service-strip { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,1fr); border-block:1px solid var(--line); padding:26px 0; margin-top:20px; }
+  .coach-service-strip > span { display:flex; align-items:center; justify-content:center; gap:10px; color:#8ca595; font-size:11px; }
+  .coach-service-strip > span + span { border-left:1px solid var(--line); }
+  .coach-service-strip strong { color:var(--ink); font-size:16px; font-weight:550; letter-spacing:-.02em; }
+  .coach-hero-workspace { min-width:0; margin:0; border:1px solid #355044; border-radius:14px; background:linear-gradient(135deg,#0d2c21,#081c15 60%); box-shadow:0 30px 80px #0003; overflow:hidden; }
+  .coach-preview-bar { display:flex; align-items:center; gap:9px; padding:16px 21px; border-bottom:1px solid var(--line); font-size:11px; }
+  .coach-preview-bar > span:last-child { margin-left:auto; color:#94af9f; font:8px "IBM Plex Mono",monospace; }
+  .coach-preview-club { display:flex; gap:13px; align-items:center; padding:27px 22px; }
+  .coach-club-crest { display:flex; flex-direction:column; align-items:center; justify-content:center; width:52px; height:59px; border:1px solid #739361; border-radius:5px 5px 23px 23px; color:var(--lime); font:700 26px/.9 "Barlow Condensed",sans-serif; }
+  .coach-club-crest > span { font:9px "IBM Plex Mono",monospace; margin-top:4px; }
+  .coach-preview-club > div { display:flex; flex-direction:column; gap:4px; }
+  .coach-preview-club strong { font-size:24px; font-weight:550; letter-spacing:-.04em; }
+  .coach-preview-club > div > span:last-child { color:#99b5a2; font-size:10px; }
+  .coach-preview-live { width:7px; height:7px; border:1px solid #b7f34a; border-radius:50%; margin-left:auto; }
+  .coach-preview-teams { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:0 21px; }
+  .coach-preview-teams > div { display:grid; grid-template-columns:1fr auto; align-items:center; gap:6px; padding:12px 10px; border:1px solid #294438; border-radius:6px; color:#a1b5a8; font-size:12px; }
+  .coach-preview-teams small { grid-row:2; font-size:8px; }
+  .coach-preview-teams > div > span:last-child { grid-column:2; grid-row:1/3; font-size:14px; }
+  .coach-preview-teams [data-selected=true] { border-color:#a2ce54; color:var(--lime); background:#b7f34a0a; }
+  .coach-preview-main { display:grid; grid-template-columns:1.13fr 1fr; margin:20px 21px; border:1px solid #2b4938; border-radius:8px; overflow:hidden; }
+  .coach-preview-pitch { min-width:0; background:radial-gradient(ellipse at 45% 40%,#2c513831,transparent 80%); display:flex; flex-direction:column; justify-content:center; padding:8px; }
+  .coach-preview-pitch svg { width:100%; stroke:#365441; stroke-width:1; fill:none; }
+  .coach-preview-pitch svg .coach-pitch-pass { stroke:#759956; stroke-dasharray:3 5; }
+  .coach-preview-pitch .coach-pitch-player { fill:#183b2a; stroke:#769069; }
+  .coach-preview-pitch .coach-pitch-selected { fill:#b7f34a; stroke:none; }
+  .coach-preview-pitch text { fill:#bbd1bb; stroke:none; font:12px "IBM Plex Mono",monospace; text-anchor:middle; }
+  .coach-preview-pitch text.coach-pitch-number { fill:#0b2415; font-weight:600; font-size:17px; }
+  .coach-preview-pitch > span { font:7px/1.5 "IBM Plex Mono",monospace; color:#829e8d; text-align:center; margin-bottom:12px; }
+  .coach-preview-focus { min-width:0; display:flex; flex-direction:column; padding:19px 17px; border-left:1px solid #2b4938; background:#10291c; }
+  .coach-preview-focus > .coach-micro { font-size:7px; }
+  .coach-preview-avatar { width:32px; height:32px; border-radius:50%; background:#2a4327; color:#b7f34a; border:1px solid #5e7951; display:grid; place-items:center; font-size:10px; margin:17px 0 10px; }
+  .coach-preview-focus > strong { font-size:14px; font-weight:550; }
+  .coach-preview-focus > span:not(.coach-micro,.coach-preview-avatar) { font-size:9px; color:#95ae9b; margin-top:3px; }
+  .coach-preview-focus > div { margin-top:18px; border-top:1px solid #34503a; padding-top:12px; display:flex; flex-direction:column; gap:4px; }
+  .coach-preview-focus small { font-size:8px; color:#94b29b; }
+  .coach-preview-focus b { font-size:12px; color:#c8e7a3; font-weight:500; }
+  .coach-preview-focus p { margin-top:14px; font-size:9px; color:#8ea995; line-height:1.65; }
+  .coach-hero-workspace figcaption { display:flex; justify-content:center; align-items:center; gap:10px; border-top:1px solid #294236; padding:17px 12px; font:8px "IBM Plex Mono",monospace; color:#b1c5b6; }
+  .coach-hero-workspace figcaption > span:not(.status-dot) { color:#678c70; }
+  .coach-hero-workspace figcaption .status-dot { width:4px; height:4px; flex-basis:4px; }
+  .coach-section-foot { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-top:23px; }
+  .coach-section-foot > span { color:#8eab98; font-size:11px; }
+  .coach-evidence-section { border-block:1px solid #254036; background:#071b13; }
+  .coach-test-strip { display:flex; flex-wrap:wrap; gap:12px 21px; margin-top:26px; color:#afc3b5; font-size:10px; }
+  .coach-test-strip > span:first-child { color:#7c9986; font:9px/1.7 "IBM Plex Mono",monospace; margin-right:7px; }
+  .coach-test-link { margin-top:9px; }
+  .coach-development { border:1px solid #35503f; border-radius:12px; overflow:hidden; background:#081f16; }
+  .coach-development-top { display:flex; gap:12px; justify-content:space-between; align-items:center; padding:18px 23px; border-bottom:1px solid #2b4735; }
+  .coach-development-top > div { display:flex; align-items:center; gap:10px; }
+  .coach-development-top strong { font-size:13px; font-weight:550; }
+  .coach-development-top > div > span:last-child { font-size:10px; color:#92af9d; }
+  .coach-development-tabs { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid #2b4735; }
+  .coach-development-tabs button { display:flex; align-items:center; gap:13px; color:#adbdaf; border:0; background:transparent; min-height:66px; padding:16px 24px; font-size:15px; font-weight:550; }
+  .coach-development-tabs button + button { border-left:1px solid #2b4735; }
+  .coach-development-tabs button > span:first-child { font:10px "IBM Plex Mono",monospace; opacity:.65; }
+  .coach-development-tabs button > span:last-child { margin-left:auto; }
+  .coach-development-tabs button[aria-pressed=true] { background:#b7f34a; color:#102612; }
+  .coach-development-body { display:grid; grid-template-columns:.88fr 1.12fr; min-height:620px; }
+  .coach-development-copy { padding:60px 48px; display:flex; flex-direction:column; justify-content:center; }
+  .coach-development-copy h3 { font:600 clamp(30px,3.2vw,44px)/1.05 "Barlow Condensed",sans-serif; text-transform:uppercase; max-width:310px; text-wrap:balance; }
+  .coach-development-copy > p:not(.eyebrow) { color:#acbfb2; font-size:14px; line-height:1.85; margin-top:22px; max-width:310px; }
+  .coach-responsibility { display:flex; flex-direction:column; gap:9px; margin-top:40px; border-top:1px solid #304b39; padding-top:22px; }
+  .coach-responsibility > span { color:#8aaa8f; font:8px/1.8 "IBM Plex Mono",monospace; }
+  .coach-responsibility strong { font-size:12px; font-weight:500; color:#c8d7c9; }
+  .coach-development-scene { min-width:0; display:flex; align-items:center; justify-content:center; border-left:1px solid #2b4735; padding:44px; background:radial-gradient(ellipse at 60% 50%,#27533659,transparent 70%),#0a2318; }
+  .coach-development-scene.is-train { padding-block:28px; }
+  .coach-plan-sheet,.coach-retest-sheet { width:100%; max-width:430px; padding:29px; border:1px solid #496047; border-radius:11px; background:linear-gradient(145deg,#183523,#0b2519); box-shadow:0 24px 45px #0002; }
+  .coach-plan-heading { display:flex; justify-content:space-between; gap:12px; margin-bottom:35px; color:#b7f34a; }
+  .coach-plan-player { display:block; font-size:11px; color:#a8c1ac; margin-bottom:7px; }
+  .coach-plan-sheet h4,.coach-retest-sheet h4 { margin:0; font:550 29px/1.15 Inter,sans-serif; letter-spacing:-.04em; text-wrap:balance; }
+  .coach-plan-sheet > p,.coach-retest-sheet > p { font-size:12px; line-height:1.75; color:#a6bcab; margin-top:14px; }
+  .coach-plan-session { display:flex; gap:14px; align-items:center; border-block:1px solid #3b573d; margin:27px 0; padding:20px 0; }
+  .coach-plan-number { width:33px; height:38px; display:grid; place-items:center; background:#b7f34a13; color:#c1df9c; font:10px "IBM Plex Mono",monospace; border:1px solid #61854b; border-radius:4px; }
+  .coach-plan-session > div { flex:1; display:flex; flex-direction:column; gap:7px; }
+  .coach-plan-session strong { font-size:13px; font-weight:550; }
+  .coach-plan-session > div > span { font-size:9px; color:#95af9b; }
+  .coach-plan-session > span:last-child { color:#b7f34a; }
+  .coach-plan-progress > span { font-size:10px; color:#a2bba7; }
+  .coach-plan-progress > strong { display:block; font-size:30px; font-weight:500; margin:10px 0 13px; }
+  .coach-plan-progress small { color:#95ad9b; font-size:11px; font-weight:400; }
+  .coach-plan-progress > div { height:5px; background:#2c4832; overflow:hidden; border-radius:3px; }
+  .coach-plan-progress i { display:block; height:100%; background:#b7f34a; }
+  .coach-plan-note { display:block; color:#8ea891; font-size:9px; line-height:1.7; margin-top:25px; }
+  .coach-training-phone { width:280px; max-width:100%; }
+  .coach-training-phone .app-device-content h3 { font-family:Inter,sans-serif; font-size:20px; font-weight:600; }
+  .coach-training-phone .app-device-context { font-size:9px; }
+  .coach-phone-next { padding:23px 0 14px; display:flex; flex-direction:column; gap:8px; }
+  .coach-phone-next span { color:#7fff21; font:8px "IBM Plex Mono",monospace; }
+  .coach-phone-next strong { font-size:14px; font-weight:550; }
+  .coach-training-phone .app-device-note { font-size:8px; }
+  .coach-retest-bars { margin-top:32px; }
+  .coach-retest-bars > div:not(.coach-result-axis) { display:grid; grid-template-columns:1fr auto; gap:12px; margin-bottom:24px; }
+  .coach-retest-bars > div > span { font-size:10px; color:#b0c4b2; }
+  .coach-retest-bars strong { font-size:22px; font-weight:500; line-height:1; }
+  .coach-retest-bars strong small { font-size:10px; color:#9caf9a; }
+  .coach-result-track { grid-column:1/-1; height:9px; background:#273f2d; border-radius:2px; overflow:hidden; }
+  .coach-result-track i { display:block; height:100%; background:#7c9b73; }
+  .coach-retest-bars [data-latest=true] .coach-result-track i { background:#b7f34a; }
+  .coach-result-axis { display:flex; justify-content:space-between; margin-top:-12px; }
+  .coach-result-axis > span { font:8px "IBM Plex Mono",monospace!important; color:#809e85!important; }
+  .coach-retest-change { padding-top:24px; border-top:1px solid #3b573d; display:flex; flex-direction:column; gap:10px; }
+  .coach-retest-change strong { color:#c8ed9f; font-size:34px; font-weight:500; }
+  .coach-retest-change small { font-size:13px; }
+  .coach-retest-change > span { font-size:9px; color:#93ad97; }
+  .coach-contact { background:#b7f34a; color:#102815; }
+  .coach-contact .eyebrow { color:#345128; }
+  .coach-contact-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; }
+  .coach-contact-heading h2 { font-size:clamp(56px,6vw,82px); }
+  .coach-contact-heading > p { max-width:300px; color:#36532b; font-size:14px; line-height:1.8; }
+  .coach-service-steps { margin:45px 0 32px; padding:30px 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); list-style:none; border-block:1px solid #41602c50; }
+  .coach-service-steps li { padding:0 30px; }
+  .coach-service-steps li:first-child { padding-left:0; }
+  .coach-service-steps li + li { border-left:1px solid #41602c50; }
+  .coach-service-steps li > span { display:block; font:10px "IBM Plex Mono",monospace; color:#557038; margin-bottom:13px; }
+  .coach-service-steps strong { font-size:17px; font-weight:600; }
+  .coach-service-steps p { font-size:12px; color:#3d582c; margin-top:9px; }
+  .coach-contact-actions { display:flex; align-items:center; gap:25px; flex-wrap:wrap; }
+  .coach-contact-actions .button-primary { background:#0c291a; color:#e4f5d7; }
+  .coach-contact-actions .button-primary:hover { background:#1c4129; }
+  .coach-contact-actions .button-text { color:#15351c; }
+  .coach-contact-actions > span { margin-left:auto; font-size:11px; color:#3b552c; }
+  .coach-contact a:focus-visible { outline-color:#15351c; }
+  @media(max-width:1100px) {
+    .coach-hero { gap:30px; padding-top:140px; }
+    .coach-hero h1 { font-size:64px; }
+    .coach-preview-main { grid-template-columns:1fr; }
+    .coach-preview-pitch { display:none; }
+    .coach-preview-focus { display:grid; grid-template-columns:36px 1fr; column-gap:12px; border-left:0; }
+    .coach-preview-focus > .coach-micro { grid-column:1/-1; }
+    .coach-preview-avatar { grid-column:1; grid-row:2/4; margin:10px 0 0; }
+    .coach-preview-focus > strong { grid-column:2; margin-top:10px; }
+    .coach-preview-focus > span:not(.coach-micro,.coach-preview-avatar) { grid-column:2; }
+    .coach-preview-focus > div { grid-column:1/-1; }
+    .coach-preview-focus > p { grid-column:1/-1; }
+    .coach-preview-focus > p br { display:none; }
+    .coach-preview-teams { padding-inline:14px; gap:5px; }
+    .coach-preview-teams > div { padding:10px 7px; }
+    .coach-preview-teams > div > span:last-child { display:none; }
+    .coach-preview-club { padding-inline:16px; }
+    .coach-preview-club strong { font-size:22px; }
+    .coach-preview-bar { padding-inline:15px; }
+    .coach-service-strip > span { flex-direction:column; gap:4px; }
+    .coach-development-copy { padding:35px 28px; }
+    .coach-development-scene { padding:30px 22px; }
+    .coach-plan-sheet,.coach-retest-sheet { padding:22px; }
+  }
+  @media(max-width:760px) {
+    .coach-hero { grid-template-columns:1fr; padding-top:118px; gap:24px; }
+    .coach-hero h1 { font-size:clamp(55px,9vw,72px); max-width:600px; }
+    .coach-hero-copy { padding:12px 0 20px; }
+    .coach-hero-workspace { max-width:550px; width:100%; justify-self:center; }
+    .coach-preview-main { grid-template-columns:1.13fr 1fr; }
+    .coach-preview-pitch { display:flex; }
+    .coach-preview-focus { display:flex; border-left:1px solid #2b4938; }
+    .coach-preview-avatar { margin:17px 0 10px; }
+    .coach-preview-focus > strong { margin-top:0; }
+    .coach-service-strip { margin-top:9px; gap:8px; padding-block:20px; }
+    .coach-service-strip strong { font-size:13px; }
+    .coach-service-strip > span { font-size:9px; }
+    .coach-section-foot { align-items:flex-start; flex-direction:column; gap:8px; }
+    .coach-development-body { grid-template-columns:1fr; min-height:0; }
+    .coach-development-copy { padding:30px; }
+    .coach-development-copy h3,.coach-development-copy > p:not(.eyebrow) { max-width:450px; }
+    .coach-development-copy h3 { font-size:36px; }
+    .coach-development-copy .eyebrow { margin-bottom:15px; }
+    .coach-responsibility { margin-top:23px; padding-top:18px; }
+    .coach-development-scene { border-left:0; border-top:1px solid #2b4735; padding:30px; }
+    .coach-development-tabs button { gap:8px; padding:15px 16px; min-height:58px; font-size:13px; }
+    .coach-development-tabs button > span:last-child { display:none; }
+    .coach-development-top { padding:15px; flex-wrap:wrap; }
+    .coach-development-top > .coach-micro { margin-left:35px; font-size:8px; }
+    .coach-contact-heading { align-items:flex-start; flex-direction:column; gap:22px; }
+    .coach-contact-heading > p { max-width:410px; }
+    .coach-service-steps { margin-top:35px; grid-template-columns:1fr; padding:0; }
+    .coach-service-steps li { padding:23px 0; display:grid; grid-template-columns:25px 1fr; gap:5px 12px; }
+    .coach-service-steps li + li { border-left:0; border-top:1px solid #41602c50; }
+    .coach-service-steps li > span { margin:4px 0 0; grid-row:1/3; }
+    .coach-service-steps p { margin-top:0; }
+    .coach-contact-actions > span { margin-left:0; width:100%; }
+  }
+  @media(max-width:359px) {
+    .coach-hero h1 { font-size:51px; }
+    .coach-hero-description { font-size:13px; }
+    .coach-preview-main { grid-template-columns:1fr; }
+    .coach-preview-pitch { display:none; }
+    .coach-preview-focus { border-left:0; }
+    .coach-preview-focus .coach-preview-avatar { display:none; }
+    .coach-preview-bar > span:last-child { max-width:65px; text-align:right; font-size:7px; }
+    .coach-preview-club .coach-micro { font-size:7px; }
+    .coach-preview-teams small { font-size:7px; }
+    .coach-hero-workspace figcaption { gap:7px; font-size:7px; }
+    .coach-service-strip strong { font-size:11px; }
+    .coach-development-scene,.coach-development-copy { padding:23px 15px; }
+    .coach-plan-sheet,.coach-retest-sheet { padding:19px; }
+    .coach-plan-heading .coach-micro { font-size:8px; }
+    .coach-plan-sheet h4,.coach-retest-sheet h4 { font-size:25px; }
+    .coach-development-tabs button { padding-inline:12px; }
+    .coach-contact-heading h2 { font-size:51px; }
+  }
+  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0s!important; transition-duration:0s!important; scroll-behavior:auto!important; } }
+}

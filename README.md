@@ -6,9 +6,12 @@ Public website: [posetek.net](https://posetek.net).
 This repository includes the scrolling homepage, all nine annotation updates,
 the clearer pose, training and technique experience, the mobile app showcase,
 and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
-The latest release was published September 16, 2026 as `6aab2fc35884120dc73147f5`.
+The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
+service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
+Both pages share persistent Players / Coaches navigation.
+The latest release was published September 17, 2026 as `6aab9fbaa73be75422324ba4`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/DRILL_VIDEO_COACH_PRODUCTION.json).
+[the latest production receipt](deployment/COACHES_PAGE_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 The two public drill clips and posters are committed in
@@ -37,7 +40,8 @@ npm --prefix app run build:marketing
 node scripts/serve-homepage-preview.mjs
 ```
 
-Open http://127.0.0.1:4174. The one-time capture downloads the pinned public
+Open http://127.0.0.1:4174 for players or http://127.0.0.1:4174/coaches for coaches.
+The one-time capture downloads the pinned public
 reference into the ignored `.netlify/deployed-reference/` directory. It needs
 internet access but no Netlify credentials. It supplies the existing application
 and static assets used by the local homepage preview. Rebuild marketing after
@@ -53,6 +57,9 @@ use committed source and do not require the reference capture.
 | --- | --- |
 | Homepage sections, copy, styles and interactive demos | `app/src/pages/home/` |
 | Public entry and metadata | `index.html` |
+| Coaches page, fictional examples, and development journey | `app/src/pages/coaches/` |
+| Coaches entry and metadata | `coaches/index.html`, `app/src/coaches-entry.tsx` |
+| Shared public audience navigation | `app/src/pages/home/MarketingHeader.tsx` |
 | Application routes and screens | `app/src/App.tsx`, `app/src/pages/` |
 | Backend functions | `functions/` |
 | Feed frontend, API contracts and provenance | `app/src/pages/feed/` |
@@ -67,14 +74,16 @@ isolated public homepage. Mobile source remains a reference for shared behavior.
 ## Validate homepage changes
 
 ```powershell
-npm --prefix app test -- src/pages/home
-node --test scripts/home-navigation.test.mjs scripts/production-baseline.test.mjs
+npm --prefix app test -- src/pages/home src/pages/coaches
+node --test scripts/home-navigation.test.mjs scripts/production-baseline.test.mjs scripts/homepage-preview.test.mjs
 npm --prefix app run check:svelte
 node app/node_modules/typescript/bin/tsc -b app
 npm --prefix app run build:marketing
 ```
 
-Review affected interactions and responsive layouts in the local preview.
+Review both audiences, affected interactions, and responsive layouts in the local
+preview. The [coaches handoff](deployment/COACHES_PAGE_UPDATE.md) documents sample
+data, service decisions, and the application preservation boundary.
 
 ## Production build
 

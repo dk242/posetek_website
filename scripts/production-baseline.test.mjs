@@ -12,6 +12,7 @@ const app = '<!doctype html><html><head><script type="module" crossorigin src="/
 const bridgeBlock = '\n<!-- homepage-navigation:start -->\n<script src="/marketing/home-navigation.js" defer></script>\n<!-- homepage-navigation:end -->\n';
 const applicationWithBridge = app.replace('</body>', bridgeBlock + '</body>');
 const marketing = '<!doctype html><!-- posetek-marketing-entry --><script type="module" src="/marketing/assets/new.js"></script>';
+const coaches = '<!doctype html><!-- posetek-coaches-entry --><title>PoseTek for coaches</title><meta name="description" content="Team-by-team support"><link rel="canonical" href="https://posetek.net/coaches"><script type="module" src="/marketing/assets/coaches.js"></script>';
 const sha = bytes => createHash('sha1').update(bytes).digest('hex');
 
 async function fixture(mode, options, run) {
@@ -25,7 +26,7 @@ async function fixture(mode, options, run) {
       ['/bookperformancetest.html', '<!doctype html><form id="bookingForm"></form>'],
     ]);
     if (modern) files.set('/marketing/home-navigation.js', '// current published bridge\n');
-    if (options.overlap) files.set('/marketing/assets/stale.js', '// do not preserve this marketing file');
+    if (options.overlap) files.set(options.overlap, '// do not preserve this marketing file');
     const manifest = {
       deploymentId: 'test-pinned-deployment', url: 'https://pinned.example',
       ...(modern ? { applicationPath: '/application.html' } : {}),
@@ -34,10 +35,12 @@ async function fixture(mode, options, run) {
     await put('deployment/homepage-baseline.json', JSON.stringify(manifest));
     await put('deployment/home-navigation.js', '// local legacy-only bridge\n');
     await put('marketing-dist/index.html', marketing);
+    await put('marketing-dist/coaches/index.html', options.missingMarker ? coaches.replace('<!-- posetek-coaches-entry -->', '') : coaches);
     await put('marketing-dist/assets/new.js', '/* new isolated homepage */');
+    await put('marketing-dist/assets/coaches.js', '/* new isolated coaches page */');
     await put('app/node_modules/typescript/bin/tsc', '// build tool fixture\n');
     await put('app/node_modules/vite/bin/vite.js', '// build tool fixture\n');
-    await put('netlify.toml', '[build]\npublish = "production-dist"\n[[redirects]]\nfrom = "/*"\nto = "/application.html"\nstatus = 200\n');
+    await put('netlify.toml', '[build]\npublish = "production-dist"\n[[redirects]]\n  from = "/coaches"\n  to = "/coaches/index.html"\n  status = 200\n[[redirects]]\n  from = "/coaches/"\n  to = "/coaches/index.html"\n  status = 200\n[[redirects]]\nfrom = "/*"\nto = "/application.html"\nstatus = 200\n');
     await put('production-dist/guard-sentinel.txt', 'unchanged until guard passes');
     await mkdir(join(directory, 'scripts'), { recursive: true });
     await copyFile(join(source, 'build-production.mjs'), join(directory, 'scripts/build-production.mjs'));
@@ -71,6 +74,7 @@ test('modern baseline preserves the complete app and bridge without reinjection'
     assert.equal(build.status, 0, build.stderr);
     for (const [path, bytes] of files) assert.equal(await readFile(join(directory, 'production-dist', path.slice(1)), 'utf8'), bytes);
     assert.equal(await readFile(join(directory, 'production-dist/index.html'), 'utf8'), marketing);
+    assert.equal(await readFile(join(directory, 'production-dist/coaches/index.html'), 'utf8'), coaches);
     const checks = execute('test-production-entry.cjs', ['--http-only']);
     assert.equal(checks.status, 0, checks.stderr);
   });
@@ -101,10 +105,17 @@ test('preserved download hash mismatches remain fatal', async () => {
   });
 });
 
-test('modern preservation cannot overlap replaced marketing output', async () => {
-  await fixture('modern', { overlap: true }, async ({ directory, build }) => {
+for (const overlap of ['/marketing/assets/stale.js', '/coaches', '/coaches/index.html']) test(`modern preservation cannot overlap ${overlap}`, async () => {
+  await fixture('modern', { overlap }, async ({ directory, build }) => {
     assert.notEqual(build.status, 0);
     assert.match(build.stderr, /Preservation baseline overlaps the marketing output/);
     assert.equal(await readFile(join(directory, 'production-dist/guard-sentinel.txt'), 'utf8'), 'unchanged until guard passes');
+  });
+});
+
+test('coaches output requires its isolated entry marker', async () => {
+  await fixture('modern', { missingMarker: true }, async ({ build }) => {
+    assert.notEqual(build.status, 0);
+    assert.match(build.stderr, /Missing coaches entry marker/);
   });
 });

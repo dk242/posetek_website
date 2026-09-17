@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { MotionConfig } from "motion/react";
 import { useThemeColor } from "../../lib/use-theme-color";
 import { useBodyBackground } from "../../lib/use-body-background";
@@ -8,8 +8,8 @@ import { LazyHomepageDemo } from "./LazyHomepageDemo";
 import { AthleteProfile } from "./AthleteProfile";
 import { PitchVisual } from "./PitchVisual";
 import { MobileAppPreview } from "./MobileAppPreview";
+import { MarketingHeader } from "./MarketingHeader";
 import { injectClarity } from "./clarity";
-import { isHeaderScrolled, menuButtonLabel } from "./home-logic";
 import "./magic.css";
 import "./home.scss";
 import "./scrolling-home.scss";
@@ -35,12 +35,9 @@ function Arrow({ down = false }: { down?: boolean }) {
 export default function HomePage() {
   useThemeColor("#04130e");
   useBodyBackground("#04130e");
-  const [headerScrolled, setHeaderScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedDrill, setSelectedDrill] = useState("sprint");
   const [requestedDrill, setRequestedDrill] = useState<{ key: string } | null>(null);
   const [workoutRequest, setWorkoutRequest] = useState({ text: "", id: 0 });
-  const menuRef = useRef<HTMLButtonElement>(null);
 
   const openWorkout = (text: string) => {
     setWorkoutRequest(previous => ({ text, id: previous.id + 1 }));
@@ -57,45 +54,18 @@ export default function HomePage() {
     const updateMotion = () => { root.style.scrollBehavior = media.matches ? "auto" : "smooth"; };
     updateMotion();
     media.addEventListener("change", updateMotion);
-    const updateHeader = () => setHeaderScrolled(isHeaderScrolled(window.scrollY));
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    updateHeader();
     const hash = window.location.hash.slice(1);
     if (hash) document.getElementById(hash)?.scrollIntoView();
     return () => {
       root.style.scrollBehavior = previous;
       media.removeEventListener("change", updateMotion);
-      window.removeEventListener("scroll", updateHeader);
     };
   }, []);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { setMenuOpen(false); menuRef.current?.focus(); }
-    };
-    document.addEventListener("keydown", escape);
-    return () => document.removeEventListener("keydown", escape);
-  }, [menuOpen]);
 
   return <MotionConfig reducedMotion="user">
     <div className="pt-home">
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <header className={`site-header${headerScrolled ? " scrolled" : ""}${menuOpen ? " menu-open" : ""}`}>
-        <nav className="nav-shell shell" aria-label="Primary navigation">
-          <a className="brand" href="#top" aria-label="PoseTek home"><span className="brand-mark">P<span /></span><span>POSETEK</span></a>
-          <div className="nav-links" id="navLinks">
-            <a href="#tests" onClick={() => setMenuOpen(false)}>Tests</a>
-            <a href="#profile" onClick={() => setMenuOpen(false)}>Athlete profile</a>
-            <a href="#training" onClick={() => setMenuOpen(false)}>Training</a>
-            <a href="#ai-coach" onClick={() => setMenuOpen(false)}>AI Coach</a>
-            <a href="#technique" onClick={() => setMenuOpen(false)}>Technique</a>
-            <a className="mobile-signin" href="/signin">Sign in <Arrow /></a>
-          </div>
-          <div className="nav-actions"><a className="nav-login" href="/signin">Sign in</a><a className="nav-cta" href="/bookPerformanceTest.html">Book a test <Arrow /></a></div>
-          <button className="menu-button" type="button" ref={menuRef} aria-label={menuButtonLabel(menuOpen)} aria-controls="navLinks" aria-expanded={menuOpen} onClick={() => setMenuOpen(open => !open)}><span /><span /></button>
-        </nav>
-      </header>
+      <MarketingHeader audience="players" />
 
       <main id="main-content">
         <section className="hero shell" id="top" aria-labelledby="hero-title">

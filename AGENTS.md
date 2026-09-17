@@ -11,10 +11,11 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aab2fc35884120dc73147f5`, published
-September 16, 2026 at 5:12:05 PM PDT. It includes the scrolling homepage, the
-mobile app preview, two approved drill videos and interactive coach metrics. Read
-`deployment/DRILL_VIDEO_COACH_PRODUCTION.json` for the current receipt,
+The latest recorded production release is `6aab9fbaa73be75422324ba4`, published
+September 17, 2026 at 1:10:47 AM PDT. It adds `/coaches` and shared Players / Coaches
+navigation while retaining the player homepage and approved drill demonstrations.
+Read `deployment/COACHES_PAGE_PRODUCTION.json` for the current receipt,
+`deployment/COACHES_PAGE_UPDATE.md` for the tailored team service and sample data,
 `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested annotations, and
 `deployment/SCROLLING_HOMEPAGE_UPDATE.md` for recovery and earlier release decisions.
 Continue from the source included in this repository.
@@ -41,7 +42,9 @@ including `/application.html` and its navigation bridge. Keep the live-applicati
 guard enforced and verify the baseline again before another release.
 
 Homepage work primarily belongs in `app/src/pages/home/`; root `index.html`
-contains the public entry and metadata. Use the latest applicable release notes,
+contains the player entry and metadata. Coaches source is in `app/src/pages/coaches/`
+with its entry at `coaches/index.html`. Both audiences share `MarketingHeader.tsx`.
+Use the latest applicable release notes,
 preserve existing routes and data contracts, and treat mobile source as reference-only.
 
 Update the context guide as the source discrepancy is resolved and new project

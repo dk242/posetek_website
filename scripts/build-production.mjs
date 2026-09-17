@@ -1,4 +1,4 @@
-// Release only the public homepage. Keep the current production application
+// Release only the public marketing pages. Keep the current production application
 // byte-for-byte, even when local dependencies or unrelated source have changed.
 import { readFile, writeFile, mkdir, cp, rm } from "node:fs/promises";
 import { resolve, dirname, relative, isAbsolute, join } from "node:path";
@@ -18,7 +18,8 @@ const preserveApplicationEntry = applicationPath === "/application.html";
 if (applicationPath !== "/index.html" && !preserveApplicationEntry) throw new Error("Unsupported baseline application path");
 const entry = manifest.files.find(file => file.path === applicationPath);
 if (!entry) throw new Error("Baseline application entry is missing: " + applicationPath);
-if (preserveApplicationEntry && manifest.files.some(file => file.path === "/index.html" || file.path.startsWith("/marketing/assets/"))) {
+if (manifest.files.some(file => file.path === "/coaches" || file.path.startsWith("/coaches/") ||
+    (preserveApplicationEntry && (file.path === "/index.html" || file.path.startsWith("/marketing/assets/"))))) {
   throw new Error("Preservation baseline overlaps the marketing output");
 }
 const outputPath = file => !preserveApplicationEntry && file.path === "/index.html" ? "/application.html" : file.path;
@@ -92,6 +93,10 @@ if (!preserveApplicationEntry) {
 const marketingHtml = await readFile(join(root, "marketing-dist/index.html"), "utf8");
 if (!marketingHtml.includes("<!-- posetek-marketing-entry -->")) throw new Error("Missing marketing entry marker");
 await writeFile(join(output, "index.html"), marketingHtml);
+const coachesHtml = await readFile(join(root, "marketing-dist/coaches/index.html"), "utf8");
+if (!coachesHtml.includes("<!-- posetek-coaches-entry -->")) throw new Error("Missing coaches entry marker");
+await mkdir(join(output, "coaches"), { recursive: true });
+await writeFile(join(output, "coaches/index.html"), coachesHtml);
 await cp(join(root, "marketing-dist/assets"), join(output, "marketing/assets"), { recursive: true });
 if (!preserveApplicationEntry) await cp(join(root, "deployment/home-navigation.js"), join(output, "marketing/home-navigation.js"));
 
@@ -100,4 +105,4 @@ for (const file of manifest.files) {
   const original = !preserveApplicationEntry && file.path === "/index.html" ? bytes.toString("utf8").replace(injected, "") : bytes;
   if (hash(original) !== file.sha || Buffer.byteLength(original) !== file.size) throw new Error("Preservation verification failed: " + file.path);
 }
-console.log(`[production] Verified ${manifest.files.length} preserved application files from ${manifest.deploymentId}; added isolated homepage.`);
+console.log(`[production] Verified ${manifest.files.length} preserved application files from ${manifest.deploymentId}; added isolated player and coaches pages.`);
