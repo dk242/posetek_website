@@ -42,7 +42,7 @@
   }
   // Shared portal CSS can load after the admin chunk. Keep the fixed tab bar
   // relative to the viewport regardless of that stylesheet order.
-  .admin-header.portal-header { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .admin-header.portal-header { backdrop-filter: none; }
   .portal-brand { flex: 0 0 auto; gap: 10px; }
   .portal-brand-mark {
     width: 34px; height: 34px; border-radius: 8px;
