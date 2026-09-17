@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { getClubContext } from "../../../lib/organization-data";
+import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import { selectedTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
 import firebase, { auth, cloud, db } from "../../../lib/firebase";
@@ -66,6 +67,8 @@ export interface AthleteBundle {
   reps: any[];
   plans: any[];
   logs: any[];
+  provisionalEstimates?: ProvisionalEstimate[];
+  allResultReps?: any[];
 }
 
 // One athlete's reps + plans + workout logs, fetched together. Free Record is
@@ -82,6 +85,8 @@ export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle
   DRILLS.forEach(drill => { byDrill[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
   return {
     reps: allStatsReps(byDrill),
+    provisionalEstimates: parseProvisionalEstimates((repsSnapshot.data as any).provisionalEstimates),
+    allResultReps: all,
     plans: plansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
     logs: logsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
   };

@@ -9,6 +9,7 @@ import { visibleAttempts, resultUsable } from "../../lib/result-values";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, cloud } from "../../lib/firebase";
+import type { ProvisionalEstimate } from "../../lib/provisional-estimates";
 import { useThemeColor } from "../../lib/use-theme-color";
 // drill-share.scss is imported BEFORE AthleteStats (and its stylesheet) so the
 // bundle keeps the legacy cascade order: athlete-drill-view.css loaded first,
@@ -29,7 +30,7 @@ import {
   previewStatsReps,
   type Rep,
 } from "./drill-lib";
-import { loadStatsReps, resolveAuthenticatedDrillPlayer, type ViewerInfo } from "./drill-data";
+import { loadStatsBundle, resolveAuthenticatedDrillPlayer, type ViewerInfo } from "./drill-data";
 import ResultsSurface from "./ResultsSurface";
 
 interface PlayerState {
@@ -67,6 +68,8 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [reps, setReps] = useState<Rep[]>([]);
   const [statsReps, setStatsReps] = useState<Rep[]>([]);
+  const [provisionalEstimates, setProvisionalEstimates] = useState<ProvisionalEstimate[]>([]);
+  const [estimateReps, setEstimateReps] = useState<Rep[]>([]);
   const [activeView, setActiveViewState] = useState<"stats" | "results">(
     params.get("view") === "results" ? "results" : "stats",
   );
@@ -105,10 +108,13 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
         const { viewer: resolvedViewer, player: resolvedPlayer } = await resolveAuthenticatedDrillPlayer(user, params.get("player"));
         if (cancelled) return;
         setBoot({ phase: "loading", message: `Loading ${config.title.toLowerCase()} results…` });
-        const allReps = await loadStatsReps(resolvedPlayer.id);
+        const bundle = await loadStatsBundle(resolvedPlayer.id);
+        const allReps = bundle.reps;
         if (cancelled) return;
         setViewer(resolvedViewer);
         setPlayer(resolvedPlayer);
+        setProvisionalEstimates(bundle.provisionalEstimates || []);
+        setEstimateReps(allReps);
         setStatsReps(visibleAttempts(allReps).filter(resultUsable));
         setReps(visibleAttempts(allReps).filter(rep => rep._statsDrill === config.key));
         setBoot({ phase: "ready" });
@@ -137,6 +143,8 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
         const currentPayload = currentResult?.payload || {};
         if (cancelled) return;
         setViewer({ role: "shared", data: {} });
+        setProvisionalEstimates([]);
+        setEstimateReps([]);
         setPlayer({ id: null, data: currentPayload.athlete || {} });
         shareExpiresAtMillisRef.current = asNumber(currentPayload.expiresAtMillis);
         const allReps = payloads.flatMap(({ drillConfig, payload }) =>
@@ -325,7 +333,7 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
               />
             </div>
             <div id="statsSurface" className={activeView !== "stats" ? "hidden" : ""}>
-              <AthleteStats reps={statsReps} athleteName={name} athlete={player.data || {}} />
+              <AthleteStats reps={statsReps} athleteName={name} athlete={player.data || {}} provisionalEstimates={shareToken ? [] : provisionalEstimates} estimateReps={shareToken ? [] : estimateReps} />
             </div>
           </>
         )}

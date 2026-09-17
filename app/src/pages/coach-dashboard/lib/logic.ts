@@ -9,6 +9,7 @@
 
 import { buildProfile } from "../../../components/athlete-stats/AthleteStats";
 import type { AthleteProfile } from "../../../components/athlete-stats/AthleteStats";
+import type { ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import {
   currentWeekNumber,
   daysLeftInWeek,
@@ -147,18 +148,22 @@ export interface AthleteSummary {
   athlete: any;
   /** The flat `_statsDrill`-tagged rep list the stats component consumes. */
   reps: any[];
+  provisionalEstimates?: ProvisionalEstimate[];
+  allResultReps?: any[];
   profile: AthleteProfile;
   totals: TrainingTotals;
   plan: any | null;
   focus: FocusArea[];
 }
 
-export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: any[]): AthleteSummary {
+export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: any[], provisionalEstimates?: ProvisionalEstimate[], allResultReps?: any[]): AthleteSummary {
   const profile = buildProfile(reps);
   const plan = activePlan(plans);
   return {
     athlete,
     reps,
+    provisionalEstimates,
+    allResultReps,
     profile,
     totals: trainingTotals(logs, reps),
     plan,

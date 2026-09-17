@@ -16,6 +16,8 @@ import { activationParams, activePlansMatch, allocationRows, PERSONALIZED_CAPABI
   createPlannerAccessGuard, isPlannerAuthorizationError, normalizeAssessment, plannerPlayerDetailsLink } from "../lib/personalizedLogic";
 import "../personalized.scss";
 import AthleteEvidenceBadges from "./AthleteEvidenceBadges";
+import { estimatePlanningContext, provisionalDribbling } from '../../../lib/provisional-estimates';
+import ProvisionalEstimateNote from '../../../components/athlete-stats/ProvisionalEstimateNote';
 
 const label = (value: string) => value.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
 const millis = (value: any) => value?.toMillis?.() ?? (typeof value === "string" ? Date.parse(value) : 0);
@@ -160,12 +162,19 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
   const current = activePlan(focusedPlans);
   useEffect(() => { setReviewed(false); }, [draft?.comparisonToken, draft?.status, current?.id, current?.planRevision]);
   const athlete = players.find(p => p.id === focused);
+  const [useEstimates, setUseEstimates] = useState(true);
+  const reviewedEstimate = (load?: AthleteLoad) => provisionalDribbling(load?.provisionalEstimates, load?.allResultReps || load?.reps || []);
+  const focusedEstimate = reviewedEstimate(evidence[focused]);
+  const estimateContextLength = useEstimates ? Math.max(0, ...[...selected, focused].map(id => {
+    const context = estimatePlanningContext(reviewedEstimate(evidence[id])); return context ? context.length + 2 : 0;
+  })) : 0;
+  const contextLimit = Math.max(0, 500 - estimateContextLength);
   const assessmentJob = jobs.find(j => j.playerId === focused && j.capability === "assess_personalized_plan");
   const assessment = assessmentJob?.status === "complete" ? normalizeAssessment(assessmentJob.result) : null;
   const ongoing = jobs.filter(j => !terminal(j.status));
   const inFlight = (playerId: string) => ongoing.some(j => j.playerId === playerId);
   const canGenerate = accessReady && previewEnabled(config) && !limited && !busy && !loading && !intake.painFlag && selected.size > 0
-    && [...selected].every(id => evidence[id] && !inFlight(id));
+    && freeTextGoals.trim().length <= contextLimit && [...selected].every(id => evidence[id] && !inFlight(id));
   const today = draft?.plan?.timezone ? new Intl.DateTimeFormat("en-CA", { timeZone: draft.plan.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()) : "";
   const stale = draft && (draft.plan.startDate !== today || !activePlansMatch(draft.expectedActivePlans, focusedPlans));
 
@@ -178,7 +187,12 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
     const failures: string[] = [];
     await runBatch(players.filter(p => selected.has(p.id)), 3, async player => {
       if (!canOperate(token)) return;
-      try { const load = evidence[player.id]; await submitLlmJob(player.id, "generate_personalized_plan", personalizedParams(load.reps, player.raw, load.evidence.age, intake, goals, freeTextGoals)); }
+      try {
+        const load = await loadAthleteEvidence(player);
+        if (!canOperate(token)) return;
+        setEvidence(old => ({ ...old, [player.id]: load }));
+        await submitLlmJob(player.id, "generate_personalized_plan", personalizedParams(load.reps, player.raw, load.evidence.age, intake, goals, freeTextGoals, useEstimates ? load.provisionalEstimates : [], load.allResultReps));
+      }
       catch (e: any) { if (canOperate(token)) {
         if (isPlannerAuthorizationError(e)) failClosed(e);
         else failures.push(`${player.name}: ${e.message}`);
@@ -203,7 +217,13 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
     if (!canOperate(token) || !previewEnabled(config, "assess_personalized_plan") || intake.painFlag || !athlete || !evidence[focused] || submitting.current || busy || inFlight(focused)) return;
     submitting.current = true;
     setBusy(true); setMessage("");
-    try { const load=evidence[focused]; await submitLlmJob(focused,"assess_personalized_plan",personalizedParams(load.reps,athlete.raw,load.evidence.age,intake,goals,freeTextGoals)); }
+    try {
+      const load = await loadAthleteEvidence(athlete);
+      if (canOperate(token)) {
+        setEvidence(old => ({ ...old, [athlete.id]: load }));
+        await submitLlmJob(focused,"assess_personalized_plan",personalizedParams(load.reps,athlete.raw,load.evidence.age,intake,goals,freeTextGoals,useEstimates ? load.provisionalEstimates : [],load.allResultReps));
+      }
+    }
     catch(e:any) { if(canOperate(token)) { if (isPlannerAuthorizationError(e)) failClosed(e); else setMessage(e.message); } }
     finally { submitting.current = false; if(canOperate(token)) setBusy(false); }
   }
@@ -232,6 +252,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
               <div className="admin-row-meta personalized-player-badges">
                 <span className="admin-chip">{teamNames.get(p.teamId ?? "") ?? "No team"}</span>
                 <AthleteEvidenceBadges evidence={load?.evidence} loading={!load && !evidenceErrors[p.id]} error={evidenceErrors[p.id]} />
+                {reviewedEstimate(load) && <span className="admin-chip">Dribbling estimate available</span>}
               </div>
               {(evidenceErrors[p.id] || recent) && <p className={`personalized-evidence-summary${evidenceErrors[p.id] ? " is-error" : ""}`}>
                 {evidenceErrors[p.id] || `${recent!.reps.length} recent test reps${recent!.excluded ? ` · ${recent!.excluded} undated/older reps excluded` : ""}`}
@@ -241,6 +262,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
           </div>;
         })}</div>}
         <p className="personalized-meta">Plans consider the schedule, position, recent results, available drills and coach feedback. Missing evidence uses a clearly labelled baseline.</p>
+        {focusedEstimate && useEstimates && <ProvisionalEstimateNote estimate={focusedEstimate} planning />}
         {athlete && <div className="personalized-preflight"><h3>Proposed priorities · {athlete.name}</h3>
           <button type="button" className="quiet-button" disabled={!accessReady || !evidence[focused] || busy || inFlight(focused) || intake.painFlag || !previewEnabled(config,"assess_personalized_plan")} onClick={() => void assess()}>Preview priorities</button>
           {assessment && <><p className="personalized-meta">{millis(assessment.assessedAt) > 0 ? `Assessment from ${new Date(millis(assessment.assessedAt)).toLocaleString()}` : "Historical assessment date unavailable"} · {assessment.schedule ? `${assessment.schedule.sessionsPerWeek} × ${assessment.schedule.minutesPerSession} minutes/week · ${label(assessment.schedule.setting)}` : "Historical training schedule unavailable"}. Generation recalculates these priorities from current inputs.</p>
@@ -251,7 +273,12 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
       </section>
       <section className="personalized-card"><h2>2. Goals & training schedule</h2>
         <fieldset><legend>Choose up to two goals</legend><div className="personalized-equipment">{["speedAgility", "dribbling", "passing", "firstTouch", "shooting", "strengthPower"].map(goal => <label key={goal}><input type="checkbox" checked={goals.includes(goal)} disabled={!goals.includes(goal) && goals.length >= 2} onChange={() => setGoals(old => old.includes(goal) ? old.filter(g => g !== goal) : [...old, goal])} />{label(goal)}</label>)}</div></fieldset>
-        <label>What would you like to improve?<textarea maxLength={500} value={freeTextGoals} onChange={e => setFreeTextGoals(e.target.value)} placeholder="Optional goals or training context" /></label>
+        {(focusedEstimate || [...selected].some(id => reviewedEstimate(evidence[id]))) && <>
+          <label className="personalized-checkbox"><input type="checkbox" checked={useEstimates} onChange={e => setUseEstimates(e.target.checked)} />Use reviewed estimates as low-confidence coaching context</label>
+          <p className="personalized-meta">Dribbling becomes a goal when a goal slot is available. Estimates stay separate from measured test results and peer comparisons.</p>
+        </>}
+        <label>What would you like to improve?<textarea maxLength={contextLimit} value={freeTextGoals} onChange={e => setFreeTextGoals(e.target.value)} placeholder="Optional goals or training context" /></label>
+        {freeTextGoals.trim().length > contextLimit && <p className="personalized-notice">Shorten your context to {contextLimit} characters to leave room for the estimated result.</p>}
         <div className="personalized-fields">
         <label>Duration<select value={intake.horizonWeeks} onChange={e => setIntake({ ...intake, horizonWeeks: +e.target.value })}>{HORIZON_WEEKS.map(n => <option key={n} value={n}>{n} weeks</option>)}</select></label>
         <label>Sessions per week<select value={intake.sessionsPerWeek} onChange={e => setIntake({ ...intake, sessionsPerWeek: +e.target.value })}>{SESSIONS_PER_WEEK.map(n => <option key={n}>{n}</option>)}</select></label>

@@ -112,7 +112,7 @@ export default function CoachDashboardPage() {
   const summaries: AthleteSummary[] = useMemo(
     () => summarySort(players.map(player => {
       const bundle = bundles[player.id] || { reps: [], plans: [], logs: [] };
-      return athleteSummary(player, bundle.reps, bundle.plans, bundle.logs);
+      return athleteSummary(player, bundle.reps, bundle.plans, bundle.logs, bundle.provisionalEstimates, bundle.allResultReps);
     })),
     [players, bundles],
   );

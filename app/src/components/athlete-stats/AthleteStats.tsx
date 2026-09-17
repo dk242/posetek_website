@@ -31,6 +31,9 @@ import type {
   StatsSection
 } from "./profile";
 import "./athlete-stats.scss";
+import { provisionalDribbling, provisionalScore, type ProvisionalEstimate } from '../../lib/provisional-estimates';
+import { metrics as benchmarks } from '../../lib/benchmarks';
+import ProvisionalEstimateNote from './ProvisionalEstimateNote';
 
 export { buildProfile } from "./profile";
 export type { AthleteProfile, ProfileAxis, StatsSection } from "./profile";
@@ -39,6 +42,8 @@ export interface AthleteStatsProps {
   reps: any[];
   athlete?: any;
   athleteName?: string;
+  provisionalEstimates?: ProvisionalEstimate[];
+  estimateReps?: any[];
 }
 
 function point(index: number, ratio: number, radius = 92, centerX = 180, centerY = 148) {
@@ -78,11 +83,13 @@ function SummaryRow({ icon, title, detail, tone }: { icon: string; title: string
 function Radar({
   axes,
   selectedAxis,
-  onSelect
+  onSelect,
+  estimatedScore
 }: {
   axes: ProfileAxis[];
   selectedAxis: string | null;
   onSelect: (key: string) => void;
+  estimatedScore: number | null;
 }) {
   const scored = axes.filter(axis => axis.score !== null);
   const athletePoints = axes.map((axis, index) =>
@@ -116,6 +123,17 @@ function Radar({
             .join(" ")}
         />
       )}
+      {estimatedScore !== null && axes.map((axis, index) => {
+        if (axis.key !== 'ballControl' || axis.score !== null) return null;
+        const current = point(index, Math.min(estimatedScore, RADAR_CEILING) / RADAR_CEILING);
+        return <g key="estimated-ball-control" role="button" tabIndex={0} aria-label={`View estimated Ball Control, ${Math.round(estimatedScore)} vs D1`}
+          onClick={() => onSelect(axis.key)} onKeyDown={event => activateOnKey(event, () => onSelect(axis.key))}>
+          {[index - 1, index + 1].map(i => athletePoints[(i + axes.length) % axes.length]).map((neighbor, i) => neighbor &&
+            <line key={i} className="provisional-chart-line" x1={neighbor.x} y1={neighbor.y} x2={current.x} y2={current.y} />)}
+          <circle className="stats-radar-marker-hit" cx={current.x} cy={current.y} r="25" />
+          <circle className="provisional-chart-marker" cx={current.x} cy={current.y} r="6" />
+        </g>;
+      })}
       {athletePoints.map((current, index) =>
         current ? (
           <g
@@ -152,7 +170,7 @@ function Radar({
           >
             <rect className="stats-radar-label-hit" x="-56" y="-25" width="112" height="56" rx="11" />
             <text className="axis-name" textAnchor="middle" y="-2">{axis.label}</text>
-            <text className="axis-score" textAnchor="middle" y="13">{axis.score === null ? "—" : Math.round(axis.score)}</text>
+            <text className="axis-score" textAnchor="middle" y="13" style={axis.key === 'ballControl' && estimatedScore !== null ? { fill: '#ffc969' } : undefined}>{axis.score === null ? axis.key === 'ballControl' && estimatedScore !== null ? `${Math.round(estimatedScore)} est.` : "—" : Math.round(axis.score)}</text>
           </g>
         );
       })}
@@ -258,11 +276,13 @@ function BreakdownPanel({ section, hidden }: { section: StatsSection; hidden: bo
   );
 }
 
-export default function AthleteStats({ reps, athlete, athleteName }: AthleteStatsProps) {
+export default function AthleteStats({ reps, athlete, athleteName, provisionalEstimates, estimateReps }: AthleteStatsProps) {
   const [selectedAxis, setSelectedAxis] = useState<string | null>(null);
   const selectAxis = (key: string) => setSelectedAxis(previous => (previous === key ? null : key));
 
   const profile = buildProfile(Array.isArray(reps) ? reps : []);
+  const estimate = provisionalDribbling(provisionalEstimates, estimateReps || (Array.isArray(reps) ? reps : []));
+  const estimatedScore = provisionalScore(estimate, benchmarks.dribbleTotalTime.reference);
   const ranked = (profile.axes.filter(axis => axis.score !== null) as (ProfileAxis & { score: number })[])
     .sort((left, right) => right.score - left.score);
   const strength = ranked[0];
@@ -293,7 +313,7 @@ export default function AthleteStats({ reps, athlete, athleteName }: AthleteStat
         <div className="stats-focus-grid">
           {strength && <SummaryRow icon="star" title="Strength" detail={`${strength.label} · ${Math.round(strength.score)} vs D1`} tone="lime" />}
           {focus && <SummaryRow icon="center_focus_strong" title="Focus area" detail={`${focus.label} · ${Math.round(focus.score)} vs D1`} tone="orange" />}
-          {missing && <SummaryRow icon="add_circle" title="Missing data" detail={missing} tone="cyan" />}
+          {missing && <SummaryRow icon="add_circle" title={estimate ? 'Missing verified data' : 'Missing data'} detail={missing} tone="cyan" />}
         </div>
         <div className="stats-radar-section">
           <header>
@@ -303,12 +323,14 @@ export default function AthleteStats({ reps, athlete, athleteName }: AthleteStat
             </div>
             <span className="stats-recorded-count">{ranked.length}/{profile.axes.length} recorded</span>
           </header>
-          <Radar axes={profile.axes} selectedAxis={selectedAxis} onSelect={selectAxis} />
+          <Radar axes={profile.axes} selectedAxis={selectedAxis} onSelect={selectAxis} estimatedScore={estimatedScore} />
           <div className="stats-radar-legend">
             <span className="you"><i />You</span>
             <span className="d1"><i />D1 standard</span>
             <span className="untested"><i />Not tested</span>
+            {estimate && <span><i style={{ borderTop: '2px dashed #ffc969' }} />Estimated</span>}
           </div>
+          {estimate && <ProvisionalEstimateNote estimate={estimate} score={estimatedScore} />}
         </div>
         <section className="stats-selected-breakdown" aria-live="polite">
           <div className="stats-section-heading">

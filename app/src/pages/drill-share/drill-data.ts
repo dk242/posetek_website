@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { visibleAttempts, sameResultStatus } from "../../lib/result-values";
+import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../lib/provisional-estimates";
 import { cloud, db } from "../../lib/firebase";
 import { findCoach, findPlayer, ownsPlayer } from "../../lib/identity";
 import { loadClubMembership } from "../../lib/organization-data";
@@ -62,12 +63,22 @@ export async function loadReps(playerId: string, drillConfig: DrillConfig): Prom
   return reps.sort((a, b) => b.createdAtMillis - a.createdAtMillis || (b.absoluteRepNumber || 0) - (a.absoluteRepNumber || 0));
 }
 
-export async function loadStatsReps(playerId: string): Promise<Rep[]> {
+export interface StatsBundle {
+  reps: Rep[];
+  provisionalEstimates?: ProvisionalEstimate[];
+}
+
+export async function loadStatsBundle(playerId: string): Promise<StatsBundle> {
   const response = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId });
-  return visibleAttempts(((response.data as any).reps || []) as Record<string, any>[]).flatMap(rep => {
+  const reps = visibleAttempts(((response.data as any).reps || []) as Record<string, any>[]).flatMap(rep => {
     const config = Object.values(configs).find(config => config.acceptedRepTypes.includes(rep.repType || rep.drillType));
     return config ? [normalizeAuthRep(rep.id, rep, config)] : [];
   }).sort((a, b) => b.createdAtMillis - a.createdAtMillis);
+  return { reps, provisionalEstimates: parseProvisionalEstimates((response.data as any).provisionalEstimates) };
+}
+
+export async function loadStatsReps(playerId: string): Promise<Rep[]> {
+  return (await loadStatsBundle(playerId)).reps;
 }
 
 export interface LoadArtifactsOptions {

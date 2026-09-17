@@ -5,6 +5,7 @@
 
 import { Fragment } from "react";
 import type { Access } from "../lib/loaders";
+import type { ProvisionalEstimate } from "../../../lib/provisional-estimates";
 
 export interface PortalContext {
   access: Access;
@@ -12,6 +13,8 @@ export interface PortalContext {
   athlete: any;
   notify: (text: string) => void;
   allStatsReps: () => any[];
+  provisionalEstimates?: ProvisionalEstimate[];
+  allResultReps?: () => any[];
 }
 
 export function PageHero({ eyebrow, title, description, icon }: { eyebrow: string; title: string; description: string; icon: string }) {

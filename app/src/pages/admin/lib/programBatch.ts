@@ -15,6 +15,7 @@ import { planV3JobParams, startPlanGeneration } from "./planJobs";
 import type { PlanIntakeForm, PlanJobState } from "./planJobs";
 import { applyLevel, testedDrills } from "./programBatchLogic";
 import type { AthleteEvidence, LevelChoice } from "./programBatchLogic";
+import type { ProvisionalEstimate } from '../../../lib/provisional-estimates';
 
 /** Every player carrying the club's `organizationId` (admins read all players). */
 export async function loadOrganizationPlayers(organizationId: string): Promise<PlayerRow[]> {
@@ -24,6 +25,8 @@ export async function loadOrganizationPlayers(organizationId: string): Promise<P
 
 export interface AthleteLoad {
   reps: any[];
+  allResultReps?: any[];
+  provisionalEstimates?: ProvisionalEstimate[];
   evidence: AthleteEvidence;
 }
 
@@ -33,6 +36,8 @@ export async function loadAthleteEvidence(player: PlayerRow): Promise<AthleteLoa
   const plan = activePlan(bundle.plans);
   return {
     reps: bundle.reps,
+    allResultReps: bundle.allResultReps,
+    provisionalEstimates: bundle.provisionalEstimates,
     evidence: {
       tested: testedDrills(bundle.reps),
       repCount: bundle.reps.length,

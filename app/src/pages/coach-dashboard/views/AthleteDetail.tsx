@@ -86,7 +86,7 @@ export default function AthleteDetail({ summary, job, preview, onBack, onCreateP
 
       {tab === "stats" ? (
         <section className="coachdash-stats-wrap">
-          <AthleteStats athlete={summary.athlete} athleteName={fullName(summary.athlete)} reps={summary.reps} />
+          <AthleteStats athlete={summary.athlete} athleteName={fullName(summary.athlete)} reps={summary.reps} provisionalEstimates={summary.provisionalEstimates} estimateReps={summary.allResultReps} />
         </section>
       ) : plan && isV3Plan(plan) ? (
         <V3ProgramView plan={plan} />

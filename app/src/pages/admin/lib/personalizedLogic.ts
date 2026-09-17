@@ -2,6 +2,7 @@
 import { planV3JobParams } from "./planJobs";
 import type { PlanIntakeForm } from "./planJobs";
 import { accountContext, accountPlayerPath, accountQuery } from "./accountHierarchy";
+import { estimatePlanningContext, provisionalDribbling, type ProvisionalEstimate } from '../../../lib/provisional-estimates';
 
 export const PERSONALIZED_ENGINE = "personalized-v1";
 export const PERSONALIZED_CAPABILITIES = ["generate_personalized_plan", "activate_personalized_plan", "discard_personalized_plan", "assess_personalized_plan"] as const;
@@ -15,10 +16,15 @@ export function recentEvidence(reps: any[], now = Date.now()) {
     window: recent.length ? { oldestAt: new Date(Math.min(...recent.map(r => r.createdAtMillis))).toISOString(),
       newestAt: new Date(Math.max(...recent.map(r => r.createdAtMillis))).toISOString() } : undefined };
 }
-export function personalizedParams(reps: any[], player: any, age: number | null, intake: PlanIntakeForm, goals: string[] = [], freeTextGoals = ""): Record<string, any> {
+export function personalizedParams(reps: any[], player: any, age: number | null, intake: PlanIntakeForm, goals: string[] = [], freeTextGoals = "", provisionalEstimates: ProvisionalEstimate[] = [], estimateReps: any[] = reps): Record<string, any> {
   const evidence = recentEvidence(reps);
   const params = planV3JobParams(evidence.reps, player, age, intake);
-  return { ...params, intake: { ...params.intake, goals, freeTextGoals: freeTextGoals.trim() || null }, engineVersion: PERSONALIZED_ENGINE,
+  const estimate = provisionalDribbling(provisionalEstimates, recentEvidence(estimateReps).reps);
+  const context = estimatePlanningContext(estimate);
+  const text = [freeTextGoals.trim(), context].filter(Boolean).join('\n\n');
+  if (text.length > 500) throw new Error('Shorten the training context to leave room for the estimated result.');
+  const planningGoals = estimate && !goals.includes('dribbling') && goals.length < 2 ? [...goals, 'dribbling'] : goals;
+  return { ...params, intake: { ...params.intake, goals: planningGoals, freeTextGoals: text || null }, engineVersion: PERSONALIZED_ENGINE,
     ...(evidence.window ? { evidenceWindow: evidence.window } : {}) };
 }
 export function plannerLink(_personalized: boolean, orgId: string, playerIds: Iterable<string>, teamId = "") {

@@ -5,6 +5,7 @@ const { isClubAdmin, clubStaffCanAccessPlayer } = require("./club-access");
 const { EXERCISES, millis, drillOf, duplicateIds, qualifyRep } = require("./insights-v2-qualification");
 const { completeQuery, mapBounded } = require("./insights-v2-projection");
 const { createProcessingEvidenceReader, contextIdentityMatches } = require("./processing-evidence");
+const { readProvisionalEstimates } = require("./provisional-estimates");
 const NUMBERS = ["jumpHeight", "jump_height_m", "jump_height_in", "jump_height_inches", "broadJumpDistance", "velocity", "max_velocity", "maxVelocity", "average_velocity", "averageVelocity", "max_acceleration", "maxAcceleration", "time_to_max_velocity", "timeToMaxVelocity", "totalTime", "distance", "totalDistance", "outboundDistance", "returnDistance", "phase1Time", "phase2Time", "phase3Time", "phase1Percent", "phase2Percent", "phase3Percent", "avgBallDistance", "markerDistance", "launch_angle", "launchAngle", "startFrame", "endFrame", "apexFrame", "peakFrame", "takeoffFrame", "landingFrame", "phase1EndFrame", "phase2EndFrame", "contact_frame", "transition_frame"];
 const LABELS = ["strike_foot", "dribble_foot", "footSide", "direction", "gateStartSide"];
 const ARTIFACTS = Object.freeze({
@@ -125,8 +126,10 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
   async function getResults(data, auth) {
     await authorize(data?.playerId, auth);
     const result = await listForPlayer(data.playerId, data.drill, true);
+    const provisionalEstimates = await readProvisionalEstimates({ db, bucket, playerId: data.playerId,
+      reps: result.reps, drill: data.drill, now: now() });
     await authorize(data.playerId, auth);
-    return result;
+    return { ...result, provisionalEstimates };
   }
   async function signedFile(name, expires) {
     let meta;

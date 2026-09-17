@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/pose-portal.css";
 import { auth, cloud } from "../../lib/firebase";
+import type { ProvisionalEstimate } from "../../lib/provisional-estimates";
 import AthleteStats from "../../components/athlete-stats/AthleteStats";
 import { DRILLS, drillByKey } from "./lib/drills";
 import { allStatsReps, avatarInitials, fullName } from "./lib/metrics";
@@ -63,6 +64,7 @@ export default function AthletePortalPage() {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [athlete, setAthlete] = useState<any>(null);
   const [reps, setReps] = useState<Record<string, any[]>>(() => Object.fromEntries(DRILLS.map(d => [d.key, []])));
+  const [provisionalEstimates, setProvisionalEstimates] = useState<ProvisionalEstimate[]>([]);
   const [view, setView] = useState("home");
   const [viewEpoch, setViewEpoch] = useState(0);
   const [drill, setDrill] = useState("shooting");
@@ -127,6 +129,7 @@ export default function AthletePortalPage() {
     setPlayerId(data.playerId);
     setAthlete(data.athlete);
     setReps(data.reps);
+    setProvisionalEstimates(data.access === "shared" ? [] : data.provisionalEstimates || []);
     setView(nextView);
     setDrill(nextDrill);
     setSession(null);
@@ -215,9 +218,9 @@ export default function AthletePortalPage() {
 
   const statsReps = () => allStatsReps(reps);
   const ctx: PortalContext = useMemo(
-    () => ({ access: (access || "athlete") as Access, playerId, athlete, notify, allStatsReps: statsReps }),
+    () => ({ access: (access || "athlete") as Access, playerId, athlete, notify, allStatsReps: statsReps, provisionalEstimates, allResultReps: () => Object.values(reps).flat() }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [access, playerId, athlete, reps],
+    [access, playerId, athlete, reps, provisionalEstimates],
   );
 
   const activeDrill = drillByKey(drill);
@@ -351,7 +354,7 @@ export default function AthletePortalPage() {
           )}
           {phase === "ready" && view === "home" && (
             <div className="athlete-overview">
-              <AthleteStats athlete={athlete} athleteName={fullName(athlete)} reps={statsReps()} />
+              <AthleteStats athlete={athlete} athleteName={fullName(athlete)} reps={statsReps()} provisionalEstimates={provisionalEstimates} estimateReps={Object.values(reps).flat()} />
             </div>
           )}
           {phase === "ready" && view === "drills" && (

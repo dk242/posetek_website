@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { visibleAttempts } from "../../../lib/result-values";
+import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import { loadClubMembership } from "../../../lib/organization-data";
 import { canAccessClubPlayer } from "../../../lib/organization";
 import { refreshAdminIdentity } from "../../admin/lib/identity";
@@ -22,6 +23,7 @@ export interface PortalData {
   playerId: string | null;
   athlete: any;
   reps: Record<string, any[]>;
+  provisionalEstimates?: ProvisionalEstimate[];
 }
 
 const emptyReps = (): Record<string, any[]> => Object.fromEntries(DRILLS.map(d => [d.key, []]));
@@ -68,7 +70,7 @@ export async function loadAuthenticated(user: any, requestedPlayer: string | nul
   } catch (error) {
     console.warn("[profile] Free Record listing unavailable", error);
   }
-  return { access, playerId: playerDoc.id, athlete, reps };
+  return { access, playerId: playerDoc.id, athlete, reps, provisionalEstimates: parseProvisionalEstimates((effective.data as any).provisionalEstimates) };
 }
 
 export async function listFreeRecordStorage(playerId: string): Promise<any[]> {
