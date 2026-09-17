@@ -33,6 +33,7 @@ exports.closeSocialAccount = functions.runWith({ failurePolicy: true }).auth.use
 
 const { createAdmission } = require("./admission");
 const { createTeamLeaderboard } = require("./team-leaderboard");
+const { createClubInsights } = require("./club-insights");
 const { createAthleteShares } = require("./athlete-shares");
 const { createClubs } = require("./clubs");
 const { createClubBranding } = require("./club-branding");
@@ -59,6 +60,7 @@ const admission = createAdmission({
   randomInt: (max) => crypto.randomInt(max),
 });
 const teamLeaderboard = createTeamLeaderboard({ db, HttpsError: functions.https.HttpsError });
+const clubInsights = createClubInsights({ db, HttpsError: functions.https.HttpsError });
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
 const ATHLETE_SHARE_REP_TYPES = {
   shooting: new Set(["side_kick", "deadballShot", "shooting"]),
@@ -377,6 +379,7 @@ exports.revokeClubStaffInvitation = functions.https.onCall((data, context) => cl
 exports.setClubPlayerTeam = functions.https.onCall((data, context) => clubs.setClubPlayerTeam(data, requireCaller(context)));
 exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => clubs.issueClubPlayerInvitation(data, requireCaller(context)));
 exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
+exports.getClubInsights = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => clubInsights.getClubInsights(data, requireCaller(context)));
 exports.adminReviseRep = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.reviseRep(data, requireCaller(context)));
 exports.adminRestoreRepRevision = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.restoreRepRevision(data, requireCaller(context)));
 exports.adminSaveAnalysisReview = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => analysisReviews.saveReview(data, requireCaller(context)));
