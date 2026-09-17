@@ -1,0 +1,26 @@
+# Build and test only. This configuration does not update a running service,
+# Firestore rules, or application config. Supply a unique reviewed _IMAGE tag.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'Dockerfile.release', '-t', '${_IMAGE}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - run
+      - --rm
+      - -v
+      - /workspace:/validation
+      - -w
+      - /validation
+      - -e
+      - PYTHONUTF8=1
+      - --entrypoint
+      - sh
+      - '${_IMAGE}'
+      - -c
+      - >-
+        pip install --quiet pytest==9.1.1 &&
+        python -m pytest -q -p no:cacheprovider --basetemp /tmp/planner-tests
+images: ['${_IMAGE}']
+options:
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1200s

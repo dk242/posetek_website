@@ -123,11 +123,16 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
   if (!entry.includes('id="root"') || !entry.includes('type="module"') || entry.includes("/src/") || !entry.includes("/assets/")) throw new Error("Fresh compiled application entry required");
   const before = new Map();
   for (const file of baseline.files) {
+    const key = file.path.toLowerCase(), existing = before.get(key);
+    if (existing) {
+      if (existing.sha !== file.sha || existing.size !== file.size) throw new Error("Conflicting case-insensitive baseline path: " + file.path);
+      continue;
+    }
     const bytes = await readFile(join(output, file.path.slice(1)));
     if (sha(bytes) !== file.sha || bytes.length !== file.size) throw new Error("Baseline not verified: " + file.path);
-    before.set(file.path, bytes);
+    before.set(key, { ...file, bytes });
   }
-  const added = [];
+  const added = [], newAssets = new Map();
   async function copyAssets(directory, prefix = "/assets") {
     for (const item of await readdir(directory, { withFileTypes: true })) {
       const path = prefix + "/" + item.name, source = join(directory, item.name);
@@ -136,11 +141,17 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
       const target = resolve(output, "." + path), rel = relative(output, target);
       if (!rel || rel.startsWith("..") || isAbsolute(rel)) throw new Error("Invalid output path");
       const bytes = await readFile(source);
-      const preserved = before.get(path);
-      if (preserved && sha(preserved) !== sha(bytes)) throw new Error("Asset collision with existing application: " + path);
+      // Netlify's inventory folds names to lowercase. Keep the pinned path when
+      // Vite emits the same asset with different casing, including on Linux.
+      const key = path.toLowerCase(), checksum = sha(bytes), preserved = before.get(key), duplicate = newAssets.get(key);
+      if (preserved && (preserved.sha !== checksum || preserved.size !== bytes.length)) throw new Error("Asset collision with existing application: " + path);
+      if (duplicate && (duplicate.sha !== checksum || duplicate.size !== bytes.length)) throw new Error("Conflicting case-insensitive new asset path: " + path);
+      if (preserved || duplicate) continue;
+      const record = { path, sha: checksum, size: bytes.length };
+      newAssets.set(key, record);
       await mkdir(dirname(target), { recursive: true });
       await writeFile(target, bytes);
-      if (!preserved) added.push({ path, sha: sha(bytes), size: bytes.length });
+      added.push(record);
     }
   }
   await copyAssets(join(dist, "assets"));
@@ -148,8 +159,8 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
   const application = entry.replace("</body>", bridge + "</body>");
   if (!application.includes(bridge)) throw new Error("Application body is missing");
   await writeFile(join(output, "application.html"), application);
-  for (const [path, bytes] of before) {
-    if (path === "/application.html") continue;
+  for (const { path, bytes } of before.values()) {
+    if (path.toLowerCase() === "/application.html") continue;
     if (sha(await readFile(join(output, path.slice(1)))) !== sha(bytes)) throw new Error("Unrelated file changed: " + path);
   }
   if (sha(await readFile(join(output, "index.html"))) !== sha(homepage)) throw new Error("Homepage changed during application composition");

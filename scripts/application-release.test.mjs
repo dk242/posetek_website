@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, writeFile, readFile, rm, symlink } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, readFile, readdir, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, dirname, resolve, basename } from "node:path";
 import { createHash } from "node:crypto";
@@ -34,6 +34,33 @@ test("application composition retains homepage and static files and excludes arb
 test("application composition rejects drift and asset-name collisions", async () => {
   await fixture(async (root, put) => { await put("production-dist/booking.html", "changed"); await assert.rejects(composeApplicationRelease(root), /Baseline not verified/); });
   await fixture(async (root, put) => { await put("dist/assets/old.js", "collision"); await assert.rejects(composeApplicationRelease(root), /Asset collision/); });
+});
+
+test("case-only identical Vite assets retain the pinned filename and are not counted as new", async () => fixture(async (root, put) => {
+  await put("dist/assets/OLD.js", "old asset");
+  const result = await composeApplicationRelease(root);
+  assert.deepEqual(result.added.map(file => file.path), ["/assets/new.js"]);
+  assert.deepEqual((await readdir(join(root, "production-dist/assets"))).sort(), ["new.js", "old.js"]);
+  assert.equal(await readFile(join(root, "production-dist/assets/old.js"), "utf8"), "old asset");
+}));
+
+test("case-only Vite collisions cannot replace a pinned asset", async () => fixture(async (root, put) => {
+  await put("dist/assets/OLD.js", "changed asset");
+  await assert.rejects(composeApplicationRelease(root), /Asset collision with existing application/);
+  assert.equal(await readFile(join(root, "production-dist/assets/old.js"), "utf8"), "old asset");
+  assert.ok(!(await readdir(join(root, "production-dist/assets"))).includes("OLD.js"));
+}));
+
+test("baseline case aliases count once and conflicting folded records fail", async () => {
+  for (const conflicting of [false, true]) await fixture(async (root, put) => {
+    const baseline = JSON.parse(await readFile(join(root, "deployment/homepage-baseline.json"), "utf8"));
+    const original = baseline.files.find(file => file.path === "/assets/old.js");
+    baseline.files.push({ ...original, path: "/assets/OLD.js", ...(conflicting ? { sha: sha("conflict") } : {}) });
+    await put("deployment/homepage-baseline.json", JSON.stringify(baseline));
+    if (conflicting) await assert.rejects(composeApplicationRelease(root), /Conflicting case-insensitive baseline path/);
+    else assert.equal((await composeApplicationRelease(root)).preservedFiles, 3);
+    assert.equal(await readFile(join(root, "production-dist/assets/old.js"), "utf8"), "old asset");
+  });
 });
 
 async function snapshotFixture(run) {

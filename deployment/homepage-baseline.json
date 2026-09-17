@@ -1,19 +1,24 @@
 {
-  "deploymentId": "6aa9b6f0d8faf6177db8fd97",
-  "sourceCommit": null,
-  "url": "https://6aa9b6f0d8faf6177db8fd97--posetek.netlify.app",
+  "deploymentId": "6aaba570721b0d41e0eabf90",
+  "sourceCommit": "1cc6637",
+  "url": "https://6aaba570721b0d41e0eabf90--posetek.netlify.app",
   "applicationPath": "/application.html",
   "platformConfig": {
     "path": "/netlify.toml",
-    "sha": "7b02012624fffa7693f38cec2497457387c53ae7",
-    "size": 1406,
+    "sha": "49aeeb329e11cfd4797bef2031b5bc39041fab47",
+    "size": 1816,
     "note": "Protected Netlify CLI-generated metadata. Effective redirects and headers must be verified before release; this is not a served application asset."
   },
   "files": [
     {
       "path": "/application.html",
-      "sha": "0f2c8c4a359aa271bee04e191fbd44677545e729",
+      "sha": "6de4d042f3a1d40253ec7a9b511f924c6cf16b49",
       "size": 1396
+    },
+    {
+      "path": "/assets/accounthierarchy-bvsgvlzr.js",
+      "sha": "73d4507f05aac6e81424cd6794cbc8ecf541bad6",
+      "size": 2849
     },
     {
       "path": "/assets/accounts-bneewpvs.js",
@@ -21,9 +26,19 @@
       "size": 6798
     },
     {
+      "path": "/assets/accounts-dxxgztq_.js",
+      "sha": "e73fbb7c8736899ae4a84a79035fb2ea8d225e36",
+      "size": 8823
+    },
+    {
       "path": "/assets/adminhome-bu6hgy09.js",
       "sha": "2da4a96e0c4b9741b49977f80d72b02b3ff62f4a",
       "size": 2793
+    },
+    {
+      "path": "/assets/adminhome-ujgbda1m.js",
+      "sha": "7eaee5fc09d3df42a0b6ad13350c597de67184c9",
+      "size": 2392
     },
     {
       "path": "/assets/adminpage-blba6n5y.css",
@@ -36,13 +51,33 @@
       "size": 10107
     },
     {
+      "path": "/assets/adminpage-cgpfoocf.js",
+      "sha": "3416c3b5c1e31c0dd41fb5169ace2a44b669de3e",
+      "size": 9971
+    },
+    {
+      "path": "/assets/adminpage-mfg6rpou.css",
+      "sha": "97aaad25e28cb41827b5f40ced9657872584b5dd",
+      "size": 33007
+    },
+    {
       "path": "/assets/adminresults-dck1h-kd.js",
       "sha": "a2d2abcdf2671774f7f38eb7d792f1869b89cbff",
       "size": 2234
     },
     {
+      "path": "/assets/adminresults-dh-xmtux.js",
+      "sha": "18be828ee50422ee8c3034552e2406d4f71aa577",
+      "size": 2325
+    },
+    {
       "path": "/assets/analysisworkspace-bpevv-aw.js",
       "sha": "91d613df727b7899ba5dde67921fc8e83e289cc6",
+      "size": 31167
+    },
+    {
+      "path": "/assets/analysisworkspace-c7kkck8s.js",
+      "sha": "895c6f7518e26417c22d4800210722bd2ded0679",
       "size": 31167
     },
     {
@@ -66,6 +101,11 @@
       "size": 29204
     },
     {
+      "path": "/assets/athleteportalpage-dasdycnq.js",
+      "sha": "1cd8a68e9ef47256a36fd62234cca0ea20800034",
+      "size": 221091
+    },
+    {
       "path": "/assets/athleteportalpage-dd4vvgud.js",
       "sha": "aa9680ef9a49df7ee9cc060442d9d625462572ea",
       "size": 230044
@@ -74,6 +114,11 @@
       "path": "/assets/athletestats-bnhyxc3b.js",
       "sha": "0245c28c6c09f2716d590fdde8e6faf898ffa2c6",
       "size": 13985
+    },
+    {
+      "path": "/assets/athletestats-clhsbber.js",
+      "sha": "110731334fa3185e7f116eab4aecde66d8bae588",
+      "size": 13990
     },
     {
       "path": "/assets/athletestats-dignmqro.css",
@@ -106,14 +151,39 @@
       "size": 10496
     },
     {
+      "path": "/assets/coachdashboardpage-bg0mkos8.js",
+      "sha": "35361a29cc71ab75b8d524f62ed45fc065f0715e",
+      "size": 36824
+    },
+    {
       "path": "/assets/coachdashboardpage-chrq6xej.js",
       "sha": "2bd553a48f6db78c216c5c7d9cd3052b5ccde9c0",
       "size": 37055
     },
     {
+      "path": "/assets/coachdemo-cuwrtei8.css",
+      "sha": "c941250222a76e740cf816fd543b1ddadc6df7a2",
+      "size": 2538
+    },
+    {
+      "path": "/assets/coachdemo-dgnkpnvq.js",
+      "sha": "b54acc2490b7dd3f065579d1b299935c9c3ef870",
+      "size": 6740
+    },
+    {
       "path": "/assets/coachdetail-crqt-3m_.js",
       "sha": "c3b1c64b00bd584e8e82a9d858356cbb1378fda4",
       "size": 3668
+    },
+    {
+      "path": "/assets/coachdetail-oo-ej9ef.js",
+      "sha": "f06e8e3966491317c2e0a910d486d90d48612624",
+      "size": 4556
+    },
+    {
+      "path": "/assets/data-bbfoaeal.js",
+      "sha": "a841f799227b49c2933f9c3f07d54d7512771764",
+      "size": 17197
     },
     {
       "path": "/assets/data-uvasujat.js",
@@ -151,9 +221,19 @@
       "size": 4634
     },
     {
+      "path": "/assets/drilldashboard-cfigfjhv.js",
+      "sha": "ec24962950cbcf15ce3599f19e826c49083e2d3c",
+      "size": 4639
+    },
+    {
       "path": "/assets/drilldetail-c2do8g9u.js",
       "sha": "099cd2c89c9f635892b81ee724820c90c0224d26",
       "size": 5685
+    },
+    {
+      "path": "/assets/drilldetail-zu30u-d0.js",
+      "sha": "10a9f3d8aa3477a86861c9e794f269ac5238841f",
+      "size": 5690
     },
     {
       "path": "/assets/drillform-4utmlknd.js",
@@ -161,9 +241,24 @@
       "size": 17540
     },
     {
+      "path": "/assets/drillform-bjuwdcmw.js",
+      "sha": "47bef9b84356ff577df26020162396a6952390b0",
+      "size": 17545
+    },
+    {
+      "path": "/assets/drilllibrary-bdqxv65q.js",
+      "sha": "3782c512933827b48d59fcd9ff97e69437830a84",
+      "size": 5016
+    },
+    {
       "path": "/assets/drilllibrary-dtbw4ieu.js",
       "sha": "1dad440f89465ad63aac8400c48970bdd568b7a3",
       "size": 5011
+    },
+    {
+      "path": "/assets/drillsharepage-b8w_fv8t.js",
+      "sha": "64027f19815f2f3d5f22afdbf1bdf086d733e455",
+      "size": 38694
     },
     {
       "path": "/assets/drillsharepage-cwtdml-s.css",
@@ -181,6 +276,11 @@
       "size": 4540
     },
     {
+      "path": "/assets/feedpage-b44bkfbf.js",
+      "sha": "e9e861c973df9dbe2b2b2b6f7ee5d70fc73841e5",
+      "size": 26812
+    },
+    {
       "path": "/assets/feedpage-cm50ztlq.js",
       "sha": "266213d3fc559c2a8859e92a276f49c00bb591b4",
       "size": 26670
@@ -189,6 +289,21 @@
       "path": "/assets/feedpage-iidu16n6.css",
       "sha": "959cc02e5d618312290f3d23b30700e1894f4329",
       "size": 16407
+    },
+    {
+      "path": "/assets/feedpage-wybxi4ll.css",
+      "sha": "16282dc619cca0bea93f3fb38a632d431979eb7e",
+      "size": 16591
+    },
+    {
+      "path": "/assets/figure-8-c2qwramp.mp4",
+      "sha": "d970067b048fb48de204b49aa181cac457e95a4b",
+      "size": 1667926
+    },
+    {
+      "path": "/assets/figure-8-sgvchadn.jpg",
+      "sha": "c211d0d0f80c50251d2b2da1025648ec87b8c5c2",
+      "size": 115215
     },
     {
       "path": "/assets/firebase-cuzwzjkv.js",
@@ -206,9 +321,19 @@
       "size": 192527
     },
     {
+      "path": "/assets/homepage-c39tqaps.css",
+      "sha": "9f4440aeacb53652034e529947635004b1ba20bb",
+      "size": 60926
+    },
+    {
       "path": "/assets/homepage-dixdbohp.css",
       "sha": "e1895073bd5787fa7a835962fef6a0096b6255ce",
       "size": 32744
+    },
+    {
+      "path": "/assets/homepage-gowi-05z.js",
+      "sha": "b2c60f42bbff24e7e6654c93f4c10577debb7884",
+      "size": 181011
     },
     {
       "path": "/assets/identity-bw64wvvm.js",
@@ -226,6 +351,11 @@
       "size": 798
     },
     {
+      "path": "/assets/index-dmwsbisp.js",
+      "sha": "3026f747ef8c792c967bd6c74b3fa3d54d4ff9d0",
+      "size": 234601
+    },
+    {
       "path": "/assets/index-ue68kfeb.js",
       "sha": "1be69d5a1f09a437a8b06f085a573d0b3ea11c42",
       "size": 234286
@@ -241,9 +371,19 @@
       "size": 25395
     },
     {
+      "path": "/assets/landingpage-cz-qndn5.js",
+      "sha": "8d05bebb98c6bfc64dbd56c336761b2e3f5263db",
+      "size": 25269
+    },
+    {
       "path": "/assets/legacy-roster-bopdureo.js",
       "sha": "c95348c05c755b86de20007ef44ce79d3bfa6e00",
       "size": 328
+    },
+    {
+      "path": "/assets/loaders-cdt-xnyn.js",
+      "sha": "54d8e03d53be2a36ebd323694413e8645f903ef4",
+      "size": 16764
     },
     {
       "path": "/assets/loaders-ujlz4czi.js",
@@ -251,9 +391,19 @@
       "size": 17192
     },
     {
+      "path": "/assets/monitoraccounts-ctxtenkv.js",
+      "sha": "9dac2905b63beca3cc625c0d47a3520c6d1a21fd",
+      "size": 14010
+    },
+    {
       "path": "/assets/monitoraccounts-d44sc-s9.js",
       "sha": "1ca8766e3ff93f38f1ce42d417783b9c87985ea5",
       "size": 6547
+    },
+    {
+      "path": "/assets/mount-c_jt4vlk.js",
+      "sha": "60b8e8cd537f83b29d346aa7c92e185b0a162b92",
+      "size": 851678
     },
     {
       "path": "/assets/mount-c_v0ngis.js",
@@ -266,9 +416,29 @@
       "size": 152
     },
     {
+      "path": "/assets/movementdemo-d2vx3wsx.js",
+      "sha": "1f9b9a395fef60be6aeea06247f55f4264c3de77",
+      "size": 443665
+    },
+    {
+      "path": "/assets/movementdemo-dpnzfqba.css",
+      "sha": "2f7d7369683b1c1b0a717c823b34753b9829ad80",
+      "size": 9135
+    },
+    {
+      "path": "/assets/navigation-c7o7js1e.js",
+      "sha": "ffdc242d5a72016ec2b45e9b791f9ce35936b9ba",
+      "size": 770
+    },
+    {
       "path": "/assets/notfoundpage-bhp3j_wx.css",
       "sha": "77fb13604cc8a59ac75e1426bf65cb145fc5d9b8",
       "size": 1095
+    },
+    {
+      "path": "/assets/notfoundpage-c2go_ncl.js",
+      "sha": "243d7c8122b695e76333afbe1f2b66e5186ddcd5",
+      "size": 1350
     },
     {
       "path": "/assets/notfoundpage-d2qqhrlo.js",
@@ -291,9 +461,24 @@
       "size": 15297
     },
     {
+      "path": "/assets/organizationpage-wak447pm.js",
+      "sha": "c12534b64b0e1854bef191aa17e2655776772f47",
+      "size": 17338
+    },
+    {
       "path": "/assets/personalizedprograms-bnk_2nin.js",
       "sha": "fde13d1c868e87b3ee33d983d5e1e7d98bc03eb8",
       "size": 20401
+    },
+    {
+      "path": "/assets/personalizedprograms-clpwuz9c.css",
+      "sha": "810d28c2ff84708a6fd10590459299f6975d63e5",
+      "size": 8220
+    },
+    {
+      "path": "/assets/personalizedprograms-cvwfrb5d.js",
+      "sha": "f42baa0585b65fd908d3ca69610253baab55334d",
+      "size": 34545
     },
     {
       "path": "/assets/planjobs-nv_qf3ck.js",
@@ -301,9 +486,19 @@
       "size": 1476
     },
     {
+      "path": "/assets/plannerredirect-dpgrii_f.js",
+      "sha": "1df326ed08a5ca18e3550890e6bb7c64be05f217",
+      "size": 240
+    },
+    {
       "path": "/assets/planv3-nohkhj0d.js",
       "sha": "b4b7facde0fe0341add56287f8098e9a89c305c5",
       "size": 6507
+    },
+    {
+      "path": "/assets/playerdetail-bglogg7i.js",
+      "sha": "2becd14b56c1f3109e92adf81681a2a3539e21ee",
+      "size": 15464
     },
     {
       "path": "/assets/playerdetail-dznmhbsr.js",
@@ -346,14 +541,44 @@
       "size": 3463
     },
     {
+      "path": "/assets/privacypage-dscoihqb.js",
+      "sha": "aaf85c7caa1d6dbf0b3e4488b041d06280591e06",
+      "size": 8588
+    },
+    {
+      "path": "/assets/product-demo-dszq9ptv.css",
+      "sha": "b63893d41123f7cb050c7bcc92371853670755f4",
+      "size": 20120
+    },
+    {
+      "path": "/assets/programspage-gz0mzh6y.js",
+      "sha": "d9f854f087850352a98b1894a7997c36e3294ca7",
+      "size": 1224
+    },
+    {
       "path": "/assets/reptools-d_gkryt9.js",
       "sha": "aeae83a108bd246409e5892c5e118fff311ca004",
       "size": 36183
     },
     {
+      "path": "/assets/reptools-djp1yrjt.js",
+      "sha": "863e2c0c9d41b4a45e2cdc315c7ab873cbf0fea2",
+      "size": 36252
+    },
+    {
       "path": "/assets/reptoolsdata-dd0pfkqg.js",
       "sha": "3b523538ced92f7bf7565b592bb53809187bb981",
       "size": 18090
+    },
+    {
+      "path": "/assets/reptoolsdata-m2ysxdeu.js",
+      "sha": "8550ab3f10b28498ef849231ac048920a864f43e",
+      "size": 18090
+    },
+    {
+      "path": "/assets/results-b3ouuuep.js",
+      "sha": "6dd9a4048a02d88ec61b21d49221d7b7a5123a85",
+      "size": 777
     },
     {
       "path": "/assets/results-dfo07ssh.js",
@@ -366,14 +591,34 @@
       "size": 716
     },
     {
+      "path": "/assets/rosterpage-beyuz_si.js",
+      "sha": "03d28b10d89d04eaf7dffa97de14e6500eed8026",
+      "size": 12489
+    },
+    {
       "path": "/assets/rosterpage-eaxhport.js",
       "sha": "df1b3179d66c2ffae11869aac913de3e69226e8b",
       "size": 12331
     },
     {
+      "path": "/assets/staffinvitepage-cks_qa1n.js",
+      "sha": "a495b884998b1eb1f23d6add10fe47abd64de81e",
+      "size": 4705
+    },
+    {
       "path": "/assets/staffinvitepage-dl14wfdk.js",
       "sha": "396a31f019553a78b181c23a6974dea82b6b99cf",
       "size": 4700
+    },
+    {
+      "path": "/assets/techniquedemo-bii80dqv.css",
+      "sha": "66e84f19625cd070784c8fb24d7137db0914bc92",
+      "size": 9075
+    },
+    {
+      "path": "/assets/techniquedemo-jb6utvli.js",
+      "sha": "93f6d512de5377ba4d30d8e4479d63b5c8a56680",
+      "size": 55642
     },
     {
       "path": "/assets/training-jey8eent.js",
@@ -391,9 +636,49 @@
       "size": 278
     },
     {
+      "path": "/assets/use-body-background-n-kho_ff.js",
+      "sha": "4d903810e3fca16b6cc086ac7f26fba62e3bdec4",
+      "size": 278
+    },
+    {
       "path": "/assets/use-theme-color-1x-hgu1d.js",
       "sha": "f50ea88ea4e45c700507f79258508ccacdc6e941",
       "size": 409
+    },
+    {
+      "path": "/assets/use-theme-color-dxhwqjdv.js",
+      "sha": "a67f0323ad01d178845190508113803b2bcbfd84",
+      "size": 409
+    },
+    {
+      "path": "/assets/useaccountload-dqc61lzp.js",
+      "sha": "34dbfaf055e14dba00eed8ff1dd9159171201226",
+      "size": 738
+    },
+    {
+      "path": "/assets/wall-pass-cr28h0oz.mp4",
+      "sha": "630a337e92b24321919aff3bab4a191302e5fe32",
+      "size": 354260
+    },
+    {
+      "path": "/assets/wall-pass-ddpr7fzx.jpg",
+      "sha": "362ed5bd53368802dff696c14638f5858b2e293d",
+      "size": 103063
+    },
+    {
+      "path": "/assets/workoutdemo-bt49u0yr.css",
+      "sha": "9b29b66504c4463f1fa6fbb68a5e2f2e27cace4b",
+      "size": 1923
+    },
+    {
+      "path": "/assets/workoutdemo-crd_-l0j.js",
+      "sha": "ab871cc83166940f65d2811be6e2ad7d9322537c",
+      "size": 47814
+    },
+    {
+      "path": "/assets/workouteditor-dsu951zp.js",
+      "sha": "8b701c52ef6be7d003b83c439dffeab8d12e818f",
+      "size": 40138
     },
     {
       "path": "/assets/workouteditor-ydrktdaa.js",

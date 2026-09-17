@@ -9,18 +9,20 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 as `6aab9fbaa73be75422324ba4`.
+The latest release was published September 17, 2026 at 1:33:55 AM PDT as
+`6aaba570721b0d41e0eabf90`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/COACHES_PAGE_PRODUCTION.json).
+[the latest production receipt](deployment/VACAVILLE_WEBSITE_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
-**Website follow-up prepared; production release pending:** canonical account
-hierarchy and reviewed personalized planning now have maintained source for
+**Website follow-up live:** canonical account
+hierarchy and reviewed personalized planning now serve
 admin, staff and athlete web surfaces. Native mobile generation is unchanged;
 the separate Insights prototype remains development-only. Read the superseding
 [Vacaville website handoff](docs/VACAVILLE_WEBSITE_UPDATE.md) for scope, workbook
-aggregates, privacy boundaries and current validation. The operator will add
-`deployment/VACAVILLE_WEBSITE_PRODUCTION.json` after live verification.
+aggregates, privacy boundaries and current validation. The release preserves the
+approved Players and Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and
+the concurrent marketing source commit `38a817e`.
 
 The two public drill clips and posters are committed in
 `app/src/pages/home/product/media/`; ordinary builds need no Firebase access.
@@ -100,8 +102,8 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 171 application/public
-files from deployment `6aa9b6f0d8faf6177db8fd97`. A fresh build downloads and
+`deployment/homepage-baseline.json`, and preserves all 228 application/public
+files from deployment `6aaba570721b0d41e0eabf90`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.
@@ -120,11 +122,18 @@ node scripts/build-application-release.mjs
 It first verifies and assembles the full preserved site, then replaces only
 `production-dist/application.html` and adds the compiled application assets.
 The deployable directory remains `production-dist/`; unrelated static files and
-the homepage retain their verified bytes. It rejects drift and asset collisions
+the homepage and Coaches page retain their verified bytes. It rejects drift and asset collisions
 and writes `.netlify/application-release-build.json`. Follow the
 [application release and validation steps](docs/VACAVILLE_WEBSITE_UPDATE.md#deliberate-application-release),
 review the exact draft output, and reconcile the preservation baseline after a
 verified release. This command does not itself deploy the website or backend.
+
+The optional `--marketing-snapshot <manifest-path>` argument pins a complete,
+verified marketing snapshot instead of publishing newly compiled marketing bytes.
+The builder validates local hashes and current production before restoring it.
+The September 17 application release used this option to retain the approved
+homepage, Coaches page and 30 marketing assets. See the handoff for manifest
+requirements; local snapshots and generated manifests stay outside Git.
 
 The latest release was a manual Netlify draft promoted after validation. Preserve
 that draft-review and verification workflow for future releases. A Git push may

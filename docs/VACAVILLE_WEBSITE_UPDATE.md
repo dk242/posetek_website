@@ -2,24 +2,26 @@
 
 ## Status
 
-**Source prepared; production deployment and final live verification are pending.**
-This handoff records the approved September 17, 2026 follow-up to the completed
-[data repair](VACAVILLE_DATA_REPAIR.md). It does not claim that the new website,
-gateway, Firestore rules or planner configuration are already serving users.
-The release operator will create
+**Live at [posetek.net](https://posetek.net).** Netlify deployment
+`6aaba570721b0d41e0eabf90` was published September 17, 2026 at 1:33:55 AM PDT
+(`2026-09-17T08:33:55.137Z`), using application source `1cc6637`.
+This is the approved follow-up to the completed [data repair](VACAVILLE_DATA_REPAIR.md).
+The gateway, Firestore rules and personalized configuration are also live; gateway
+revision `gatewayweb43b9da983c41` serves the updated backend. See
 [`deployment/VACAVILLE_WEBSITE_PRODUCTION.json`](../deployment/VACAVILLE_WEBSITE_PRODUCTION.json)
-after verification, with the actual source, deployment and rules receipts.
+for the complete deployment, verification and recovery receipts.
 
-The latest confirmed homepage receipt remains
-[`DRILL_VIDEO_COACH_PRODUCTION.json`](../deployment/DRILL_VIDEO_COACH_PRODUCTION.json)
-until a newer verified receipt is recorded. Historical deployment, migration and
-planner documents remain records of their original releases. This document
+The homepage, `/coaches` entry and 30 marketing assets retain the exact approved
+bytes from marketing deployment `6aab9fbaa73be75422324ba4`. Concurrent marketing
+commit `38a817e` remains in the shared history and source. Historical deployment,
+migration and planner documents remain records of their original releases. This document
 supersedes their admin-only personalized-preview rollout instructions for the
 approved website update described below.
 
 ## Workbook reconciliation
 
-The updated workbook is saved in the operator's OneDrive as **Operations Updated.xlsx**.
+The updated workbook is saved in the operator's OneDrive Operations folder as
+**PoseTek_Testing_Roster_Audit_2026-09-16_Updated.xlsx**.
 It preserves existing contact information, notes and historical audit sheets.
 The roster contains 36 athletes: 16 girls and 20 boys. Its current testing
 classifications are:
@@ -94,7 +96,7 @@ these four capabilities**, expressed explicitly as `dailyLimitPolicy: "unlimited
 with `enabled: true`. This does not disable authentication, membership checks,
 global/feature switches, operation ownership, concurrency protection or limits on
 other capabilities. Missing or invalid personalized configuration fails closed.
-Actual production configuration readback belongs in the forthcoming receipt.
+Production configuration readback is recorded in the production receipt.
 
 ## Backend and privacy boundaries
 
@@ -117,8 +119,7 @@ Drafts, draft views and contexts remain server-written. The per-athlete
 competing and retried operations without granting a client authority to activate
 or overwrite plans. Personalized quota/accounting uses stable operation identity
 for retries. Backend tests and Firestore emulator tests cover these boundaries;
-their final results and serving revisions must be recorded before marking the
-release verified.
+their results and serving revisions are recorded in the production receipt.
 
 ## Deliberate application release
 
@@ -131,6 +132,21 @@ node --test scripts/application-release.test.mjs
 node scripts/build-application-release.mjs
 ```
 
+For an application release that must retain an already approved marketing build,
+the optional `--marketing-snapshot` argument accepts a verified local manifest:
+
+```powershell
+node scripts/build-application-release.mjs --marketing-snapshot .netlify/approved-marketing-snapshot.json
+```
+
+The example path must contain an operator-prepared manifest with its deployment
+ID, absolute source directory, complete page/asset paths, sizes and SHA-1 hashes,
+and served-path hashes. The builder checks the local bytes and current production
+marketing before restoring them. It rejects missing coverage, path escapes,
+symbolic links and case-insensitive conflicts. This release used that option to
+preserve the approved Players and Coaches pages. Keep local snapshot locations
+and generated manifests out of Git.
+
 [`build-application-release.mjs`](../scripts/build-application-release.mjs) first
 runs the existing guarded homepage build. That build verifies the live pinned
 application and assembles the complete public output. The application release
@@ -139,17 +155,21 @@ then runs Vite, copies only the newly compiled `dist/assets/` files into
 the compiled entry plus the existing homepage navigation bridge. It does not run
 the legacy file-copy step or publish arbitrary repository-root files.
 
-The builder rejects baseline drift and conflicting asset names. It verifies that
-the homepage, existing assets and unrelated static files remain unchanged; only
-the application entry is intentionally replaced. Its local build manifest is
+The builder rejects baseline drift and conflicting asset names, including
+case-insensitive collisions. It verifies that the homepage, Coaches page,
+existing assets and unrelated static files remain unchanged; only the application
+entry is intentionally replaced. Identical assets already present in the baseline
+are reused. Its local build manifest is
 `.netlify/application-release-build.json`. The complete deployable directory is
 **`production-dist/`**, not the repository root, `dist/` or `marketing-dist/`.
 
 Ordinary `node scripts/build-production.mjs` remains the homepage-preservation
 path and does not include fresh application source. Do not disable its
-live-application guard. After a verified application release, deliberately
-reconcile the preservation baseline to the new serving application before the
-next ordinary homepage release.
+live-application guard. The current baseline is reconciled to deployment
+`6aaba570721b0d41e0eabf90` and contains **228 application/public files**. It includes
+the updated application and 57 genuinely new asset paths; compiled-output asset
+counts also include reused paths. Future application releases must deliberately
+reconcile this baseline again before an ordinary homepage release.
 
 Review a Netlify draft built from this exact output before promoting it. Verify
 account navigation, each authorized web planner role, draft lifecycle behavior,
@@ -158,15 +178,17 @@ Insights prototype. Deploy gateway/rules/configuration in a coordinated order
 with readback; a website deployment alone does not enable the new permissions.
 Record the actual releases and recovery instructions in the production receipt.
 
-## Validation recorded so far
+## Recorded release validation
 
 | Check | Recorded result |
 | --- | --- |
-| App test inventory | 758 expected tests. The preceding full run passed 757 and exposed one outdated navigation assertion; the updated three-test navigation suite passed. A final full-suite receipt is pending. |
-| Focused hierarchy, roster, navigation, organization and editor regression selection | 51 passed. These tests overlap the app suite and are not an additional 51 tests to add to its total. |
-| TypeScript | Passed after the hierarchy and navigation changes. |
-| Targeted hierarchy diff checks | Passed. |
-| Integrated browser review, backend/rules validation and production readback | Pending final release receipts. |
+| Frontend | 811 tests passed across 59 files; TypeScript passed. Focused selections overlap this total. |
+| Gateway | 1,353 tests passed in each of two runs; six private-fixture tests were explicitly skipped. |
+| Firestore authorization | 205 emulator assertions and seven live permission checks passed. |
+| Release composition, navigation and snapshot checks | 26 passed, including 11 application-release checks covering case-insensitive asset overlap. |
+| Published inventory | 261 Netlify files, including all 260 local artifact files and one platform-generated metadata file. |
+| Marketing preservation | Homepage, Coaches entry and 30 marketing assets match the approved marketing release exactly. |
+| Live browser | Fresh manager sign-in showed all four teams and enabled the authorized six-player batch. No plan-generation or activation request was submitted. Further browser and preservation-build details are in the production receipt. |
 
 Tests include migrated players with stale legacy pointers, shared coach/team
 assignments, absent or malformed staff membership, rosters beyond the global

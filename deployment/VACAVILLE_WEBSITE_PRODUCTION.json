@@ -1,0 +1,108 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aaba570721b0d41e0eabf90",
+  "state": "ready",
+  "publishedAt": "2026-09-17T08:33:55.137Z",
+  "publishedLocal": "September 17, 2026, 1:33:55 AM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aaba570721b0d41e0eabf90--posetek.netlify.app",
+  "artifactSourceCommit": "1cc6637",
+  "releaseMethod": "Verified Netlify preview promoted unchanged after compatible gateway, rules and capability-policy release",
+  "changes": [
+    "Canonical Admin → Organization → Coach/Team → Player hierarchy and persistent navigation context",
+    "One shared personalized website planner for admin, assigned staff and athletes; generation creates a draft, explicit review activates it",
+    "Requester-owned safe draft review views, current-access enforcement, atomic job claims and recoverable player operation leases",
+    "Explicit unlimited daily policy for the four personalized operations; native generation and unrelated limits retained"
+  ],
+  "workbook": {
+    "filename": "PoseTek_Testing_Roster_Audit_2026-09-16_Updated.xlsx",
+    "athletes": 36,
+    "girls": 16,
+    "boys": 20,
+    "fullyTested": 10,
+    "partiallyTested": 24,
+    "noSuccessfulTests": 0,
+    "noRecordedTests": 2,
+    "sourceRecords": 325,
+    "qualified": 244,
+    "noPrimary": 54,
+    "pathlessDuplicateOutputs": 27,
+    "metadataFolders": 297,
+    "acceptedRevisions": 7,
+    "sha256": "1868b8e4f546bcf49a41241cd3e77be644498727b18f23656965c0739f8d6b08",
+    "privacy": "Workbook, contacts, private evidence and source athlete identities remain outside Git"
+  },
+  "preservation": {
+    "previousApplicationBaseline": "6aa9b6f0d8faf6177db8fd97",
+    "unchangedExistingFiles": 170,
+    "applicationSha1": "6de4d042f3a1d40253ec7a9b511f924c6cf16b49",
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingSourceCommit": "38a817e",
+    "marketingFiles": 32,
+    "marketing": "Exact original homepage, Coaches page and 30 assets retained; original inventory hashes and served HTML hashes verified separately for Netlify pretty-URL normalization",
+    "newUniqueAssets": 57,
+    "applicationBaselineFiles": 228,
+    "publishedInventoryFiles": 261,
+    "matchedLocalFiles": 260,
+    "platformGeneratedConfigFiles": 1,
+    "nativeMobile": "No source/build/deployment changes; legacy generation and existing saved plans/logs/reservations retained"
+  },
+  "backend": {
+    "verifiedAt": "2026-09-17T08:16:29.021Z",
+    "revision": "agent-gateway-web-43b9da983c41",
+    "image": "us-west1-docker.pkg.dev/kickai-69dd0/cloud-run-source-deploy/agent-gateway@sha256:b5c8afa9bbfa9c967dd3fb718b6738015b4b9bc8f8855ad99ee99ae52c175cd6",
+    "sourceArchiveSha256": "43b9da983c4160a30b370ad1cdc897867c4c4d1042fa85f77a5d360e5d171fda",
+    "cloudBuildId": "d6cc8783-9bb5-43bb-aee1-dacc985db265",
+    "ruleset": "projects/kickai-69dd0/rulesets/114a46bf-5025-4485-aeac-5e61ae516a3b",
+    "rulesSha256": "730065065b31a0d146096062aec7d57d713e9d839a77b3fed809a299e90b46fa",
+    "trafficPercent": 100,
+    "runtimeConfigPreserved": true,
+    "previousTrafficTagsPreserved": true,
+    "onlyCapabilityConfigChanges": [
+      "capabilities.generate_personalized_plan.dailyLimitPolicy",
+      "capabilities.assess_personalized_plan.dailyLimitPolicy",
+      "capabilities.activate_personalized_plan.dailyLimitPolicy",
+      "capabilities.discard_personalized_plan.dailyLimitPolicy"
+    ]
+  },
+  "verification": {
+    "frontend": {
+      "tests": 811,
+      "files": 59,
+      "result": "passed"
+    },
+    "backend": {
+      "tests": 1353,
+      "privateHistoryTestsSkipped": 6,
+      "environments": [
+        "local UTF-8 runtime",
+        "exact production-base container"
+      ],
+      "result": "passed"
+    },
+    "firestoreRulesAssertions": 205,
+    "livePermissionChecks": 7,
+    "releaseNavigationChecks": 26,
+    "typeScript": "passed",
+    "productionBuild": "passed; existing lazy 3D chunk warnings retained",
+    "previewHTTP": {
+      "checkedFiles": 168,
+      "applicationRoutes": 8,
+      "coachesRoutes": 2,
+      "homepageAndCoachesUnchanged": true
+    },
+    "browser": "Hosted preview admin sign-in, legacy planner redirect with preserved selection, canonical Daniel six-player roster and player return context; production fresh manager sign-in, all four teams and six-player planner batch availability; desktop and 390px responsive viewport with no horizontal overflow or captured errors",
+    "productionPlanRequests": 0,
+    "limits": "Generation, revocation and draft lifecycle mutations exercised with synthetic fixtures; production smoke was read-only. Six private historical replay tests require excluded private data. Physical iOS/Safari was not exercised.",
+    "futureMarketingBuild": "Passed: ordinary build preserved all 228 files from the released application baseline"
+  },
+  "rollback": {
+    "websiteDeployId": "6aab9fbaa73be75422324ba4",
+    "websiteUrl": "https://6aab9fbaa73be75422324ba4--posetek.netlify.app",
+    "gatewayRevision": "agent-gateway-personalized-b31a53817d5c",
+    "ruleset": "projects/kickai-69dd0/rulesets/212d07e3-9f21-4652-bc56-4ecb1fc5f62e",
+    "policy": "Restore only the four captured capability fields with current-update preconditions; coordinate website/gateway/rules rollback and preserve all drafts, plans and athlete data",
+    "instructions": "services/agent-gateway/WEB_PLANNER.md",
+    "privateGuardedReceiptDirectory": ".netlify/personalized-web-release/"
+  }
+}

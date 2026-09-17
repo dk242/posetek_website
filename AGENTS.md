@@ -11,10 +11,14 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aab9fbaa73be75422324ba4`, published
-September 17, 2026 at 1:10:47 AM PDT. It adds `/coaches` and shared Players / Coaches
-navigation while retaining the player homepage and approved drill demonstrations.
-Read `deployment/COACHES_PAGE_PRODUCTION.json` for the current receipt,
+The latest recorded production release is `6aaba570721b0d41e0eabf90`, published
+September 17, 2026 at 1:33:55 AM PDT. It publishes the canonical account hierarchy
+and reviewed personalized web planner while preserving the exact Players and
+Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and concurrent source
+commit `38a817e`. Gateway, rules and personalized configuration are live; native
+mobile generation is unchanged. Read `deployment/VACAVILLE_WEBSITE_PRODUCTION.json`
+for the current receipt, `docs/VACAVILLE_WEBSITE_UPDATE.md` for the web rollout,
+`deployment/COACHES_PAGE_PRODUCTION.json` for the prior marketing receipt,
 `deployment/COACHES_PAGE_UPDATE.md` for the tailored team service and sample data,
 `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested annotations, and
 `deployment/SCROLLING_HOMEPAGE_UPDATE.md` for recovery and earlier release decisions.
@@ -30,16 +34,23 @@ At the initial September 15 review, GitHub main was older than the live homepage
 The user chose the deployed site as the reference. Recovered modules have provenance
 beside their code; the other computer's original authored source remains unavailable.
 The unchanged deployment `6aa9b6f0d8faf6177db8fd97` remains the tabbed comparison
-reference and preserved-application baseline. On a fresh clone, run
+reference. The current application baseline instead pins the September 17 release
+in `deployment/homepage-baseline.json`. On a fresh clone, run
 `node scripts/capture-deployed-reference.mjs` before using either preview server.
 The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd97/`.
 
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The production build preserves 171 application/public assets byte-for-byte,
+port 4173. The ordinary production build preserves 228 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
+
+Deliberate application releases use `node scripts/build-application-release.mjs`.
+Its optional `--marketing-snapshot` argument accepts a verified manifest to retain
+approved marketing bytes, as used for the current release. Follow the web handoff
+for preparation, preview, verification and baseline reconciliation; keep local
+snapshots and generated output outside Git.
 
 Homepage work primarily belongs in `app/src/pages/home/`; root `index.html`
 contains the player entry and metadata. Coaches source is in `app/src/pages/coaches/`

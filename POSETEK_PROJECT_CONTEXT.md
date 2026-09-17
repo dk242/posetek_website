@@ -6,7 +6,14 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Vacaville website follow-up: source prepared, release pending
+### Current release: Vacaville account hierarchy and personalized web planning
+
+Deployment `6aaba570721b0d41e0eabf90` is live at https://posetek.net, published
+September 17, 2026 at 1:33:55 AM PDT (`2026-09-17T08:33:55.137Z`) from application
+source `1cc6637`. The gateway, Firestore rules and personalized configuration are
+also live; backend serving revision is `gatewayweb43b9da983c41`. The complete
+release and recovery record is
+[`deployment/VACAVILLE_WEBSITE_PRODUCTION.json`](deployment/VACAVILLE_WEBSITE_PRODUCTION.json).
 
 The approved September 17 follow-up adds a canonical organization/staff/team
 account hierarchy and one reviewed personalized-planner workflow across admin,
@@ -17,21 +24,33 @@ roster mirrors. The separate Insights prototype remains development-only.
 The reconciled workbook retains 36 athletes (16 girls, 20 boys): 10 fully tested,
 24 partially tested and 2 with no recorded tests; none are classified as having
 no successful tests. Its audit preserves 325 source records and prior contacts,
-notes and historical sheets. Private workbook contents remain outside Git.
+notes and historical sheets. The final OneDrive Operations workbook is
+`PoseTek_Testing_Roster_Audit_2026-09-16_Updated.xlsx`; private contents remain outside Git.
 
 Web users explicitly review and activate drafts. The four personalized
 capabilities use an explicit unlimited daily policy, while authorization,
 feature gates, private-context boundaries and operation ownership remain enforced.
-Native mobile `generate_training_plan` behavior is unchanged. This is prepared
-source, not a claim of a production website, gateway, rules or config release.
+Native mobile `generate_training_plan` behavior is unchanged. Release verification
+did not submit plan-generation or activation requests.
 
 Read [`docs/VACAVILLE_WEBSITE_UPDATE.md`](docs/VACAVILLE_WEBSITE_UPDATE.md) for the
 superseding web rollout contract, validation status and guarded application
 release command. `node scripts/build-application-release.mjs` creates the complete
 `production-dist/` artifact; the ordinary homepage build still preserves the
-pinned application. The operator will create
-`deployment/VACAVILLE_WEBSITE_PRODUCTION.json` after actual release verification.
-Preserve existing receipts as historical records.
+pinned application. The optional `--marketing-snapshot` manifest was used here
+to retain exact approved homepage, Coaches entry and 30 marketing asset bytes
+from `6aab9fbaa73be75422324ba4`. Concurrent marketing commit `38a817e` remains in
+the shared source and history.
+
+The published inventory contains 261 files: all 260 local artifact files plus
+platform-generated metadata. The reconciled preservation baseline contains 228
+application/public files, including 57 genuinely new asset paths; compiled asset
+counts also include reused paths. Frontend validation passed 811 tests across 59
+files and TypeScript. The gateway passed 1,353 tests in each of two runs with six
+explicit private-fixture skips; authorization checks passed 205 emulator
+assertions and seven live permission checks. The production receipt records the
+final release-helper counts and exact live browser/preservation checks. Preserve
+existing receipts as historical records.
 
 ### Vacaville ownership and organization access repair
 
@@ -79,12 +98,12 @@ application output. Preview with the Vite dev server at `/feed?preview=1`; read
 checks, provenance and the release boundary. The normal dev app uses its existing
 cloud Firebase configuration unless a developer explicitly changes it.
 
-The source handoff does not deploy frontend/backend or modify production data.
-The homepage production build still enforces and preserves its 171-file application
-baseline. A future application release needs a separate full application review
-and deliberate baseline reconciliation.
+That source handoff did not deploy frontend/backend or modify production data;
+its 171-file preservation baseline was historical. The later application release
+above reconciles the current baseline to 228 files. Future application releases
+still need a full application review and deliberate baseline reconciliation.
 
-### Current revision: public coaches and clubs page
+### Previous marketing release: public coaches and clubs page
 
 Deployment `6aab9fbaa73be75422324ba4` was published September 17, 2026 at
 1:10:47 AM PDT (08:10:47.595 UTC). `/coaches` is a separate marketing entry,
@@ -373,11 +392,12 @@ Port 4173 remains the unchanged September 15 tabbed reference. See the
 [production receipt](deployment/SCROLLING_HOMEPAGE_PRODUCTION.json) for publication
 and verification details. Live HTTP and published-file checks passed.
 
-## Previous deployed reference, rollback, and application baseline
+## Historical September 15 reference and application baseline
 
 - Previous production/reference deployment: `6aa9b6f0d8faf6177db8fd97`,
   “Compact interactive homepage preview.” It remains unchanged as the tabbed
-  comparison reference, rollback target, and preserved-application baseline.
+  comparison reference. Its rollback and baseline roles below describe that
+  historical release; use the current production receipt for recovery now.
 - Published: September 15, 2026, 2:44:08 PM PDT (21:44:08 UTC).
 - Pinned URL: https://6aa9b6f0d8faf6177db8fd97--posetek.netlify.app
 - Netlify reports no linked commit and no source archive for this release.
@@ -398,13 +418,13 @@ and verification details. Live HTTP and published-file checks passed.
   Workout (sample intake), and AI Coach (sample profile/questions/answer).
   No form was submitted, account used, or data changed.
 
-## Production reconciliation
+## Historical production reconciliation (September 15)
 
 During initial preparation, the old production baseline stopped the build with:
 `Production application changed; reconcile homepage-baseline.json with its latest deployment.`
 That mismatch was resolved for the authorized scrolling release using the full
 Netlify file inventory for `6aa9b6f0d8faf6177db8fd97`, not the partial 88-file
-browser-reference capture. `deployment/homepage-baseline.json` now specifies
+browser-reference capture. `deployment/homepage-baseline.json` then specified
 `applicationPath: "/application.html"` and 171 preserved application/public files.
 All 171 retained files matched their pinned SHA-1 hashes and sizes. The application
 entry and existing navigation bridge remain at their original paths without
@@ -517,20 +537,21 @@ npm --prefix app run build:marketing
 ```
 
 The production command is `node scripts/build-production.mjs`. In the current
-release architecture it verifies the live app against the baseline, preserves
-171 application/public files, serves the preserved application through `/application.html`, and
+release architecture it verifies the live app against the September 17 baseline,
+preserves 228 application/public files, serves the preserved application through `/application.html`, and
 adds the isolated homepage at `/` and `/index.html` with assets under
 `/marketing/assets/`. Output is `production-dist`. The ordinary application build
 outputs `dist` and is a different path; editing app source alone does not replace
 the preserved application in a homepage release.
 
-Do not publish the repository root as if it were the old static site. The verified
+Do not publish the repository root as if it were the old static site. For the
+historical September 15 scrolling release, the verified
 `production-dist` artifact was uploaded as a draft, reviewed, then promoted without
 rebuilding to deployment `6aa9fd38c6863f74b02380e9`. No backend or authenticated data
 change was made. Source was uncommitted at that manual release; it is now included
 in the repository handoff together with the later annotation update.
 
-Release verification (build, hosted draft, and production):
+Historical September 15 scrolling-release verification (build, hosted draft, and production):
 
 - Production assembly passed with all 171 preserved files verified.
 - Five baseline integration tests and six navigation tests passed; the baseline
@@ -572,7 +593,10 @@ Initial preparation verification (before the scrolling update):
 
 ## Context documents and precedence
 
-1. `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json`: latest production receipt;
+1. `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`:
+   current application/backend release, validation, privacy and recovery.
+   `deployment/COACHES_PAGE_PRODUCTION.json` records the preserved marketing release.
+   `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json` is a historical viewer receipt;
    `deployment/VIEWER_DESIGN_REFERENCE.md` records the viewer design decisions.
    `deployment/ANNOTATION_UPDATE_PRODUCTION.json` is the historical annotation
    release; `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` records all nine requests.
