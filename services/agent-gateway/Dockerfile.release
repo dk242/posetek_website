@@ -1,0 +1,8 @@
+# Preserve the dependency/runtime layers of the verified serving gateway.
+# A future dependency refresh should update this digest as a separate release.
+FROM us-west1-docker.pkg.dev/kickai-69dd0/cloud-run-source-deploy/agent-gateway@sha256:3cdf51ccfaf0b77ed96cb40131dbb49e900f9db3892954b70fa10f28d6985caa
+WORKDIR /app
+COPY gateway/ gateway/
+COPY knowledge/ knowledge/
+COPY main.py main.py
+CMD ["python", "main.py"]

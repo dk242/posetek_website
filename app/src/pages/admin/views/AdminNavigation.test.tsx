@@ -13,12 +13,15 @@ describe("combined admin navigation", () => {
     expect((html.match(/class="admin-nav-short"/g) ?? []).length).toBe(5);
     expect(html).toContain('aria-label="Technique review"');
   });
-  it("offers both planners and the saved kick review workspace from home", () => {
+  it("offers one personalized planner and the saved kick review workspace from home", () => {
     const html = renderToStaticMarkup(<MemoryRouter><AdminHome /></MemoryRouter>);
-    for (const path of ["programs", "programs/personalized", "analysis"]) {
+    for (const path of ["programs", "analysis"]) {
       expect(html).toContain(`href="/admin/${path}"`);
     }
     expect((html.match(/href="\/admin\/analysis"/g) ?? []).length).toBe(1);
+    expect((html.match(/href="\/admin\/programs"/g) ?? []).length).toBe(1);
+    expect(html).not.toContain("programs/personalized");
+    expect(html).not.toContain("Generate programs");
   });
   it("does not expose ready-only navigation while signed out", () => {
     const html = renderToStaticMarkup(<MemoryRouter><AdminHeader ready={false} onSignOut={() => {}} /></MemoryRouter>);

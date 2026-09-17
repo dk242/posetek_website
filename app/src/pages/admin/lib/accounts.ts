@@ -19,6 +19,8 @@ import firebase, { auth, db } from "../../../lib/firebase";
 import { resolveEligibility } from "../../../lib/contracts/types";
 import type { Position, TechnicalEligibility } from "../../../lib/contracts/types";
 import { playerSignup } from "./signup";
+import { getClubContext } from "../../../lib/organization-data";
+import { buildClubHierarchy, hasClubIdentity, staffName } from "./accountHierarchy";
 
 export interface OrganizationRow {
   id: string;
@@ -47,6 +49,9 @@ export interface CoachRow {
   organizationId: string | null;
   organizationCode: string | null;
   maxDrillDifficulty: number | null;
+  organizationRole?: "manager" | "coach";
+  organizationStatus?: string;
+  teamIds?: string[];
 }
 
 export interface PlayerRow {
@@ -123,39 +128,34 @@ export async function loadTeams(): Promise<TeamRow[]> {
 }
 
 /**
- * The athletes of one club team: every indexed player whose `teamId` names the
- * team, plus any id on the team's `playerIds` projection that the capped index
- * missed (fetched individually). Both relations exist in real data.
+ * Canonical ownership is authoritative even when roster projections are stale.
+ * The optional index is retained for callers compiled against the earlier API.
  */
-export async function loadTeamPlayers(team: TeamRow, index: PlayerRow[]): Promise<PlayerRow[]> {
-  const byId = new Map<string, PlayerRow>();
-  for (const player of index) {
-    if (player.teamId === team.id && player.organizationId === team.organizationId) byId.set(player.id, player);
-  }
-  const missing = team.playerIds.filter(id => !byId.has(id));
-  const docs = await Promise.all(missing.map(id => db.collection("players").doc(id).get().catch(() => null)));
-  for (const doc of docs) {
-    if (doc?.exists) byId.set(doc.id, playerRow(doc.id, doc.data()));
-  }
-  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+export async function loadTeamPlayers(team: TeamRow, _index?: PlayerRow[]): Promise<PlayerRow[]> {
+  const roster = await loadOrganizationPlayers(team.organizationId);
+  if (roster.truncated) throw new Error("This organization exceeds the 2,000-athlete roster limit. Contact PoseTek to load the remaining athletes.");
+  return roster.players.filter(player => player.teamId === team.id);
+}
+
+export const CLUB_PLAYER_LIMIT = 2000;
+export async function loadOrganizationPlayers(organizationId: string) {
+  const snapshot = await db.collection("players").where("organizationId", "==", organizationId).limit(CLUB_PLAYER_LIMIT + 1).get();
+  return { players: snapshot.docs.slice(0, CLUB_PLAYER_LIMIT).map(doc => playerRow(doc.id, doc.data()))
+    .filter(player => hasClubIdentity(player) && player.organizationId === organizationId)
+    .sort((a, b) => a.name.localeCompare(b.name)), truncated: snapshot.docs.length > CLUB_PLAYER_LIMIT };
+}
+
+export async function loadClubAccountData(organizationId: string) {
+  const context = await getClubContext(organizationId);
+  if (context.role !== "admin" || context.organization?.id !== organizationId) throw new Error("PoseTek admin access is required to inspect this organization.");
+  const roster = await loadOrganizationPlayers(organizationId);
+  return { context, hierarchy: buildClubHierarchy(context, roster.players, roster.truncated) };
 }
 
 export async function loadCoaches(): Promise<CoachRow[]> {
   const snapshot = await db.collection("coaches").get();
   return snapshot.docs
-    .map(doc => {
-      const data: any = doc.data() || {};
-      return {
-        id: doc.id,
-        userUID: String(data.userUID || doc.id),
-        name: personName(data, "Coach"),
-        email: String(data.email || ""),
-        members: stringArray(data.members),
-        organizationId: refId(data.organization),
-        organizationCode: data.organizationCode ? String(data.organizationCode) : null,
-        maxDrillDifficulty: ratingOrNull(data.maxDrillDifficulty),
-      };
-    })
+    .map(coachRowFrom)
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -165,7 +165,8 @@ export function playerRow(id: string, data: any): PlayerRow {
     name: personName(data, "Athlete"),
     email: String(data?.signupEmail || data?.email || ""),
     coachId: refId(data?.coach) ?? (data?.coachUID ? String(data.coachUID) : null),
-    organizationId: (typeof data?.organizationId === "string" && data.organizationId) || refId(data?.organization),
+    organizationId: Object.prototype.hasOwnProperty.call(data || {}, "organizationId")
+      ? (typeof data.organizationId === "string" && data.organizationId ? data.organizationId : null) : refId(data?.organization),
     teamId: typeof data?.teamId === "string" && data.teamId ? data.teamId : null,
     ...playerSignup(data),
     raw: data || {},
@@ -178,23 +179,62 @@ export function playerRow(id: string, data: any): PlayerRow {
  * latter). Both relations exist in real data, so both are read.
  */
 export async function loadCoachRoster(coach: CoachRow): Promise<PlayerRow[]> {
-  const byId = new Map<string, PlayerRow>();
-  const memberDocs = await Promise.all(
-    coach.members.map(id => db.collection("players").doc(id).get().catch(() => null)),
-  );
-  for (const doc of memberDocs) {
-    if (doc?.exists) byId.set(doc.id, playerRow(doc.id, doc.data()));
-  }
-  for (const key of [coach.userUID, coach.id]) {
-    if (!key) continue;
-    try {
-      const snapshot = await db.collection("players").where("coachUID", "==", key).get();
-      snapshot.docs.forEach(doc => byId.set(doc.id, playerRow(doc.id, doc.data())));
-    } catch (error) {
-      console.warn("[admin] coachUID lookup unavailable", key, error);
+  if (coach.organizationRole && !coach.organizationId) throw new Error("This staff account has a missing organization assignment. Its legacy roster cannot identify current team access.");
+  if (coach.organizationId) {
+    const organization = await db.collection("organizations").doc(coach.organizationId).get();
+    if (coach.organizationRole || organization.data()?.schemaVersion === 2) {
+      const { context, hierarchy } = await loadClubAccountData(coach.organizationId);
+      const member = context.staff.find(entry => entry.userUID === coach.userUID);
+      if (!member || member.status !== "active") return [];
+      return member.role === "manager" ? hierarchy.players : hierarchy.coaches.find(row => row.member.userUID === coach.userUID)?.players || [];
     }
   }
+  const byId = new Map<string, PlayerRow>();
+  const memberDocs = await Promise.all(
+    coach.members.map(id => db.collection("players").doc(id).get()),
+  );
+  const include = (doc: any) => {
+    if (!doc.exists) return;
+    const player = playerRow(doc.id, doc.data());
+    if (!hasClubIdentity(player)) byId.set(doc.id, player);
+  };
+  for (const doc of memberDocs) {
+    include(doc);
+  }
+  for (const key of new Set([coach.userUID, coach.id])) {
+    if (!key) continue;
+    const snapshot = await db.collection("players").where("coachUID", "==", key).get();
+    snapshot.docs.forEach(include);
+  }
+  const references = await db.collection("players").where("coach", "==", db.collection("coaches").doc(coach.id)).get();
+  references.docs.forEach(include);
   return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export async function loadCoachAccount(coachId: string, organizationId?: string) {
+  const doc = await db.collection("coaches").doc(coachId).get();
+  const mirror = doc.exists ? coachRowFrom(doc) : null;
+  const orgId = organizationId || mirror?.organizationId;
+  if (orgId) {
+    const org = await db.collection("organizations").doc(orgId).get();
+    if (org.data()?.schemaVersion === 2) {
+      const { context, hierarchy } = await loadClubAccountData(orgId);
+      const member = context.staff.find(entry => entry.userUID === (mirror?.userUID || coachId));
+      if (!member) throw new Error("This account has no staff membership in this organization. Open Accounts to find its current assignment.");
+      const canonicalMirror = mirror?.id === member.userUID && mirror.userUID === member.userUID && mirror.organizationId === orgId ? mirror : null;
+      const assignment = hierarchy.coaches.find(entry => entry.member.userUID === member.userUID);
+      const active = Boolean(assignment || hierarchy.managers.some(entry => entry.userUID === member.userUID));
+      const coach: CoachRow = { id: member.userUID, userUID: member.userUID, name: staffName(member), email: member.email,
+        members: [], organizationId: orgId, organizationCode: null, maxDrillDifficulty: canonicalMirror?.maxDrillDifficulty ?? null,
+        organizationRole: member.role, organizationStatus: active ? "active" : member.status === "active" ? "invalid" : member.status, teamIds: member.teamIds };
+      return { coach, organization: context.organization, teams: !active ? [] : member.role === "manager" ? hierarchy.teams : assignment?.teams || [],
+        roster: !active ? [] : member.role === "manager" ? hierarchy.players : assignment?.players || [],
+        limits: hierarchy.limits, ratingEditable: active && member.role === "coach" && Boolean(canonicalMirror) };
+    }
+    if (organizationId && mirror?.organizationId && mirror.organizationId !== organizationId) throw new Error("This coach is linked to another organization. Return to Accounts to view the current assignment.");
+  }
+  if (!mirror) throw new Error("That coach account no longer exists.");
+  return { coach: mirror, organization: null, teams: [], roster: await loadCoachRoster(mirror), limits: [] as string[], ratingEditable: true };
 }
 
 /**
@@ -245,9 +285,12 @@ function coachRowFrom(doc: any): CoachRow {
     name: personName(data, "Coach"),
     email: String(data.email || ""),
     members: stringArray(data.members),
-    organizationId: refId(data.organization),
+    organizationId: Object.prototype.hasOwnProperty.call(data, "organizationId") ? refId(data.organizationId) : refId(data.organization),
     organizationCode: data.organizationCode ? String(data.organizationCode) : null,
     maxDrillDifficulty: ratingOrNull(data.maxDrillDifficulty),
+    organizationRole: ["coach", "manager"].includes(data.organizationRole) ? data.organizationRole : undefined,
+    organizationStatus: typeof data.organizationStatus === "string" ? data.organizationStatus : undefined,
+    teamIds: Array.isArray(data.teamIds) ? stringArray(data.teamIds) : undefined,
   };
 }
 

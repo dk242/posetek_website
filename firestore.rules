@@ -64,6 +64,41 @@ service cloud.firestore {
         : legacyCoachOf(pid);
     }
     function visiblePlayer(pid) { return selfPlayer(pid) || coachOf(pid) || isPosetekAdmin(); }
+    // Reviewed web plans use current authority, independently of legacy/native
+    // recording fallbacks. Private originals and contexts remain admin-only.
+    function personalizedCapability(capability) {
+      return capability in ['generate_personalized_plan', 'activate_personalized_plan',
+        'discard_personalized_plan', 'assess_personalized_plan'];
+    }
+    function personalizedLegacyCoach(pid, p) {
+      let c = get(/databases/$(database)/documents/coaches/$(request.auth.uid)).data;
+      return c.get('userUID', '') == request.auth.uid
+        && ((c.get('members', []) is list && c.get('members', []).hasAny([pid]))
+          || (p.get('organizationCode', '') != ''
+            && c.get('organizationCode', '__none__') == p.organizationCode));
+    }
+    function personalizedClubStaff(p) {
+      let member = clubMembership(p.get('organizationId', ''));
+      return activeClubMember(p.organizationId) && member.get('teamIds', null) is list
+        && (member.role == 'manager'
+          || (p.get('teamId', '') is string && p.get('teamId', '').size() > 0
+            && member.teamIds.hasAny([p.teamId])));
+    }
+    function personalizedClubIdentity(p) {
+      return (!('authenticationUID' in p) || (p.authenticationUID is string && p.authenticationUID.size() > 0))
+        && (!('userUID' in p) || (p.userUID is string && p.userUID.size() > 0))
+        && (!('authenticationUID' in p) || !('userUID' in p) || p.authenticationUID == p.userUID);
+    }
+    function personalizedActor(pid) {
+      let p = playerData(pid);
+      return signedIn()
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous'
+        && (isPosetekAdmin() || (
+          !request.auth.token.get('email', '').lower().matches('.*@posetek[.]net$')
+          && (('organizationId' in p)
+            ? (personalizedClubIdentity(p) && (strictClubSelf(pid, p) || personalizedClubStaff(p)))
+            : (legacySelfPlayer(pid) || personalizedLegacyCoach(pid, p)))));
+    }
 function isPosetekAdmin() {
   return request.auth != null
     && ('email' in request.auth.token)
@@ -176,7 +211,7 @@ match /players/{playerId}/workoutSchedule/current {
 }
 match /llmJobs/{jobId} {
   function serverOwnedFields() {
-    return ['result', 'resultRef', 'traceRef', 'usage', 'error', 'startedAt', 'completedAt', 'progress', 'engineVersion'];
+    return ['result', 'resultRef', 'traceRef', 'usage', 'error', 'startedAt', 'completedAt', 'progress', 'engineVersion', 'personalizedExecution'];
   }
   function isWellFormedPendingJob() {
     return request.resource.data.status == 'pending'
@@ -188,7 +223,7 @@ match /llmJobs/{jobId} {
       && request.resource.data.params is map
       && request.resource.data.createdAt == request.time
       && (request.resource.data.capability in ['generate_personalized_plan','activate_personalized_plan','discard_personalized_plan','assess_personalized_plan']
-        ? isPosetekAdmin() && request.resource.data.params.get('engineVersion', '') == 'personalized-v1'
+        ? personalizedActor(request.resource.data.playerId) && request.resource.data.params.get('engineVersion', '') == 'personalized-v1'
           && (request.resource.data.capability in ['generate_personalized_plan','assess_personalized_plan']
             ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow'])
               && request.resource.data.params.planVersion == 3
@@ -206,8 +241,17 @@ match /llmJobs/{jobId} {
   }
   allow create: if request.auth != null && isWellFormedPendingJob();
   allow read: if request.auth != null
-    && resource.data.requestedByUid == request.auth.uid;
+    && resource.data.requestedByUid == request.auth.uid
+    && (!personalizedCapability(resource.data.capability) || personalizedActor(resource.data.playerId));
   allow update, delete: if false;
+}
+match /players/{playerId}/personalizedPlanDraftViews/{draftId} {
+  allow read: if isPosetekAdmin() || (personalizedActor(playerId)
+    && resource.data.createdByUid == request.auth.uid);
+  allow write: if false;
+}
+match /players/{playerId}/personalizedPlanOperations/{operationId} {
+  allow read, write: if false;
 }
 match /players/{playerId}/aiConversations/{conversationId} {
 
@@ -561,9 +605,9 @@ match /drillCatalogMeta/{docId} {
     }
     match /players/{pid}/{sub}/{doc=**} {
       allow read: if (!clubPlayer(pid) || visiblePlayer(pid)) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
       allow write: if !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
     }
 
     // Kick evidence and expert-review projections (2026-09-08).

@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DragEvent } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { db } from "../../../lib/firebase";
 import { blockDoseLine } from "../../../lib/contracts/drillV2";
 import type { AthleteContext, CatalogDrill } from "../../../lib/contracts/drillV2";
@@ -26,6 +26,7 @@ import { domainLabel, isPosition } from "../../../lib/contracts/types";
 import type { BlockV3 } from "../../../lib/contracts/types";
 import { eligibilityFor, loadCoachOfPlayer, loadPlayer, loadWorkoutLogs, resolvePlayerAge } from "../lib/accounts";
 import type { PlayerRow } from "../lib/accounts";
+import { accountContext, accountPlayerPath } from "../lib/accountHierarchy";
 import { loadCatalog } from "../lib/catalog";
 import {
   MAX_BLOCKS,
@@ -68,6 +69,8 @@ interface Loaded {
 export default function WorkoutEditor() {
   const { playerId = "", planId = "", workoutId = "" } = useParams();
   const navigate = useNavigate();
+  const [query] = useSearchParams();
+  const playerPath = accountPlayerPath(playerId, accountContext(query));
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<WorkoutDraft | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -210,7 +213,7 @@ export default function WorkoutEditor() {
         generationContextRef: loaded.context.ref,
       });
       setConfirming(false);
-      navigate(`/admin/accounts/player/${playerId}`, {
+      navigate(playerPath, {
         replace: true,
         state: { saved: result.adjustmentId },
       });
@@ -229,7 +232,7 @@ export default function WorkoutEditor() {
     return (
       <div className="admin-banner danger">
         <span className="material-symbols-outlined">error</span>
-        <p>{loadError} <Link to={`/admin/accounts/player/${playerId}`}>Back to the athlete</Link>.</p>
+        <p>{loadError} <Link to={playerPath}>Back to the athlete</Link>.</p>
       </div>
     );
   }
@@ -243,7 +246,7 @@ export default function WorkoutEditor() {
   return (
     <>
       <section className="admin-heading">
-        <Link className="icon-button" to={`/admin/accounts/player/${playerId}`} aria-label="Back to the athlete">
+        <Link className="icon-button" to={playerPath} aria-label="Back to the athlete">
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>
         <div>

@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import type { PlayerRow } from "../lib/accounts";
 import SignupStatus from "./SignupStatus";
+import { accountPlayerPath } from "../lib/accountHierarchy";
+import type { AccountContext } from "../lib/accountHierarchy";
 
 export function AccountAvatar({ name }: { name: string }) {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -10,12 +12,13 @@ export function AccountAvatar({ name }: { name: string }) {
 }
 
 /** Navigation and clipboard actions are siblings, never nested interactive controls. */
-export default function PlayerRosterRow({ player, compact = false, children }: {
+export default function PlayerRosterRow({ player, compact = false, children, context }: {
   player: PlayerRow;
   compact?: boolean;
   children?: ReactNode;
+  context?: AccountContext;
 }) {
-  const path = `/admin/accounts/player/${encodeURIComponent(player.id)}`;
+  const path = accountPlayerPath(player.id, context);
   return (
     <div className={`admin-row admin-player-row${compact ? " compact" : ""}`}>
       <AccountAvatar name={player.name} />
@@ -31,7 +34,7 @@ export default function PlayerRosterRow({ player, compact = false, children }: {
         <SignupStatus registered={player.registered} signupCode={player.signupCode} playerName={player.name} />
       </div>
       <div className="admin-row-actions">
-        <Link className="quiet-button small" to={`${path}/results`} aria-label={`Results for ${player.name}`}>
+        <Link className="quiet-button small" to={accountPlayerPath(player.id, context, true)} aria-label={`Results for ${player.name}`}>
           <span className="material-symbols-outlined" aria-hidden="true">analytics</span>Results
         </Link>
         <Link className="icon-button" to={path} aria-label={`Open ${player.name}`}>

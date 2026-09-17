@@ -29,7 +29,7 @@ const PlayerDetail = lazy(() => import("./views/PlayerDetail"));
 const WorkoutEditor = lazy(() => import("./views/WorkoutEditor"));
 const AdminResults = lazy(() => import("./views/AdminResults"));
 const RepTools = lazy(() => import("./views/RepTools"));
-const GeneratePrograms = lazy(() => import("./views/GeneratePrograms"));
+const PlannerRedirect = lazy(() => import("./views/PlannerRedirect"));
 const AnalysisWorkspace = lazy(() => import("./views/AnalysisWorkspace"));
 const PersonalizedPrograms = lazy(() => import("./views/PersonalizedPrograms"));
 
@@ -93,9 +93,9 @@ export default function AdminPage() {
           <Route path="accounts/player/:playerId/results" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey" element={<AdminResults />} />
           <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
-          <Route path="programs" element={<GeneratePrograms />} />
+          <Route path="programs" element={<PersonalizedPrograms />} />
           <Route path="analysis" element={<AnalysisWorkspace />} />
-          <Route path="programs/personalized" element={<PersonalizedPrograms />} />
+          <Route path="programs/personalized" element={<PlannerRedirect />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
             element={<WorkoutEditor />}

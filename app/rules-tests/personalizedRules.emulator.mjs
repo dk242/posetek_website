@@ -1,43 +1,108 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {initializeTestEnvironment,assertFails,assertSucceeds} from '@firebase/rules-unit-testing';
-import {doc,getDoc,setDoc,serverTimestamp,collection,getDocs} from 'firebase/firestore';
-const env=await initializeTestEnvironment({projectId:'demo-personalized-planner',firestore:{rules:fs.readFileSync('firestore.rules','utf8'),host:'127.0.0.1',port:8189}});
-const admin=env.authenticatedContext('admin',{email:'staff@posetek.net',email_verified:true}).firestore();
-const athlete=env.authenticatedContext('athlete',{email:'player@example.test',email_verified:true}).firestore();
-const coach=env.authenticatedContext('coach',{email:'coach@example.test',email_verified:true}).firestore();
-const unverified=env.authenticatedContext('unverified',{email:'staff@posetek.net',email_verified:false}).firestore();
-const anon=env.unauthenticatedContext().firestore();
-let checks=0;
+import {initializeTestEnvironment, assertFails, assertSucceeds} from '@firebase/rules-unit-testing';
+import {doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where, setLogLevel} from 'firebase/firestore';
+setLogLevel('silent'); // Expected denial cases remain assertions, not noisy SDK logs.
+
+const env = await initializeTestEnvironment({projectId:'demo-personalized-planner',
+  firestore:{rules:fs.readFileSync('firestore.rules','utf8'), host:'127.0.0.1', port:8189}});
+const actors = Object.fromEntries(['admin','athlete','coach','manager','wrong','inactive','malformed','mismatch','outsider','unverified','anonymous'].map(uid => {
+  const claims = {email:`${uid}@example.test`, email_verified:true};
+  if (uid === 'admin' || uid === 'unverified') claims.email = `${uid}@posetek.net`;
+  if (uid === 'unverified') claims.email_verified = false;
+  if (uid === 'anonymous') claims.firebase = {sign_in_provider:'anonymous'};
+  return [uid, env.authenticatedContext(uid, claims).firestore()];
+}));
+const anon = env.unauthenticatedContext().firestore();
+const bodies = {
+  generate_personalized_plan:{engineVersion:'personalized-v1',planVersion:3,intake:{},timezone:'UTC'},
+  assess_personalized_plan:{engineVersion:'personalized-v1',planVersion:3,intake:{},timezone:'UTC'},
+  activate_personalized_plan:{engineVersion:'personalized-v1',draftId:'draft',comparisonToken:'opaque-token',expectedActivePlans:[]},
+  discard_personalized_plan:{engineVersion:'personalized-v1',draftId:'draft'},
+};
+let checks = 0;
+async function allowed(promise) { await assertSucceeds(promise); checks++; }
+async function denied(promise) { await assertFails(promise); checks++; }
+async function seed(write) { await env.withSecurityRulesDisabled(ctx => write(ctx.firestore())); }
+function job(uid, playerId, capability, params=bodies[capability]) {
+  return {schemaVersion:1,status:'pending',requestedByUid:uid,playerId,capability,params,createdAt:serverTimestamp()};
+}
 try {
- await env.withSecurityRulesDisabled(async context=>{
-  const db=context.firestore();
-  await setDoc(doc(db,'players/player'),{authenticationUID:'athlete',coachUID:'coach',age:15});
-  await setDoc(doc(db,'coaches/coach'),{userUID:'coach',members:['player']});
-  await setDoc(doc(db,'players/player/personalizedPlanDrafts/draft'),{status:'ready',playerId:'player'});
-  await setDoc(doc(db,'players/player/personalizedPlanDraftContexts/draft'),{private:true});
- });
- for(const sub of ['personalizedPlanDrafts','personalizedPlanDraftContexts']) {
-  await assertSucceeds(getDoc(doc(admin,`players/player/${sub}/draft`)));checks++;
-  await assertSucceeds(getDocs(collection(admin,`players/player/${sub}`)));checks++;
-  for(const db of [athlete,coach,unverified,anon]) {await assertFails(getDoc(doc(db,`players/player/${sub}/draft`)));checks++;}
-  for(const db of [admin,athlete,coach,anon]) {await assertFails(setDoc(doc(db,`players/player/${sub}/new`),{status:'ready'}));checks++;}
- }
- const params={generate_personalized_plan:{engineVersion:'personalized-v1',planVersion:3,intake:{},timezone:'UTC'},
- assess_personalized_plan:{engineVersion:'personalized-v1',planVersion:3,intake:{},timezone:'UTC'},
- activate_personalized_plan:{engineVersion:'personalized-v1',draftId:'draft',comparisonToken:'token',expectedActivePlans:[]},
- discard_personalized_plan:{engineVersion:'personalized-v1',draftId:'draft'}};
- for(const [capability,body] of Object.entries(params)) {
-  for(const [uid,db,allowed] of [['admin',admin,true],['athlete',athlete,false],['coach',coach,false],['unverified',unverified,false]]) {
-    const job={schemaVersion:1,status:'pending',requestedByUid:uid,playerId:'player',capability,params:body,createdAt:serverTimestamp()};
-    await (allowed?assertSucceeds:assertFails)(setDoc(doc(db,`llmJobs/${capability}-${uid}`),job));checks++;
+  await seed(async db => {
+    await setDoc(doc(db,'players/player'),{authenticationUID:'athlete',userUID:'athlete',coachUID:'coach',organizationCode:'legacy'});
+    await setDoc(doc(db,'coaches/coach'),{userUID:'coach',members:['player','club-player'],organizationCode:'legacy'});
+    await setDoc(doc(db,'players/club-player'),{authenticationUID:'athlete',userUID:'athlete',organizationId:'club',teamId:'girls',
+      coachUID:'outsider',organizationCode:'legacy',signupEmail:'outsider@example.test'});
+    for (const [uid, role, teamIds, status, userUID] of [
+      ['coach','coach',['girls'],'active','coach'], ['manager','manager',[],'active','manager'],
+      ['wrong','coach',['boys'],'active','wrong'], ['inactive','coach',['girls'],'inactive','inactive'],
+      ['malformed','manager','girls','active','malformed'], ['mismatch','manager',[],'active','other'],
+      ['anonymous','manager',[],'active','anonymous'],
+    ]) await setDoc(doc(db,`organizations/club/members/${uid}`),{role,teamIds,status,userUID});
+    for (const player of ['player','club-player']) {
+      await setDoc(doc(db,`players/${player}/personalizedPlanDrafts/draft`),{status:'ready',playerId:player,createdByUid:'admin'});
+      await setDoc(doc(db,`players/${player}/personalizedPlanDraftContexts/draft`),{rawCoachNote:'private',peerIdentities:['private']});
+      await setDoc(doc(db,`players/${player}/trainingPlanContexts/plan`),{rawCoachNote:'private'});
+      await setDoc(doc(db,`players/${player}/privateProfile/coachFeedback`),{text:'private'});
+      await setDoc(doc(db,`players/${player}/personalizedPlanOperations/current`),{jobId:'job',token:'server-only'});
+      for (const uid of ['admin','athlete','coach','manager']) {
+        await setDoc(doc(db,`players/${player}/personalizedPlanDraftViews/${uid}`),{schemaVersion:1,status:'ready',playerId:player,createdByUid:uid});
+      }
+    }
+  });
+  for (const player of ['player','club-player']) {
+    for (const sub of ['personalizedPlanDrafts','personalizedPlanDraftContexts','trainingPlanContexts']) {
+      const id = sub === 'trainingPlanContexts' ? 'plan' : 'draft';
+      await allowed(getDoc(doc(actors.admin,`players/${player}/${sub}/${id}`)));
+      for (const uid of ['athlete','coach','manager','outsider','unverified']) await denied(getDoc(doc(actors[uid],`players/${player}/${sub}/${id}`)));
+    }
+    await denied(getDoc(doc(actors.athlete,`players/${player}/privateProfile/coachFeedback`)));
+    for (const uid of ['admin','athlete','coach','manager']) {
+      for (const sub of ['personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations']) {
+        await denied(setDoc(doc(actors[uid],`players/${player}/${sub}/forged`),{status:'ready',createdByUid:uid}));
+      }
+    }
+    for (const [capability, params] of Object.entries(bodies)) {
+      for (const [uid, db] of Object.entries(actors)) {
+        const can = ['admin','athlete','coach'].includes(uid) || (player === 'club-player' && uid === 'manager');
+        await (can ? allowed : denied)(setDoc(doc(db,`llmJobs/${player}-${capability}-${uid}`),job(uid,player,capability)));
+      }
+      for (const paramsOverride of [{...params,engineVersion:'future'},{...params,unexpected:'field'}]) {
+        await denied(setDoc(doc(actors.admin,`llmJobs/bad-${player}-${capability}`),job('admin',player,capability,paramsOverride)));
+      }
+    }
   }
-  for(const malformed of [{...body,engineVersion:'future'},{...body,unexpected:'field'}]) {
-   await assertFails(setDoc(doc(admin,`llmJobs/bad-${capability}`),{schemaVersion:1,status:'pending',requestedByUid:'admin',playerId:'player',capability,params:malformed,createdAt:serverTimestamp()}));checks++;
+  for (const uid of ['athlete','coach','manager']) {
+    const db = actors[uid];
+    await allowed(getDoc(doc(db,`players/club-player/personalizedPlanDraftViews/${uid}`)));
+    await allowed(getDocs(query(collection(db,'players/club-player/personalizedPlanDraftViews'),where('createdByUid','==',uid))));
+    await denied(getDocs(collection(db,'players/club-player/personalizedPlanDraftViews')));
+    await denied(getDoc(doc(db,'players/club-player/personalizedPlanDraftViews/admin')));
+    await denied(getDoc(doc(db,'players/club-player/personalizedPlanOperations/current')));
   }
- }
- await assertFails(setDoc(doc(admin,'llmJobs/forged-version'),{schemaVersion:1,status:'pending',requestedByUid:'admin',playerId:'player',capability:'generate_training_plan',params:{},createdAt:serverTimestamp(),engineVersion:'personalized-v1'}));checks++;
- await assertSucceeds(setDoc(doc(athlete,'llmJobs/legacy-current'),{schemaVersion:1,status:'pending',requestedByUid:'athlete',playerId:'player',capability:'generate_training_plan',params:{planVersion:3},createdAt:serverTimestamp()}));checks++;
- assert.equal(checks,46);
- console.log(`${checks} personalized rule assertions passed; current client submission retained.`);
-} finally {await env.cleanup();}
+  await allowed(getDocs(collection(actors.admin,'players/club-player/personalizedPlanDraftViews')));
+  await denied(getDoc(doc(anon,'players/club-player/personalizedPlanDraftViews/athlete')));
+  await denied(setDoc(doc(actors.athlete,'llmJobs/forged-execution'),{
+    ...job('athlete','club-player','generate_personalized_plan'),personalizedExecution:{token:'forged'}}));
+  await denied(setDoc(doc(actors.admin,'llmJobs/forged-version'),{
+    ...job('admin','player','generate_training_plan',{}),engineVersion:'personalized-v1'}));
+  await allowed(setDoc(doc(actors.athlete,'llmJobs/native-current'),job('athlete','club-player','generate_training_plan',{planVersion:3})));
+  const coachJob = 'club-player-generate_personalized_plan-coach';
+  await allowed(getDoc(doc(actors.coach,`llmJobs/${coachJob}`)));
+  await allowed(getDocs(query(collection(actors.coach,'llmJobs'),where('requestedByUid','==','coach'),where('playerId','==','club-player'))));
+  await seed(db => setDoc(doc(db,'organizations/club/members/coach'),{userUID:'coach',role:'coach',status:'inactive',teamIds:['girls']}));
+  await denied(getDoc(doc(actors.coach,`llmJobs/${coachJob}`)));
+  await denied(getDoc(doc(actors.coach,'players/club-player/personalizedPlanDraftViews/coach')));
+  await denied(getDocs(query(collection(actors.coach,'players/club-player/personalizedPlanDraftViews'),where('createdByUid','==','coach'))));
+  await denied(setDoc(doc(actors.coach,'llmJobs/revoked'),job('coach','club-player','generate_personalized_plan')));
+  await seed(db => setDoc(doc(db,'organizations/club/members/coach'),{userUID:'coach',role:'coach',status:'active',teamIds:['girls']}));
+  await seed(db => setDoc(doc(db,'players/club-player'),{authenticationUID:'athlete',userUID:'athlete',organizationId:'club',teamId:'boys',coachUID:'coach',organizationCode:'legacy'}));
+  await denied(getDoc(doc(actors.coach,'players/club-player/personalizedPlanDraftViews/coach')));
+  await denied(getDoc(doc(actors.coach,`llmJobs/${coachJob}`)));
+  await allowed(getDoc(doc(actors.manager,'players/club-player/personalizedPlanDraftViews/manager')));
+  await seed(db => setDoc(doc(db,'players/club-player'),{authenticationUID:'athlete',userUID:'other',organizationId:'club',teamId:'girls'}));
+  await denied(getDoc(doc(actors.athlete,'players/club-player/personalizedPlanDraftViews/athlete')));
+  await denied(getDoc(doc(actors.manager,'players/club-player/personalizedPlanDraftViews/manager')));
+  assert.ok(checks > 200);
+  console.log(`${checks} personalized rule assertions passed; original draft privacy and native submission retained.`);
+} finally { await env.cleanup(); }

@@ -57,6 +57,7 @@ import {
 } from "../lib/repTools";
 import type { FrameRange, Mark, Point, ShuttleFrames, StartingSide } from "../lib/repTools";
 import { resultsPath } from "../lib/results";
+import { accountContext, accountQuery } from "../lib/accountHierarchy";
 
 type AnnotationTarget = "com" | "ball";
 type ComSource = "annotated" | "pose" | "none";
@@ -109,7 +110,7 @@ export default function RepTools() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerId, repId, drill.key, generation]);
 
-  const back = `${resultsPath(playerId, drill.key)}`;
+  const back = resultsPath(playerId, drill.key) + accountQuery(accountContext(search));
   const sessionParam = search.get("session");
 
   if (loadError) {

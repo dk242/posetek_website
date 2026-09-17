@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "source": "authored-tool-tape",
+  "note": "Explicitly authored legal tool actions and independent-check responses. Not recorded model behavior; zero token spend.",
+  "profileId": "xinjection",
+  "calls": [
+    {
+      "stage": "coach_parse",
+      "iteration": "",
+      "attempt": 0,
+      "contextSha256": "76c23161395281b203c756929cf04dd2223ca8ab657bafd6dc51df9de018ad6f",
+      "toolActions": [],
+      "result": {
+        "parsedEmphasis": [
+          {
+            "domain": "speed",
+            "direction": "more",
+            "strength": 1
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w1s1",
+      "attempt": 0,
+      "contextSha256": "6ad894098cc5d3b53b1edc4e2edfef36dd945edf131d3ec78c4d4c4459ba56fb",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w1s2",
+      "attempt": 0,
+      "contextSha256": "9e47b3aa53b65e5212431a8b7fa3248f66b36eff9287d52efcde06a187caec6b",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s1",
+      "attempt": 0,
+      "contextSha256": "69443627bc2b4afeb00511869cadb40895e5cdcb5ef1c82b44b2d43d96058427",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s2",
+      "attempt": 0,
+      "contextSha256": "ac5426e1543d5050ae5ab04ce1e7795da8aad7f05ef63eff27caa9d9a3b5a9b9",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    }
+  ]
+}

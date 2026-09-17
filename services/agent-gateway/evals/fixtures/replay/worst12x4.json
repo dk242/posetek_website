@@ -1,0 +1,1016 @@
+{
+  "schemaVersion": 1,
+  "source": "authored-tool-tape",
+  "note": "Explicitly authored legal tool actions and independent-check responses. Not recorded model behavior; zero token spend.",
+  "profileId": "worst12x4",
+  "calls": [
+    {
+      "stage": "adversarial",
+      "iteration": "w1s1",
+      "attempt": 0,
+      "contextSha256": "4f6c8889e5e0a4778cbc1f90ffcbbf1edebfd39cae8799f10995851ecaca3408",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w1s2",
+      "attempt": 0,
+      "contextSha256": "b65dada80f2d756c5e6cc7240a8ba6d54a8232390fddf1fd66112fa09741ebe2",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w1s3",
+      "attempt": 0,
+      "contextSha256": "f84dbfe110d9080939df78df3434f67d3acd7b261a15991ac56037846a9ff455",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w1s4",
+      "attempt": 0,
+      "contextSha256": "35d989fa33615bae8e0eca01263d7657a65f515a196e03ac34ba780b1800b0f6",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s1",
+      "attempt": 0,
+      "contextSha256": "f08d57151144166ac0a11db59ac296720743d14fe6b971e6a5ed7333b6fce001",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s2",
+      "attempt": 0,
+      "contextSha256": "d2d88c5a7b08b4e25c0edaee4ede28344cc09ce4845cb833fae79477b8cfbe62",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s3",
+      "attempt": 0,
+      "contextSha256": "a8bbe6980c120db44c6637cfc6cd961098d80394e89fc1fd9b23b277114e9637",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s4",
+      "attempt": 0,
+      "contextSha256": "6722cd9b15f45186b6a95fd6258a4efd351eca08c91fcacc46763e0621c403f0",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w3s1",
+      "attempt": 0,
+      "contextSha256": "5c104091bdc05e190eb77f2d5d3fd7255fabd05165a843b9bcba421d859a47a5",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w3s2",
+      "attempt": 0,
+      "contextSha256": "ff56acebe5f8e1d008b1dd710cb9ed4fcdc0e6f5cc1ec003ed361e6d42c9bc37",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w3s3",
+      "attempt": 0,
+      "contextSha256": "3ba66f2c49046a8ca8866872507a11528291a7c5d7f0d76e8c83e91a81960ecb",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w3s4",
+      "attempt": 0,
+      "contextSha256": "3cbca5aca1f28827b437645c7a394ebb1f31e28732b4b1d4e1b55f68577a1075",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w4s1",
+      "attempt": 0,
+      "contextSha256": "4fb1ec5e1ebe76933dd175ca3f21f12f5c0d17cf8976892fbe8c45ba72be293e",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w4s2",
+      "attempt": 0,
+      "contextSha256": "2bea37a5360aeb0adf47a38c3550c3a875b5f397b4d8f146eebb2b50e19aeb6a",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w4s3",
+      "attempt": 0,
+      "contextSha256": "754fddd1a1d4f3f5c5796b5d79713fa060fc09d5786f39dcda9a4c3ec5e2111a",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w4s4",
+      "attempt": 0,
+      "contextSha256": "45c4b9dfc33b6630320de2e8355f3e948936d45df976c0e455b939a9c45ebb65",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w5s1",
+      "attempt": 0,
+      "contextSha256": "b99204c0d376bd5c29dca832bed51820e1997dcef3201b7f30d3a89ece16afa6",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w5s2",
+      "attempt": 0,
+      "contextSha256": "d50de3f468d79475b532e7d9648c76d3265d59b0e6ad8df7bd611afef1a34f90",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w5s3",
+      "attempt": 0,
+      "contextSha256": "bafbc026fd7ef7edbdf223f497be0427dd66640956fe57914eb94687f7c35f15",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w5s4",
+      "attempt": 0,
+      "contextSha256": "b94f7429c75667d44a47c6a656ed36d557e7d3c8d0583ef6dfe4d3d9f3bf1d1b",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w6s1",
+      "attempt": 0,
+      "contextSha256": "e7ef395a47627869e9330bcfef3669e9449eb5e290202807fdf3ea52aee5a754",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w6s2",
+      "attempt": 0,
+      "contextSha256": "4223879b7dcbb1f960d2366e8a56e9109a9d2308289e703cdbd9d12c90efe6ce",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w6s3",
+      "attempt": 0,
+      "contextSha256": "fc0be3d395e11983502b5ef3d1ea7877ee34ceb10f93529c16fb8549c4d1c4f6",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w6s4",
+      "attempt": 0,
+      "contextSha256": "241f8dc5888051b0501552bdf2893c1010c39ee346ca400715bc549d91ba82f7",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w7s1",
+      "attempt": 0,
+      "contextSha256": "9d80390c7d399300e61983e02cda0744c9c3270e75abecc24fa45faa8b771e8e",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w7s2",
+      "attempt": 0,
+      "contextSha256": "b87692e6e886c048c023f876ac98eaab70b5f074fa02abe2ec001555f64a2502",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w7s3",
+      "attempt": 0,
+      "contextSha256": "f7f4f6bd50d9e57d9f3856904630602370e72387b24b38b6c40b9e2143d25fc5",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w7s4",
+      "attempt": 0,
+      "contextSha256": "3fb13488a2c91dace9c7ccd5987525f155042705cbe0917d80161634a3ac4dff",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w8s1",
+      "attempt": 0,
+      "contextSha256": "849f414c353f8974fefab85b2aab1ecf461544134f08fc7e9ad15d0b1d78d75b",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w8s2",
+      "attempt": 0,
+      "contextSha256": "81953e7419e2da83d90070b641e00e6e4c415557588b5c431b731f66228df2d7",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w8s3",
+      "attempt": 0,
+      "contextSha256": "e6cd664876d131a6964dfdc0a2c607e72d8dab1e63ebf9456c9dfa28717f5999",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w8s4",
+      "attempt": 0,
+      "contextSha256": "954ca1b4f6069f52fbfd94269f9802991d0ef856c31bb3df2dd59d319f2e38e7",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w9s1",
+      "attempt": 0,
+      "contextSha256": "77be2caa05aae588e58872b98b4c94819126d4b999f1a2a464000dae2312eea3",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w9s2",
+      "attempt": 0,
+      "contextSha256": "9da0c3a2da56aad1d14f6cba66e77ece40e7f975e9d28d027584df8b6f3681b3",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w9s3",
+      "attempt": 0,
+      "contextSha256": "05305d7c57ec678642da41e0fe27253990d0728d17ccc7a1f70d45b2be962d0f",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w9s4",
+      "attempt": 0,
+      "contextSha256": "d162d1213f3f6dca0c8a64f1c54d95b7207a80cf4a21fa529c2516628a63e092",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w10s1",
+      "attempt": 0,
+      "contextSha256": "af467427b68b46df7f853619f96336c14618e4ce58f8672cbd6d921308290091",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w10s2",
+      "attempt": 0,
+      "contextSha256": "7c074298103e2de8ef89656e677d3404b1bb85aae70f7178d6dd644657e9f2a1",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w10s3",
+      "attempt": 0,
+      "contextSha256": "db466093ca68f43deb1d9b19536790ea5d48a6a0774ce9c070941af2c7e9693e",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w10s4",
+      "attempt": 0,
+      "contextSha256": "35fbc19b9cd903433f5f25b0ffb6cbfa875fecd7b290b0c29c0771eb7998bf00",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w11s1",
+      "attempt": 0,
+      "contextSha256": "173d498c3a1a2370ef7cbbe9f7946ab6995622b1c63f9b8ce786b3fd3a2383e6",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w11s2",
+      "attempt": 0,
+      "contextSha256": "64b174e427fc6a40f0fbf29e9d6695cf8cbd7a597aa2630337fbee04d53ed9fc",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w11s3",
+      "attempt": 0,
+      "contextSha256": "e0cd2e87906b44efba580fe12a1a427e97103661450a7bab01337f80445f8593",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w11s4",
+      "attempt": 0,
+      "contextSha256": "1defe6970017c7eb0cdb1e9a1c053d902c75c9bfe8f4c193928193346a8179ba",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w12s1",
+      "attempt": 0,
+      "contextSha256": "d78bc6391925b6e6da81ae21f311cebd3c3c405bbd1d26cc827f47627f3349e5",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w12s2",
+      "attempt": 0,
+      "contextSha256": "6ecba27bd1d43cf54fe2e717ea0fb73e33e3411ec6f31108cca364a434b773a0",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w12s3",
+      "attempt": 0,
+      "contextSha256": "23aca4ec4862f7c480751f1a383c205b52fa1dcd273cc6aab00acab3473bf046",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w12s4",
+      "attempt": 0,
+      "contextSha256": "d7c321d470448bebf7398f70392ddc51f17e481b74387612942932522ecfe02d",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    }
+  ]
+}

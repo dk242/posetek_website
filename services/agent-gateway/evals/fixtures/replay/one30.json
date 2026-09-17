@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "source": "authored-tool-tape",
+  "note": "Explicitly authored legal tool actions and independent-check responses. Not recorded model behavior; zero token spend.",
+  "profileId": "one30",
+  "calls": [
+    {
+      "stage": "adversarial",
+      "iteration": "w1s1",
+      "attempt": 0,
+      "contextSha256": "272df0456a80e5b01c370e6c8dd5c3c00a548ce9bfa2f83131ff1a3bac7d85ee",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    }
+  ]
+}

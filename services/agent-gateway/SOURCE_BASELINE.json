@@ -1,0 +1,533 @@
+{
+  "revision": "agent-gateway-personalized-b31a53817d5c",
+  "imageDigest": "sha256:3cdf51ccfaf0b77ed96cb40131dbb49e900f9db3892954b70fa10f28d6985caa",
+  "buildId": "9a02c501-0d51-429e-8c3c-88af0477253f",
+  "sourceGeneration": "1788900390120258",
+  "archiveSha256": "c481d46664b912969ef3df540ac5412d7afa12d0fb422f4f8276bebacb582604",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "sha256": "48705e6f0bc2ccd2b081434819197a15251e9831e88b4a650d0b5c2f79b74f55"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "0f79116d41d3a90d37c2a63451eccdda523fb11ec8f4c41c3afe01f302484337"
+    },
+    {
+      "path": "evals/__init__.py",
+      "sha256": "0221d1ea9b04d56f246abb5e3178d3381521f77ae0f200cd12e456f0c0c0ca89"
+    },
+    {
+      "path": "evals/adversarial_03a.py",
+      "sha256": "38e31ce5dd77463ecc98acb18bf96b83b56feacc7f28b014e0fc71eb88451852"
+    },
+    {
+      "path": "evals/coach_parse_03a.py",
+      "sha256": "6c8cee760415a075d9c04969518792a3e7f92a1207c652e5bb45222a662cc7ac"
+    },
+    {
+      "path": "evals/fixtures/catalog_v2.json",
+      "sha256": "1e4e2b659c4b2406d6b0650ed5ae4675766edb93ed96f5c723c9f7ab146d42a3"
+    },
+    {
+      "path": "evals/fixtures/coach_notes_03a.json",
+      "sha256": "fc684d6370f2feb01066ff1a75878c0f8272e4f268d93a71b8bfe99738a7e5ff"
+    },
+    {
+      "path": "evals/fixtures/profiles.json",
+      "sha256": "4ae03e29503b560282bc9ac530e720b786f9d9e33bb21398b16dab6866753570"
+    },
+    {
+      "path": "evals/fixtures/profiles_03a.json",
+      "sha256": "6a3961496f641ee2ef453630e6a41e7c06e112a57fea81f9ec48f300ea0a7e84"
+    },
+    {
+      "path": "evals/kick_review_evaluation.py",
+      "sha256": "8cb6ed16aaf023aa4ea517e712559410a98cddb6e237bb73bd4e3ca9d964e490"
+    },
+    {
+      "path": "evals/personalized.py",
+      "sha256": "a1457ce80b1df4ae5233f9a6fbfda7f4bc5c50ffb9bb0bcad0749f43add40961"
+    },
+    {
+      "path": "evals/program_v3.py",
+      "sha256": "fa56300b4acdf737d4f880f3585478a449679ea96747fc24424d26052994f3fc"
+    },
+    {
+      "path": "gateway/__init__.py",
+      "sha256": "32852f847bec6eaa4a32e031cf9393f126d75ff628a87574047f635077539685"
+    },
+    {
+      "path": "gateway/assemblers.py",
+      "sha256": "78bb3c1a578afa7d1af6c1e9f9ab75d5703cdd7f772d8a21bbc4d63bd0b1fa93"
+    },
+    {
+      "path": "gateway/authz.py",
+      "sha256": "7aefa02ddd83fc8675a6e04a3e522854e1c50c03347035db6d6508e463a0fa5d"
+    },
+    {
+      "path": "gateway/catalog.py",
+      "sha256": "c1f4834427f818031afd11aebf22e61d1c2989628febcdc60dc0b939f21ffd04"
+    },
+    {
+      "path": "gateway/catalog_v2.py",
+      "sha256": "a859678ba9f0ae8e80f0349f18793f33fb2fce5b584bc77832788e1d8b3887c2"
+    },
+    {
+      "path": "gateway/coach_actions.py",
+      "sha256": "3a5cbe1b92ab3a32802fd19d5f774e0ced1e80c4e058054d4f79e4bd8d79d36c"
+    },
+    {
+      "path": "gateway/coach_chat.py",
+      "sha256": "3664994ee92579731e048e02c5f709bea28d79cb69b808628a290f4f37664d11"
+    },
+    {
+      "path": "gateway/coach_context.py",
+      "sha256": "5c3d55cf3f143963d0d23e541ce77c439fb8d28ba8bf3aec63096261534163bf"
+    },
+    {
+      "path": "gateway/coach_workspace.py",
+      "sha256": "ee6e2a21d802d852143fe9277bdd82114ed20c29fde3c5670ad4393dbe96876f"
+    },
+    {
+      "path": "gateway/config.py",
+      "sha256": "a4232b8359fb0f3f9aa3801e8aaf952638e50e259568e335af36ab4f202f9e6d"
+    },
+    {
+      "path": "gateway/ctx.py",
+      "sha256": "e61f9fdee757dd5694a6459c3b499fd7843b9c8fbb9c011cd5ea03b25d129c57"
+    },
+    {
+      "path": "gateway/errors.py",
+      "sha256": "69ffad4a72104cb3943f2bb4722ab68a43609c9b530975f79554600c371f75b7"
+    },
+    {
+      "path": "gateway/kick_comparison.py",
+      "sha256": "90018f66840f6615baec98098370b7c1f47fa63742bf4ff828d94f77b2265dab"
+    },
+    {
+      "path": "gateway/kick_evidence.py",
+      "sha256": "bcd3ce77f455a6a2e0bda0d93c582c29caa468bcdf56a4e33741a49f28a5e92a"
+    },
+    {
+      "path": "gateway/kick_faults.py",
+      "sha256": "df5de100330de156aacf231f8d089d072d85c070e8fc7bdd6a1aeb4cc655fde3"
+    },
+    {
+      "path": "gateway/kick_grounding.py",
+      "sha256": "088f43d9ae7c36208e52a7edc1b52e877ad0ddc0b98a20a8d2232996d5f6aba7"
+    },
+    {
+      "path": "gateway/kick_metrics.py",
+      "sha256": "305b6e258bb21a2cf502ad20c13c078a4b7f560ea8f4de712ade5546bb9585df"
+    },
+    {
+      "path": "gateway/knowledge.py",
+      "sha256": "a4e5c93720eb3ac9b38baf2e22d6fa4d79c1fc11d3777c446ddb97b37bca160a"
+    },
+    {
+      "path": "gateway/personalized_assessment.py",
+      "sha256": "458538cfd99627f89336cedf7e97b69648e739ae43cad22b74705343c9311344"
+    },
+    {
+      "path": "gateway/personalized_composition.py",
+      "sha256": "383c874b12138ed4180196eeb6258db8d737f1b184605421851253b9dae45de2"
+    },
+    {
+      "path": "gateway/personalized_plans.py",
+      "sha256": "fc29d8f799910cc0007be5444537a82d008ebf0b832bcd1a6ae31189228cad6f"
+    },
+    {
+      "path": "gateway/pipeline.py",
+      "sha256": "8c19da8c00f75ac2bd9aa256c76082081ec80907ba701f8a8b4d4914e233e25b"
+    },
+    {
+      "path": "gateway/program_composition.py",
+      "sha256": "0a62a8ab4f1fd41e1fb74ff2d400d65866f1e054f41132039e7de6ebe80a3f4f"
+    },
+    {
+      "path": "gateway/program_focus.py",
+      "sha256": "7f83ca0ef145075e8303988603b8cd36b61df71a9f7513138b1b2e64e5ca45e4"
+    },
+    {
+      "path": "gateway/program_generator.py",
+      "sha256": "2640abb6655c5cd50a5d2e70e5b79cb3db7a0c8ecd638c539a5836a405ca406d"
+    },
+    {
+      "path": "gateway/program_profile.py",
+      "sha256": "5fb123630d1703d3023854d67a4518031bfbfce1bb8310e32f733ca56abd3105"
+    },
+    {
+      "path": "gateway/program_progress.py",
+      "sha256": "38d3b221bbbf14931a9d7fc8500a830c1b175ab0db8f6eefaee9f447a9be8599"
+    },
+    {
+      "path": "gateway/prompts.py",
+      "sha256": "70e12b37b6b665fc35ca387274390846843d92bf325967b722a8f70284313119"
+    },
+    {
+      "path": "gateway/providers/__init__.py",
+      "sha256": "99ad9b4a19cb6a6227483ea790c4d19069a5cdf5dc4492637df5ce0174065506"
+    },
+    {
+      "path": "gateway/providers/anthropic_direct.py",
+      "sha256": "0c4ed9bf7911eaa2e92efcb1b17ca901e9049608b6384df93a66ba19708d5ab2"
+    },
+    {
+      "path": "gateway/providers/anthropic_vertex.py",
+      "sha256": "139f10e8569acfaa42c23b18ce5ac1aa7af4c8aa3b933ed2de09b302a3fa005c"
+    },
+    {
+      "path": "gateway/providers/base.py",
+      "sha256": "a92dfd3d22fb2da2555dcf6f9b74f946bdc15b5ca8c64c16b286bbe7901de231"
+    },
+    {
+      "path": "gateway/providers/vertex_gemini.py",
+      "sha256": "43f606e7ba747f9f265ba08238cfe2ec38a06332facfc81cf77195c9be7aa108"
+    },
+    {
+      "path": "gateway/registry.py",
+      "sha256": "f6f56c80f111a01c415f80b1027d862e65aabb36bf1eb97d474153ab57e85ad1"
+    },
+    {
+      "path": "gateway/schemas/__init__.py",
+      "sha256": "d9b35480c9bfbc2903d82e59e753603258fec1e3ec538e8f5323ab115c70bd1b"
+    },
+    {
+      "path": "gateway/schemas/kick_analysis_v1.py",
+      "sha256": "77ce5cf7f6e68da8417d262599f9de885f1af7aab7d2856dd840a675ecf46987"
+    },
+    {
+      "path": "gateway/schemas/kick_comparison_v1.py",
+      "sha256": "7b8cabc214d2f3225a6c7cba31b7d64550b653c77ab8e82357fb00794cb50f44"
+    },
+    {
+      "path": "gateway/schemas/report_v1.py",
+      "sha256": "d4ba9ac8bcdf2853e18b3d8ce6636a895805e015934d857df52b0ab3bae49661"
+    },
+    {
+      "path": "gateway/schemas/session_summary_v1.py",
+      "sha256": "ef63f8df32488f7f4f477dde4d79ec56f352185584f59a9244a227185b87a857"
+    },
+    {
+      "path": "gateway/schemas/training_plan_v1.py",
+      "sha256": "3573868c2b7b7f23635af255128f30aa097a9583d15a9bf3077081afe40ad955"
+    },
+    {
+      "path": "gateway/schemas/workout_v1.py",
+      "sha256": "4179f71a57a528e1fde271def08af179ad4fbc58089a61a6830a57b0dcf4557a"
+    },
+    {
+      "path": "gateway/storage.py",
+      "sha256": "974efe5562f2d092831620cefcbd310a48f81315be402c9866a707f5feca34c1"
+    },
+    {
+      "path": "gateway/tools.py",
+      "sha256": "eb43a206ed905edacbab926d8298f7339780ee79f67008460acd05a06e3cd70a"
+    },
+    {
+      "path": "gateway/usage.py",
+      "sha256": "f955b19580a2a539bec2049d8266100de611b887084bbfbfffe258570592a859"
+    },
+    {
+      "path": "gateway/validators.py",
+      "sha256": "704e2ad52f9721433faad4bca41207081eb267d7f8859a0b0f8710df6ffd9131"
+    },
+    {
+      "path": "gateway/workout_chat.py",
+      "sha256": "2cff3e490dfb158a3e12964183c4eb8d0449c42563aa2adb673f45ba2f9300b8"
+    },
+    {
+      "path": "gateway/workout_history.py",
+      "sha256": "cb9374e1d2a4af2d4f776cc5b41200b051e392f5c3fbbfe40d1084fd9b7daf5a"
+    },
+    {
+      "path": "gateway/workout_persistence.py",
+      "sha256": "881311e9102f26da43286c2676cd063adfd4670e9a5f87db06560990ea59c5d8"
+    },
+    {
+      "path": "gateway/workout_requirements.py",
+      "sha256": "0d9cc551ebf3702df5db7075d59a05770c51af470bd9296bd8afde5a91c18549"
+    },
+    {
+      "path": "gateway/workout_time.py",
+      "sha256": "7072e3bf0f23791918adbc38868f4fa3de0e73dcd280107c261b76ccb333207f"
+    },
+    {
+      "path": "gateway/workout_tools.py",
+      "sha256": "07df36dc934081b1d8b8f3aff436524bb06542cbc95f41f0cf1d6a13fe8f278f"
+    },
+    {
+      "path": "knowledge/age_level_matrix.json",
+      "sha256": "2bd7993b33e42e00dc3f374a60ea1a998a184d9804c5505464573f0533aac3d4"
+    },
+    {
+      "path": "knowledge/copy_rules.md",
+      "sha256": "1800be75b92c08a8c5c8397b4a7b17992c70ee047c1a4fad2fab8e04fbc02d6d"
+    },
+    {
+      "path": "knowledge/dosage_principles.md",
+      "sha256": "dc14f15a24e0634558fda52178ce2c8039dbbcd7b98077f4a8f724f97624df38"
+    },
+    {
+      "path": "knowledge/drill_index.json",
+      "sha256": "fa3ee3e21bb3e3d3145a0b0c80d706ac4845542ba3ba23dcf3bb5f84eee19621"
+    },
+    {
+      "path": "knowledge/kick_biomechanics.md",
+      "sha256": "acd3ef579d1cf3cc0026e8455dfa12d7bdc7f3d12c49c05f5dc55dac55e13400"
+    },
+    {
+      "path": "knowledge/kick_fault_cue_map.json",
+      "sha256": "d3b2e5cda4658dac827bb0fe0d080144e1970c37d04d1a779c6563aa5c193299"
+    },
+    {
+      "path": "knowledge/kick_reference_values.json",
+      "sha256": "53468fd9f19785c4c8638d3f39653fa6372cb2b1a76af0b171a906e9ffb9d72d"
+    },
+    {
+      "path": "knowledge/kick_symptom_map.json",
+      "sha256": "f7ce76b3ad440d0c446fbe7b5b0db51589034d0aabf06fbe55edbeaa9a69873e"
+    },
+    {
+      "path": "knowledge/program_focus_v3.json",
+      "sha256": "f068120eb3189b6389150cfef65ee02edb3906a3c8ff4d939f69486595e19258"
+    },
+    {
+      "path": "knowledge/program_taxonomy_v3.json",
+      "sha256": "681bc9a37217e4f4cd408c71852ec5303c5ad7918362a7a73c9ec4bbbcfb26ef"
+    },
+    {
+      "path": "knowledge/recommendation_rules.json",
+      "sha256": "c89c9d00e9e31a2fb76830cb9df2134cd940b4f377e668fb1997e75894e70425"
+    },
+    {
+      "path": "knowledge/taxonomy.json",
+      "sha256": "7df85d418ff7d87f2ced4c6a034e2fd265a012be3d35ca40fcbbc326eb68b900"
+    },
+    {
+      "path": "knowledge/test_protocols.json",
+      "sha256": "bcae72dfec20b8914a614edc5c8e7e3de5df5255cc8b876a6b71fd9fb082fdd4"
+    },
+    {
+      "path": "main.py",
+      "sha256": "bd0c7714cf7b0d82a1bb5b76a7bc8b2017a91fd3acbc23e76a602d211a1bb374"
+    },
+    {
+      "path": "pytest.ini",
+      "sha256": "9f96b6f63697fbb327066e2af8d22590d0d9c0613c8f9dc18db16558f89e5435"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "12411283792b0399f119e2414ebb42696dbd766b8c46e7ee8620d5259dd0bb14"
+    },
+    {
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "8434e599dd017aff7175541f7abfb1ea5606b95d602474ef75f330c92f1a6eea"
+    },
+    {
+      "path": "tests/fixtures/expected_minutes_fixture.json",
+      "sha256": "cdc377c8d348196b5a714ef74c0642ffd3f05d63fdec960e4302fbb4b6c37afc"
+    },
+    {
+      "path": "tests/fixtures/week_progress_v3.json",
+      "sha256": "534afdda12dfe6e1b9c2a7b8e7d93d00223b620880ec1e218e7aa48cd6046552"
+    },
+    {
+      "path": "tests/test_adversarial_03a.py",
+      "sha256": "1c3a8fc1f709abb3999fc6e0d51dc38817b054b57ff636ab52c13fc51e298286"
+    },
+    {
+      "path": "tests/test_apply_quota_v3.py",
+      "sha256": "be0f1da9d217879736f5040849428fd7e62a0b72af411512ba32376c6a6eaac4"
+    },
+    {
+      "path": "tests/test_assemblers.py",
+      "sha256": "a0c1f2804bdac5e14dae6748d3e016d10681c8ebd0d71c3f59a50ef841d379e5"
+    },
+    {
+      "path": "tests/test_best_result_modifiers.py",
+      "sha256": "281eca0cb5ade62948b4ab0593294f542758174fe38532d7247588f298d36d17"
+    },
+    {
+      "path": "tests/test_catalog.py",
+      "sha256": "4132b6f61a1a8dc6949ffa64527a8ad730ca0fda80d0d24f3c83e16029fdd794"
+    },
+    {
+      "path": "tests/test_club_authorization.py",
+      "sha256": "9653a30b0b789c45bef5465c2f6df245fab15500ee14d5d05e22cadec901e879"
+    },
+    {
+      "path": "tests/test_coach_actions.py",
+      "sha256": "99e5e2de46d588af699b30b4604f29d95a6d80e5b3204d814333266c5e1e89e3"
+    },
+    {
+      "path": "tests/test_coach_parse_03a.py",
+      "sha256": "6cd998a7dba0a0a52c218c8bc4b12515dbe6493bfad51d9673c832be6bbe5660"
+    },
+    {
+      "path": "tests/test_coach_workspace.py",
+      "sha256": "95718df51a69f802cf263fafcd88cea495809b18482be306445b1d52213b3248"
+    },
+    {
+      "path": "tests/test_context_storage.py",
+      "sha256": "a083a87280f581264948c02e64158e948adc0ebdf5ef996f76f87ba2c1780273"
+    },
+    {
+      "path": "tests/test_daily_allowances.py",
+      "sha256": "89d4530df778db1b2d8f3903268c41685feb6a759939376c654132e9fc64fd71"
+    },
+    {
+      "path": "tests/test_expected_minutes.py",
+      "sha256": "8ad88ebdc7bc77291faf7df49b187e3c99b777288377e90bf59801f3022d9784"
+    },
+    {
+      "path": "tests/test_job_progress.py",
+      "sha256": "635ddbd5640c6e812f3289951130fa3bb29df14f035a6614494582897bebc456"
+    },
+    {
+      "path": "tests/test_kick_analysis.py",
+      "sha256": "9a975303101d8888812ba431a27c9d4de007e6b30fe283c8c949ef38e7a98ca2"
+    },
+    {
+      "path": "tests/test_kick_chat.py",
+      "sha256": "1310b395d65fdc722a4ae8878290bd2cc3794b00ed00f8ec640954c10050518f"
+    },
+    {
+      "path": "tests/test_kick_evidence_comparison.py",
+      "sha256": "c2e8c43bb6137b0c6936c2dc75303ed1e5b52532041b95bbb175ebc427072e69"
+    },
+    {
+      "path": "tests/test_kick_faults.py",
+      "sha256": "401162245cf7b23c0fa469681d8e069df889611a90eb1986d1177651bceaadf1"
+    },
+    {
+      "path": "tests/test_kick_grounding.py",
+      "sha256": "b2b3b0d84ac80acf0a2b0f6c484c0205cb7e90c81de6a97250f4826d7f36c5a9"
+    },
+    {
+      "path": "tests/test_kick_metrics.py",
+      "sha256": "5fae12944a25fb3b56dae3b74840ee19678d49b3f12408f21acb4dca261358b2"
+    },
+    {
+      "path": "tests/test_kick_provider_tools.py",
+      "sha256": "50ea25bb71634c4b4c01043f63d3887f02f994c059f99d69b376636097ecbd33"
+    },
+    {
+      "path": "tests/test_kick_review_evaluation.py",
+      "sha256": "38586dc512d913963ea131d932849161db495af445dad518747210520c04ab06"
+    },
+    {
+      "path": "tests/test_kick_salvage.py",
+      "sha256": "6429161f26dee2ae780619658647c55eacf8efaf5e0450b31d9dede87d7e765c"
+    },
+    {
+      "path": "tests/test_knowledge.py",
+      "sha256": "3c1255bfe586cb311b441c798c9f9fe176556606d77f4e46d5e38f047ac11241"
+    },
+    {
+      "path": "tests/test_legacy_admin_authz.py",
+      "sha256": "6addd10fe4d6dd167452711a655892b3bcc2b9a8d352a27d6d72fb6d93e86722"
+    },
+    {
+      "path": "tests/test_personalized_plans.py",
+      "sha256": "2e97991a8c7ddd1d525b825ee66367f70e2653512515b4fba555dfefe85a5ee7"
+    },
+    {
+      "path": "tests/test_pipeline_stages.py",
+      "sha256": "f5be03879b56a7c596a89fd085760fb245af3ffca99ef92d4a9948a155fc6edf"
+    },
+    {
+      "path": "tests/test_program_composition_03a.py",
+      "sha256": "559903118c0f1939ea79969ae7ba0aa03c3b22568b24922db7d1fa0cd0e19657"
+    },
+    {
+      "path": "tests/test_program_eval_v3.py",
+      "sha256": "c3056279cfa320fa4e53c006f7a934f206197351f6af2d88e3ab406999373a22"
+    },
+    {
+      "path": "tests/test_program_focus_03a.py",
+      "sha256": "2c65c5e4cd84303d17e92b6641e5789efd967e5c2a639ba39013efa9c68e520b"
+    },
+    {
+      "path": "tests/test_program_focus_v3.py",
+      "sha256": "79dd1563c560d1f09af09bb85fef3ba52b1e53b43db63e92f25b4e39cf9d7b64"
+    },
+    {
+      "path": "tests/test_program_generator_v3.py",
+      "sha256": "d8e467b1a022a6aa2b666305d8655b43343758ef8c96b70c8ff3e869c35b9cdb"
+    },
+    {
+      "path": "tests/test_program_profile_v3.py",
+      "sha256": "526c7d45613c39475a84bf5ea60ef37a7e1ced00c8a7c16be399b992212cbaf2"
+    },
+    {
+      "path": "tests/test_program_progress_v3.py",
+      "sha256": "0a899412429d9be9b3cfe01d1caeb765af1c637ed6a557f708cca222b2b275fa"
+    },
+    {
+      "path": "tests/test_provider_params.py",
+      "sha256": "db925e055a8aae3a2b554d28300783892c24b5b019f76a5533c9b97bd6589d08"
+    },
+    {
+      "path": "tests/test_provider_usage_v3.py",
+      "sha256": "0aaa88ee561324dfd13091cc0d557bfe42047fc723e1ddce6495eafbd7ec97ce"
+    },
+    {
+      "path": "tests/test_schemas.py",
+      "sha256": "bb33e89c7cb76cd551b7caa18018a4993a599360b72994b78ff5f61917c393bd"
+    },
+    {
+      "path": "tests/test_sonnet_checker_scope.py",
+      "sha256": "1e2e6ba6046abae4298737e69d12bc728a06f63f26308c7c247a54f2110477fd"
+    },
+    {
+      "path": "tests/test_storage.py",
+      "sha256": "0be7b456c3579fa8231b8b3192cda2e18b8f87ad14f6b7976abf90abdd4b2062"
+    },
+    {
+      "path": "tests/test_tools.py",
+      "sha256": "de80ee67e50861bd761075f12bd06e884356d1ae280e8e62ae3ec19ab0f21f1a"
+    },
+    {
+      "path": "tests/test_training_plan.py",
+      "sha256": "bce1fcadffb1325b43befb84ef4be1307686680c0485c27cad78ea72c9983ced"
+    },
+    {
+      "path": "tests/test_v3_config_gate.py",
+      "sha256": "1cde191931bb7f7ebe3f7567b823d5755665f5ec276856db882d487ac774d1d2"
+    },
+    {
+      "path": "tests/test_validators.py",
+      "sha256": "0a5397f629b856766e82ac775758c58dbb061dd0d633543a853a8de68c66e4ad"
+    },
+    {
+      "path": "tests/test_week_progress_parity.py",
+      "sha256": "be8c554241fa4d51d5377015f94d53c12e217675c48e78641edb063b6731cfcf"
+    },
+    {
+      "path": "tests/test_workout_builder.py",
+      "sha256": "43a973f01e380091110fb9274b65f3835670a5e34b8c1709656cce1fb3772f60"
+    },
+    {
+      "path": "tests/test_workout_chat.py",
+      "sha256": "2d13b41464f07e9f21bb49009677467231da97481faf8af3faec482aa5df3b1a"
+    },
+    {
+      "path": "tests/test_workout_persistence_v3.py",
+      "sha256": "320b48e68a508479117ae65aeaea7f1f41f77f0ac4bb6bcf4fbb9cbb2d79b8b0"
+    },
+    {
+      "path": "tests/test_workout_requirements.py",
+      "sha256": "3dae06bac3e524e3ffeaa275027dc00e54b8fb4dcd58f826b07a4ed0e33aeb44"
+    },
+    {
+      "path": "tests/test_workout_tools_v3.py",
+      "sha256": "f628dc8a8a486e1301bcbbd29c4824a5fa8c3fdfa292aa10bf4514212b7ec3b6"
+    }
+  ]
+}

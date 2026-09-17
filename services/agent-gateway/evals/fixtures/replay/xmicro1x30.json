@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "source": "authored-tool-tape",
+  "note": "Explicitly authored legal tool actions and independent-check responses. Not recorded model behavior; zero token spend.",
+  "profileId": "xmicro1x30",
+  "calls": [
+    {
+      "stage": "adversarial",
+      "iteration": "w1s1",
+      "attempt": 0,
+      "contextSha256": "20ce7485f3a488ad8509fa163db39930833422fa82ef8c3fa8b56e5f47f6c4c7",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w2s1",
+      "attempt": 0,
+      "contextSha256": "1c54e12ae7160728988905892aa3ebfad0b091f4eff90de0dc73022b98081690",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w3s1",
+      "attempt": 0,
+      "contextSha256": "8368adca8e45d6aec7f9444604d9a0508249c6ff52d372cd986bf993d807eac1",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    },
+    {
+      "stage": "adversarial",
+      "iteration": "w4s1",
+      "attempt": 0,
+      "contextSha256": "5f85e4ea6fa9e2ffc08f045e636707990e52e34882caf45caafe3fecbf4ac7a4",
+      "toolActions": [],
+      "result": {
+        "passed": true,
+        "issues": []
+      },
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "thinkingTokens": 0,
+        "thinkingTokensAvailable": true,
+        "cachedInputTokens": 0,
+        "calls": 1,
+        "latencyMs": 0
+      },
+      "usageSource": "authored-fixture-no-model-usage"
+    }
+  ]
+}

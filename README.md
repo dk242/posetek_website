@@ -11,6 +11,14 @@ Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
 [the latest production receipt](deployment/DRILL_VIDEO_COACH_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
+**Website follow-up prepared; production release pending:** canonical account
+hierarchy and reviewed personalized planning now have maintained source for
+admin, staff and athlete web surfaces. Native mobile generation is unchanged;
+the separate Insights prototype remains development-only. Read the superseding
+[Vacaville website handoff](docs/VACAVILLE_WEBSITE_UPDATE.md) for scope, workbook
+aggregates, privacy boundaries and current validation. The operator will add
+`deployment/VACAVILLE_WEBSITE_PRODUCTION.json` after live verification.
+
 The two public drill clips and posters are committed in
 `app/src/pages/home/product/media/`; ordinary builds need no Firebase access.
 See [the drill and coach update](deployment/DRILL_VIDEO_COACH_UPDATE.md) for
@@ -93,6 +101,21 @@ has drifted. Reconcile a reviewed baseline instead of bypassing the guard.
 The repository root, `marketing-dist/`, and the ordinary application `dist/`
 are not the complete homepage release artifact. Application source changes are
 not automatically included in this preservation-based homepage build.
+
+For the approved application update, use the separate guarded builder:
+
+```powershell
+node scripts/build-application-release.mjs
+```
+
+It first verifies and assembles the full preserved site, then replaces only
+`production-dist/application.html` and adds the compiled application assets.
+The deployable directory remains `production-dist/`; unrelated static files and
+the homepage retain their verified bytes. It rejects drift and asset collisions
+and writes `.netlify/application-release-build.json`. Follow the
+[application release and validation steps](docs/VACAVILLE_WEBSITE_UPDATE.md#deliberate-application-release),
+review the exact draft output, and reconcile the preservation baseline after a
+verified release. This command does not itself deploy the website or backend.
 
 The latest release was a manual Netlify draft promoted after validation. Preserve
 that draft-review and verification workflow for future releases. A Git push may

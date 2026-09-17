@@ -17,10 +17,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../../../lib/firebase";
-import { buildProfile } from "../../../components/athlete-stats/AthleteStats";
+import PersonalizedPrograms from "../../admin/views/PersonalizedPrograms";
 import { submitLlmJob, waitForJob } from "../lib/loaders";
-import { dateText, number, statsSnapshot, timestamp } from "../lib/mobile";
+import { dateText, number, timestamp } from "../lib/mobile";
 import { createdMillis, repType, sessionFolder } from "../lib/metrics";
 import {
   blockKindLabel,
@@ -72,7 +73,13 @@ export default function TrainingView({ ctx }: { ctx: PortalContext }) {
   if (ctx.access === "shared") {
     return <LockedPage title="Training" copy="Training plans and workout history are private athlete records." />;
   }
-  if (ctx.access === "manager" || ctx.access === "admin") return <StaffTrainingView playerId={ctx.playerId!} />;
+  if (ctx.access === "coach" || ctx.access === "manager" || ctx.access === "admin") {
+    const query = new URLSearchParams({ players: ctx.playerId || "" });
+    if (typeof ctx.athlete?.organizationId === "string" && ctx.athlete.organizationId) query.set("orgId", ctx.athlete.organizationId);
+    if (typeof ctx.athlete?.teamId === "string" && ctx.athlete.teamId) query.set("teamId", ctx.athlete.teamId);
+    return <><section className="mobile-page"><Link className="primary-cta" to={`${ctx.access === "admin" ? "/admin/programs" : "/programs"}?${query}`}>Open personalized planner</Link></section>
+      <StaffTrainingView key={ctx.playerId} playerId={ctx.playerId!} /></>;
+  }
   return <TrainingContent ctx={ctx} />;
 }
 
@@ -997,154 +1004,14 @@ function TrainingHistory({ plan, store, onBack }: { plan: any; store: WorkoutSto
 
 // MARK: - Intake
 
-const GOAL_OPTIONS: [string, string][] = [
-  ["speedAgility", "Speed & agility"],
-  ["dribbling", "Dribbling"],
-  ["passing", "Passing"],
-  ["firstTouch", "First touch"],
-  ["shooting", "Shooting"],
-  ["strengthPower", "Strength & power"],
-];
-
 interface IntakeProps {
   ctx: PortalContext;
   onReload: () => void;
   registerJobUnsub: (unsubscribe: () => void) => void;
 }
 
-function TrainingIntake({ ctx, onReload, registerJobUnsub }: IntakeProps) {
-  const [goals, setGoals] = useState<string[]>([]);
-  const [days, setDays] = useState("3");
-  const [setting, setSetting] = useState("solo");
-  const [weeks, setWeeks] = useState("6");
-  const [age, setAge] = useState("");
-  const [freeText, setFreeText] = useState("");
-  const [pain, setPain] = useState(false);
-  const [status, setStatus] = useState("");
-
-  const toggleGoal = (value: string, checked: boolean) => {
-    if (!checked) {
-      setGoals(prev => prev.filter(goal => goal !== value));
-      return;
-    }
-    if (goals.length >= 2) {
-      ctx.notify("Choose up to two goals");
-      return;
-    }
-    setGoals(prev => [...prev, value]);
-  };
-
-  const onSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    // Legacy read the checked boxes in DOM order.
-    const chosen = GOAL_OPTIONS.filter(([value]) => goals.includes(value)).map(([value]) => value);
-    if (!chosen.length) {
-      setStatus("Choose at least one training goal.");
-      return;
-    }
-    if (pain) {
-      setStatus("Pause training and check with a qualified medical professional before generating a plan.");
-      return;
-    }
-    setStatus("Reviewing results and building your plan week by week…");
-    try {
-      const profile = buildProfile(ctx.allStatsReps());
-      const intake: any = {
-        goals: chosen,
-        freeTextGoals: freeText.trim() || null,
-        sessionsPerWeek: Number(days),
-        minutesPerSession: 60,
-        setting,
-        equipment: ["ball", "cones", "markers", "goal", "timer", "wall"],
-        // Banded on the same thresholds the Stats tab uses, matching the app's
-        // PlanLevelInference. A null overall compares false on both branches.
-        level: (profile.overall ?? 0) >= 85 ? "performance" : (profile.overall ?? 0) >= 65 ? "club" : "foundation",
-        horizonWeeks: Number(weeks),
-        painFlag: false,
-      };
-      // Age gates drill eligibility and maturity floors server-side. Sent only
-      // when given; otherwise the gateway falls back to the athlete's profile.
-      const parsedAge = Number(age);
-      if (age.trim() && Number.isInteger(parsedAge) && parsedAge >= 5 && parsedAge <= 80) intake.age = parsedAge;
-
-      const job = await submitLlmJob(ctx.playerId!, "generate_training_plan", {
-        planVersion: 3,
-        statsProfile: statsSnapshot(profile),
-        intake,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-      });
-      await waitForJob(job.id, setStatus, registerJobUnsub);
-      ctx.notify("Training plan ready");
-      onReload();
-    } catch (error: any) {
-      setStatus(error.message || "Could not generate the plan.");
-    }
-  };
-
-  return (
-    <section className="portal-card training-intake">
-      <div className="intake-intro">
-        <span className="material-symbols-outlined">auto_awesome</span>
-        <h2>Build your training plan</h2>
-        <p>Answer a few questions. PoseTek combines your goals with the athlete's measured results to create a 4–12 week program.</p>
-      </div>
-      <form id="trainingIntakeForm" onSubmit={onSubmit}>
-        <fieldset>
-          <legend>Choose up to two goals</legend>
-          <div className="goal-options">
-            {GOAL_OPTIONS.map(([value, label]) => (
-              <label key={value}>
-                <input
-                  type="checkbox"
-                  name="goals"
-                  value={value}
-                  checked={goals.includes(value)}
-                  onChange={event => toggleGoal(value, event.target.checked)}
-                />
-                <span>{label}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <label>
-          Training days per week
-          <input type="range" name="days" min={1} max={6} value={days} onChange={event => setDays(event.target.value)} />
-          <output id="daysOutput">{days} days</output>
-        </label>
-        <label>
-          Training setting
-          <select name="setting" value={setting} onChange={event => setSetting(event.target.value)}>
-            <option value="solo">Solo</option>
-            <option value="partner">With a partner</option>
-            <option value="halfAndHalf">Half solo, half partner</option>
-          </select>
-        </label>
-        <label>
-          Program length
-          <select name="weeks" value={weeks} onChange={event => setWeeks(event.target.value)}>
-            <option value="4">4 weeks</option>
-            <option value="6">6 weeks</option>
-            <option value="8">8 weeks</option>
-            <option value="12">12 weeks</option>
-          </select>
-        </label>
-        <label>
-          Age (optional — it keeps the drills age-appropriate)
-          <input type="number" name="age" min={5} max={80} value={age} placeholder="e.g. 15" onChange={event => setAge(event.target.value)} />
-        </label>
-        <label>
-          Anything else you want to improve?
-          <textarea name="freeText" maxLength={500} placeholder="Optional" value={freeText} onChange={event => setFreeText(event.target.value)} />
-        </label>
-        <label className="pain-check">
-          <input type="checkbox" name="pain" checked={pain} onChange={event => setPain(event.target.checked)} />
-          <span>I currently have pain that affects training</span>
-        </label>
-        <button className="primary-cta" type="submit">Generate my plan</button>
-        <p id="planGenerationStatus">{status}</p>
-      </form>
-    </section>
-  );
+function TrainingIntake({ ctx, onReload }: IntakeProps) {
+  return <PersonalizedPrograms role="athlete" playerId={ctx.playerId!} onActivated={onReload} />;
 }
 
 // MARK: - Preview

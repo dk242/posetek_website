@@ -1,0 +1,899 @@
+{
+ "catalogVersion": "1.0.0",
+ "generatedAt": "2026-08-03T03:22:20+00:00",
+ "workbookSha256": "d727b435c17da263db767899c963b542a7b1366af1ee13c0ad0314de6a9bd233",
+ "rules": [
+  {
+   "ruleId": "R01",
+   "tests": [
+    "T01",
+    "T02"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T01/T02",
+   "observedFlag": "5-10 m time or peak acceleration",
+   "trigger": "Below matched benchmark on 2+ valid sessions",
+   "constraint": "Acceleration capacity / start execution",
+   "drillTags": [
+    "ACC",
+    "HORIZONTAL_FORCE",
+    "STRENGTH"
+   ],
+   "starterDrills": [
+    "Falling start",
+    "Wall-switch march",
+    "Light resisted acceleration",
+    "Broad jump to sprint"
+   ],
+   "prescriptionLogic": "Prioritize quality 5-10 m reps with full recovery; add strength only with competence",
+   "guardrail": "Do not infer weakness from a single joint angle",
+   "sourceIds": [
+    "S09",
+    "S15",
+    "S24"
+   ],
+   "starterDrillIds": [
+    "SPD-002",
+    "SPD-003",
+    "SPD-005",
+    "HJP-006"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R02",
+   "tests": [
+    "T01",
+    "T02"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T01/T02",
+   "observedFlag": "Trunk too upright in first steps",
+   "trigger": "Persistent across valid trials",
+   "constraint": "Projection strategy may limit horizontal impulse",
+   "drillTags": [
+    "PROJECTION",
+    "ACC"
+   ],
+   "starterDrills": [
+    "Falling start",
+    "Push-up start",
+    "Wall drill to sprint"
+   ],
+   "prescriptionLogic": "Use external cue: push the ground back and project through the gate",
+   "guardrail": "Anthropometrics and start style affect angles",
+   "sourceIds": [
+    "S09",
+    "S29"
+   ],
+   "starterDrillIds": [
+    "SPD-002",
+    "SPD-004",
+    "SPD-003"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R03",
+   "tests": [
+    "T01",
+    "T02"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T01/T02",
+   "observedFlag": "Large left-right step asymmetry",
+   "trigger": "Persistent and exceeds device error",
+   "constraint": "Coordination, strength or pain flag",
+   "drillTags": [
+    "SYMMETRY",
+    "UNILATERAL"
+   ],
+   "starterDrills": [
+    "Split-stance isometric",
+    "March-to-skip",
+    "Low-volume unilateral bounds"
+   ],
+   "prescriptionLogic": "First confirm camera alignment and ask about pain",
+   "guardrail": "Pain/refusal triggers professional review, not app prescription",
+   "sourceIds": [
+    "S15",
+    "S31"
+   ],
+   "starterDrillIds": [
+    "STR-002",
+    "SPD-003",
+    "HJP-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R04",
+   "tests": [
+    "T03",
+    "T04"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T03/T04",
+   "observedFlag": "Low 10-20/flying speed",
+   "trigger": "Good acceleration but poor later split",
+   "constraint": "Maximum-velocity exposure / elastic qualities",
+   "drillTags": [
+    "MAXV",
+    "VERTICAL_STIFFNESS"
+   ],
+   "starterDrills": [
+    "Wicket runs",
+    "Build-and-fly",
+    "Pogo series"
+   ],
+   "prescriptionLogic": "Stop when speed falls >3-5% or mechanics deteriorate",
+   "guardrail": "Advanced only with safe space and full warm-up",
+   "sourceIds": [
+    "S09",
+    "S29"
+   ],
+   "starterDrillIds": [
+    "SPD-007",
+    "SPD-006",
+    "VJP-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R05",
+   "tests": [
+    "T05"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T05",
+   "observedFlag": "Low CMJ height",
+   "trigger": "Reliable deficit vs matched cohort",
+   "constraint": "General power; possible strength or jump-skill constraint",
+   "drillTags": [
+    "VERTICAL_POWER",
+    "STRENGTH"
+   ],
+   "starterDrills": [
+    "Snap-down to jump",
+    "CMJ clusters",
+    "Squat pattern progression"
+   ],
+   "prescriptionLogic": "Use 6-8+ week block before interpreting adaptation",
+   "guardrail": "Do not calculate power from video without validated mass/time inputs",
+   "sourceIds": [
+    "S07",
+    "S08",
+    "S24"
+   ],
+   "starterDrillIds": [
+    "VJP-002",
+    "VJP-003",
+    "STR-001"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R06",
+   "tests": [
+    "T05",
+    "T06"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T05/T06",
+   "observedFlag": "Poor landing control / knee-trunk errors",
+   "trigger": "2+ errors across trials",
+   "constraint": "Landing skill and neuromuscular control",
+   "drillTags": [
+    "LANDING",
+    "BALANCE"
+   ],
+   "starterDrills": [
+    "Jump-and-stick",
+    "Lateral stick",
+    "Hop-to-balance"
+   ],
+   "prescriptionLogic": "Progress height/speed only after quiet stable landings",
+   "guardrail": "This is not an ACL-risk diagnosis",
+   "sourceIds": [
+    "S12",
+    "S13",
+    "S31"
+   ],
+   "starterDrillIds": [
+    "VJP-001",
+    "HJP-005",
+    "VJP-006"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R07",
+   "tests": [
+    "T05"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T05",
+   "observedFlag": "Very deep or slow countermovement",
+   "trigger": "Low takeoff output plus long movement time",
+   "constraint": "Jump strategy / concentric capacity",
+   "drillTags": [
+    "CMJ_STRATEGY"
+   ],
+   "starterDrills": [
+    "Fast dip-and-jump",
+    "Pause squat jump",
+    "Low-load jump squat (older)"
+   ],
+   "prescriptionLogic": "Cue intent, not a universal ideal depth",
+   "guardrail": "Individual optimum varies",
+   "sourceIds": [
+    "S07",
+    "S24"
+   ],
+   "starterDrillIds": [
+    "VJP-002",
+    "VJP-003"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R08",
+   "tests": [
+    "T07"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T07",
+   "observedFlag": "Low broad-jump distance",
+   "trigger": "Reliable deficit with stable landing",
+   "constraint": "Horizontal force/power",
+   "drillTags": [
+    "HORIZONTAL_POWER"
+   ],
+   "starterDrills": [
+    "Broad jump",
+    "Triple extension jump",
+    "Bound-bound-sprint"
+   ],
+   "prescriptionLogic": "Progress from single jump quality to repeated horizontal actions",
+   "guardrail": "Do not chase distance with unsafe landing",
+   "sourceIds": [
+    "S07",
+    "S24"
+   ],
+   "starterDrillIds": [
+    "HJP-002",
+    "HJP-003"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R09",
+   "tests": [
+    "T07",
+    "T08"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T07/T08",
+   "observedFlag": "Landing step or trunk collapse",
+   "trigger": "Repeated invalid/stability errors",
+   "constraint": "Horizontal deceleration and control",
+   "drillTags": [
+    "LANDING",
+    "BRAKING"
+   ],
+   "starterDrills": [
+    "Stick landing",
+    "Hop-to-stick",
+    "Broad jump with zone"
+   ],
+   "prescriptionLogic": "Score valid controlled reps before distance",
+   "guardrail": "Regress to submaximal distance",
+   "sourceIds": [
+    "S31"
+   ],
+   "starterDrillIds": [
+    "VJP-001",
+    "HJP-004",
+    "HJP-002"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R10",
+   "tests": [
+    "T09",
+    "T10"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T09/T10",
+   "observedFlag": "Slow turn split",
+   "trigger": "Approach speed adequate; turn split slow",
+   "constraint": "Braking and redirection",
+   "drillTags": [
+    "COD",
+    "BRAKING"
+   ],
+   "starterDrills": [
+    "Decel gate",
+    "45-to-90 degree cut",
+    "505 technique reps"
+   ],
+   "prescriptionLogic": "Separate entry speed, turn and exit in feedback",
+   "guardrail": "Faster total time can hide poor side-specific turn",
+   "sourceIds": [
+    "S14",
+    "S32"
+   ],
+   "starterDrillIds": [
+    "COD-002",
+    "COD-003",
+    "COD-004",
+    "COD-005"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R11",
+   "tests": [
+    "T09",
+    "T10"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T09/T10",
+   "observedFlag": "High COM / insufficient hip-knee flexion at plant",
+   "trigger": "Persistent under matched entry speed",
+   "constraint": "Braking strategy",
+   "drillTags": [
+    "COM_LOWER",
+    "BRAKING"
+   ],
+   "starterDrills": [
+    "Drop step and stick",
+    "Decel to lateral exit",
+    "Planned cut progression"
+   ],
+   "prescriptionLogic": "Use target chest height/external lane cue",
+   "guardrail": "Do not prescribe one plant angle to all cuts",
+   "sourceIds": [
+    "S14",
+    "S32"
+   ],
+   "starterDrillIds": [
+    "COD-002",
+    "COD-003",
+    "COD-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R12",
+   "tests": [
+    "T11"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T11",
+   "observedFlag": "Slow decision time, movement time normal",
+   "trigger": "Accurate device cue timing",
+   "constraint": "Perceptual-decision component",
+   "drillTags": [
+    "REACTION",
+    "DECISION"
+   ],
+   "starterDrills": [
+    "Color call cut",
+    "Ball release reaction",
+    "1v1 gate game"
+   ],
+   "prescriptionLogic": "Increase cue uncertainty, not cone complexity",
+   "guardrail": "Screen display latency must be calibrated",
+   "sourceIds": [
+    "S10",
+    "S14",
+    "S33"
+   ],
+   "starterDrillIds": [
+    "COD-007",
+    "COD-008",
+    "SSG-001"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R13",
+   "tests": [
+    "T11"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T11",
+   "observedFlag": "Fast decision but slow movement",
+   "trigger": "Decision correct; movement split slow",
+   "constraint": "Physical COD / acceleration component",
+   "drillTags": [
+    "COD",
+    "ACC"
+   ],
+   "starterDrills": [
+    "Reactive start to 5 m",
+    "Decel-reaccelerate",
+    "Strength progression"
+   ],
+   "prescriptionLogic": "Train physical constraint separately then reintegrate cue",
+   "guardrail": "Avoid conflating cognitive and movement time",
+   "sourceIds": [
+    "S14",
+    "S24"
+   ],
+   "starterDrillIds": [
+    "SPD-004",
+    "SPD-009",
+    "STR-001"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R14",
+   "tests": [
+    "T12",
+    "T14"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T12/T14",
+   "observedFlag": "Slow with low touch frequency",
+   "trigger": "Few but large touches; no major errors",
+   "constraint": "Contact fluency / close control",
+   "drillTags": [
+    "BALL_MASTERY",
+    "TOUCH_FREQ"
+   ],
+   "starterDrills": [
+    "Inside-outside rhythm",
+    "Figure-8",
+    "tight-box mastery"
+   ],
+   "prescriptionLogic": "Increase speed only while ball stays in playable radius",
+   "guardrail": "High touch frequency is not always better in open space",
+   "sourceIds": [
+    "S20",
+    "S22"
+   ],
+   "starterDrillIds": [
+    "DRB-003",
+    "DRB-006",
+    "DRB-002"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R15",
+   "tests": [
+    "T12",
+    "T13"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T12/T13",
+   "observedFlag": "Fast time with frequent control errors",
+   "trigger": "Error-adjusted score below benchmark",
+   "constraint": "Control at speed",
+   "drillTags": [
+    "CONTROL_RADIUS",
+    "SPEED_DRIBBLE"
+   ],
+   "starterDrills": [
+    "Gates dribble",
+    "variable-lane slalom",
+    "speed dribble with stop zone"
+   ],
+   "prescriptionLogic": "Score time + penalties, not time alone",
+   "guardrail": "Protect against gaming the metric",
+   "sourceIds": [
+    "S16",
+    "S17"
+   ],
+   "starterDrillIds": [
+    "DRB-007",
+    "DRB-008",
+    "DRB-010"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R16",
+   "tests": [
+    "T12",
+    "T14"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T12/T14",
+   "observedFlag": "Strong-foot dominance",
+   "trigger": "Consistent foot-use imbalance in bilateral task",
+   "constraint": "Bilateral exposure",
+   "drillTags": [
+    "WEAK_FOOT"
+   ],
+   "starterDrills": [
+    "Weak-foot gates",
+    "alternating figure-8",
+    "receive across body"
+   ],
+   "prescriptionLogic": "Use exposure targets; do not force weak foot in every game action",
+   "guardrail": "Dominance is expected; focus on functional options",
+   "sourceIds": [
+    "S20",
+    "S22"
+   ],
+   "starterDrillIds": [
+    "DRB-009",
+    "DRB-006",
+    "PAS-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R17",
+   "tests": [
+    "T12",
+    "T13",
+    "T14"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T12/T13/T14",
+   "observedFlag": "Head-down / low scanning events",
+   "trigger": "Valid camera view and task opportunity to scan",
+   "constraint": "Perception-action habit",
+   "drillTags": [
+    "SCANNING"
+   ],
+   "starterDrills": [
+    "Color scan dribble",
+    "numbered-gate dribble",
+    "1v1 exit game"
+   ],
+   "prescriptionLogic": "Cue before touch and between touches",
+   "guardrail": "Scanning count needs task context; more is not automatically better",
+   "sourceIds": [
+    "S20",
+    "S33"
+   ],
+   "starterDrillIds": [
+    "DRB-011",
+    "DRB-007",
+    "DRB-012"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R18",
+   "tests": [
+    "T15"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T15",
+   "observedFlag": "Passing accuracy low",
+   "trigger": "Multiple distances/feet; stable feed",
+   "constraint": "Contact and aiming consistency",
+   "drillTags": [
+    "PASS_ACCURACY"
+   ],
+   "starterDrills": [
+    "Gate passing",
+    "two-touch wall pass",
+    "target-zone passing"
+   ],
+   "prescriptionLogic": "Start unopposed, then add moving target and opponent",
+   "guardrail": "Do not label game vision from gate accuracy",
+   "sourceIds": [
+    "S16",
+    "S22",
+    "S23"
+   ],
+   "starterDrillIds": [
+    "PAS-002",
+    "PAS-001",
+    "PAS-009"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R19",
+   "tests": [
+    "T16"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T16",
+   "observedFlag": "First touch too far / wrong side",
+   "trigger": "Feed variability controlled",
+   "constraint": "Body orientation and touch direction",
+   "drillTags": [
+    "FIRST_TOUCH",
+    "ORIENTATION"
+   ],
+   "starterDrills": [
+    "Open-body receive",
+    "receive-through-gate",
+    "scan-receive-play"
+   ],
+   "prescriptionLogic": "Progress feed angle and pressure",
+   "guardrail": "Log feed speed/angle",
+   "sourceIds": [
+    "S10",
+    "S20",
+    "S23"
+   ],
+   "starterDrillIds": [
+    "PAS-003",
+    "PAS-005"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R20",
+   "tests": [
+    "T17"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T17",
+   "observedFlag": "Shot speed low, accuracy acceptable",
+   "trigger": "Age/size/sex matched",
+   "constraint": "Ball-striking speed and sequencing",
+   "drillTags": [
+    "SHOT_POWER"
+   ],
+   "starterDrills": [
+    "Laces contact progression",
+    "approach-and-strike",
+    "sprint-to-finish"
+   ],
+   "prescriptionLogic": "Maintain target zone; power without valid contact does not count",
+   "guardrail": "Body size strongly affects raw speed",
+   "sourceIds": [
+    "S18"
+   ],
+   "starterDrillIds": [
+    "SHT-003",
+    "SHT-005",
+    "SHT-007"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R21",
+   "tests": [
+    "T17"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T17",
+   "observedFlag": "Accuracy low, speed high",
+   "trigger": "Distribution across 6-10+ shots",
+   "constraint": "Contact consistency / target control",
+   "drillTags": [
+    "SHOT_ACCURACY"
+   ],
+   "starterDrills": [
+    "Gate finish",
+    "four-corner grid",
+    "variable target shooting"
+   ],
+   "prescriptionLogic": "Reduce power, stabilize placement, then rebuild speed",
+   "guardrail": "Accuracy is noisy; use repeated attempts",
+   "sourceIds": [
+    "S17",
+    "S21"
+   ],
+   "starterDrillIds": [
+    "SHT-002",
+    "SHT-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R22",
+   "tests": [
+    "T17",
+    "T18"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T17/T18",
+   "observedFlag": "Plant foot too near/far or angle inconsistent",
+   "trigger": "Association repeated across valid shots",
+   "constraint": "Approach and plant consistency",
+   "drillTags": [
+    "PLANT_FOOT"
+   ],
+   "starterDrills": [
+    "Plant-marker rehearsal",
+    "one-step strike",
+    "approach-channel finish"
+   ],
+   "prescriptionLogic": "Use a range, not a universal exact plant location",
+   "guardrail": "Pose feature is a coaching clue, not proven cause",
+   "sourceIds": [
+    "S16",
+    "S18"
+   ],
+   "starterDrillIds": [
+    "SHT-005",
+    "SHT-003"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R23",
+   "tests": [
+    "T17",
+    "T18"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T17/T18",
+   "observedFlag": "Limited hip rotation / truncated follow-through",
+   "trigger": "Low speed plus repeated pattern",
+   "constraint": "Whole-body striking coordination",
+   "drillTags": [
+    "HIP_ROTATION",
+    "FOLLOW_THROUGH"
+   ],
+   "starterDrills": [
+    "Walk-in strike",
+    "cross-body target",
+    "moving-ball finish"
+   ],
+   "prescriptionLogic": "Prioritize clean contact and balanced finish",
+   "guardrail": "Avoid forcing range in painful hip/groin",
+   "sourceIds": [
+    "S18",
+    "S26"
+   ],
+   "starterDrillIds": [
+    "SHT-005",
+    "SHT-004",
+    "SHT-009"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R24",
+   "tests": [
+    "T18"
+   ],
+   "testsSelector": "ids",
+   "testsRaw": "T18",
+   "observedFlag": "Large drop from static to moving shot",
+   "trigger": "Same foot/target and feed logged",
+   "constraint": "Perception, approach adjustment and transition",
+   "drillTags": [
+    "MOVING_FINISH"
+   ],
+   "starterDrills": [
+    "Dribble-and-shoot",
+    "receive-and-finish",
+    "sprint-COD-finish"
+   ],
+   "prescriptionLogic": "Progress one constraint at a time",
+   "guardrail": "Do not attribute all decline to fatigue",
+   "sourceIds": [
+    "S10",
+    "S16",
+    "S23"
+   ],
+   "starterDrillIds": [
+    "SHT-006",
+    "SHT-009",
+    "SHT-008"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R25",
+   "tests": [
+    "T12",
+    "T13",
+    "T14",
+    "T15",
+    "T16",
+    "T17",
+    "T18"
+   ],
+   "testsSelector": "allTechnical",
+   "testsRaw": "All technical",
+   "observedFlag": "Good isolated score, poor opposed transfer",
+   "trigger": "Observed across representative task",
+   "constraint": "Perception-action / pressure transfer",
+   "drillTags": [
+    "SSG",
+    "PRESSURE"
+   ],
+   "starterDrills": [
+    "1v1 gate game",
+    "3v3 four-goal",
+    "overload possession"
+   ],
+   "prescriptionLogic": "Keep test drill, but allocate more time to representative games",
+   "guardrail": "App should say transfer gap, not lack of skill",
+   "sourceIds": [
+    "S10",
+    "S19",
+    "S23"
+   ],
+   "starterDrillIds": [
+    "SSG-001",
+    "SSG-003",
+    "SSG-004"
+   ],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R26",
+   "tests": [],
+   "testsSelector": "any",
+   "testsRaw": "Any",
+   "observedFlag": "Pain, marked movement avoidance, or sudden decline",
+   "trigger": "Any occurrence",
+   "constraint": "Health/readiness flag",
+   "drillTags": [
+    "STOP",
+    "REFER"
+   ],
+   "starterDrills": [],
+   "prescriptionLogic": "Stop testing; advise parent/coach to seek qualified assessment as appropriate",
+   "guardrail": "Not a diagnosis",
+   "sourceIds": [
+    "S03",
+    "S27"
+   ],
+   "starterDrillIds": [],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R27",
+   "tests": [],
+   "testsSelector": "any",
+   "testsRaw": "Any",
+   "observedFlag": "Change smaller than test noise",
+   "trigger": "Within protocol MDC/typical error",
+   "constraint": "Uncertain change",
+   "drillTags": [
+    "RETEST"
+   ],
+   "starterDrills": [
+    "Repeat standardized test",
+    "keep current block"
+   ],
+   "prescriptionLogic": "Show confidence band and avoid celebratory/negative claim",
+   "guardrail": "Needs device-specific reliability study",
+   "sourceIds": [
+    "S15",
+    "S17",
+    "S32"
+   ],
+   "starterDrillIds": [],
+   "starterDrillsUnresolved": []
+  },
+  {
+   "ruleId": "R28",
+   "tests": [],
+   "testsSelector": "any",
+   "testsRaw": "Any",
+   "observedFlag": "Circa-PHV rapid growth flag",
+   "trigger": "Growth velocity/readiness trigger",
+   "constraint": "Temporary coordination/load tolerance change",
+   "drillTags": [
+    "GROWTH",
+    "LOAD_MANAGE"
+   ],
+   "starterDrills": [
+    "Technique refresh",
+    "lower-volume strength",
+    "landing",
+    "mobility as needed"
+   ],
+   "prescriptionLogic": "Reduce complexity/volume before eliminating speed entirely",
+   "guardrail": "Maturity estimate has error; use repeated height data where possible",
+   "sourceIds": [
+    "S05",
+    "S06",
+    "S27"
+   ],
+   "starterDrillIds": [],
+   "starterDrillsUnresolved": []
+  }
+ ]
+}

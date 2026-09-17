@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { clubCall, getClubContext } from "../../lib/organization-data";
 import type { ClubContext } from "../../lib/organization-data";
 import type { StaffRole } from "../../lib/organization";
+import { accountContext, accountPlayerPath, accountQuery } from "../admin/lib/accountHierarchy";
 import "../../styles/pose-portal.css";
 import "./organization.scss";
 
 export default function OrganizationPage({ admin = false }: { admin?: boolean }) {
   const navigate = useNavigate();
+  const [query] = useSearchParams();
+  const requested = accountContext(query);
   const [context, setContext] = useState<ClubContext | null>(null);
   const [organizationId, setOrganizationId] = useState("");
   const [teamId, setTeamId] = useState("");
@@ -32,7 +35,8 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
   const team = context?.teams.find(entry => entry.id === teamId);
   const editTeamName = teamNameDraft.teamId === teamId ? teamNameDraft.value : team?.name || "";
   const setEditTeamName = (value: string) => setTeamNameDraft({ teamId, value });
-  const players = context?.players.filter(player => player.teamId === teamId) || [];
+  const players = context?.players.filter(player => player.organizationId === organizationId && player.teamId === teamId) || [];
+  const unassignedPlayers = context?.players.filter(player => player.organizationId === organizationId && !context.teams.some(entry => entry.id === player.teamId)) || [];
 
   const clearClubData = useCallback(() => {
     setContext(null); setOrganizationId(""); setTeamId(""); setWebsiteUrl("");
@@ -53,6 +57,7 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
       setContext(result);
       setOrganizationId(result.organization?.id || "");
       setWebsiteUrl(result.organization?.websiteUrl || "");
+      if (preferredTeamId && !result.teams.some(entry => entry.id === preferredTeamId)) setNotice("The requested team is no longer available. Choose one of the current teams.");
       setTeamId(current => {
         const candidate = preferredTeamId ?? current;
         return result.teams.some(entry => entry.id === candidate) ? candidate : result.teams[0]?.id || "";
@@ -76,7 +81,7 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
       clearClubData(); setError(""); setBusy(false);
       if (!user) { navigate("/signin", { replace: true }); return; }
       const uid = user.uid;
-      reload().catch(failure => {
+      reload(requested.orgId, requested.teamId).catch(failure => {
         if (mounted.current && currentUid.current === uid && auth.currentUser?.uid === uid) {
           setError(failure instanceof Error ? failure.message : "Your organization could not be loaded.");
         }
@@ -87,7 +92,7 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
       ++loadGeneration.current; ++operationGeneration.current;
       stop();
     };
-  }, [navigate, reload, clearClubData]);
+  }, [navigate, reload, clearClubData, requested.orgId, requested.teamId]);
 
   async function mutate(action: (isCurrent: () => boolean) => Promise<unknown>, success: string) {
     if (operationBusy.current || !auth.currentUser) return;
@@ -153,12 +158,13 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
     {issued && <section className="club-card club-code" aria-live="polite"><h2>Invitation ready</h2><p>{issued.email}</p><code>{issued.code}</code><p>{issued.expiresAtMillis ? `Expires ${new Date(issued.expiresAtMillis).toLocaleDateString()}. ` : ""}Copy this code now and share it with the intended person. They can claim it at <Link to={issued.player ? "/signin" : "/join"}>{issued.player ? "player signup" : "/join"}</Link>.</p><button type="button" className="quiet-button" onClick={() => { void navigator.clipboard.writeText(issued.code).then(() => setNotice("Code copied.")).catch(() => setError("Copy the code above manually; clipboard access is unavailable.")); }}>Copy code</button><button className="quiet-button" onClick={() => setIssued(null)}>Done</button></section>}
     {context?.organization && context.role !== "player" && <>
       <section className="club-card"><div className="club-section-title"><h2>Teams</h2><span>{context.teams.length} teams · {context.players.length} players</span></div>
-        {context.teams.length ? <div className="club-team-grid">{context.teams.map(entry => <button key={entry.id} type="button" className={`club-team${teamId === entry.id ? " selected" : ""}`} aria-pressed={teamId === entry.id} onClick={() => setTeamId(entry.id)}><strong>{entry.name}</strong><span>{entry.playerIds.length} players · {entry.coachUIDs.length} coaches</span></button>)}</div> : <p>No teams have been created yet.</p>}
+        {context.teams.length ? <div className="club-team-grid">{context.teams.map(entry => <button key={entry.id} type="button" className={`club-team${teamId === entry.id ? " selected" : ""}`} aria-pressed={teamId === entry.id} onClick={() => setTeamId(entry.id)}><strong>{entry.name}</strong><span>{context.players.filter(player => player.organizationId === organizationId && player.teamId === entry.id).length} players{manager ? ` · ${context.staff.filter(member => member.role === "coach" && member.status === "active" && member.teamIds.includes(entry.id)).length} linked coaches` : ""}</span></button>)}</div> : <p>No teams have been created yet.</p>}
+        {(context.players.length >= 2000 || context.teams.length >= 100 || context.staff.length >= 100) && <p className="club-message" role="status">The organization service reached a roster limit. Contact PoseTek if a team, staff member or athlete is missing.</p>}
         {manager && <form className="club-inline" onSubmit={event => { event.preventDefault(); void mutate(async isCurrent => { const result = await clubCall<{ teamId: string }>("saveClubTeam", { organizationId, name: teamName.trim() }); if (isCurrent()) setTeamName(""); return result; }, "Team created."); }}><label>New team name<input required maxLength={120} value={teamName} onChange={event => setTeamName(event.target.value)} /></label><button className="primary-cta" disabled={busy}>Add team</button></form>}
       </section>
-      {team && <section className="club-card"><div className="club-section-title"><h2>{team.name}</h2>{context.role === "coach" && <Link className="quiet-button" to={`/dashboard?team=${encodeURIComponent(team.id)}`}>Team dashboard</Link>}</div>
+      {team && <section className="club-card"><div className="club-section-title"><h2>{team.name}</h2><Link className="quiet-button" to={`${admin ? "/admin/programs" : "/programs"}${accountQuery({ orgId: organizationId, teamId: team.id })}`}>Personalized programs</Link>{context.role === "coach" && <Link className="quiet-button" to={`/dashboard?team=${encodeURIComponent(team.id)}`}>Team dashboard</Link>}</div>
         {manager && <form className="club-inline" onSubmit={event => { event.preventDefault(); void mutate(() => clubCall("saveClubTeam", { organizationId, teamId, name: editTeamName.trim() }), "Team renamed."); }}><label>Team name<input required maxLength={120} value={editTeamName} onChange={event => setEditTeamName(event.target.value)} /></label><button className="quiet-button" disabled={busy}>Save name</button></form>}
-        <div className="club-player-list">{players.length ? players.map(player => <div className="club-player" key={player.id}><Link to={admin ? `/admin/accounts/player/${encodeURIComponent(player.id)}` : `/athlete?player=${encodeURIComponent(player.id)}`}><strong>{player.firstName} {player.lastName}</strong><span>Open profile and results</span></Link>{player.canIssueSignupCode === true && <button className="quiet-button" disabled={busy} onClick={() => void mutate(async isCurrent => {
+        <div className="club-player-list">{players.length ? players.map(player => <div className="club-player" key={player.id}><Link to={admin ? accountPlayerPath(player.id, { orgId: organizationId, teamId }) : `/athlete?player=${encodeURIComponent(player.id)}`}><strong>{player.firstName} {player.lastName}</strong><span>Open profile and results</span></Link>{player.canIssueSignupCode === true && <button className="quiet-button" disabled={busy} onClick={() => void mutate(async isCurrent => {
           const result = await clubCall<{ code: string }>("issueClubPlayerInvitation", { organizationId, playerId: player.id });
           if (isCurrent()) setIssued({ code: result.code, email: `${player.firstName} ${player.lastName} — player signup code`, player: true });
         }, "New player signup code created. Copy it above; any earlier code is replaced.")}>Create signup code</button>}{manager && <label className="club-move">Team<select aria-label={`Team for ${player.firstName} ${player.lastName}`} value={player.teamId} disabled={busy} onChange={event => { void mutate(() => clubCall("setClubPlayerTeam", { organizationId, playerId: player.id, teamId: event.target.value }), "Player moved; existing results and sign-in preserved."); }}>{context.teams.map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>}</div>) : <p>No players in this team yet.</p>}</div>
@@ -167,6 +173,10 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
           if (isCurrent()) { setIssued({ code: result.code, email: `${newPlayer.firstName} ${newPlayer.lastName} — player signup code`, player: true }); setNewPlayer({ firstName: "", lastName: "" }); }
         }, "Player created. Their code claims this same profile."); }}><label>Player first name<input required maxLength={100} value={newPlayer.firstName} onChange={event => setNewPlayer({ ...newPlayer, firstName: event.target.value })} /></label><label>Last name<input required maxLength={100} value={newPlayer.lastName} onChange={event => setNewPlayer({ ...newPlayer, lastName: event.target.value })} /></label><button className="primary-cta" disabled={busy}>Add player</button></form>
       </section>}
+      {manager && unassignedPlayers.length > 0 && <section className="club-card"><h2>Unassigned players</h2><p>These players belong to this organization and need a current team.</p><div className="club-player-list">{unassignedPlayers.map(player => <div className="club-player" key={player.id}>
+        <Link to={admin ? accountPlayerPath(player.id, { orgId: organizationId }) : `/athlete?player=${encodeURIComponent(player.id)}`}><strong>{player.firstName} {player.lastName}</strong><span>Open profile and results</span></Link>
+        <label className="club-move">Team<select aria-label={`Team for ${player.firstName} ${player.lastName}`} value="" disabled={busy || !context.teams.length} onChange={event => { void mutate(() => clubCall("setClubPlayerTeam", { organizationId, playerId: player.id, teamId: event.target.value }), "Player assigned; existing results and sign-in preserved."); }}><option value="" disabled>Choose a team</option>{context.teams.map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>
+      </div>)}</div></section>}
       {manager && <>
         <section className="club-card"><h2>Organization logo</h2><p>Import the logo from your club’s official website.</p><form className="club-inline" onSubmit={event => { event.preventDefault(); void mutate(() => clubCall("importClubLogo", { organizationId, websiteUrl: websiteUrl.trim() }), "Organization logo imported."); }}><label>Official website<input type="url" required value={websiteUrl} onChange={event => setWebsiteUrl(event.target.value)} placeholder="https://…" /></label><button className="primary-cta" disabled={busy}>Import logo</button></form></section>
         <section className="club-card"><h2>Invite a coach or manager</h2><p>Managers can access every team. Coaches receive access to the teams selected here.</p><form onSubmit={event => { event.preventDefault(); void mutate(async isCurrent => { const result = await clubCall<{ code: string; expiresAtMillis: number }>("createClubStaffInvitation", { organizationId, ...invite, teamIds: invite.role === "manager" ? [] : invite.teamIds }); if (isCurrent()) { setIssued({ ...result, email: invite.email }); setInvite({ firstName: "", lastName: "", email: "", role: "coach", teamIds: [] }); } }, "Invitation created. Copy the code above."); }}>

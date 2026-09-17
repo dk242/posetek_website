@@ -6,6 +6,33 @@ business document is included.
 
 ## Readiness and source provenance
 
+### Vacaville website follow-up: source prepared, release pending
+
+The approved September 17 follow-up adds a canonical organization/staff/team
+account hierarchy and one reviewed personalized-planner workflow across admin,
+coach/manager and athlete web surfaces. Named team labels do not create staff
+accounts. Current membership and player team ownership take priority over legacy
+roster mirrors. The separate Insights prototype remains development-only.
+
+The reconciled workbook retains 36 athletes (16 girls, 20 boys): 10 fully tested,
+24 partially tested and 2 with no recorded tests; none are classified as having
+no successful tests. Its audit preserves 325 source records and prior contacts,
+notes and historical sheets. Private workbook contents remain outside Git.
+
+Web users explicitly review and activate drafts. The four personalized
+capabilities use an explicit unlimited daily policy, while authorization,
+feature gates, private-context boundaries and operation ownership remain enforced.
+Native mobile `generate_training_plan` behavior is unchanged. This is prepared
+source, not a claim of a production website, gateway, rules or config release.
+
+Read [`docs/VACAVILLE_WEBSITE_UPDATE.md`](docs/VACAVILLE_WEBSITE_UPDATE.md) for the
+superseding web rollout contract, validation status and guarded application
+release command. `node scripts/build-application-release.mjs` creates the complete
+`production-dist/` artifact; the ordinary homepage build still preserves the
+pinned application. The operator will create
+`deployment/VACAVILLE_WEBSITE_PRODUCTION.json` after actual release verification.
+Preserve existing receipts as historical records.
+
 ### Vacaville ownership and organization access repair
 
 The September 16 collection cleanup was applied and independently verified on

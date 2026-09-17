@@ -1,0 +1,2393 @@
+{
+  "schemaVersion": 3,
+  "note": "Gateway fold_week_progress/next_workout parity fixture. 04 and 05 must adopt this entire file byte-for-byte before v3 rollout. Expected values are hand-authored. Plan logs retain assigned slot week; adhoc timestamps use half-open local calendar windows.",
+  "cases": [
+    {
+      "name": "fresh_week",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "one_domain_exposure_for_three_blocks_partial_floor_and_duplicate_log",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": null,
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 5
+            },
+            {
+              "blockId": "b2",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 5
+            },
+            {
+              "blockId": "b4",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "partial",
+              "estimatedMinutes": 5
+            }
+          ]
+        },
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": null,
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 5
+            },
+            {
+              "blockId": "b2",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 5
+            },
+            {
+              "blockId": "b4",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "partial",
+              "estimatedMinutes": 5
+            }
+          ]
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 1,
+            "exposuresTarget": 2,
+            "minutesDone": 12,
+            "minutesRemaining": 13
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "inProgress"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "partial",
+            "minutesDone": 12
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "skipped_only_abandoned_finishes_slot_without_exposure",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": "2026-03-04T13:00:00Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "skipped",
+              "estimatedMinutes": 40
+            }
+          ],
+          "endReason": "abandoned"
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "finished",
+            "endReason": "abandoned"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s2"
+    },
+    {
+      "name": "resume_beats_earlier_unstarted_slot",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s2",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s2",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": null,
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 5
+            }
+          ]
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 1,
+            "exposuresTarget": 2,
+            "minutesDone": 5,
+            "minutesRemaining": 20
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "inProgress"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "partial",
+            "minutesDone": 5
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s2"
+    },
+    {
+      "name": "minutes_floor_and_future_week_after_all_current_slots_end",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": "2026-03-04T13:00:00Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 21
+            }
+          ],
+          "endReason": "completed"
+        },
+        {
+          "id": "p1_w1s2",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s2",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": "2026-03-05T13:00:00Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 20
+            }
+          ],
+          "endReason": "endedEarly"
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 2,
+            "exposuresTarget": 2,
+            "minutesDone": 41,
+            "minutesRemaining": 0
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "finished",
+            "endReason": "completed"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "finished",
+            "endReason": "endedEarly"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "done",
+            "minutesDone": 41
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w2s1"
+    },
+    {
+      "name": "adhoc_actual_timestamp_half_open_dst_window_ignores_seed_plan_and_week",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "adhoc1",
+          "source": "adhoc",
+          "planId": "oldPlan",
+          "weekNumber": 99,
+          "workoutId": "adhoc1",
+          "startedAt": "2026-03-09T06:59:59Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 4
+            }
+          ]
+        },
+        {
+          "id": "adhoc2",
+          "source": "adhoc",
+          "planId": "oldPlan",
+          "weekNumber": 99,
+          "workoutId": "adhoc1",
+          "startedAt": "2026-03-09T07:00:00Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 4
+            }
+          ]
+        },
+        {
+          "id": "adhoc3",
+          "source": "adhoc",
+          "planId": "oldPlan",
+          "weekNumber": 99,
+          "workoutId": "adhoc1",
+          "startedAt": "2026-03-02T07:59:59Z",
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 4
+            }
+          ]
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 1,
+            "exposuresTarget": 2,
+            "minutesDone": 4,
+            "minutesRemaining": 21
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "partial",
+            "minutesDone": 4
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "linked_session_deduplicates_all_reps_from_one_recorded_session",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": null,
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "SPD-001",
+              "domain": "speed",
+              "status": "done",
+              "estimatedMinutes": 6
+            }
+          ],
+          "linkedTrainingSessionId": "ts1"
+        }
+      ],
+      "reps": [
+        {
+          "id": "r1",
+          "repType": "sprint",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-04T12:00:00Z"
+        },
+        {
+          "id": "r2",
+          "repType": "sprint",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-04T12:01:00Z"
+        }
+      ],
+      "trainingSessions": [
+        {
+          "id": "ts1",
+          "sessionRefs": [
+            {
+              "sessionDocId": "r1",
+              "drillType": "sprint",
+              "sessionNumber": 1
+            }
+          ]
+        }
+      ],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 1,
+            "exposuresTarget": 1,
+            "minutesDone": 6,
+            "minutesRemaining": 4
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "inProgress"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "done",
+            "minutesDone": 6
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "free_test_mapping_no_slot_finish_distinct_drill_session_namespaces",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [
+        {
+          "id": "r1",
+          "repType": "sprint",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-09T06:59:59Z"
+        },
+        {
+          "id": "r2",
+          "repType": "sprint",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-09T06:58:00Z"
+        },
+        {
+          "id": "boundary",
+          "repType": "sprint",
+          "sessionNumber": 2,
+          "createdAt": "2026-03-09T07:00:00Z"
+        },
+        {
+          "id": "j",
+          "repType": "jump",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-04T12:00:00Z"
+        },
+        {
+          "id": "bj",
+          "repType": "broadJump",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-04T12:00:00Z"
+        },
+        {
+          "id": "s",
+          "repType": "side_kick",
+          "sessionNumber": 1,
+          "createdAt": "2026-03-04T12:00:00Z"
+        }
+      ],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 1,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          },
+          {
+            "domain": "plyometrics",
+            "exposuresDone": 2,
+            "exposuresTarget": 0,
+            "minutesDone": 0,
+            "minutesRemaining": 0
+          },
+          {
+            "domain": "shooting",
+            "exposuresDone": 1,
+            "exposuresTarget": 0,
+            "minutesDone": 0,
+            "minutesRemaining": 0
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "plan_slot_retains_assigned_week_after_late_start",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 2,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-10T12:00:00Z",
+          "endedAt": null,
+          "blocks": [
+            {
+              "blockId": "b1",
+              "drillId": "DRB-001",
+              "domain": "dribbling",
+              "status": "done",
+              "estimatedMinutes": 7
+            }
+          ]
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-10T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 1,
+            "exposuresTarget": 2,
+            "minutesDone": 7,
+            "minutesRemaining": 18
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "inProgress"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "partial",
+            "minutesDone": 7
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w2s1"
+    },
+    {
+      "name": "other_plan_and_adhoc_ids_cannot_finish_assigned_slot",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [
+        {
+          "id": "p1_w1s1",
+          "source": "plan",
+          "planId": "p2",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": "2026-03-04T13:00:00Z",
+          "blocks": []
+        },
+        {
+          "id": "wrong_id",
+          "source": "plan",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-04T12:00:00Z",
+          "endedAt": "2026-03-04T13:00:00Z",
+          "blocks": []
+        },
+        {
+          "id": "p1_w1s1",
+          "source": "adhoc",
+          "planId": "p1",
+          "weekNumber": 1,
+          "workoutId": "w1s1",
+          "startedAt": "2026-03-10T12:00:00Z",
+          "endedAt": "2026-03-10T13:00:00Z",
+          "blocks": []
+        }
+      ],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "calendar_spring_forward_starts_week_two_after_167_hours",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-09T07:30:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w2s1"
+    },
+    {
+      "name": "calendar_fall_back_does_not_advance_before_local_midnight",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-10-26",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-11-02T07:30:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s1"
+    },
+    {
+      "name": "inactive_plan_has_no_next",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "superseded",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 1,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": null
+    },
+    {
+      "name": "admin_reorder_changes_selection_without_changing_ids",
+      "plan": {
+        "schemaVersion": 3,
+        "planId": "p1",
+        "status": "active",
+        "startDate": "2026-03-02",
+        "timezone": "America/Los_Angeles",
+        "horizonWeeks": 2,
+        "weeks": [
+          {
+            "weekNumber": 1,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 2
+              },
+              {
+                "domain": "speed",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 25
+              },
+              {
+                "domain": "speed",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w1s1",
+                "order": 2,
+                "revision": 2,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b2",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  },
+                  {
+                    "blockId": "b3",
+                    "drillId": "SPD-001",
+                    "domain": "speed"
+                  }
+                ]
+              },
+              {
+                "workoutId": "w1s2",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "weekNumber": 2,
+            "targets": [
+              {
+                "domain": "dribbling",
+                "exposures": 1
+              }
+            ],
+            "allocations": [
+              {
+                "domain": "dribbling",
+                "minutes": 10
+              }
+            ],
+            "workouts": [
+              {
+                "workoutId": "w2s1",
+                "order": 1,
+                "blocks": [
+                  {
+                    "blockId": "b1",
+                    "drillId": "DRB-001",
+                    "domain": "dribbling"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "weekNumber": 1,
+      "logs": [],
+      "reps": [],
+      "trainingSessions": [],
+      "now": "2026-03-04T12:00:00Z",
+      "expected": {
+        "weekNumber": 1,
+        "domainProgress": [
+          {
+            "domain": "dribbling",
+            "exposuresDone": 0,
+            "exposuresTarget": 2,
+            "minutesDone": 0,
+            "minutesRemaining": 25
+          },
+          {
+            "domain": "speed",
+            "exposuresDone": 0,
+            "exposuresTarget": 1,
+            "minutesDone": 0,
+            "minutesRemaining": 10
+          }
+        ],
+        "workoutProgress": [
+          {
+            "workoutId": "w1s2",
+            "state": "notStarted"
+          },
+          {
+            "workoutId": "w1s1",
+            "state": "notStarted"
+          }
+        ],
+        "drillProgress": [
+          {
+            "drillId": "DRB-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          },
+          {
+            "drillId": "SPD-001",
+            "state": "notStarted",
+            "minutesDone": 0
+          }
+        ]
+      },
+      "expectedNextWorkoutId": "w1s2"
+    }
+  ]
+}

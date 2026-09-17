@@ -1,240 +1,118 @@
-// Monitor accounts — "navigate into a coaches account -> player".
-// Organizations first: a club's teams open straight to their athletes, so an
-// admin can reach any athlete's recorded results in three clicks. Then the
-// coaches under each organization, independent coaches, and a search across
-// the roster for a player who is not where you expected (including players
-// with no coach at all).
-//
-// This is the navigation the identity contract §4 describes, not an
-// account-health dashboard.
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { PLAYER_INDEX_LIMIT, loadClubAccountData, loadCoaches, loadOrganizations, loadPlayerIndex } from "../lib/accounts";
+import type { CoachRow, OrganizationRow, PlayerRow } from "../lib/accounts";
+import { accountContext, accountQuery, hasClubIdentity, legacyCoachGroups, staffName } from "../lib/accountHierarchy";
+import type { AccountContext, ClubStaff, HierarchyTeam } from "../lib/accountHierarchy";
+import { useAccountLoad } from "../lib/useAccountLoad";
+import PlayerRosterRow, { AccountAvatar } from "./PlayerRosterRow";
 
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  PLAYER_INDEX_LIMIT,
-  loadCoaches,
-  loadOrganizations,
-  loadPlayerIndex,
-  loadTeamPlayers,
-  loadTeams,
-} from "../lib/accounts";
-import type { CoachRow, OrganizationRow, PlayerRow, TeamRow } from "../lib/accounts";
-import PlayerRowLink, { AccountAvatar } from "./PlayerRosterRow";
-
-// Stable empties, so the memos below do not recompute on every keystroke.
-const NO_COACHES: CoachRow[] = [];
-const NO_ORGS: OrganizationRow[] = [];
-const NO_PLAYERS: PlayerRow[] = [];
-const NO_TEAMS: TeamRow[] = [];
-
-type Load =
-  | { kind: "loading" }
-  | { kind: "ready"; orgs: OrganizationRow[]; coaches: CoachRow[]; teams: TeamRow[]; players: PlayerRow[]; truncated: boolean }
-  | { kind: "error"; message: string };
+async function directory() {
+  const [orgs, coaches, index] = await Promise.all([loadOrganizations(), loadCoaches(), loadPlayerIndex()]);
+  return { orgs, coaches, index };
+}
 
 export default function MonitorAccounts() {
-  const [load, setLoad] = useState<Load>({ kind: "loading" });
+  const { state, refresh } = useAccountLoad(directory);
+  const [query, setQuery] = useSearchParams();
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    document.title = "Monitor accounts | PoseTek admin";
-    Promise.all([loadOrganizations(), loadCoaches(), loadPlayerIndex(), loadTeams().catch(() => NO_TEAMS)])
-      .then(([orgs, coaches, index, teams]) =>
-        setLoad({ kind: "ready", orgs, coaches, teams, players: index.players, truncated: index.truncated }))
-      .catch(error => setLoad({ kind: "error", message: error?.message || "Accounts could not be loaded." }));
-  }, []);
-
-  const coaches = load.kind === "ready" ? load.coaches : NO_COACHES;
-  const orgs = load.kind === "ready" ? load.orgs : NO_ORGS;
-  const players = load.kind === "ready" ? load.players : NO_PLAYERS;
-  const teams = load.kind === "ready" ? load.teams : NO_TEAMS;
-
-  const coachesByOrg = useMemo(() => {
-    const map = new Map<string, CoachRow[]>();
-    for (const coach of coaches) {
-      const key = coach.organizationId ?? "__independent__";
-      map.set(key, [...(map.get(key) ?? []), coach]);
-    }
-    // A coach listed on the organization document but without the back-pointer
-    // still belongs to it — both relations exist in real data.
-    for (const org of orgs) {
-      for (const coachId of org.coachIds) {
-        const coach = coaches.find(entry => entry.id === coachId || entry.userUID === coachId);
-        if (!coach) continue;
-        const current = map.get(org.id) ?? [];
-        if (!current.some(entry => entry.id === coach.id)) map.set(org.id, [...current, coach]);
-        const independents = map.get("__independent__") ?? [];
-        if (!coach.organizationId) {
-          map.set("__independent__", independents.filter(entry => entry.id !== coach.id));
-        }
-      }
-    }
-    return map;
-  }, [coaches, orgs]);
-
-  const teamsByOrg = useMemo(() => {
-    const map = new Map<string, TeamRow[]>();
-    for (const team of teams) map.set(team.organizationId, [...(map.get(team.organizationId) ?? []), team]);
-    return map;
-  }, [teams]);
-
-  const matches = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (term.length < 2) return [];
-    return players
-      .filter(player => player.name.toLowerCase().includes(term) || player.email.toLowerCase().includes(term))
-      .slice(0, 40);
-  }, [players, search]);
-
-  return (
-    <>
-      <section className="admin-heading">
-        <div>
-          <p className="eyebrow">Monitor accounts</p>
-          <h1>Organizations, coaches and athletes</h1>
-          <p>Open an organization's team to reach its athletes, or a coach to see their roster. Every athlete page links to their recorded results and the rep tools.</p>
-        </div>
-        <div className="admin-heading-actions">
-          <Link className="quiet-button" to="/admin/organizations">
-            <span className="material-symbols-outlined">groups</span>Manage organizations and staff
-          </Link>
-        </div>
-      </section>
-
-      {load.kind === "loading" && <div className="portal-loading"><span className="spinner" /><p>Loading accounts…</p></div>}
-      {load.kind === "error" && <p className="form-message" role="alert">{load.message}</p>}
-
-      {load.kind === "ready" && (
-        <>
-          <section className="admin-card">
-            <h3>Find an athlete</h3>
-            <div className="admin-toolbar">
-              <label className="search-field">
-                <span className="material-symbols-outlined">search</span>
-                <input
-                  type="search"
-                  placeholder="Search athletes by name or email"
-                  autoComplete="off"
-                  value={search}
-                  onChange={event => setSearch(event.target.value)}
-                />
-              </label>
-            </div>
-            {load.truncated && (
-              <p className="admin-note">
-                Searching the first {PLAYER_INDEX_LIMIT} athletes. If someone is missing, open them
-                through their team or their coach's roster instead.
-              </p>
-            )}
-            {search.trim().length >= 2 && (
-              <div className="admin-rows">
-                {matches.length === 0 && <p className="admin-empty">No athlete matches that.</p>}
-                {matches.map(player => <PlayerRowLink key={player.id} player={player} />)}
-              </div>
-            )}
-          </section>
-
-          {orgs.map(org => (
-            <section className="admin-card admin-org" key={org.id}>
-              <header className="admin-org-head">
-                {org.logoUrl ? <img className="admin-org-logo" src={org.logoUrl} alt={`${org.name} logo`} /> : <AccountAvatar name={org.name} />}
-                <h3>
-                  {org.name}
-                  {org.code && <span className="admin-chip">{org.code}</span>}
-                  {org.schemaVersion === 2
-                    ? <span className="admin-chip accent">club</span>
-                    : <span className="admin-chip">legacy roster</span>}
-                </h3>
-              </header>
-              {org.schemaVersion === 2 && (
-                <TeamList teams={teamsByOrg.get(org.id) ?? []} index={players} />
-              )}
-              <h4 className="admin-subhead">Coaches</h4>
-              <CoachList coaches={coachesByOrg.get(org.id) ?? []} />
-            </section>
-          ))}
-
-          <section className="admin-card">
-            <h3>Independent coaches</h3>
-            <CoachList coaches={(coachesByOrg.get("__independent__") ?? []).filter(coach => !coach.organizationId)} />
-          </section>
-        </>
-      )}
-    </>
-  );
+  const selected = accountContext(query);
+  useEffect(() => { document.title = "Monitor accounts | PoseTek admin"; }, []);
+  const groups = useMemo(() => state.kind === "ready" ? legacyCoachGroups(state.data.orgs, state.data.coaches) : null, [state]);
+  const matches = state.kind === "ready" && search.trim().length >= 2
+    ? state.data.index.players.filter(player => `${player.name} ${player.email}`.toLowerCase().includes(search.trim().toLowerCase())) : [];
+  const choose = (context: AccountContext) => setQuery(accountQuery(context));
+  return <>
+    <section className="admin-heading"><div><p className="eyebrow">Monitor accounts</p><h1>Organizations, coaches and athletes</h1>
+      <p>Open an organization to see its managers, assigned coaches and team rosters. Athlete profiles lead to recorded results and rep tools.</p></div>
+      <div className="admin-heading-actions"><button className="quiet-button" onClick={refresh}>Refresh</button>
+        <Link className="quiet-button" to={`/admin/organizations${accountQuery({ orgId: selected.orgId, teamId: selected.teamId })}`}>Manage organizations and staff</Link></div></section>
+    {state.kind === "loading" && <p role="status">Loading accounts…</p>}
+    {state.kind === "error" && <LoadError message={state.message} retry={refresh} />}
+    {state.kind === "ready" && groups && <>
+      <section className="admin-card"><h2>Find an athlete</h2><label className="search-field"><span className="material-symbols-outlined" aria-hidden="true">search</span>
+        <span className="admin-sr-only">Search athletes by name or email</span><input type="search" placeholder="Search athletes by name or email" value={search} onChange={event => setSearch(event.target.value)} /></label>
+        {state.data.index.truncated && <p className="admin-note">Searching the first {PLAYER_INDEX_LIMIT} athletes. Open an organization or coach for athletes outside this search.</p>}
+        {search.trim().length >= 2 && <div className="admin-rows">{!matches.length && <p className="admin-empty">No athlete matches that.</p>}
+          {matches.length > 40 && <p className="admin-note">Showing the first 40 matches. Refine the name or email to narrow the search.</p>}
+          {matches.slice(0, 40).map(player => <PlayerRosterRow key={player.id} player={player} context={{ orgId: player.organizationId || undefined, teamId: player.teamId || undefined }} />)}</div>}</section>
+      {selected.orgId && !state.data.orgs.some(org => org.id === selected.orgId) && <p className="form-message" role="alert">That organization is no longer available. Choose another organization below.</p>}
+      {state.data.orgs.map(org => <section className="admin-card admin-org" key={org.id}>
+        <button type="button" className="admin-row admin-team-toggle" aria-expanded={selected.orgId === org.id} onClick={() => choose(selected.orgId === org.id ? {} : { orgId: org.id })}>
+          {org.logoUrl ? <img className="admin-org-logo" src={org.logoUrl} alt="" /> : <AccountAvatar name={org.name} />}
+          <span className="admin-row-copy"><strong>{org.name}</strong><span className="admin-row-meta">{org.schemaVersion === 2 ? "Organization teams and staff" : "Legacy organization"}{org.code && ` · ${org.code}`}</span></span>
+          <span className="material-symbols-outlined" aria-hidden="true">{selected.orgId === org.id ? "expand_more" : "chevron_right"}</span></button>
+        {selected.orgId === org.id && (org.schemaVersion === 2 ? <ClubOrganization key={org.id} org={org} selected={selected} choose={choose} />
+          : <><h3 className="admin-subhead">Coaches</h3><CoachList coaches={groups.groups.get(org.id) || []} orgId={org.id} /></>)}
+      </section>)}
+      {!state.data.orgs.length && <p className="admin-empty">No organizations have been created yet.</p>}
+      <section className="admin-card"><h2>Independent coaches</h2><CoachList coaches={groups.independent} /></section>
+      {groups.unknown.length > 0 && <section className="admin-card"><h2>Coaches with an unavailable organization</h2><p className="admin-note">Their existing account is preserved. Open the roster to inspect its legacy players.</p><CoachList coaches={groups.unknown} /></section>}
+      <UnlinkedPlayers players={state.data.index.players} coaches={[...groups.groups.values()].flat().concat(groups.independent, groups.unknown)} organizations={state.data.orgs} truncated={state.data.index.truncated} />
+    </>}
+  </>;
 }
 
-// MARK: - Teams → athletes
-
-function TeamList({ teams, index }: { teams: TeamRow[]; index: PlayerRow[] }) {
-  if (!teams.length) return <p className="admin-empty">No teams have been created in this club yet.</p>;
-  return (
-    <div className="admin-rows admin-teams">
-      {teams.map(team => <TeamRowView key={team.id} team={team} index={index} />)}
-    </div>
-  );
+function ClubOrganization({ org, selected, choose }: { org: OrganizationRow; selected: AccountContext; choose: (context: AccountContext) => void }) {
+  const loader = useCallback(() => loadClubAccountData(org.id), [org.id]);
+  const { state, refresh } = useAccountLoad(loader);
+  if (state.kind === "loading") return <p role="status">Loading {org.name}…</p>;
+  if (state.kind === "error") return <LoadError message={state.message} retry={refresh} />;
+  const { context, hierarchy } = state.data;
+  return <>
+    <p className="admin-note">{hierarchy.players.length} athletes · {hierarchy.teams.length} teams · {hierarchy.coaches.length} active coaches</p>
+    {hierarchy.limits.map(message => <p className="form-message" role="status" key={message}>{message}</p>)}
+    <h3 className="admin-subhead">Organization managers</h3>
+    {hierarchy.managers.length ? hierarchy.managers.map(member => <StaffRow key={member.userUID} member={member} orgId={org.id} detail="Access to all teams" />) : <p className="admin-empty">No active organization managers.</p>}
+    <h3 className="admin-subhead">Coaches</h3>
+    {hierarchy.coaches.length ? hierarchy.coaches.map(({ member, teams, players }) => <StaffRow key={member.userUID} member={member} orgId={org.id}
+      detail={`${players.length} athletes · ${teams.map(row => row.team.name).join(", ") || "No teams assigned"}`} />) : <p className="admin-empty">No coach accounts are assigned yet. The team rosters below remain available.</p>}
+    {hierarchy.teams.some(row => row.coaches.length > 0) && <><h3 className="admin-subhead">Teams with assigned coaches</h3>
+      {hierarchy.teams.filter(row => row.coaches.length > 0).map(row => <TeamRoster key={row.team.id} row={row} selected={selected} choose={choose} />)}</>}
+    {hierarchy.unassignedTeams.length > 0 && <><h3 className="admin-subhead">Teams without a linked coach</h3><p className="admin-note">Team names may include a coach’s name. A name on a team does not create an account or grant access.</p>
+      {hierarchy.unassignedTeams.map(row => <TeamRoster key={row.team.id} row={row} selected={selected} choose={choose} />)}</>}
+    {!hierarchy.teams.length && <p className="admin-empty">No teams have been created in this organization.</p>}
+    {selected.teamId && !hierarchy.teams.some(row => row.team.id === selected.teamId) && <p className="form-message" role="alert">That team is no longer in this organization. Choose a current team.</p>}
+    {hierarchy.unassignedPlayers.length > 0 && <section><h3 className="admin-subhead">Unassigned players</h3><p className="admin-note">These players belong to the organization but have no current team. Assign a team in organization management.</p>
+      {hierarchy.unassignedPlayers.map(player => <PlayerRosterRow key={player.id} player={player} context={{ orgId: org.id }} />)}</section>}
+    {hierarchy.inactiveStaff.length > 0 && <><h3 className="admin-subhead">Inactive staff</h3>{hierarchy.inactiveStaff.map(member => <StaffRow key={member.userUID} member={member} orgId={org.id} detail={`${member.status || "Invalid membership"} · no active roster access`} />)}</>}
+    {context.invitations.length > 0 && <><h3 className="admin-subhead">Staff invitations</h3>{context.invitations.map(invite => <div className="admin-row" key={invite.id}><div className="admin-row-copy"><strong>{[invite.firstName, invite.lastName].filter(Boolean).join(" ") || invite.email}</strong>
+      <span className="admin-row-meta">{invite.email} · {invite.role} · {invite.status}</span></div></div>)}</>}
+    <Link className="quiet-button" to={`/admin/organizations${accountQuery({ orgId: org.id, teamId: selected.teamId })}`}>Manage teams and staff access</Link>
+  </>;
 }
 
-function TeamRowView({ team, index }: { team: TeamRow; index: PlayerRow[] }) {
-  const [open, setOpen] = useState(false);
-  const [roster, setRoster] = useState<PlayerRow[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open || roster) return;
-    let live = true;
-    loadTeamPlayers(team, index)
-      .then(rows => { if (live) setRoster(rows); })
-      .catch(failure => { if (live) setError(failure?.message || "The team's athletes could not be loaded."); });
-    return () => { live = false; };
-  }, [open, roster, team, index]);
-
-  return (
-    <div className={`admin-team${open ? " open" : ""}`}>
-      <button className="admin-row admin-team-toggle" type="button" aria-expanded={open} onClick={() => setOpen(current => !current)}>
-        <span className="material-symbols-outlined" aria-hidden="true">{open ? "expand_more" : "chevron_right"}</span>
-        <div className="admin-row-copy">
-          <strong>{team.name}</strong>
-          <span className="admin-row-meta">
-            <span>{team.playerIds.length} {team.playerIds.length === 1 ? "athlete" : "athletes"}</span>
-            <span>{team.coachUIDs.length} {team.coachUIDs.length === 1 ? "coach" : "coaches"}</span>
-          </span>
-        </div>
-      </button>
-      {open && (
-        <div className="admin-team-players">
-          {error && <p className="form-message" role="alert">{error}</p>}
-          {!error && !roster && <p className="admin-note">Loading athletes…</p>}
-          {roster && roster.length === 0 && <p className="admin-empty">No athletes on this team yet.</p>}
-          {roster && roster.map(player => <PlayerRowLink key={player.id} player={player} compact />)}
-        </div>
-      )}
-    </div>
-  );
+export function TeamRoster({ row, selected, choose }: { row: HierarchyTeam; selected: AccountContext; choose: (context: AccountContext) => void }) {
+  const open = selected.teamId === row.team.id;
+  const context = { ...selected, orgId: row.team.organizationId, teamId: row.team.id };
+  return <div className={`admin-team${open ? " open" : ""}`}>
+    <button type="button" className="admin-row admin-team-toggle" aria-expanded={open} onClick={() => choose({ ...context, teamId: open ? undefined : row.team.id })}>
+      <span className="material-symbols-outlined" aria-hidden="true">{open ? "expand_more" : "chevron_right"}</span><span className="admin-row-copy"><strong>{row.team.name}</strong>
+        <span className="admin-row-meta">{row.players.length} {row.players.length === 1 ? "athlete" : "athletes"} · {row.coaches.map(staffName).join(", ") || "No linked coach account"}</span></span></button>
+    {open && <div className="admin-team-players">{!row.players.length && <p className="admin-empty">No athletes on this team yet.</p>}
+      {row.players.map(player => <PlayerRosterRow key={player.id} player={player} compact context={context} />)}</div>}
+  </div>;
 }
 
-// MARK: - Coaches
-
-function CoachList({ coaches }: { coaches: CoachRow[] }) {
+function StaffRow({ member, orgId, detail }: { member: ClubStaff; orgId: string; detail: string }) {
+  return <Link className="admin-row" to={`/admin/accounts/coach/${encodeURIComponent(member.userUID)}${accountQuery({ orgId })}`}><AccountAvatar name={staffName(member)} />
+    <span className="admin-row-copy"><strong>{staffName(member)}</strong><span className="admin-row-meta">{member.email || "No email on file"} · {member.role}</span><span className="admin-row-meta">{detail}</span></span>
+    <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span></Link>;
+}
+function CoachList({ coaches, orgId }: { coaches: CoachRow[]; orgId?: string }) {
   if (!coaches.length) return <p className="admin-empty">No coaches here.</p>;
-  return (
-    <div className="admin-rows">
-      {coaches.map(coach => (
-        <Link key={coach.id} className="admin-row" to={`/admin/accounts/coach/${coach.id}`}>
-          <AccountAvatar name={coach.name} />
-          <div className="admin-row-copy">
-            <strong>{coach.name}</strong>
-            <span className="admin-row-meta">
-              <span>{coach.email || "no email"}</span>
-              <span>{coach.members.length} on the roster</span>
-              <span className="admin-chip">
-                Max difficulty {coach.maxDrillDifficulty ?? "all (1–5)"}
-              </span>
-            </span>
-          </div>
-          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-        </Link>
-      ))}
-    </div>
-  );
+  return <div className="admin-rows">{coaches.map(coach => <Link key={coach.id} className="admin-row" to={`/admin/accounts/coach/${encodeURIComponent(coach.id)}${accountQuery({ orgId })}`}>
+    <AccountAvatar name={coach.name} /><span className="admin-row-copy"><strong>{coach.name}</strong><span className="admin-row-meta">{coach.email || "No email on file"} · Legacy roster</span></span>
+    <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span></Link>)}</div>;
+}
+function UnlinkedPlayers({ players, coaches, organizations, truncated }: { players: PlayerRow[]; coaches: CoachRow[]; organizations: OrganizationRow[]; truncated: boolean }) {
+  const unlinked = players.filter(player => hasClubIdentity(player)
+    ? !organizations.some(org => org.schemaVersion === 2 && org.id === player.organizationId)
+    : !coaches.some(coach => coach.members.includes(player.id) || coach.id === player.coachId || coach.userUID === player.coachId));
+  if (!unlinked.length) return null;
+  return <section className="admin-card"><h2>Players needing an account assignment</h2><p className="admin-note">{truncated ? `From the first ${PLAYER_INDEX_LIMIT} athletes: ` : ""}These profiles have no linked coach or a missing organization. Their results remain available.</p>
+    {unlinked.map(player => <PlayerRosterRow key={player.id} player={player} />)}</section>;
+}
+export function LoadError({ message, retry }: { message: string; retry: () => void }) {
+  return <div><p className="form-message" role="alert">{message}</p><button className="quiet-button" onClick={retry}>Try again</button></div>;
 }

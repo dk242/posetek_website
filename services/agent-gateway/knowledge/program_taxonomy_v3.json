@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "domains": [
+    "ballMastery",
+    "dribbling",
+    "passing",
+    "receiving",
+    "shooting",
+    "speed",
+    "agility",
+    "plyometrics",
+    "strength",
+    "games"
+  ],
+  "reservedUnavailable": [
+    "ballMastery"
+  ],
+  "measuredRepDomains": {
+    "sprint": "speed",
+    "jump": "plyometrics",
+    "broadJump": "plyometrics",
+    "changeOfDirection": "agility",
+    "dribbling": "dribbling",
+    "side_kick": "shooting"
+  }
+}

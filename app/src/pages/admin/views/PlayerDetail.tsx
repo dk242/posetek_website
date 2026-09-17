@@ -10,8 +10,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { blockDoseLine } from "../../../lib/contracts/drillV2";
 import {
   currentWeekNumber,
@@ -44,20 +44,13 @@ import {
   savePlayerProfile,
 } from "../lib/accounts";
 import type { CoachNote, CoachRow, PlayerRow } from "../lib/accounts";
-import {
-  DEFAULT_INTAKE,
-  HORIZON_WEEKS,
-  MINUTES_PER_SESSION,
-  SESSIONS_PER_WEEK,
-  SETTINGS,
-  planV3JobParams,
-  startPlanGeneration,
-} from "../lib/planJobs";
-import type { PlanIntakeForm, PlanJobState } from "../lib/planJobs";
+import { accountContext, accountPlayerPath, accountQuery, accountReturnPath } from "../lib/accountHierarchy";
 import { RESULT_DRILLS, resultsPath } from "../lib/results";
 
 export default function PlayerDetail() {
   const { playerId = "" } = useParams();
+  const [query] = useSearchParams();
+  const navigation = accountContext(query);
   const [player, setPlayer] = useState<PlayerRow | null>(null);
   const [coach, setCoach] = useState<CoachRow | null>(null);
   const [plans, setPlans] = useState<any[]>([]);
@@ -106,11 +99,11 @@ export default function PlayerDetail() {
   return (
     <>
       <section className="admin-heading">
-        <Link className="icon-button" to={coach ? `/admin/accounts/coach/${coach.id}` : "/admin/accounts"} aria-label="Back">
+        <Link className="icon-button" to={accountReturnPath(navigation)} aria-label="Back">
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>
         <div>
-          <p className="eyebrow">Athlete{coach ? ` · ${coach.name}` : " · no coach"}</p>
+          <p className="eyebrow">Athlete{player.organizationId ? " · organization member" : coach ? ` · ${coach.name}` : ""}</p>
           <h1>{player.name}</h1>
           <p>
             {player.email || "No email on file"} ·{" "}
@@ -119,7 +112,7 @@ export default function PlayerDetail() {
           </p>
         </div>
         <div className="admin-heading-actions">
-          <Link className="primary-cta small" to={resultsPath(player.id)}>
+          <Link className="primary-cta small" to={accountPlayerPath(player.id, navigation, true)}>
             <span className="material-symbols-outlined">analytics</span>Recorded results
           </Link>
           <Link className="quiet-button" to={`/athlete?player=${player.id}`}>
@@ -130,7 +123,7 @@ export default function PlayerDetail() {
 
       {error && <p className="form-message" role="alert">{error}</p>}
 
-      <ResultsCard playerId={player.id} reps={reps} />
+      <ResultsCard playerId={player.id} reps={reps} context={accountQuery(navigation)} />
 
       <div className="admin-grid-two">
         <ProfileCard key={String(player.raw?.updatedAt?.seconds ?? player.id)} player={player} coach={coach} onSaved={reload} />
@@ -143,9 +136,7 @@ export default function PlayerDetail() {
         plan={plan}
         plans={plans}
         logs={logs}
-        reps={reps}
-        age={resolvedAge?.age ?? null}
-        onReload={reload}
+        context={accountQuery(navigation)}
       />
 
       {plan && isV3Plan(plan) && <AdjustmentHistory adjustments={adjustments} />}
@@ -155,7 +146,7 @@ export default function PlayerDetail() {
 
 // MARK: - Recorded results → the rep tools
 
-function ResultsCard({ playerId, reps }: { playerId: string; reps: any[] }) {
+function ResultsCard({ playerId, reps, context }: { playerId: string; reps: any[]; context: string }) {
   return (
     <section className="admin-card">
       <div className="admin-heading" style={{ marginBottom: 8 }}>
@@ -168,7 +159,7 @@ function ResultsCard({ playerId, reps }: { playerId: string; reps: any[] }) {
         {RESULT_DRILLS.map(drill => {
           const count = reps.filter(rep => rep._statsDrill === drill.key).length;
           return (
-            <Link key={drill.key} className={`admin-result-tile${count ? "" : " empty"}`} to={resultsPath(playerId, drill.key)}>
+            <Link key={drill.key} className={`admin-result-tile${count ? "" : " empty"}`} to={resultsPath(playerId, drill.key) + context}>
               <span className="material-symbols-outlined">{drill.icon}</span>
               <strong>{drill.label}</strong>
               <span>{count} {count === 1 ? "rep" : "reps"}</span>
@@ -357,123 +348,23 @@ function CoachNoteCard({ playerId, note, onSaved }: { playerId: string; note: Co
 
 // MARK: - The plan
 
-function PlanSection({ playerId, player, plan, plans, logs, reps, age, onReload }: {
-  playerId: string;
-  player: PlayerRow;
-  plan: any | null;
-  plans: any[];
-  logs: any[];
-  reps: any[];
-  age: number | null;
-  onReload: () => Promise<void>;
+function PlanSection({ playerId, player, plan, plans, logs, context }: {
+  playerId: string; player: PlayerRow; plan: any | null; plans: any[]; logs: any[]; context: string;
 }) {
-  const [intake, setIntake] = useState<PlanIntakeForm>(DEFAULT_INTAKE);
-  const [job, setJob] = useState<PlanJobState | null>(null);
-  const [open, setOpen] = useState(false);
-  const stopRef = useRef<(() => void) | null>(null);
-
-  useEffect(() => () => stopRef.current?.(), []);
-
-  async function generate() {
-    try {
-      const params = planV3JobParams(reps, player.raw, age, intake);
-      stopRef.current = await startPlanGeneration(playerId, params, state => {
-        setJob(state);
-        if (state.status === "complete") void onReload();
-      });
-    } catch (error: any) {
-      setJob({ jobId: null, status: "failed", message: error?.message || "The job could not be submitted." });
-    }
-  }
-
-  const busy = job !== null && ["submitting", "pending", "running"].includes(job.status);
+  const query = new URLSearchParams(context);
+  query.set("players", playerId);
+  if (player.organizationId) query.set("orgId", player.organizationId);
+  if (player.teamId) query.set("teamId", player.teamId);
   const version = plan ? planSchemaVersion(plan) : null;
-
-  return (
-    <>
-      <section className="admin-card">
-        <div className="admin-heading" style={{ marginBottom: 8 }}>
-          <div>
-            <h2>Training program</h2>
-            <Link to={`/admin/programs/personalized?players=${encodeURIComponent(playerId)}${player?.organizationId ? `&orgId=${encodeURIComponent(player.organizationId)}` : ""}`}>Open personalized planner · Preview</Link>
-            <p>
-              {plan
-                ? `${planHorizonWeeks(plan)} weeks from ${String(plan.startDate ?? "—")} · ${plan.sessionsPerWeek ?? plan.intake?.daysPerWeek ?? "?"} sessions/week · plan revision ${plan.planRevision ?? 1}`
-                : "No active plan yet."}
-            </p>
-          </div>
-          <div className="admin-heading-actions">
-            <button className="quiet-button" type="button" onClick={() => setOpen(current => !current)}>
-              <span className="material-symbols-outlined">auto_awesome</span>
-              {plan ? "Build a new plan" : "Build a plan"}
-            </button>
-          </div>
-        </div>
-
-        {open && (
-          <div className="admin-form">
-            <div className="admin-field-row">
-              <label className="admin-field">
-                <span>Weeks</span>
-                <select value={intake.horizonWeeks} onChange={event => setIntake({ ...intake, horizonWeeks: Number(event.target.value) })}>
-                  {HORIZON_WEEKS.map(value => <option key={value} value={value}>{value}</option>)}
-                </select>
-              </label>
-              <label className="admin-field">
-                <span>Sessions per week</span>
-                <select value={intake.sessionsPerWeek} onChange={event => setIntake({ ...intake, sessionsPerWeek: Number(event.target.value) })}>
-                  {SESSIONS_PER_WEEK.map(value => <option key={value} value={value}>{value}</option>)}
-                </select>
-              </label>
-              <label className="admin-field">
-                <span>Minutes per session</span>
-                <select value={intake.minutesPerSession} onChange={event => setIntake({ ...intake, minutesPerSession: Number(event.target.value) })}>
-                  {MINUTES_PER_SESSION.map(value => <option key={value} value={value}>{value}</option>)}
-                </select>
-              </label>
-              <label className="admin-field">
-                <span>Training setting</span>
-                <select value={intake.setting} onChange={event => setIntake({ ...intake, setting: event.target.value as PlanIntakeForm["setting"] })}>
-                  {SETTINGS.map(value => <option key={value} value={value}>{value}</option>)}
-                </select>
-              </label>
-            </div>
-            <p className="admin-note">
-              That is {intake.sessionsPerWeek * intake.minutesPerSession} minutes of programming a
-              week. Generation runs on the training engine; a new plan supersedes the active one.
-            </p>
-            <div className="admin-form-actions">
-              <button className="primary-cta" type="button" disabled={busy} onClick={generate}>
-                {busy ? "Building…" : "Generate the plan"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {job && (
-          <p className={job.status === "failed" ? "form-message" : "admin-note"} role={job.status === "failed" ? "alert" : undefined}>
-            {job.status === "submitting" && "Submitting the job…"}
-            {job.status === "pending" && "Waiting for the training engine…"}
-            {job.status === "running" && "Building the plan — this takes a couple of minutes."}
-            {job.status === "complete" && "The plan landed. It is listed below."}
-            {job.status === "failed" && (job.message || "The plan could not be generated.")}
-          </p>
-        )}
-      </section>
-
-      {!plan && (
-        <div className="admin-banner">
-          <span className="material-symbols-outlined">assignment</span>
-          <p>
-            This athlete has no active plan.{plans.length ? ` ${plans.length} older plan${plans.length === 1 ? "" : "s"} on file.` : ""}
-          </p>
-        </div>
-      )}
-
-      {plan && version !== 3 && <LegacyPlanCard plan={plan} />}
-      {plan && version === 3 && <WorkoutList playerId={playerId} plan={plan} logs={logs} />}
-    </>
-  );
+  return <>
+    <section className="admin-card"><div className="admin-heading">
+      <div><h2>Training program</h2><p>{plan ? planHorizonWeeks(plan) + " weeks from " + String(plan.startDate ?? "—") : "No active plan yet."}</p></div>
+      <Link className="primary-cta" to={"/admin/programs?" + query}>Open personalized planner</Link>
+    </div><p>Build a draft from current evidence, review its workouts, then choose Use this plan.</p></section>
+    {!plan && <div className="admin-banner"><p>This athlete has no active plan.{plans.length ? " " + plans.length + " older plans on file." : ""}</p></div>}
+    {plan && version !== 3 && <LegacyPlanCard plan={plan} />}
+    {plan && version === 3 && <WorkoutList playerId={playerId} plan={plan} logs={logs} />}
+  </>;
 }
 
 function LegacyPlanCard({ plan }: { plan: any }) {

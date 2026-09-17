@@ -5,7 +5,7 @@ const SECTIONS = [
   { path: "drills", icon: "library_books", label: "Drill library", short: "Drills" },
   { path: "organizations", icon: "groups", label: "Organizations", short: "Clubs" },
   { path: "accounts", icon: "supervisor_account", label: "Monitor accounts", short: "Accounts" },
-  { path: "programs", icon: "auto_awesome", label: "Generate programs", short: "Programs" },
+  { path: "programs", icon: "auto_awesome", label: "Personalized planner", short: "Planner" },
 ];
 
 export default function AdminHeader({ ready, email, onSignOut }: {

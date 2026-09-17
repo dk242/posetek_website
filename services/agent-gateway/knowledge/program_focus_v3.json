@@ -1,0 +1,3292 @@
+{
+  "schemaVersion": 1,
+  "version": "provisional-2026-09-06",
+  "status": "provisional: needs Nolan or Dylan approval",
+  "provenance": {
+    "source": "Nolan brief centre-back example and v3.1 Profile to Plan B5:B17 / Age-Level Matrix K5:K19",
+    "workbookSha256": "43a2a202d7a852004ad3df427888109435904b7de79fb3bce4504fc118bab63a",
+    "authorship": "Agent 03 proposed full table; position rows are not workbook-authored",
+    "playFloorInterpretation": "Team representative-play floor is not implementable in approved solo catalog; unavailable domains redistribute to bounded eligible technical and physical work, never relabel it as games."
+  },
+  "bounds": {
+    "singleDomainMaxPct": 40,
+    "coachNudgeMaxPerDomainPct": 10,
+    "coachNudgeMaxTotalPct": 30,
+    "statedGoalMaxPct": 35,
+    "gapNudgeMaxPerDomainPct": 5,
+    "gapNudgeMaxTotalPct": 20
+  },
+  "measuredPriorityCaps": {
+    "U6-U8": {
+      "foundation": 20,
+      "club": 20,
+      "performance": 20
+    },
+    "U9-U10": {
+      "foundation": 25,
+      "club": 25,
+      "performance": 25
+    },
+    "U11-U12": {
+      "foundation": 30,
+      "club": 30,
+      "performance": 35
+    },
+    "U13-U14": {
+      "foundation": 35,
+      "club": 35,
+      "performance": 40
+    },
+    "U15-U16": {
+      "foundation": 45,
+      "club": 45,
+      "performance": 50
+    },
+    "U17-U19": {
+      "foundation": 55,
+      "club": 55,
+      "performance": 60
+    },
+    "senior": {
+      "foundation": 55,
+      "club": 55,
+      "performance": 60
+    }
+  },
+  "contentRedistributionPolicy": {
+    "version": "bounded-2026-09-07",
+    "maxAuthoredGainPct": 10,
+    "infeasiblePolicy": "Keep technical authored-gain limits, positional caps, dose/frequency capacity and the 40% domain maximum. Redistribute any remaining points evenly to eligible physical domains and record the unmet authored-gain bound explicitly; fail if physical capacity is insufficient."
+  },
+  "contentRedistributionPriority": [
+    "passing",
+    "shooting",
+    "dribbling",
+    "receiving",
+    "speed",
+    "plyometrics",
+    "agility",
+    "strength",
+    "games"
+  ],
+  "rows": [
+    {
+      "position": "neutral",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U6-U8",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U6-U8",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U6-U8",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U9-U10",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U9-U10",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 30,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 0,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U9-U10",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 25,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 5,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 22,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 7,
+        "plyometrics": 12,
+        "strength": 2,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 24,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 24,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 2,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 2,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 2,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U11-U12",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 22,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 7,
+        "plyometrics": 12,
+        "strength": 2,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 24,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 24,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 2,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 2,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 2,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U11-U12",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 21,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 9,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 20,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 9,
+        "agility": 7,
+        "plyometrics": 12,
+        "strength": 2,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 9,
+        "agility": 0,
+        "plyometrics": 12,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 22,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 14,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 22,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 4,
+        "agility": 2,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 4,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 4,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 14,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U11-U12",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 19,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 9,
+        "agility": 0,
+        "plyometrics": 7,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U13-U14",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U13-U14",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 8,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 12,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 17,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 17,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U13-U14",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U15-U16",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U15-U16",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 8,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 12,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 17,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 17,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U15-U16",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U17-U19",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U17-U19",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 8,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 12,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 17,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 17,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "U17-U19",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "senior",
+      "level": "foundation",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 10,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 10,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 15,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 5,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 5,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 15,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "senior",
+      "level": "club",
+      "percentages": {
+        "ballMastery": 15,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 10,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "neutral",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 15,
+        "receiving": 15,
+        "shooting": 10,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "GK",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 8,
+        "dribbling": 5,
+        "passing": 25,
+        "receiving": 15,
+        "shooting": 5,
+        "speed": 12,
+        "agility": 10,
+        "plyometrics": 15,
+        "strength": 5,
+        "games": 0
+      }
+    },
+    {
+      "position": "CB",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 10,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 15,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "FB",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 20,
+        "receiving": 10,
+        "shooting": 10,
+        "speed": 17,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "DM",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 5,
+        "speed": 7,
+        "agility": 5,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "CM",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 25,
+        "receiving": 20,
+        "shooting": 10,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "AM",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 20,
+        "passing": 20,
+        "receiving": 15,
+        "shooting": 15,
+        "speed": 7,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "W",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 25,
+        "passing": 10,
+        "receiving": 10,
+        "shooting": 15,
+        "speed": 17,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    },
+    {
+      "position": "ST",
+      "ageBand": "senior",
+      "level": "performance",
+      "percentages": {
+        "ballMastery": 13,
+        "dribbling": 15,
+        "passing": 10,
+        "receiving": 15,
+        "shooting": 25,
+        "speed": 12,
+        "agility": 0,
+        "plyometrics": 10,
+        "strength": 0,
+        "games": 0
+      }
+    }
+  ],
+  "contentPositionDomainCaps": {
+    "CB": {
+      "dribbling": 15
+    }
+  }
+}

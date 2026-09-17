@@ -1,0 +1,135 @@
+{
+ "catalogVersion": "1.0.0",
+ "generatedAt": "2026-08-03T02:39:57+00:00",
+ "workbookSha256": "d727b435c17da263db767899c963b542a7b1366af1ee13c0ad0314de6a9bd233",
+ "fields": [
+  {
+   "field": "age_band",
+   "type": "enum",
+   "allowedValues": [
+    "U6-U8 | U9-U10 | U11-U12 | U13-U14 | U15-U16 | U17-U19"
+   ],
+   "rule": "First product filter; never the only development filter."
+  },
+  {
+   "field": "level",
+   "type": "enum",
+   "allowedValues": [
+    "Foundation | Club | Performance"
+   ],
+   "rule": "Use transparent definitions; avoid using league brand as universal quality proxy."
+  },
+  {
+   "field": "maturity_context",
+   "type": "enum",
+   "allowedValues": [
+    "Pre-PHV | Circa-PHV | Post-PHV | Unknown"
+   ],
+   "rule": "Unknown is valid and lowers comparison specificity."
+  },
+  {
+   "field": "evidence_tier",
+   "type": "enum",
+   "allowedValues": [
+    "A | B | C"
+   ],
+   "rule": "A synthesis/consensus; B direct study/governing guidance; C evidence-informed implementation."
+  },
+  {
+   "field": "recommendation_confidence",
+   "type": "enum",
+   "allowedValues": [
+    "Low | Moderate | High"
+   ],
+   "rule": "Depends on repeated validity, measurement reliability, cohort match, and converging metrics."
+  },
+  {
+   "field": "delivery_mode",
+   "type": "enum",
+   "allowedValues": [
+    "Solo | Partner | Coach/app | Group | Qualified S&C"
+   ],
+   "rule": "Prevents recommending an impossible drill context."
+  },
+  {
+   "field": "safety_gate",
+   "type": "enum",
+   "allowedValues": [
+    "Clear | Regress | Stop/refer"
+   ],
+   "rule": "Pain or acute injury is Stop/refer; low competence is Regress."
+  },
+  {
+   "field": "technical_transfer",
+   "type": "enum",
+   "allowedValues": [
+    "Isolated | Variable | Opposed | Game"
+   ],
+   "rule": "Progress representative information/pressure, not difficulty for its own sake."
+  },
+  {
+   "field": "intensity_intent",
+   "type": "enum",
+   "allowedValues": [
+    "Low | Moderate | High | Max-quality"
+   ],
+   "rule": "Max-quality requires long rest; never equate with fatigue."
+  },
+  {
+   "field": "error_adjusted_score",
+   "type": "formula concept",
+   "allowedValues": [
+    "raw time + defined penalties"
+   ],
+   "rule": "Required for slalom/dribble tasks where loss of control can game raw time."
+  },
+  {
+   "field": "speed_cost",
+   "type": "formula concept",
+   "allowedValues": [
+    "technical-task time / no-ball sprint time"
+   ],
+   "rule": "Separates general speed from ball-carrying cost when protocols match."
+  },
+  {
+   "field": "side_asymmetry",
+   "type": "formula concept",
+   "allowedValues": [
+    "100 x |L-R| / max(L,R)"
+   ],
+   "rule": "Report direction and raw sides; do not treat threshold as diagnosis."
+  },
+  {
+   "field": "change_status",
+   "type": "enum",
+   "allowedValues": [
+    "Improved | Unclear | Declined"
+   ],
+   "rule": "Only after comparing change with device/protocol noise or confidence interval."
+  },
+  {
+   "field": "causal_language",
+   "type": "controlled text",
+   "allowedValues": [
+    "may be associated with | may be limiting | warrants review"
+   ],
+   "rule": "Avoid 'caused by' until longitudinal intervention validation supports it."
+  },
+  {
+   "field": "retest_window",
+   "type": "number/week",
+   "allowedValues": [
+    "Usually 6-8 weeks"
+   ],
+   "rule": "Shorter for familiarization/quality checks; longer for development blocks."
+  },
+  {
+   "field": "stop_set_rule",
+   "type": "controlled logic",
+   "allowedValues": [
+    "speed/quality drop, pain, or technique breakdown"
+   ],
+   "rule": "Threshold must be age/method specific and validated; 3-5% is a coaching starting range for speed quality, not a universal law."
+  }
+ ]
+}

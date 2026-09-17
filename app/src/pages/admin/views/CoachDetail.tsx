@@ -1,130 +1,66 @@
-// One coach: their roster, and the team-wide technical eligibility rating.
-//
-// PLAYER_PROFILE_INPUTS_CONTRACT.md §7 — `coaches/{id}.maxDrillDifficulty` is
-// an optional integer 1–5 that only an admin sets. Unset means all five levels;
-// a player's own override beats it.
-
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { db } from "../../../lib/firebase";
-import { loadCoachRoster, saveCoachRating } from "../lib/accounts";
-import type { CoachRow, PlayerRow } from "../lib/accounts";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { auth } from "../../../lib/firebase";
+import { loadCoachAccount, saveCoachRating } from "../lib/accounts";
+import { accountContext, accountQuery } from "../lib/accountHierarchy";
+import { useAccountLoad } from "../lib/useAccountLoad";
 import PlayerRosterRow from "./PlayerRosterRow";
+import { LoadError, TeamRoster } from "./MonitorAccounts";
 
 export default function CoachDetail() {
   const { coachId = "" } = useParams();
-  const [coach, setCoach] = useState<CoachRow | null>(null);
-  const [roster, setRoster] = useState<PlayerRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useSearchParams();
+  const requested = accountContext(query);
+  const orgId = requested.orgId;
+  const loader = useCallback(() => loadCoachAccount(coachId, orgId), [coachId, orgId]);
+  const { state, refresh } = useAccountLoad(loader);
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
+  const mutation = useRef(0);
   useEffect(() => {
-    document.title = "Coach | PoseTek admin";
-    let live = true;
-    (async () => {
-      try {
-        const doc = await db.collection("coaches").doc(coachId).get();
-        if (!doc.exists) throw new Error("That coach account no longer exists.");
-        const data: any = doc.data() || {};
-        const row: CoachRow = {
-          id: doc.id,
-          userUID: String(data.userUID || doc.id),
-          name: [data.firstName, data.lastName].filter(Boolean).join(" ").trim() || "Coach",
-          email: String(data.email || ""),
-          members: Array.isArray(data.members) ? data.members.map((entry: unknown) => String(entry)) : [],
-          organizationId: typeof data.organization?.id === "string" ? data.organization.id : null,
-          organizationCode: data.organizationCode ? String(data.organizationCode) : null,
-          maxDrillDifficulty:
-            typeof data.maxDrillDifficulty === "number" ? data.maxDrillDifficulty : null,
-        };
-        if (!live) return;
-        setCoach(row);
-        setRoster(await loadCoachRoster(row));
-      } catch (error: any) {
-        if (live) setMessage(error?.message || "That coach could not be loaded.");
-      } finally {
-        if (live) setLoading(false);
-      }
-    })();
-    return () => { live = false; };
-  }, [coachId]);
-
+    ++mutation.current; setMessage(null); setSaving(false);
+    return () => { ++mutation.current; };
+  }, [coachId, orgId]);
+  useEffect(() => { document.title = state.kind === "ready" ? `${state.data.coach.name} | PoseTek admin` : "Staff account | PoseTek admin"; }, [state]);
   async function setRating(value: number | null) {
-    setSaving(true);
-    setMessage(null);
+    if (state.kind !== "ready" || !state.data.ratingEditable || saving) return;
+    const id = state.data.coach.id, uid = auth.currentUser?.uid, generation = ++mutation.current;
+    const current = () => generation === mutation.current && uid === auth.currentUser?.uid;
+    setSaving(true); setMessage(null);
     try {
-      await saveCoachRating(coachId, value);
-      setCoach(current => (current ? { ...current, maxDrillDifficulty: value } : current));
-      setMessage(
-        value === null
-          ? "Cleared. This team is eligible for all five difficulty levels again."
-          : `Saved. This team's drills are capped at difficulty ${value}; a player's own override still wins.`,
-      );
-    } catch (error: any) {
-      setMessage(error?.message || "That rating could not be saved.");
-    } finally {
-      setSaving(false);
-    }
+      await saveCoachRating(id, value);
+      if (!current()) return;
+      setMessage(value === null ? "Coach difficulty limit cleared." : `Coach difficulty limit saved at ${value}.`);
+      refresh();
+    } catch (error) { if (current()) setMessage(error instanceof Error ? error.message : "That rating could not be saved."); }
+    finally { if (current()) setSaving(false); }
   }
-
-  if (loading) return <div className="portal-loading"><span className="spinner" /><p>Loading the coach…</p></div>;
-  if (!coach) return <p className="form-message" role="alert">{message}</p>;
-
-  return (
-    <>
-      <section className="admin-heading">
-        <Link className="icon-button" to="/admin/accounts" aria-label="Back to accounts">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </Link>
-        <div>
-          <p className="eyebrow">Coach</p>
-          <h1>{coach.name}</h1>
-          <p>{coach.email || "No email on file"} · {roster.length} athletes</p>
-        </div>
-      </section>
-
-      {message && <div className="admin-banner good"><span className="material-symbols-outlined">info</span><p>{message}</p></div>}
-
-      <section className="admin-card">
-        <h3>Maximum drill difficulty</h3>
-        <p className="admin-note">
-          Applies to this coach's whole team. Unset means all levels. An individual athlete's
-          override, set on their own page, beats this.
-        </p>
-        <div className="admin-checks">
-          <button
-            className={`quiet-button${coach.maxDrillDifficulty === null ? " active" : ""}`}
-            type="button" disabled={saving} onClick={() => setRating(null)}
-          >
-            All levels (1–5)
-          </button>
-          {[1, 2, 3, 4, 5].map(level => (
-            <button
-              key={level}
-              className={`quiet-button${coach.maxDrillDifficulty === level ? " active" : ""}`}
-              type="button" disabled={saving} onClick={() => setRating(level)}
-            >
-              Up to {level}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="admin-card">
-        <h3>Roster</h3>
-        {roster.length === 0 && <p className="admin-empty">No athletes on this roster yet.</p>}
-        <div className="admin-rows">
-          {roster.map(player => (
-            <PlayerRosterRow key={player.id} player={player}>
-              {player.raw?.position && <span className="admin-chip">{String(player.raw.position)}</span>}
-              {typeof player.raw?.maxDrillDifficulty === "number" && (
-                <span className="admin-chip accent">Own cap {player.raw.maxDrillDifficulty}</span>
-              )}
-            </PlayerRosterRow>
-          ))}
-        </div>
-      </section>
-    </>
-  );
+  const back = `/admin/accounts${accountQuery({ orgId, teamId: requested.teamId })}`;
+  if (state.kind === "loading") return <p role="status">Loading the staff account…</p>;
+  if (state.kind === "error") return <><Link className="quiet-button" to={back}>Back to accounts</Link><LoadError message={state.message} retry={refresh} /></>;
+  const { coach, organization, roster, teams, limits, ratingEditable } = state.data;
+  const role = coach.organizationRole === "manager" ? "Organization manager" : "Coach";
+  const context = { orgId: organization?.id || orgId, coachId, teamId: requested.teamId };
+  const unassigned = roster.filter(player => !teams.some(row => row.team.id === player.teamId));
+  return <>
+    <section className="admin-heading"><Link className="icon-button" to={back} aria-label="Back to accounts"><span className="material-symbols-outlined">arrow_back</span></Link>
+      <div><p className="eyebrow">{role}{organization ? ` · ${organization.name}` : " · legacy roster"}</p><h1>{coach.name}</h1>
+        <p>{coach.email || "No email on file"} · {roster.length} athletes{coach.organizationStatus && ` · ${coach.organizationStatus}`}</p></div>
+      <div className="admin-heading-actions"><button className="quiet-button" onClick={refresh}>Refresh</button>{organization && <Link className="quiet-button" to={`/admin/organizations${accountQuery({ orgId: organization.id })}`}>Manage staff access</Link>}</div></section>
+    {message && <p className="form-message" role="status">{message}</p>}
+    {limits.map(limit => <p className="form-message" role="status" key={limit}>{limit}</p>)}
+    {ratingEditable && <section className="admin-card"><h2>Coach difficulty limit</h2><p className="admin-note">Sets drill eligibility for athletes who inherit this coach’s limit. Their individual limits take priority.</p>
+      <div className="admin-checks"><button className={`quiet-button${coach.maxDrillDifficulty === null ? " active" : ""}`} disabled={saving} onClick={() => void setRating(null)}>All levels (1–5)</button>
+        {[1, 2, 3, 4, 5].map(level => <button key={level} className={`quiet-button${coach.maxDrillDifficulty === level ? " active" : ""}`} disabled={saving} onClick={() => void setRating(level)}>Up to {level}</button>)}</div></section>}
+    <section className="admin-card"><h2>{organization ? coach.organizationRole === "manager" ? "All organization teams" : "Assigned teams" : "Roster"}</h2>
+      {organization ? <>
+        {coach.organizationStatus !== "active" ? <p className="admin-empty">This staff membership has no active roster access.</p> : <>
+          {!teams.length && <p className="admin-empty">No teams are assigned to this coach.</p>}
+          {teams.map(row => <TeamRoster key={row.team.id} row={row} selected={context} choose={selection => setQuery(accountQuery(selection))} />)}
+          {requested.teamId && !teams.some(row => row.team.id === requested.teamId) && <p className="form-message" role="alert">That team is no longer assigned to this account. Choose a current team.</p>}
+          {unassigned.length > 0 && <><h3 className="admin-subhead">Unassigned players</h3>{unassigned.map(player => <PlayerRosterRow key={player.id} player={player} context={{ ...context, teamId: undefined }} />)}</>}
+        </>}
+      </> : <div className="admin-rows">{!roster.length && <p className="admin-empty">No athletes on this legacy roster.</p>}{roster.map(player => <PlayerRosterRow key={player.id} player={player} context={context} />)}</div>}
+    </section>
+  </>;
 }

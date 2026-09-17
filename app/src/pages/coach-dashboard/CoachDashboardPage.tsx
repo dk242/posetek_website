@@ -11,7 +11,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { athleteSummary, summarySort } from "./lib/logic";
 import type { AthleteSummary } from "./lib/logic";
-import { loadAthleteBundle, loadCoachContext, startPlanJob } from "./lib/data";
+import { loadAthleteBundle, loadCoachContext } from "./lib/data";
 import type { AthleteBundle, PlanJobState } from "./lib/data";
 import { PREVIEW_BUNDLES, PREVIEW_PLAYERS } from "./lib/preview";
 import Overview from "./views/Overview";
@@ -32,7 +32,7 @@ export default function CoachDashboardPage() {
   const [orgLabel, setOrgLabel] = useState("Coach dashboard");
   const [players, setPlayers] = useState<any[]>([]);
   const [bundles, setBundles] = useState<Record<string, AthleteBundle>>({});
-  const [jobs, setJobs] = useState<Record<string, PlanJobState>>({});
+  const [jobs] = useState<Record<string, PlanJobState>>({});
 
   const signingOutRef = useRef(false);
   const unsubscribersRef = useRef<(() => void)[]>([]);
@@ -103,40 +103,21 @@ export default function CoachDashboardPage() {
     [players, bundles],
   );
 
-  const onJobChange = useCallback((state: PlanJobState) => {
-    setJobs(current => ({ ...current, [state.playerId]: state }));
-    if (state.status === "complete") {
-      reloadAthlete(state.playerId).catch(error => console.warn("[dashboard] reload failed", error));
-    }
-  }, [reloadAthlete]);
-
-  // One athlete's plan job (detail view button, and the bulk action per row).
+  // Website requests open the shared draft/review flow; native generation is unchanged.
   const createPlanFor = useCallback(async (playerId: string) => {
-    const player = players.find(entry => entry.id === playerId);
-    const bundle = bundles[playerId];
-    if (!player || !bundle) return;
-    try {
-      const stop = await startPlanJob(playerId, bundle, player, onJobChange);
-      unsubscribersRef.current.push(stop);
-    } catch (error: any) {
-      onJobChange({ playerId, jobId: null, status: "failed", message: error?.message || "The job could not be submitted." });
-    }
-  }, [players, bundles, onJobChange]);
+    if (!players.some(player => player.id === playerId) || preview) return;
+    const params = new URLSearchParams({ players: playerId });
+    const player = players.find(row => row.id === playerId);
+    if (player.organizationId) params.set("orgId", player.organizationId);
+    if (player.teamId) params.set("teamId", player.teamId);
+    navigate("/programs?" + params);
+  }, [players, preview, navigate]);
 
-  // "Create workout plans for all athletes" — every roster athlete without an
-  // active plan and no job already in flight.
   const createPlansForAll = useCallback(async () => {
-    const targets = summaries.filter(summary => {
-      const job = jobs[summary.athlete.id];
-      const busy = job && ["submitting", "pending", "running"].includes(job.status);
-      return !summary.plan && !busy;
-    });
-    for (const target of targets) {
-      // Sequential submits keep Firestore happy and make progress readable;
-      // the gateway works the jobs concurrently regardless.
-      await createPlanFor(target.athlete.id);
-    }
-  }, [summaries, jobs, createPlanFor]);
+    if (preview) return;
+    const ids = summaries.filter(summary => !summary.plan).map(summary => summary.athlete.id);
+    navigate("/programs?" + new URLSearchParams({ players: ids.join(",") }));
+  }, [summaries, preview, navigate]);
 
   async function handleSignOut() {
     signingOutRef.current = true;
