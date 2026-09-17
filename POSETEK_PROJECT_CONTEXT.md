@@ -31,9 +31,51 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
-### Current release: Reviewed provisional Dribbling evidence
+### Current release: Reviewed provisional Agility evidence
 
-Deployment `6aac666c61025a8e62e8c399` is live at https://posetek.net, published
+Deployment `6aac6cc0bfb1ddbe0a73e636` is live at https://posetek.net, published
+September 17, 2026 at 3:47:35 PM PDT (`2026-09-17T22:47:35.951Z`). Application
+source `64b1dca569b43bad319fbc7c116d22717be9ad5b` is pushed on
+`codex/provisional-dribbling-recovery`. See
+[`deployment/PROVISIONAL_AGILITY_PRODUCTION.json`](deployment/PROVISIONAL_AGILITY_PRODUCTION.json)
+and [`docs/PROVISIONAL_AGILITY_RECOVERY.md`](docs/PROVISIONAL_AGILITY_RECOVERY.md).
+
+The capture owner confirmed that a Sprint-labeled recording was the no-ball
+agility test. The same-ID classification correction preserves its date, all
+31 original session objects and the genuine Sprint attempt. Twenty destination
+objects plus two administrative revision before-images retain the reviewed and
+original analysis. Unsupported Sprint and movement values are cleared, so the
+incomplete recording removes one formerly qualified Sprint result. Its finish
+remains unavailable as a measured Change of Direction result.
+
+A separately reviewed conditional Agility estimate was appended to one existing
+private document with its previous Dribbling entry and raw fields unchanged.
+Both estimates can appear on the authenticated skill map and in optional
+low-confidence planning context. They add no measured results, overall rating,
+completion count, ranking, Insights value or shared result. Each is suppressed
+only by a qualified result for its own drill. The reader is ACTIVE version 4;
+post-publication measured responses match the checkpoint after classification.
+The source-only update changed one helper and preserved 11 other packaged files,
+all 57 checked function IAM policies, 56 other central function definitions and
+rules. Preserve all 32 archive guards in `onvideoupload-00027-guw`.
+
+The website contains 542 verified local files matching 543 production inventory
+entries. The reconciled baseline protects 510 application/public files and keeps
+the approved Players and Coaches marketing bytes. Validation passed 49 focused
+frontend tests, a later nine-test assertion suite, TypeScript, 450 preview HTTP
+checks across 11 routes and 19 release/baseline tests. The nine-test suite overlaps
+the focused run; these are not 58 distinct tests or a full-suite rerun. Backend
+checks passed 44 workspace tests and 39 isolated tests, with one private fixture
+excluded from the candidate after passing in the workspace. Independent migration
+checks passed 99/99; append review passed 12/12 and its runner tests passed 8/8.
+Production chart and planner review passed, including one priority-preview
+assessment using both stated goals. No workout plan was generated or activated.
+Native display and the outstanding
+Mac/iPhone/TestFlight acceptance are unchanged.
+
+### Previous release: Reviewed provisional Dribbling evidence
+
+Deployment `6aac666c61025a8e62e8c399` was published at https://posetek.net on
 September 17, 2026 at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`). Application
 source `e1c410153549a0e65dd36738d840391901059807` is pushed on
 `codex/provisional-dribbling-recovery`. See
@@ -45,12 +87,12 @@ conditional estimates on authenticated skill maps and optional low-confidence
 planning context. The estimates remain separate from measured results, overall
 ratings, qualification, completion counts, rankings, Insights and shared results.
 They disappear when a qualified Dribbling result becomes available. No Agility
-estimate was published, and this release generated or activated no workout plan.
+estimate was published by that release, and it generated or activated no workout plan.
 
-The authenticated `getAthleteEffectiveResults` reader is ACTIVE version 3. Its
+The authenticated `getAthleteEffectiveResults` reader was verified at version 3. Its
 source-only deployment preserved configuration, all 57 checked function IAM
 policies, 56 unrelated central function definitions and rules releases. The
-current video processor is `onvideoupload-00026-bup` with all 30 archive guards;
+video processor at that checkpoint was `onvideoupload-00026-bup` with 30 archive guards;
 its source and the prior 26 entries remain intact. Two further mislabeled attempts
 were moved to one Dribbling session with the same IDs and original recordings.
 Both remain incomplete, and the successful original agility attempt is unchanged.

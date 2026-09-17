@@ -7,13 +7,21 @@ attempts remain incomplete; no projected value is written as a measured result.
 Athlete identities, recordings, source hashes and measurement journals stay in
 ignored private evidence, outside Git.
 
-The website is live as `6aac666c61025a8e62e8c399`, published September 17, 2026
+This release was published as `6aac666c61025a8e62e8c399` on September 17, 2026
 at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`), from source `e1c4101` on
-`codex/provisional-dribbling-recovery`. The authenticated reader is ACTIVE
+`codex/provisional-dribbling-recovery`. The authenticated reader was verified at
 version 3. See the [sanitized production receipt](../deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
 for the scoped backend source verification, website inventory, test results and
 preservation checks. Production review confirmed the two labeled estimates and
 planner option without generating or activating a workout plan.
+
+The later [Agility follow-up](PROVISIONAL_AGILITY_RECOVERY.md) and its
+[production receipt](../deployment/PROVISIONAL_AGILITY_PRODUCTION.json) extend
+the reader to version 4 and preserve both existing Dribbling estimates. They add
+one independently reviewed Agility estimate after a separate classification
+correction. The current website is `6aac6cc0bfb1ddbe0a73e636`; preserve the full
+32-entry guard in `onvideoupload-00027-guw`. Counts, limits and 30-entry guard
+references below describe this earlier Dribbling release's checkpoint.
 
 ## Reader and display contract
 

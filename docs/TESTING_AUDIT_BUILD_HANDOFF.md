@@ -190,3 +190,27 @@ across 11 routes passed. Backend checks passed 37 workspace tests and 32 package
 candidate tests; one private fixture was intentionally omitted from the package
 after passing in the workspace. This is not a new complete-suite pass claim.
 Taiyo's native candidate and outstanding Mac/iPhone/TestFlight work are unchanged.
+
+## Later September 17 follow-up: provisional Agility context
+
+The current website is `6aac6cc0bfb1ddbe0a73e636`, published at
+`2026-09-17T22:47:35.951Z` (3:47:35 PM PDT), from source `64b1dca`.
+Read the [Agility production receipt](../deployment/PROVISIONAL_AGILITY_PRODUCTION.json)
+and [method and recovery handoff](PROVISIONAL_AGILITY_RECOVERY.md). Earlier
+release counts and receipts above remain historical checkpoints.
+
+A confirmed no-ball agility attempt was corrected from Sprint to Change of
+Direction with its original identity, date and artifacts preserved. Its missing
+finish remains unmeasured; obsolete Sprint measurements are cleared and the
+other genuine Sprint attempt is unchanged. This classification removes one
+formerly qualifying Sprint result. A separate private estimate append adds only
+labeled Agility coaching context, preserving the existing Dribbling entry.
+Neither estimate contributes measured results, completion or Insights.
+
+The authenticated reader is ACTIVE version 4. Its source-only deployment and
+estimate publication preserve measured responses from the post-classification
+checkpoint. The full current video guard has 32 entries in
+`onvideoupload-00027-guw`; preserve all prior entries and historical journals.
+The website's 542 local files match 543 inventory entries, with 510 protected
+application/public files and approved marketing unchanged. Native acceptance
+and display remain unchanged. No workout plan was generated or activated.

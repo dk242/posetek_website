@@ -6,6 +6,18 @@ out-and-back test. The original clip contains the outbound run, turn and part of
 the return, but no finish. It is reclassified with the same rep identity and date;
 its completion time remains unavailable as a measured result.
 
+The website is live as `6aac6cc0bfb1ddbe0a73e636`, published September 17, 2026
+at 3:47:35 PM PDT (`2026-09-17T22:47:35.951Z`), from source `64b1dca` on
+`codex/provisional-dribbling-recovery`. The authenticated reader is ACTIVE
+version 4 and the reviewed estimate append is verified. See the
+[sanitized production receipt](../deployment/PROVISIONAL_AGILITY_PRODUCTION.json).
+Athlete identities, private performance values, recordings and publication
+before-images remain outside Git.
+
+Production review confirmed both separately labeled chart estimates, explicit
+sensitivity limits and the optional planning context. One priority-preview
+assessment completed successfully; no workout plan was generated or activated.
+
 ## Classification and preservation
 
 The journaled transfer preserves fourteen original attempt files and three session
@@ -15,6 +27,9 @@ calibration. Sprint analysis is retained under `original_capture`, not promoted
 into active Change of Direction measurements. Sixteen unsupported movement values
 and nine inherited Sprint aliases are cleared. Session counts change atomically
 with the rep's classification; the other genuine Sprint attempt is unchanged.
+The audited revision adds two expected administrative before-images, making
+22 destination objects after revision. All 31 original Sprint-session objects,
+all seven rep identities and the six other reps were verified unchanged.
 
 Because the moved attempt is incomplete, qualified measured coverage decreases by
 one. Its former Sprint speed no longer competes for the Sprint personal best.
@@ -70,6 +85,23 @@ not replace measured `statsProfile`, best results or verified deficits. Publishi
 the data and interface does not create or activate a workout plan.
 
 ## Evidence and recovery
+
+The reader's source-only deployment changed `provisional-estimates.js` and kept
+the other 11 source files byte-for-byte. Verification preserved configuration,
+57 function IAM policies, 56 other central functions, rules and the guarded video
+processor. Authenticated post-publication checks match the approved estimate,
+preserve both earlier Dribbling estimates and return only the requested drill's
+estimate when filtered. Measured rows and qualification match the checkpoint
+after the classification correction; classification itself reduced measured
+qualification by one.
+
+Validation passed 49 focused frontend tests, a later nine-test assertion suite,
+TypeScript, 450 preview HTTP checks across 11 routes and 19 release/baseline
+tests. The later assertions overlap the focused suite; no full frontend rerun
+is claimed. Backend checks passed 44 workspace tests and 39 immutable-candidate
+tests, with one private fixture excluded from that package after passing in the
+workspace. Independent migration review passed 99 checks; the estimate append
+passed 12 independent checks and eight runner tests.
 
 Detailed video evidence, independent calculation and migration reviews, source
 hashes and the single-document append plan remain in ignored private recovery

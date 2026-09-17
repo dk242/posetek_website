@@ -11,19 +11,22 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aac666c61025a8e62e8c399`, published
-September 17, 2026 at 3:22:58 PM PDT. Reviewed provisional Dribbling estimates add
-explicitly labeled skill-map and optional planning context without changing
-measured results, qualification, rankings or Insights. Read
-`deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
-`docs/PROVISIONAL_DRIBBLING_RECOVERY.md`. The preceding testing audit adds canonical
+The latest recorded production release is `6aac6cc0bfb1ddbe0a73e636`, published
+September 17, 2026 at 3:47:35 PM PDT. Reviewed provisional Dribbling and Agility
+estimates add explicitly labeled skill-map and optional planning context,
+separate from measured results, qualification, rankings and Insights. A confirmed
+Sprint-to-Agility classification correction removes the incomplete attempt from
+measured Sprint results while preserving the genuine Sprint attempt. Read
+`deployment/PROVISIONAL_AGILITY_PRODUCTION.json` and
+`docs/PROVISIONAL_AGILITY_RECOVERY.md`; the prior Dribbling receipt remains a
+historical checkpoint. The preceding testing audit adds canonical
 qualified results, proven duplicate suppression, exact capture media and truthful
 pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
-`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 462 files.
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 510 files.
 Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
 capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
-native repository rules. Preserve the 30-entry video archive guard in
-`onvideoupload-00026-bup` and the separate historical repair journals.
+native repository rules. Preserve the 32-entry video archive guard in
+`onvideoupload-00027-guw` and the separate historical repair journals.
 Expanded Insights includes demographics,
 verified testing, workout outcomes and estimated active use for admins,
 organization managers and assigned coaches, preserving the account hierarchy,
@@ -62,7 +65,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 462 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 510 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 

@@ -239,3 +239,32 @@ alongside the original journals. Withdrawing an estimate requires its own curren
 document-version check; undoing a category transfer additionally requires its
 session, rep and artifact journal. Neither operation should overwrite a later
 review or alter the historical repairs.
+
+## Final September 17 follow-up: confirmed Agility classification
+
+The capture owner subsequently confirmed that a Sprint-labeled attempt was the
+no-ball agility test. It now belongs to Change of Direction with the same rep
+identity, date and rep numbers. All 31 original Sprint-session objects and the
+six other reps remain unchanged; 20 staged destination objects plus two expected
+administrative revision before-images preserve the original and reviewed data.
+The genuine Sprint attempt is retained. Unsupported Sprint and movement metrics
+are cleared, so this correction removes one formerly qualified Sprint result;
+the incomplete agility attempt is unqualified.
+
+The reviewed partial shuttle supports a separately labeled conditional Agility
+estimate under `partial_shuttle_visual_start_v1`. One version-checked private
+document append preserves the existing Dribbling estimate and every prior raw
+field. It adds no measured result or recorded finish. After this classification,
+authenticated reader and publication checks leave measured rows and qualification
+unchanged. Earlier checkpoint totals above remain records of their observation.
+
+The website release is `6aac6cc0bfb1ddbe0a73e636`, published at
+`2026-09-17T22:47:35.951Z` (3:47:35 PM PDT), and the authenticated reader is
+ACTIVE version 4. The archive guard now contains 32 entries in
+`onvideoupload-00027-guw`, with previous guards and processor source preserved.
+See the [sanitized receipt](../deployment/PROVISIONAL_AGILITY_PRODUCTION.json)
+and [Agility method, limits and recovery handoff](PROVISIONAL_AGILITY_RECOVERY.md).
+Private evidence remains in the ignored repair and
+`.netlify/provisional-agility-release/` directories. Estimate rollback and
+classification rollback require their separate journals and fresh version
+checks. No workout plan was generated or activated by this publication.
