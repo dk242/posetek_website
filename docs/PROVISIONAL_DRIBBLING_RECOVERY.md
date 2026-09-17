@@ -116,3 +116,42 @@ Backend and website release receipts belong under the separately ignored
 authenticated reader may hide estimates while preserving their private evidence.
 Preserve canonical result/media services, native capture compatibility, private
 rules, earlier repairs and the 30-entry video guard in any rollback.
+
+## Additional data-only follow-up
+
+At `2026-09-17T23:01:06.940559Z`, one additional private Dribbling estimate was
+created under the existing `constant_return_pace_v1` contract. An earlier
+feasibility summary confused return-leg coverage with complete-course coverage.
+The corrected interpretation is `1 - remainingReturnFraction / 2`, measured
+along the two straight marker-to-marker legs. Independent video, timing and
+regression review confirms eligibility under the unchanged 75-percent threshold.
+No agility result, cohort value or other attempt was substituted.
+
+The projection retains the original detected start as an explicit assumption,
+uses recent observed return motion and gives an outward-rounded pace-sensitivity
+range. It does not recover a finish frame or validate a complete test. One
+create-only write added one estimate document, preserving every source rep and
+session and the existing qualified agility result. The reviewed inventory now
+contains four estimates across three players: three Dribbling and one Agility.
+
+This follow-up required no new website/backend deployment or code, rules,
+configuration or video-guard changes. Website `6aac6cc0bfb1ddbe0a73e636`, reader
+version 4, the 510-file protected baseline and all 32 guards remain current.
+The separate [data publication receipt](../deployment/PROVISIONAL_DRIBBLING_DATA_FOLLOWUP.json)
+records this checkpoint without changing earlier release receipts. Athlete
+identities, performance values and evidence remain private.
+
+Authenticated readback at `2026-09-17T23:02:24.400Z` exactly matched the reviewed
+projection and preserved every measured row. Drill filtering returned the
+appropriate evidence and omitted private provenance. Production profile review
+confirmed the estimated label and sensitivity range, unchanged measured counts
+and the existing agility result. The planner displayed optional low-confidence
+context and enabled generation; no workout plan was generated or activated.
+
+The publication runner passed 11 tests and independent plan review passed ten
+checks. Fresh checks pinned the migrated source movie and pose and compared the
+complete raw rep and session inventories. The single write requires the target
+document to be absent; an existing empty document is also protected. A lost
+acknowledgement is reconciled by readback without automatic resubmission.
+Withdrawing the estimate requires a fresh document-version check and must not
+erase a later review. Earlier category-migration journals remain unchanged.

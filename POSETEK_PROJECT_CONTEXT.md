@@ -73,6 +73,32 @@ assessment using both stated goals. No workout plan was generated or activated.
 Native display and the outstanding
 Mac/iPhone/TestFlight acceptance are unchanged.
 
+### Data-only follow-up: additional provisional Dribbling evidence
+
+One additional reviewed Dribbling estimate was created at
+`2026-09-17T23:01:06.940559Z`, using the existing authenticated reader and website.
+The earlier feasibility summary had confused the proportion of the return leg
+observed with the proportion of the full out-and-back course. Independent review
+corrected that interpretation: full-course coverage is
+`1 - remainingReturnFraction / 2`. The existing 75-percent Dribbling eligibility
+threshold and `constant_return_pace_v1` method were retained.
+
+The create-only publication adds one private document and one estimate, bringing
+the reviewed total to four entries across three players: three Dribbling and one
+Agility. The original detected start remains an explicit assumption and the
+finish remains unrecorded. No rep, session, recording or measured result was
+rewritten; the existing qualified agility result is preserved. There was no new
+deployment or code, rules, configuration or guard change. The current version-4
+reader, 510-file baseline and all 32 archive guards remain in place. See the
+[data-only receipt](deployment/PROVISIONAL_DRIBBLING_DATA_FOLLOWUP.json) and
+[Dribbling handoff](docs/PROVISIONAL_DRIBBLING_RECOVERY.md#additional-data-only-follow-up).
+Authenticated readback at `2026-09-17T23:02:24.400Z` matched the reviewed estimate,
+preserved measured rows exactly and omitted private provenance. Production
+profile and planner checks passed with an explicit estimated label, sensitivity
+range and optional low-confidence context. No workout plan was generated or
+activated.
+Earlier production receipts remain immutable records of their checkpoints.
+
 ### Previous release: Reviewed provisional Dribbling evidence
 
 Deployment `6aac666c61025a8e62e8c399` was published at https://posetek.net on
