@@ -6,16 +6,29 @@ business document is included.
 
 ## Readiness and source provenance
 
-### September 16 measurement recovery
+### Vacaville measurement recovery
 
-After the ownership repair, eleven failed attempts were repaired in place on
-September 17 using reviewed original recordings and audited admin revisions.
-Twelve attempts still require complete footage or retesting. Original videos,
-failure reports, fourteen duplicate documents and the audit workbook were
-preserved. This data repair made no deployment changes. See
+The September 17 first pass repaired eleven failed September 16 attempts using
+original recordings and audited revisions. The second pass corrected eight more
+numerical results: four August change-of-direction times, one September 16
+dribbling time and three broad jumps. A further mislabeled broad jump was
+reclassified without a numeric result because its landing was not measurable.
+Category migrations preserve the same rep IDs, recording dates and original
+files, with explicit session and server-owned duplicate corrections. The user
+confirmed the 5.875-inch black marker; the four first-pass jump repairs already
+used that calibration and remain unchanged.
+
+The first pass made no deployment changes. The second pass extended the existing
+video processor's exact archive guard to 26 entries in verified revision
+`onvideoupload-00025-vic`, with source unchanged. Preserve that environment map
+during later deployments. The concurrent application/reader remediation has its
+own release receipts and is not a website release performed by this data repair.
+Twelve original failures and one newly identified incomplete broad jump still
+require complete footage or retesting. See
 [`docs/VACAVILLE_REP_RECOVERY.md`](docs/VACAVILLE_REP_RECOVERY.md) for evidence,
-verification and the additional jump-artifact recovery boundary. Earlier release
-checkpoint totals below describe their original observation, before this repair.
+the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
+and the expanded rollback boundary. Earlier release checkpoint totals below
+remain records of their original observation.
 
 ### Current release: Expanded Insights
 
