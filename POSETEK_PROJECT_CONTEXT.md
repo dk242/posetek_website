@@ -1,10 +1,29 @@
 # PoseTek website project context
 
-Reviewed on September 16, 2026. This guide summarizes the available repository and
+Reviewed on September 17, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
 ## Readiness and source provenance
+
+### Vacaville ownership and organization access repair
+
+The September 16 collection cleanup was applied and independently verified on
+September 17, 2026 UTC. It corrected organization/team assignments, consolidated
+duplicate athlete profiles into the selected existing profile, transferred
+misattributed recordings into another existing profile, and restored the director's
+canonical manager access. The operator confirmed all four teams are visible in
+the mobile app. Recorded measurements and timestamps were preserved; suspected
+duplicate processing results remain flagged for a separate audit.
+
+The website and mobile deployments were unchanged. A narrow archive guard was
+deployed to the existing legacy Storage upload processor before copying video
+objects; its private path/checksum coverage also protects rollback restores.
+Read [`docs/VACAVILLE_DATA_REPAIR.md`](docs/VACAVILLE_DATA_REPAIR.md) for the generic
+repair tool, verified aggregate results, guard revision and recovery requirements.
+Private manifests, athlete data, signup codes, backups and runtime configuration
+remain excluded from Git. Historical production and migration receipts remain
+unchanged.
 
 ### Feed stack recovered for the shared repository
 
