@@ -11,16 +11,16 @@ export function WeeklyRepsChart({ labels, values }: { labels: string[]; values: 
     if (!canvas) return;
     const chart = new Chart(canvas, {
       type: "bar",
-      data: { labels, datasets: [{ label: "Reps", data: values, backgroundColor: "#b7f34a", borderRadius: 4, borderSkipped: "bottom", maxBarThickness: 36 }] },
+      data: { labels, datasets: [{ label: "Recording documents", data: values, backgroundColor: "#b7f34a", borderRadius: 4, borderSkipped: "bottom", maxBarThickness: 36 }] },
       options: {
         maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: any) => `${item.formattedValue} reps` } } },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: any) => `${item.formattedValue} recording documents` } } },
         scales: { x: { ...AXIS, grid: { display: false } }, y: { ...AXIS, beginAtZero: true, ticks: { ...AXIS.ticks, precision: 0 } } },
       },
     });
     return () => chart.destroy();
   }, [labels, values]);
-  return <div className="insights-chart"><canvas ref={canvasRef} role="img" aria-label="Team reps recorded per week" /></div>;
+  return <div className="insights-chart"><canvas ref={canvasRef} role="img" aria-label="Team recording documents per week" /></div>;
 }
 
 export function MetricTrendChart({ label, unit, labels, values }: { label: string; unit: string; labels: string[]; values: (number | null)[] }) {

@@ -87,9 +87,13 @@ describe("team rollups", () => {
 describe("lastActiveText", () => {
   const now = Date.UTC(2026, 8, 16, 12);
   it("describes recency in days", () => {
-    expect(lastActiveText(null, now)).toBe("No dated reps");
+    expect(lastActiveText(null, now)).toBe("No dated recordings");
     expect(lastActiveText(now - 60_000, now)).toBe("Today");
     expect(lastActiveText(now - DAY, now)).toBe("Yesterday");
     expect(lastActiveText(now - 9 * DAY, now)).toBe("9 days ago");
+  });
+  it("uses UTC calendar days across midnight rather than elapsed 24-hour periods", () => {
+    expect(lastActiveText(Date.UTC(2026, 8, 16, 23, 59), Date.UTC(2026, 8, 17, 0, 1))).toBe("Yesterday");
+    expect(lastActiveText(Date.UTC(2026, 8, 17, 0, 1), Date.UTC(2026, 8, 17, 23, 59))).toBe("Today");
   });
 });

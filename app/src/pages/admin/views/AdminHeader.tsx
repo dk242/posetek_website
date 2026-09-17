@@ -1,4 +1,6 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { accountContext } from "../lib/accountHierarchy";
+import { insightsLink } from "../../insights/lib/navigation";
 
 const SECTIONS = [
   { path: "feeds", icon: "dynamic_feed", label: "Community feeds", short: "Feeds" },
@@ -6,6 +8,7 @@ const SECTIONS = [
   { path: "organizations", icon: "groups", label: "Organizations", short: "Clubs" },
   { path: "accounts", icon: "supervisor_account", label: "Monitor accounts", short: "Accounts" },
   { path: "programs", icon: "auto_awesome", label: "Personalized planner", short: "Planner" },
+  { path: "insights", icon: "monitoring", label: "Team Insights", short: "Insights" },
 ];
 
 export default function AdminHeader({ ready, email, onSignOut }: {
@@ -13,6 +16,8 @@ export default function AdminHeader({ ready, email, onSignOut }: {
   email?: string;
   onSignOut: () => void;
 }) {
+  const location = useLocation();
+  const insightsPath = insightsLink(accountContext(location.search), "accounts");
   return (
     <header className="portal-header admin-header">
       <Link className="portal-brand" to="/admin" aria-label="PoseTek admin home">
@@ -24,7 +29,7 @@ export default function AdminHeader({ ready, email, onSignOut }: {
         <nav className="admin-nav" aria-label="Admin sections">
           {SECTIONS.map(section => (
             <NavLink key={section.path} className={({ isActive }) => `quiet-button admin-nav-link${isActive ? " active" : ""}`}
-              to={`/admin/${section.path}`} aria-label={section.label}>
+              to={section.path === "insights" ? insightsPath : `/admin/${section.path}`} aria-label={section.label}>
               <span className="material-symbols-outlined" aria-hidden="true">{section.icon}</span>
               <span className="admin-nav-full">{section.label}</span>
               <span className="admin-nav-short" aria-hidden="true">{section.short}</span>

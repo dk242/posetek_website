@@ -28,14 +28,16 @@ const insights: ClubInsights = {
 describe("InsightsReport", () => {
   it("summarizes the team and lists every player with weekly counts", () => {
     const html = renderToStaticMarkup(<InsightsReport insights={insights} />);
-    expect(html).toContain("<span>Active this week</span><strong>1</strong><em>of 2</em>");
-    expect(html).toContain("<span>Reps this week</span><strong>4</strong>");
+    expect(html).toContain("<span>Players recording this week</span><strong>1</strong><em>of 2</em>");
+    expect(html).toContain("<span>Recording documents this week</span><strong>4</strong>");
     expect(html).toContain("<span>5 total</span>");
     expect(html).toContain(">Sep 7</th>");
     expect(html).toContain(">Sep 14</th>");
     expect(html).toContain("Zoe &lt;Park&gt;");
     expect(html).not.toContain("<Park>");
-    expect(html).toContain("No dated reps");
+    expect(html).toContain("No dated recordings");
+    expect(html).toContain("Latest recording (UTC)");
+    expect(html).toContain("Recording dates and weeks use UTC");
     expect(html.indexOf("Zoe")).toBeLessThan(html.indexOf("Ada"));
     expect(html).not.toContain("insights-detail");
     expect(html).not.toContain("Only the first");
@@ -46,9 +48,21 @@ describe("InsightsReport", () => {
     const html = renderToStaticMarkup(<InsightsReport insights={insights} initialOpenPlayer="zoe" />);
     expect(html).toContain('aria-expanded="true"');
     expect(html).toContain("Sprint <strong>3</strong>");
-    expect(html).toContain("2 reps have no recorded date");
+    expect(html).toContain("2 recording documents have no usable date");
     expect(html).toContain("6.40 s → 5.90 s <em>Improving</em>");
     expect(html).toContain("18.3 mph → 16.8 mph <em>Declining</em>");
     expect((html.match(/<canvas/g) ?? []).length).toBe(3);
+  });
+  it("discloses incomplete history and future dates without calling document counts successful tests", () => {
+    const partial = { ...insights, historyTruncated: true, repLimitPerPlayer: 1000, recordedDocumentsRead: 1000,
+      players: [{ ...insights.players[0], repsTruncated: true, recordedDocumentsRead: 1000, futureDatedReps: 2 }] };
+    const html = renderToStaticMarkup(<InsightsReport insights={partial} initialOpenPlayer="zoe" playerLink={id => `/athlete?player=${id}&orgId=club&teamId=a`} />);
+    expect(html).toContain("Partial history");
+    expect(html).toContain("1000-document read limit");
+    expect(html).toContain("not complete or necessarily recent history");
+    expect(html).toContain("2 future-dated recording documents");
+    expect(html).toContain("including failed or duplicate outputs");
+    expect(html).toContain('href="/athlete?player=zoe&amp;orgId=club&amp;teamId=a"');
+    expect(html).not.toContain("Only the first");
   });
 });

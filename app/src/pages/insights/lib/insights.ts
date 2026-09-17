@@ -11,6 +11,9 @@ export interface InsightPlayer {
   lastName: string;
   lastActiveMillis: number | null;
   undatedReps: number;
+  futureDatedReps?: number;
+  repsTruncated?: boolean;
+  recordedDocumentsRead?: number;
   weeklyReps: number[];
   drillCounts: Record<string, number>;
   metrics: InsightMetric[];
@@ -22,6 +25,9 @@ export interface ClubInsights {
   teamName: string;
   generatedAtMillis: number;
   rosterTruncated: boolean;
+  historyTruncated?: boolean;
+  repLimitPerPlayer?: number;
+  recordedDocumentsRead?: number;
   weeks: number[];
   players: InsightPlayer[];
 }
@@ -115,8 +121,8 @@ export function teamSummary(insights: Pick<ClubInsights, "weeks" | "players">) {
 }
 
 export function lastActiveText(lastActiveMillis: number | null, nowMillis: number): string {
-  if (lastActiveMillis === null) return "No dated reps";
-  const days = Math.floor((nowMillis - lastActiveMillis) / DAY_MS);
+  if (lastActiveMillis === null) return "No dated recordings";
+  const days = Math.floor(nowMillis / DAY_MS) - Math.floor(lastActiveMillis / DAY_MS);
   if (days <= 0) return "Today";
   if (days === 1) return "Yesterday";
   return `${days} days ago`;

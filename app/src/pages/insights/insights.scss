@@ -7,7 +7,7 @@
   .portal-header .portal-brand { margin-right: auto; }
 
   .insights-card { background: #0c2119; border: 1px solid #264137; border-radius: 18px; padding: 22px; margin-top: 20px; }
-  .insights-section-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .insights-section-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
   .insights-section-title > span { color: var(--muted); font-size: 14px; }
 
   label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #c8d8cf; }
@@ -17,8 +17,8 @@
   .insights-filters { align-items: end; }
   .insights-filters > label { flex: 1 1 200px; }
   .insights-filters > button { min-height: 44px; }
-  .insights-sort { flex-direction: row; align-items: center; }
-  .insights-sort select { width: auto; min-height: 38px; }
+  .insights-sort { flex-direction: row; align-items: center; min-width: 0; max-width: 100%; }
+  .insights-sort select { width: auto; min-width: 0; max-width: 100%; min-height: 38px; }
 
   .insights-message.error { color: var(--danger); }
   .insights-note { font-size: 13px; margin: 14px 0 0; }

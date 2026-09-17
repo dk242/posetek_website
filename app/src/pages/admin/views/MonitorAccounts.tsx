@@ -6,6 +6,7 @@ import { accountContext, accountQuery, hasClubIdentity, legacyCoachGroups, staff
 import type { AccountContext, ClubStaff, HierarchyTeam } from "../lib/accountHierarchy";
 import { useAccountLoad } from "../lib/useAccountLoad";
 import PlayerRosterRow, { AccountAvatar } from "./PlayerRosterRow";
+import { insightsLink } from "../../insights/lib/navigation";
 
 async function directory() {
   const [orgs, coaches, index] = await Promise.all([loadOrganizations(), loadCoaches(), loadPlayerIndex()]);
@@ -61,6 +62,7 @@ function ClubOrganization({ org, selected, choose }: { org: OrganizationRow; sel
   const { context, hierarchy } = state.data;
   return <>
     <p className="admin-note">{hierarchy.players.length} athletes · {hierarchy.teams.length} teams · {hierarchy.coaches.length} active coaches</p>
+    <Link className="quiet-button" to={insightsLink({ orgId: org.id, teamId: hierarchy.teams.some(row => row.team.id === selected.teamId) ? selected.teamId : undefined }, "accounts")}>Team Insights</Link>
     {hierarchy.limits.map(message => <p className="form-message" role="status" key={message}>{message}</p>)}
     <h3 className="admin-subhead">Organization managers</h3>
     {hierarchy.managers.length ? hierarchy.managers.map(member => <StaffRow key={member.userUID} member={member} orgId={org.id} detail="Access to all teams" />) : <p className="admin-empty">No active organization managers.</p>}
@@ -89,7 +91,7 @@ export function TeamRoster({ row, selected, choose }: { row: HierarchyTeam; sele
     <button type="button" className="admin-row admin-team-toggle" aria-expanded={open} onClick={() => choose({ ...context, teamId: open ? undefined : row.team.id })}>
       <span className="material-symbols-outlined" aria-hidden="true">{open ? "expand_more" : "chevron_right"}</span><span className="admin-row-copy"><strong>{row.team.name}</strong>
         <span className="admin-row-meta">{row.players.length} {row.players.length === 1 ? "athlete" : "athletes"} · {row.coaches.map(staffName).join(", ") || "No linked coach account"}</span></span></button>
-    {open && <div className="admin-team-players">{!row.players.length && <p className="admin-empty">No athletes on this team yet.</p>}
+    {open && <div className="admin-team-players"><Link className="quiet-button" to={insightsLink(context, "accounts")}>Team Insights</Link>{!row.players.length && <p className="admin-empty">No athletes on this team yet.</p>}
       {row.players.map(player => <PlayerRosterRow key={player.id} player={player} compact context={context} />)}</div>}
   </div>;
 }

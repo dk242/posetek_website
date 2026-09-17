@@ -4,7 +4,7 @@ const fs = require('node:fs'), path = require('node:path'), http = require('node
 const httpOnly = process.argv.includes('--http-only');
 const root = path.resolve(__dirname, '..'), dist = path.join(root, 'production-dist');
 const out = path.join(root, 'app/node_modules/.cache/planner-entry-tests');
-const cases = ['/signin', '/privacy', '/profile.html', '/admin', '/admin/', '/admin/programs', '/admin/programs/personalized?orgId=club&players=p',
+const cases = ['/signin', '/privacy', '/profile.html', '/insights', '/insights?orgId=club&teamId=team&weeks=12', '/dashboard', '/admin', '/admin/', '/admin/programs', '/admin/programs/personalized?orgId=club&players=p',
   '/admin/organizations', '/admin/accounts', '/admin/accounts/coach/c', '/admin/accounts/player/p',
   '/admin/accounts/player/p/plan/a/workout/w', '/admin/drills', '/admin/drills/d/edit',
   '/admin/analysis', '/admin/analysis/', '/admin/accounts/player/p/results',

@@ -16,6 +16,7 @@ import type { AthleteBundle, PlanJobState } from "./lib/data";
 import { PREVIEW_BUNDLES, PREVIEW_PLAYERS } from "./lib/preview";
 import Overview from "./views/Overview";
 import AthleteDetail from "./views/AthleteDetail";
+import { createInsightsRequestGuard, dashboardPlayerQuery, insightsLink } from "../insights/lib/navigation";
 import "../../styles/pose-portal.css";
 import "./coach-dashboard.scss";
 
@@ -31,6 +32,8 @@ export default function CoachDashboardPage() {
   const [boot, setBoot] = useState<Boot>({ kind: "loading", note: "Checking your sign-in…" });
   const [orgLabel, setOrgLabel] = useState("Coach dashboard");
   const [players, setPlayers] = useState<any[]>([]);
+  const [clubSelection, setClubSelection] = useState<{ orgId: string; teamId: string } | null>(null);
+  const bootGuard = useRef(createInsightsRequestGuard(() => auth.currentUser?.uid)).current;
   const [bundles, setBundles] = useState<Record<string, AthleteBundle>>({});
   const [jobs] = useState<Record<string, PlanJobState>>({});
 
@@ -46,8 +49,14 @@ export default function CoachDashboardPage() {
   }, []);
 
   const boot_ = useCallback(async (user: any) => {
+    const isCurrent = bootGuard.begin(user.uid);
+    setPlayers([]); setBundles({}); setClubSelection(null);
     setBoot({ kind: "loading", note: "Loading your roster…" });
-    const context = await loadCoachContext(user, new URLSearchParams(window.location.search).get("team"));
+    try {
+    const query = new URLSearchParams(window.location.search);
+    const context = await loadCoachContext(user, query.get("teamId") || query.get("team"), query.get("orgId") || undefined);
+    if (!isCurrent()) return;
+    setClubSelection(context.organizationId && context.teamId ? { orgId: context.organizationId, teamId: context.teamId } : null);
     setOrgLabel(context.orgLabel);
     setPlayers(context.players);
     setBoot({ kind: "loading", note: "Crunching athlete data…" });
@@ -61,9 +70,15 @@ export default function CoachDashboardPage() {
         return [player.id, { reps: [], plans: [], logs: [] }] as const;
       }
     }));
+    if (!isCurrent()) return;
     setBundles(Object.fromEntries(loaded));
     setBoot({ kind: "ready" });
-  }, []);
+    } catch (error: any) {
+      if (!isCurrent()) return;
+      setPlayers([]); setBundles({}); setClubSelection(null);
+      setBoot({ kind: "error", message: error.message || "Please refresh and try again." });
+    }
+  }, [bootGuard]);
 
   const preview = searchParams.get("preview") === "1";
 
@@ -78,16 +93,15 @@ export default function CoachDashboardPage() {
     }
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (!user) {
+        bootGuard.cancel(); setClubSelection(null); setPlayers([]); setBundles({});
         if (!signingOutRef.current) navigate("/signin", { replace: true });
         return;
       }
-      boot_(user).catch(error => {
-        console.error("[dashboard]", error);
-        setBoot({ kind: "error", message: error.message || "Please refresh and try again." });
-      });
+      void boot_(user);
     });
     const subscriptions = unsubscribersRef.current;
     return () => {
+      bootGuard.cancel();
       unsubscribe();
       subscriptions.forEach(stop => stop());
     };
@@ -116,8 +130,8 @@ export default function CoachDashboardPage() {
   const createPlansForAll = useCallback(async () => {
     if (preview) return;
     const ids = summaries.filter(summary => !summary.plan).map(summary => summary.athlete.id);
-    navigate("/programs?" + new URLSearchParams({ players: ids.join(",") }));
-  }, [summaries, preview, navigate]);
+    navigate("/programs?" + new URLSearchParams({ players: ids.join(","), ...(clubSelection || {}) }));
+  }, [summaries, preview, navigate, clubSelection]);
 
   async function handleSignOut() {
     signingOutRef.current = true;
@@ -126,13 +140,8 @@ export default function CoachDashboardPage() {
   }
 
   const selectAthlete = useCallback((id: string | null) => {
-    const params: Record<string, string> = {};
-    const team = searchParams.get("team");
-    if (team) params.team = team;
-    if (preview) params.preview = "1";
-    if (id) params.athlete = id;
-    setSearchParams(params, { replace: false });
-  }, [setSearchParams, preview, searchParams]);
+    setSearchParams(dashboardPlayerQuery(searchParams.toString(), clubSelection, id), { replace: false });
+  }, [setSearchParams, searchParams, clubSelection]);
 
   const selected = selectedId ? summaries.find(summary => summary.athlete.id === selectedId) : null;
 
@@ -198,6 +207,7 @@ export default function CoachDashboardPage() {
           <span>POSETEK</span>
         </Link>
         <nav className="coachdash-nav">
+          {clubSelection && !preview && <Link className="quiet-button" to={insightsLink(clubSelection, "dashboard")}><span className="material-symbols-outlined">monitoring</span><span>Team Insights</span></Link>}
           <Link className="quiet-button" to="/roster?userType=coach">
             <span className="material-symbols-outlined">groups</span>
             <span>Roster</span>

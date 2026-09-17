@@ -4,7 +4,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { getClubContext, loadClubPlayers } from "../../../lib/organization-data";
+import { getClubContext } from "../../../lib/organization-data";
 import { selectedTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
 import firebase, { auth, db } from "../../../lib/firebase";
@@ -24,14 +24,20 @@ export interface CoachContext {
   coachDoc: any;
   orgLabel: string;
   players: any[];
+  organizationId?: string;
+  teamId?: string;
 }
 
-export async function loadCoachContext(user: any, requestedTeamId: string | null = null): Promise<CoachContext> {
-  const club = await getClubContext();
+export async function loadCoachContext(user: any, requestedTeamId: string | null = null, organizationId?: string): Promise<CoachContext> {
+  const club = await getClubContext(organizationId);
   if (club.role === "coach" && club.organization) {
     const team = selectedTeam(club.teams, requestedTeamId);
     if (!team) throw new Error("Choose a team from your organization before opening the dashboard.");
-    return { coachDoc: await findCoach(user.uid), orgLabel: `${club.organization.name} · ${team.name}`, players: await loadClubPlayers(team) };
+    const ids = [...new Set(club.players.filter(player => player.organizationId === club.organization!.id && player.teamId === team.id).map(player => player.id))];
+    const docs = await Promise.all(ids.map(id => db.collection("players").doc(id).get()));
+    const players = docs.filter(doc => doc.exists && doc.data()?.organizationId === club.organization!.id && doc.data()?.teamId === team.id)
+      .map(doc => ({ ...doc.data(), id: doc.id }));
+    return { coachDoc: await findCoach(user.uid), orgLabel: `${club.organization.name} · ${team.name}`, players, organizationId: club.organization.id, teamId: team.id };
   }
   if (club.role === "manager" || club.role === "admin") throw new Error("Open your organization to review its teams and athlete results.");
   const coachDoc = await findCoach(user.uid);

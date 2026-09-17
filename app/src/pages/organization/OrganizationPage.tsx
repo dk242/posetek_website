@@ -6,6 +6,7 @@ import type { ClubContext } from "../../lib/organization-data";
 import type { StaffRole } from "../../lib/organization";
 import { accountContext, accountQuery } from "../admin/lib/accountHierarchy";
 import { organizationPlayerPath } from "../athlete-portal/lib/navigation";
+import { insightsLink } from "../insights/lib/navigation";
 import "../../styles/pose-portal.css";
 import "./organization.scss";
 
@@ -163,7 +164,7 @@ export default function OrganizationPage({ admin = false }: { admin?: boolean })
         {(context.players.length >= 2000 || context.teams.length >= 100 || context.staff.length >= 100) && <p className="club-message" role="status">The organization service reached a roster limit. Contact PoseTek if a team, staff member or athlete is missing.</p>}
         {manager && <form className="club-inline" onSubmit={event => { event.preventDefault(); void mutate(async isCurrent => { const result = await clubCall<{ teamId: string }>("saveClubTeam", { organizationId, name: teamName.trim() }); if (isCurrent()) setTeamName(""); return result; }, "Team created."); }}><label>New team name<input required maxLength={120} value={teamName} onChange={event => setTeamName(event.target.value)} /></label><button className="primary-cta" disabled={busy}>Add team</button></form>}
       </section>
-      {team && <section className="club-card"><div className="club-section-title"><h2>{team.name}</h2><Link className="quiet-button" to={`${admin ? "/admin/programs" : "/programs"}${accountQuery({ orgId: organizationId, teamId: team.id })}`}>Personalized programs</Link>{context.role === "coach" && <Link className="quiet-button" to={`/dashboard?team=${encodeURIComponent(team.id)}`}>Team dashboard</Link>}</div>
+      {team && <section className="club-card"><div className="club-section-title"><h2>{team.name}</h2><Link className="quiet-button" to={insightsLink({ orgId: organizationId, teamId: team.id }, "organization")}>Team Insights</Link><Link className="quiet-button" to={`${admin ? "/admin/programs" : "/programs"}${accountQuery({ orgId: organizationId, teamId: team.id })}`}>Personalized programs</Link>{context.role === "coach" && <Link className="quiet-button" to={`/dashboard?team=${encodeURIComponent(team.id)}&orgId=${encodeURIComponent(organizationId)}&teamId=${encodeURIComponent(team.id)}`}>Team dashboard</Link>}</div>
         {manager && <form className="club-inline" onSubmit={event => { event.preventDefault(); void mutate(() => clubCall("saveClubTeam", { organizationId, teamId, name: editTeamName.trim() }), "Team renamed."); }}><label>Team name<input required maxLength={120} value={editTeamName} onChange={event => setEditTeamName(event.target.value)} /></label><button className="quiet-button" disabled={busy}>Save name</button></form>}
         <div className="club-player-list">{players.length ? players.map(player => <div className="club-player" key={player.id}><Link to={organizationPlayerPath(player, admin)}><strong>{player.firstName} {player.lastName}</strong><span>Open profile and results</span></Link>{player.canIssueSignupCode === true && <button className="quiet-button" disabled={busy} onClick={() => void mutate(async isCurrent => {
           const result = await clubCall<{ code: string }>("issueClubPlayerInvitation", { organizationId, playerId: player.id });

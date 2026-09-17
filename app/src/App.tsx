@@ -10,8 +10,7 @@ const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
 const CoachDashboardPage = lazy(() => import("./pages/coach-dashboard/CoachDashboardPage"));
 const AthletePortalPage = lazy(() => import("./pages/athlete-portal/AthletePortalPage"));
 const DrillSharePage = lazy(() => import("./pages/drill-share/DrillSharePage"));
-// Teammate prototype remains available locally; its callable has not been released.
-const InsightsPage = import.meta.env.DEV ? lazy(() => import("./pages/insights/InsightsPage")) : null;
+const InsightsPage = lazy(() => import("./pages/insights/InsightsPage"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 const ProgramsPage = lazy(() => import("./pages/programs/ProgramsPage"));
 const PrivacyPage = lazy(() => import("./pages/privacy/PrivacyPage"));
@@ -51,7 +50,7 @@ export default function App() {
 
           <Route path="/dashboard" element={<CoachDashboardPage />} />
           <Route path="/programs" element={<ProgramsPage />} />
-          {InsightsPage && <Route path="/insights" element={<InsightsPage />} />}
+          <Route path="/insights" element={<InsightsPage />} />
 
           {/* The admin console mounts its own nested routes; `/*` is what lets
               it own /admin/drills, /admin/accounts and everything under them. */}
