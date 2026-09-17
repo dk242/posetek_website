@@ -279,7 +279,8 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
       </section>
       <section className="personalized-card" id="planner-schedule"><h2>2. Goals & training schedule</h2>
         <p className="personalized-meta">Choose a realistic weekly commitment. The draft will show how that time supports the player’s priorities.</p>
-        <fieldset><legend>Choose up to two goals</legend><div className="personalized-equipment">{PLANNER_GOALS.map(goal => <label key={goal.id}><input type="checkbox" checked={goals.includes(goal.id)} disabled={busy || (!goals.includes(goal.id) && goals.length >= 2)} onChange={() => setGoals(old => old.includes(goal.id) ? old.filter(g => g !== goal.id) : [...old, goal.id])} />{goal.label}</label>)}</div></fieldset>
+        <p className="personalized-meta">Leave the goals unchecked to let the player’s test results guide priorities. Select up to two when you want additional coaching emphasis.</p>
+        <fieldset><legend>Optional coaching goals</legend><div className="personalized-equipment">{PLANNER_GOALS.map(goal => <label key={goal.id}><input type="checkbox" checked={goals.includes(goal.id)} disabled={busy || (!goals.includes(goal.id) && goals.length >= 2)} onChange={() => setGoals(old => old.includes(goal.id) ? old.filter(g => g !== goal.id) : [...old, goal.id])} />{goal.label}</label>)}</div></fieldset>
         <p className="personalized-meta">Speed focuses on straight-line running. Agility focuses on braking and changing direction.</p>
         <>
           <label className="personalized-checkbox"><input type="checkbox" checked={useEstimates} disabled={busy} onChange={e => setUseEstimates(e.target.checked)} />Use reviewed estimates, when available, as low-confidence coaching context</label>
