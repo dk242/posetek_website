@@ -1,0 +1,45 @@
+/* Existing PoseTek header tokens remain the visual authority. The audience
+   links stay visible independently of the section-navigation disclosure. */
+.pt-home .marketing-header .nav-shell { gap: 22px; }
+.pt-home .marketing-header .brand { flex-shrink: 0; }
+.pt-home .marketing-header .nav-links { gap: 20px; }
+.pt-home .marketing-header .nav-actions { gap: 18px; flex-shrink: 0; }
+.pt-home .marketing-header .nav-links a,
+.pt-home .marketing-header .nav-actions a { white-space: nowrap; }
+.pt-home .marketing-header .audience-switch { display: flex; flex-shrink: 0; padding: 3px; border: 1px solid var(--line); border-radius: 6px; background: #071b13; }
+.pt-home .marketing-header .audience-switch a { display: flex; align-items: center; justify-content: center; min-height: 38px; padding-inline: 13px; border-radius: 3px; color: var(--muted); font-size: 11px; font-weight: 600; }
+.pt-home .marketing-header .audience-switch a:hover { color: var(--ink); background: #ffffff09; }
+.pt-home .marketing-header .audience-switch a[aria-current="page"] { background: var(--lime); color: #102015; }
+.pt-home .marketing-header .nav-links .marketing-menu-signin,
+.pt-home .marketing-header .nav-links .marketing-menu-cta { display: none; }
+
+@media (max-width: 1180px) {
+  .pt-home .marketing-header .nav-shell { height: 70px; gap: 18px; }
+  .pt-home .marketing-header .nav-actions { margin-left: auto; }
+  .pt-home .marketing-header .nav-login { display: none; }
+  .pt-home .marketing-header .nav-links { display: none; position: absolute; left: 20px; right: 20px; top: 70px; max-height: calc(100dvh - 90px); overflow-y: auto; margin: 0; background: #0a2418; border: 1px solid var(--line); padding: 16px; border-radius: 0 0 7px 7px; }
+  .pt-home .marketing-header.menu-open .nav-links { display: grid; gap: 0; }
+  .pt-home .marketing-header .nav-links a { display: flex; min-height: 46px; align-items: center; justify-content: space-between; }
+  .pt-home .marketing-header .nav-links .marketing-menu-signin { display: flex; border-top: 1px solid var(--line); margin-top: 8px; }
+  .pt-home .marketing-header .menu-button { display: grid; place-content: center; flex-shrink: 0; gap: 5px; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 4px; background: transparent; }
+  .pt-home .marketing-header .menu-button span { width: 16px; height: 1px; background: var(--ink); transition: transform .2s; }
+  .pt-home .marketing-header.menu-open .menu-button span:first-child { transform: translateY(3px) rotate(45deg); }
+  .pt-home .marketing-header.menu-open .menu-button span:last-child { transform: translateY(-3px) rotate(-45deg); }
+}
+
+@media (max-width: 700px) {
+  .pt-home .marketing-header .brand-wordmark { display: none; }
+}
+
+@media (max-width: 600px) {
+  .pt-home .marketing-header .nav-shell { gap: 10px; }
+  .pt-home .marketing-header .audience-switch { margin-inline: auto; }
+  .pt-home .marketing-header .audience-switch a { min-height: 38px; padding-inline: 14px; }
+  .pt-home .marketing-header .nav-actions { display: none; }
+  .pt-home .marketing-header .nav-links .marketing-menu-cta { display: flex; justify-content: center; gap: 12px; margin-top: 8px; border-radius: 4px; background: var(--lime); color: #102015; font-weight: 700; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-home .marketing-header,
+  .pt-home .marketing-header .menu-button span { transition: none; }
+}

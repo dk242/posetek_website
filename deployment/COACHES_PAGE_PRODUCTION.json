@@ -1,0 +1,58 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aab9fbaa73be75422324ba4",
+  "state": "ready",
+  "publishedAt": "2026-09-17T08:10:47.595Z",
+  "publishedLocal": "September 17, 2026, 1:10:47 AM PDT",
+  "url": "https://posetek.net/coaches",
+  "immutableUrl": "https://6aab9fbaa73be75422324ba4--posetek.netlify.app/coaches",
+  "releaseMethod": "Reviewed draft promoted unchanged; GitHub source updated with [skip netlify]",
+  "sourceBase": "609faa0",
+  "changes": [
+    "Isolated public Coaches page with dedicated metadata and canonical URL",
+    "Persistent Players / Coaches audience links on desktop and phones",
+    "Illustrative club, team, and player selection with five-area profiles",
+    "Plan / Train / Retest follows one selected player with approved phone drill demonstrations",
+    "Tailored team service and email enquiry to dylank@posetek.net"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "result": "byte-for-byte unchanged, including application.html and navigation bridge",
+    "playerPage": "Existing body, demos, and media unchanged; shared header adds audience navigation",
+    "backend": "No API, database, permissions, authentication, Firebase, or mobile changes",
+    "collaboration": "Isolated worktree from shared main; concurrent parent-checkout edits excluded"
+  },
+  "publishedInventory": {
+    "fileCount": 204,
+    "matchedProductionDistFiles": 203,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homeAndCoachesTests": 141,
+    "testFiles": 19,
+    "navigationBuildAndPreviewTests": 15,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed; existing lazy 3D chunk warning remains",
+    "draftAndLiveHttp": {
+      "playerRoutes": 2,
+      "coachesRoutes": 3,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "marketingAssets": 30,
+      "result": "passed; marketing hashes and full published inventory match local output"
+    },
+    "browser": "Edge responsive viewports at 1440, 820, 390, and 320px; team/player selection; journey reset; Plan/Train/Retest; both approved clips; native keyboard activation; mobile menu Escape focus return; audience navigation and Back/Forward; direct coaches URL and refresh; section links; contact hrefs; no horizontal overflow or captured console errors/warnings",
+    "playerRegression": "Existing pose/performance recordings, training demo, AI Coach metric selection, technique demo, and phone preview render; home/coaches test suite passed",
+    "reducedMotion": "Reviewed MotionConfig, shared BlurFade useReducedMotion behavior, media-query scroll handling, and animation/transition overrides in source",
+    "limitations": "Physical iOS/Safari, OS reduced-motion browser emulation, and authenticated application workflows were not exercised; no enquiry email was sent"
+  },
+  "designDecisions": "deployment/COACHES_PAGE_UPDATE.md",
+  "mediaProvenance": "app/src/pages/home/product/media/provenance.json",
+  "rollback": {
+    "deployId": "6aab2fc35884120dc73147f5",
+    "url": "https://6aab2fc35884120dc73147f5--posetek.netlify.app"
+  }
+}

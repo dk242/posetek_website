@@ -13,5 +13,11 @@ export default defineConfig({
     outDir: "marketing-dist",
     emptyOutDir: true,
     assetsDir: "assets",
+    rollupOptions: {
+      input: {
+        players: fileURLToPath(new URL("../index.html", import.meta.url)),
+        coaches: fileURLToPath(new URL("../coaches/index.html", import.meta.url)),
+      },
+    },
   },
 });

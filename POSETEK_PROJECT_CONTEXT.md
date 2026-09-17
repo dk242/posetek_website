@@ -84,7 +84,30 @@ The homepage production build still enforces and preserves its 171-file applicat
 baseline. A future application release needs a separate full application review
 and deliberate baseline reconciliation.
 
-### Current revision: two drill videos and interactive coach results
+### Current revision: public coaches and clubs page
+
+Deployment `6aab9fbaa73be75422324ba4` was published September 17, 2026 at
+1:10:47 AM PDT (08:10:47.595 UTC). `/coaches` is a separate marketing entry,
+linked through a persistent Players / Coaches switch on both audience pages.
+The player-page body is unchanged. The new page presents a tailored team-by-team
+service: discuss the teams, arrange testing, and agree ongoing support.
+
+Fictional Northfield FC examples connect club/team selection, individual profiles,
+and Plan / Train / Retest. The phone uses the two approved drill clips. Admin
+inspection informed the club hierarchy and assigned-team coach access; admin-only
+editing tools are not advertised as coach capabilities. No private club/player
+data, fixed packages, cadence promises, or guaranteed improvements are included.
+Team enquiries open an email to `dylank@posetek.net` with a team-enquiry subject.
+
+The draft was promoted unchanged. All 171 application/public baseline files and
+the navigation bridge remain byte-for-byte preserved; no backend, database, rules,
+or authentication changes were deployed. Coaches source lives in
+`app/src/pages/coaches/`; metadata is in `coaches/index.html`. See
+`deployment/COACHES_PAGE_UPDATE.md` and `deployment/COACHES_PAGE_PRODUCTION.json`
+for decisions, verification, and rollback. The work was isolated from concurrent
+admin/training changes in the local checkout and based on shared main `609faa0`.
+
+### Previous revision: two drill videos and interactive coach results
 
 Deployment `6aab2fc35884120dc73147f5` was published September 16, 2026 at
 5:12:05 PM PDT (September 17, 00:12:05.241 UTC). The homepage sample now uses
