@@ -12,6 +12,8 @@ export async function composeApplicationRelease(root) {
   const baseline = JSON.parse(await readFile(join(root, "deployment/homepage-baseline.json"), "utf8"));
   const homepage = await readFile(join(output, "index.html"));
   if (!homepage.toString().includes("<!-- posetek-marketing-entry -->")) throw new Error("Verified homepage output is required");
+  const coaches = await readFile(join(output, "coaches/index.html"));
+  if (!coaches.toString().includes("<!-- posetek-coaches-entry -->")) throw new Error("Verified coaches output is required");
   const entry = await readFile(join(dist, "index.html"), "utf8");
   if (!entry.includes('id="root"') || !entry.includes('type="module"') || entry.includes("/src/") || !entry.includes("/assets/")) throw new Error("Fresh compiled application entry required");
   const before = new Map();
@@ -46,7 +48,8 @@ export async function composeApplicationRelease(root) {
     if (sha(await readFile(join(output, path.slice(1)))) !== sha(bytes)) throw new Error("Unrelated file changed: " + path);
   }
   if (sha(await readFile(join(output, "index.html"))) !== sha(homepage)) throw new Error("Homepage changed during application composition");
-  const receipt = { baselineDeploymentId: baseline.deploymentId, homepageSha: sha(homepage), preservedFiles: before.size - 1,
+  if (sha(await readFile(join(output, "coaches/index.html"))) !== sha(coaches)) throw new Error("Coaches page changed during application composition");
+  const receipt = { baselineDeploymentId: baseline.deploymentId, homepageSha: sha(homepage), coachesSha: sha(coaches), preservedFiles: before.size - 1,
     application: { path: "/application.html", sha: sha(application), size: Buffer.byteLength(application) }, added };
   await mkdir(join(root, ".netlify"), { recursive: true });
   await writeFile(join(root, ".netlify/application-release-build.json"), JSON.stringify(receipt, null, 2) + "\n");

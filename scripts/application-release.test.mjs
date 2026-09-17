@@ -13,6 +13,7 @@ async function fixture(run) {
   const files = new Map([["/application.html", "old entry"], ["/assets/old.js", "old asset"], ["/booking.html", "booking"], ["/marketing/home-navigation.js", "bridge"]]);
   for (const [path, bytes] of files) await put("production-dist" + path, bytes);
   await put("production-dist/index.html", "<!-- posetek-marketing-entry -->homepage");
+  await put("production-dist/coaches/index.html", "<!-- posetek-coaches-entry -->coaches");
   await put("deployment/homepage-baseline.json", JSON.stringify({ deploymentId: "reviewed", files: [...files].map(([path, bytes]) => ({ path, sha: sha(bytes), size: bytes.length })) }));
   await put("dist/index.html", '<html><body><div id="root"></div><script type="module" src="/assets/new.js"></script></body></html>');
   await put("dist/assets/new.js", "new asset");
@@ -26,6 +27,7 @@ test("application composition retains homepage and static files and excludes arb
   const result = await composeApplicationRelease(root);
   assert.equal(result.preservedFiles, 3); assert.equal(result.added.length, 1);
   assert.equal(await readFile(join(root, "production-dist/index.html"), "utf8"), "<!-- posetek-marketing-entry -->homepage");
+  assert.equal(await readFile(join(root, "production-dist/coaches/index.html"), "utf8"), "<!-- posetek-coaches-entry -->coaches");
   assert.match(await readFile(join(root, "production-dist/application.html"), "utf8"), /home-navigation/);
   await assert.rejects(readFile(join(root, "production-dist/private.json")), { code: "ENOENT" });
 }));

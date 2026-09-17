@@ -13,6 +13,7 @@ import { allStatsReps, avatarInitials, fullName } from "./lib/metrics";
 import { VIEW_LABELS } from "./lib/mobile";
 import type { Access, PortalData } from "./lib/loaders";
 import { loadAuthenticated, loadShared } from "./lib/loaders";
+import { athleteRosterNavigation } from "./lib/navigation";
 import { previewData } from "./lib/preview";
 import DrillDashboard from "./views/DrillDashboard";
 import SessionView from "./views/SessionView";
@@ -220,6 +221,7 @@ export default function AthletePortalPage() {
   );
 
   const activeDrill = drillByKey(drill);
+  const rosterNavigation = athleteRosterNavigation(access, athlete, params.toString());
 
   if (phase === 'ready' && (access === 'athlete' || access === 'preview')) {
     return <PlayerExperience key={playerId} ctx={ctx} initialReps={reps} />;
@@ -250,8 +252,8 @@ export default function AthletePortalPage() {
         </a>
         <div className="portal-current-view" id="currentViewLabel">{VIEW_LABELS[view] || "Athlete Home"}</div>
         <div className="portal-header-actions">
-          <Link className="quiet-button" id="rosterLink" to={access === "admin" ? "/admin/organizations" : access === "manager" ? "/organization" : athlete?.teamId ? `/roster?team=${encodeURIComponent(athlete.teamId)}` : "/roster?userType=coach"} hidden={!access || !["coach", "manager", "admin"].includes(access)}>
-            <span className="material-symbols-outlined">groups</span><span>{access === "manager" || access === "admin" ? "Organization" : "Roster"}</span>
+          <Link className="quiet-button" id="rosterLink" to={rosterNavigation.to} hidden={!access || !["coach", "manager", "admin"].includes(access)}>
+            <span className="material-symbols-outlined">groups</span><span>{rosterNavigation.label}</span>
           </Link>
           <button
             className="quiet-button share-button"

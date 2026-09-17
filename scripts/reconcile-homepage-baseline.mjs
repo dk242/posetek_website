@@ -20,7 +20,8 @@ const previousFiles = new Map(previous.files.map(file => [file.path, file]));
 // Netlify CLI regenerates its protected /netlify.toml artifact for every deploy.
 // Preserve user-serving application files here; audit effective config separately.
 const platformConfig = inventory.find(file => file.path === '/netlify.toml');
-const files = inventory.filter(file => file.path !== '/index.html' && file.path !== '/netlify.toml' && !file.path.startsWith('/marketing/assets/'))
+const files = inventory.filter(file => file.path !== '/index.html' && file.path !== '/netlify.toml' && !file.path.startsWith('/marketing/assets/')
+  && file.path !== '/coaches' && !file.path.startsWith('/coaches/'))
   .map(file => {
     const previousFile = previousFiles.get(file.path);
     return { path: file.path, sha: file.sha, size: file.size,
@@ -80,4 +81,4 @@ const manifest = { deploymentId, sourceCommit: null, url, applicationPath: '/app
     note: 'Protected Netlify CLI-generated metadata. Effective redirects and headers must be verified before release; this is not a served application asset.' } } : {}), files };
 await writeFile(previousPath, JSON.stringify(manifest, null, 2) + '\n');
 console.log(JSON.stringify({ deploymentId, inventoryFiles: inventory.length, preservedFiles: files.length,
-  preservedBytes: files.reduce((sum, file) => sum + file.size, 0), applicationSha1: appEntry.sha, excluded: ['/', '/index.html', '/marketing/assets/*', '/netlify.toml (CLI-generated metadata)'] }, null, 2));
+  preservedBytes: files.reduce((sum, file) => sum + file.size, 0), applicationSha1: appEntry.sha, excluded: ['/', '/index.html', '/coaches/*', '/marketing/assets/*', '/netlify.toml (CLI-generated metadata)'] }, null, 2));
