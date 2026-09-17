@@ -30,9 +30,39 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
-### Current release: Expanded Insights
+### Current release: Testing audit remediation
 
-Deployment `6aabc66e9bcc60cc5c2ee12c` is live at https://posetek.net/insights,
+Deployment `6aac59bb9c49063e622aa65a` is live at https://posetek.net, published
+September 17, 2026 at 2:22:42 PM PDT (`2026-09-17T21:22:42.725Z`). See
+[`deployment/TESTING_AUDIT_PRODUCTION.json`](deployment/TESTING_AUDIT_PRODUCTION.json)
+and [`docs/TESTING_AUDIT_BUILD_HANDOFF.md`](docs/TESTING_AUDIT_BUILD_HANDOFF.md).
+Authenticated results, shared results and native team rankings use reviewed
+qualification. Failed measurements remain unavailable, proven mirrors are
+excluded, and explicit review nulls cannot be replaced by stale metadata.
+Original or verified diagnostic media uses exact capture identity; replay respects
+confidence, aspect ratio and recorded timestamps. Legacy clips without trustworthy
+timing support manual pose inspection rather than invented synchronization.
+
+The unchanged verified candidate contains 445 local files matching the 446-file
+production inventory; the protected application baseline now contains 413 files.
+Approved Players and Coaches marketing bytes remain intact. The original workbook
+is unchanged; its 264 overlapping issue rows have a separate private disposition
+ledger. The independent post-repair checkpoint above has 258 qualifying results,
+27 proven duplicates and all 40 qualifying vertical jumps with available peak
+indices. Historical evidence gaps and retests remain explicit.
+
+Native source is pushed at `e2c3736` on `codex/testing-audit-remediation` in
+`athelyticsOG/posetek-mobile-app`, based on main `944177b` (which already includes
+Insights usage). It retains source video for six tests, journals immutable capture
+IDs and frozen ownership, commits idempotently after artifact acknowledgement,
+and adds coach Finish plus a 60-second cutoff for COD/dribbling. The native handoff
+is `docs/plans/TESTING_AUDIT_REMEDIATION_HANDOFF.md`. It remains code complete with
+Mac compilation, XCTest, physical-iPhone acceptance and TestFlight outstanding.
+No native rules, Apple signing settings or App Store Connect build were changed.
+
+### Previous release: Expanded Insights
+
+Deployment `6aabc66e9bcc60cc5c2ee12c` was published for https://posetek.net/insights,
 published September 17, 2026 at 4:05:05 AM PDT (`2026-09-17T11:05:05.592Z`),
 from application source `706f103`. See
 [`deployment/EXPANDED_INSIGHTS_PRODUCTION.json`](deployment/EXPANDED_INSIGHTS_PRODUCTION.json)

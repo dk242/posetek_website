@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "release": "September 16 testing audit remediation",
+  "status": "website-and-Firebase-live; native-code-pushed-awaiting-Mac-acceptance",
+  "recordedAt": "2026-09-17T21:26:54.488Z",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/testing-audit-remediation",
+    "applicationCommit": "053d322ba62e6ce3847a2171e4834ab1b75e78bb"
+  },
+  "website": {
+    "deploymentId": "6aac59bb9c49063e622aa65a",
+    "publishedAt": "2026-09-17T21:22:42.725Z",
+    "url": "https://posetek.net",
+    "previousDeploymentId": "6aac51aec6abea278de64a84",
+    "preAuditDeploymentId": "6aabc66e9bcc60cc5c2ee12c",
+    "applicationSha1": "b689dec19e4d0a6f21ef3d2f93f0d63a479680fd",
+    "localFilesVerified": 445,
+    "productionInventoryFiles": 446,
+    "protectedBaselineFiles": 413,
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "homepageAndCoachesBytesPreserved": true,
+    "verifiedCandidatePromotedUnchanged": true
+  },
+  "firebase": {
+    "project": "kickai-69dd0",
+    "functions": {
+      "getAthleteEffectiveResults": {
+        "version": "2",
+        "sourceArchiveSha256": "0baf9ba8e3f8fa343a9a9e02267e7a88356f4e2cc91bb9519bb3e3cdff99e266",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "getAthleteRepMedia": {
+        "version": "2",
+        "sourceArchiveSha256": "0baf9ba8e3f8fa343a9a9e02267e7a88356f4e2cc91bb9519bb3e3cdff99e266",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "getClubInsightsV2": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "recordInsightUsage": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightPlayer": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightRecords": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightRevisions": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightFailures": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightArtifacts": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "projectInsightArtifactDeletes": {
+        "version": "2",
+        "sourceArchiveSha256": "adfdeaeab8a87a8b87ab387f5eac1840402186db9f21da5a5e8f62a62ed0bf15",
+        "status": "ACTIVE",
+        "runtime": "nodejs22"
+      },
+      "getAthleteResultsShare": {
+        "version": "11",
+        "sourceArchiveSha256": "7b01a5ad0a5e65c984a21bd4b99aa39c20024a6d1a251cdde8b3d7ab84948d9c",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      },
+      "getAthleteSharedRepArtifacts": {
+        "version": "10",
+        "sourceArchiveSha256": "7b01a5ad0a5e65c984a21bd4b99aa39c20024a6d1a251cdde8b3d7ab84948d9c",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      },
+      "adminReviseRep": {
+        "version": "4",
+        "sourceArchiveSha256": "a519f4e991840c47395ed45c316f7cf9d6c9dbf997185a03fa3a37b5f8dfb2b6",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      },
+      "adminSaveAnalysisReview": {
+        "version": "2",
+        "sourceArchiveSha256": "04afa24af639c496bdf35fc65189f9eb1c0965fbf0246fc61c05323dd058f127",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      },
+      "getSocialMedia": {
+        "version": "5",
+        "sourceArchiveSha256": "598a74541f05b245c3f2b2698cf9ca13f5497c20f14a91fe6e8ee27389ab8527",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      },
+      "getTeamLeaderboard": {
+        "version": "2",
+        "sourceArchiveSha256": "8dfe202b2136cd57a3e89b626b2c43c4a830c2c74d417ce739fabac224f73f6c",
+        "status": "ACTIVE",
+        "protectedConfigurationUnchanged": true,
+        "iamUnchanged": true
+      }
+    },
+    "onVideoUpload": {
+      "revision": "onvideoupload-00025-vic",
+      "sourceArchiveSha256": "64ff75a52e1f8474b0c4d934654273955e4522d6c9ef939e0f6372252bdc792d",
+      "exactArchiveGuardEntries": 26,
+      "configurationAndIamPreserved": true
+    },
+    "firestoreRulesChanged": false,
+    "storageRulesChanged": false,
+    "ttlChanged": false,
+    "unrelatedFunctionsUnchanged": 41,
+    "inventoryChecks": 84,
+    "inventoryVerifiedAt": "2026-09-17T21:17:02.649Z",
+    "iamVerificationScope": "Only endpoints with captured per-release IAM baselines; no initial IAM baseline for every unrelated function."
+  },
+  "native": {
+    "repository": "https://github.com/athelyticsOG/posetek-mobile-app",
+    "branch": "codex/testing-audit-remediation",
+    "commit": "e2c37363ca0f29e068dcb65fbd373d94f3120fad",
+    "baseCommit": "944177bebc1bc5f250134a9fd63e0237829784b5",
+    "pushed": true,
+    "status": "in progress — code complete, verification outstanding",
+    "swiftCompilationRun": false,
+    "xctestRun": false,
+    "physicalDeviceAcceptanceRun": false,
+    "testFlightUploaded": false,
+    "rulesDeployed": false,
+    "appVersion": "1.1",
+    "existingBuildNumber": "4",
+    "buildNumberAction": "Select next unused App Store Connect build on the Mac",
+    "handoff": "docs/plans/TESTING_AUDIT_REMEDIATION_HANDOFF.md"
+  },
+  "validation": {
+    "frontendTestsPassed": 924,
+    "frontendTestFiles": 71,
+    "typeScriptPassed": true,
+    "backendCompatibilityTestsPassed": 232,
+    "releaseVerifierTestsPassed": 19,
+    "baselineNavigationTestsPassed": 15,
+    "finalCloudChecksPassed": 84,
+    "hostedAdminChecks": [
+      "negative secondary metric remains unavailable",
+      "failed primary card/detail parity",
+      "legacy jump peak navigation",
+      "original video playback",
+      "diagnostic video playback and matching timed seek",
+      "dedicated drill authorization",
+      "current organization Insights"
+    ],
+    "scopeLimit": "Browser samples do not certify every historical pose; native validation remains unrun."
+  },
+  "historical": {
+    "originalWorkbookModified": false,
+    "overlappingIssueRows": 264,
+    "qualificationObservedAt": "2026-09-17T21:07:03.626Z",
+    "players": 36,
+    "repDocuments": 325,
+    "qualifiedResults": 258,
+    "provenDuplicateDocuments": 27,
+    "unqualifiedDistinctAttempts": 40,
+    "fullyTested": 12,
+    "partiallyTested": 22,
+    "unrecorded": 2,
+    "qualifiedVerticalJumpsWithPeakFrame": 40,
+    "originalVideoUnavailableRows": 64,
+    "diagnosticVideosAvailable": 13,
+    "noMatchingVideoInCurrentResolverLocations": 51,
+    "videoCheckObservedAt": "2026-09-17T21:23:14.469Z",
+    "videoCheckScope": "Read-only deployed resolver semantic replay and real object metadata; bulk signing replaced, no external archive search. Hosted samples separately verify signing/playback.",
+    "september16AttendeesMissingCategories": 9,
+    "september16MissingProfileCategories": 10,
+    "privateFollowUpDirectory": "PoseTek/Operations/PoseTek_Testing_Audit_Remediation_2026-09-17",
+    "recoveryDocumentation": "docs/VACAVILLE_REP_RECOVERY.md"
+  },
+  "handoff": "docs/TESTING_AUDIT_BUILD_HANDOFF.md"
+}

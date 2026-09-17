@@ -9,11 +9,18 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 4:05:05 AM PDT as
-`6aabc66e9bcc60cc5c2ee12c`.
+The latest release was published September 17, 2026 at 2:22:42 PM PDT as
+`6aac59bb9c49063e622aa65a`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/EXPANDED_INSIGHTS_PRODUCTION.json).
+[the latest production receipt](deployment/TESTING_AUDIT_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
+
+**Testing audit fixes live:** reviewed results, duplicate suppression, independent
+metric validity and exact-attempt video/pose replay are deployed. Read the
+[audit release and Mac handoff](docs/TESTING_AUDIT_BUILD_HANDOFF.md). Taiyo's native
+candidate is pushed as `codex/testing-audit-remediation` at `e2c3736`; Xcode,
+physical-iPhone acceptance and TestFlight remain outstanding. Historical footage
+gaps are recorded separately and are not claimed as software repairs.
 
 **Website follow-up live:** canonical account
 hierarchy and reviewed personalized planning now serve
