@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("../../../lib/firebase", () => ({ db: {} }));
 vi.mock("../../athlete-portal/lib/loaders", () => ({ submitLlmJob: vi.fn() }));
 import { activationParams, activePlansMatch, PERSONALIZED_ENGINE, personalizedParams, plannerLink, prescriptionSignature, previewEnabled, recentEvidence,
-  createPlannerAccessGuard, isPlannerAuthorizationError, normalizeAssessment, plannerPlayerDetailsLink } from "./personalizedLogic";
+  createPlannerAccessGuard, isPlannerAuthorizationError, normalizeAssessment, plannerPlayerDetailsLink,
+  methodologyPriorities, blockTrainingRationale, METHODOLOGY_VERSION, PLANNER_GOALS } from "./personalizedLogic";
 import { DEFAULT_INTAKE } from "./planJobs";
 describe("personalized preview contract", () => {
   it("uses only recent dated evidence; stale best results cannot dominate", () => {
@@ -173,5 +174,45 @@ describe("draft review active-plan comparison", () => {
       [{ planId: "active", planRevision: "7" }], [{ planId: "active", planRevision: 7 }, { planId: "active", planRevision: 7 }]]) {
       expect(activePlansMatch(expected, current)).toBe(false);
     }
+  });
+});
+
+describe("versioned training methodology", () => {
+  const priority = { id: "agility-turn", rank: 1, domain: "agility", objectiveId: "controlled-turn", label: "Control the turn",
+    role: "primary", evidenceBasis: "conditionalEstimate", confidence: "low", reason: "A reviewed estimate supports investigating the return phase.",
+    limitation: "The finish is missing.", metricIds: ["totalTime"], targetPct: 25, weeklyTargetMinutes: 30,
+    progressCheck: "Record a complete shuttle under the same setup.", eligibleDrillCount: 2 };
+  it("retains explicit estimate status and links time and progress without interpreting estimates as measurements", () => {
+    const result = methodologyPriorities({ methodologyVersion: METHODOLOGY_VERSION, priorities: [priority] });
+    expect(result).toEqual([priority]);
+    expect(normalizeAssessment({ methodologyVersion: METHODOLOGY_VERSION, priorities: [priority] })?.priorities).toEqual(result);
+  });
+  it("keeps historical plans and unknown methodology versions readable without invented priorities", () => {
+    expect(methodologyPriorities({ findings: [{ domain: "speed" }], priorities: [priority] })).toEqual([]);
+    expect(methodologyPriorities({ methodologyVersion: "future-v2", priorities: [priority] })).toEqual([]);
+    expect(blockTrainingRationale({ whyIncluded: "Historical reason" })).toBeNull();
+  });
+  it("rejects malformed or ambiguous priority rows and never turns missing timing into zero", () => {
+    const result = methodologyPriorities({ methodologyVersion: METHODOLOGY_VERSION, priorities: [
+      null, { ...priority, id: "unsupported", evidenceBasis: "probablyMeasured" }, priority, priority,
+      { ...priority, id: "later", rank: 2, weeklyTargetMinutes: undefined, targetPct: NaN, eligibleDrillCount: -1 },
+    ] });
+    expect(result).toHaveLength(2);
+    expect(result[1]).toMatchObject({ weeklyTargetMinutes: null, targetPct: null, eligibleDrillCount: null });
+    expect(methodologyPriorities({ methodologyVersion: METHODOLOGY_VERSION, priorities: {} })).toEqual([]);
+  });
+  it("reads only versioned exercise explanations and retains their source priority", () => {
+    const trainingRationale = { methodologyVersion: METHODOLOGY_VERSION, objectiveId: "controlled-turn", priorityId: "agility-turn",
+      evidenceBasis: "conditionalEstimate", confidence: "low", reason: "Practice a controlled turn.", progressCheck: "Review controlled repetitions." };
+    expect(blockTrainingRationale({ trainingRationale })).toMatchObject({ priorityId: "agility-turn", evidenceBasis: "conditionalEstimate", progressCheck: "Review controlled repetitions." });
+    expect(blockTrainingRationale({ trainingRationale: { ...trainingRationale, methodologyVersion: undefined } })).toBeNull();
+  });
+  it("keeps speed and agility distinct while supporting historical combined goals", () => {
+    expect(PLANNER_GOALS.map(goal => goal.id)).toContain("speed");
+    expect(PLANNER_GOALS.map(goal => goal.id)).toContain("agility");
+    expect(personalizedParams([], {}, 16, DEFAULT_INTAKE, ["speed", "agility"], "Coach input", [], [], true)).toMatchObject({
+      useProvisionalEstimates: true, intake: { goals: ["speed", "agility"], freeTextGoals: "Coach input" },
+    });
+    expect(personalizedParams([], {}, 16, DEFAULT_INTAKE, ["speedAgility"]).intake.goals).toEqual(["speedAgility"]);
   });
 });

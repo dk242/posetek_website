@@ -58,24 +58,25 @@ describe('reviewed provisional dribbling', () => {
     expect(retested).not.toContain('About 9.3 s');
     expect(retested).not.toContain('provisional-chart-marker');
   });
-  it('planning carries explicit assumptions and a bounded goal, never fabricated best results', () => {
+  it('planning explicitly opts into server-reviewed estimates without fabricating stats or coach feedback', () => {
     const baseline = personalizedParams([], {}, null, DEFAULT_INTAKE);
     const planned = personalizedParams([], {}, null, DEFAULT_INTAKE, [], 'Prepare for practice.', [estimate], [source]);
     expect(planned.statsProfile).toEqual(baseline.statsProfile);
     expect(planned.intake.level).toBe(baseline.intake.level);
-    expect(planned.intake.goals).toEqual(['dribbling']);
-    expect(planned.intake.freeTextGoals).toContain('One-time dribbling estimate: ~9.3s');
-    expect(planned.intake.freeTextGoals).toContain('not a measured test or agility result');
-    expect(planned.intake.freeTextGoals).toContain('Prepare for practice.');
+    expect(planned.intake.goals).toEqual([]);
+    expect(planned.useProvisionalEstimates).toBe(true);
+    expect(planned.intake.freeTextGoals).toBe('Prepare for practice.');
     expect(planned.intake.freeTextGoals.length).toBeLessThanOrEqual(500);
     expect(personalizedParams([], {}, null, DEFAULT_INTAKE, ['passing', 'shooting'], '', [estimate], [source]).intake.goals).toEqual(['passing', 'shooting']);
-    expect(() => personalizedParams([], {}, null, DEFAULT_INTAKE, [], 'x'.repeat(500), [estimate], [source])).toThrow('Shorten');
+    expect(personalizedParams([], {}, null, DEFAULT_INTAKE, [], 'x'.repeat(500), [estimate], [source]).intake.freeTextGoals).toHaveLength(500);
+    expect(() => personalizedParams([], {}, null, DEFAULT_INTAKE, [], 'x'.repeat(501), [estimate], [source])).toThrow('Shorten');
   });
   it('planning drops provisional context after a valid test and preserves unrelated coach goals', () => {
     const measured = { ...source, id: 'retest', totalTime: 8, resultStatus: { qualified: true, duplicate: false } };
     const output = personalizedParams([measured], {}, null, DEFAULT_INTAKE, ['passing'], 'Coach context', [estimate], [source, measured]);
     expect(output.intake.goals).toEqual(['passing']);
     expect(output.intake.freeTextGoals).toBe('Coach context');
+    expect(output.useProvisionalEstimates).toBe(false);
   });
   it('valid tests supersede only their matching estimate and reject mixed methods or missing source identity', () => {
     const estimates = [estimate, agilityEstimate], sources = [source, agilitySource];
@@ -100,15 +101,14 @@ describe('reviewed provisional dribbling', () => {
     expect(legacy).toContain('0/5 recorded'); expect(playerProfile(sources).overall).toBeNull();
     expect(self).toContain('vs your standard');
   });
-  it('planning includes both assumptions within the intake limit and preserves existing goals', () => {
+  it('multiple estimates use one server opt-in and do not consume user goal slots', () => {
     const estimates = [estimate, agilityEstimate], sources = [source, agilitySource];
     const output = personalizedParams([], {}, null, DEFAULT_INTAKE, [], '', estimates, sources);
-    expect(output.intake.goals).toEqual(['dribbling', 'speedAgility']);
-    expect(output.intake.freeTextGoals).toContain('~7.0s');
-    expect(output.intake.freeTextGoals).toContain('~9.3s');
-    expect(output.intake.freeTextGoals).toContain('~65% course seen');
-    expect(output.intake.freeTextGoals.length).toBeLessThanOrEqual(500);
+    expect(output.intake.goals).toEqual([]);
+    expect(output.intake.freeTextGoals).toBeNull();
+    expect(output.useProvisionalEstimates).toBe(true);
     expect(output.statsProfile).toEqual(personalizedParams([], {}, null, DEFAULT_INTAKE).statsProfile);
     expect(personalizedParams([], {}, null, DEFAULT_INTAKE, ['passing', 'shooting'], '', estimates, sources).intake.goals).toEqual(['passing', 'shooting']);
+    expect(personalizedParams([], {}, null, DEFAULT_INTAKE, [], '', estimates, sources, false).useProvisionalEstimates).toBe(false);
   });
 });
