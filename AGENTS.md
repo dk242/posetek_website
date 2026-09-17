@@ -11,10 +11,10 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aaa57d3fe77d22f67611c42`, published
-September 16, 2026 at 1:52:03 AM PDT. It includes the scrolling homepage, all nine
-annotation updates, and the athletic male viewer refinement. Read
-`deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json` for the current receipt,
+The latest recorded production release is `6aab2fc35884120dc73147f5`, published
+September 16, 2026 at 5:12:05 PM PDT. It includes the scrolling homepage, the
+mobile app preview, two approved drill videos and interactive coach metrics. Read
+`deployment/DRILL_VIDEO_COACH_PRODUCTION.json` for the current receipt,
 `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested annotations, and
 `deployment/SCROLLING_HOMEPAGE_UPDATE.md` for recovery and earlier release decisions.
 Continue from the source included in this repository.

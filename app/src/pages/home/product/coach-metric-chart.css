@@ -1,0 +1,38 @@
+.pt-home .coach-demo button.pd-profile-metric {
+  width:100%; min-width:0; color:#e1efda; text-align:left; cursor:pointer;
+  font-family:inherit; appearance:none;
+}
+.pt-home .coach-demo button.pd-profile-metric:hover { border-color:#b7f34a; background:#1b361f; }
+.pt-home .coach-demo button.pd-profile-metric:focus-visible,
+.pt-home .coach-demo .pd-question-chips button:focus-visible { outline:2px solid #b7f34a; outline-offset:3px; }
+.pt-home .coach-demo .pd-metric-arrow { margin-left:auto; font:18px/1 Inter,sans-serif; color:#85a77c; }
+.pt-home .coach-demo [aria-pressed=true] .pd-metric-arrow { color:#c7f56d; }
+.pt-home .coach-demo .pd-profile-metric em { font-style:normal; }
+.pt-home .pd-metric-chart {
+  margin:16px 0 0; min-width:0; border:1px solid #355038; border-radius:7px;
+  padding:12px 9px 8px; background:#0b2418;
+}
+.pt-home .pd-metric-chart figcaption { padding:0 3px; display:flex; flex-wrap:wrap; gap:5px 10px; justify-content:space-between; }
+.pt-home .pd-metric-chart figcaption strong { color:#d8e9cc; font:500 10px/1.5 Inter,sans-serif; }
+.pt-home .pd-metric-chart figcaption span { color:#95ad92; font:9px/1.5 Inter,sans-serif; }
+.pt-home .pd-metric-chart figcaption b { color:#cbefa1; font-weight:500; }
+.pt-home .pd-metric-chart svg { display:block; width:100%; height:auto; margin-top:9px; overflow:visible; }
+.pt-home .pd-metric-chart text { font:9px Inter,sans-serif; fill:#a5bba0; }
+.pt-home .pd-metric-grid line { stroke:#314833; stroke-width:1; }
+.pt-home .pd-metric-grid text { font-size:8px; fill:#7d997a; }
+.pt-home .pd-metric-trend { fill:none; stroke:#b7f34a; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.pt-home .pd-metric-point circle { fill:#b7f34a; stroke:#0b2418; stroke-width:2; }
+.pt-home .pd-metric-point[data-latest=true] text:not(.pd-metric-checkpoint) { fill:#d8f5b6; font-weight:600; }
+.pt-home .pd-metric-chart .pd-metric-checkpoint { fill:#829d7f; font-size:8px; }
+.pt-home .pd-metric-target line { stroke:#91b270; stroke-width:1; stroke-dasharray:4 4; }
+.pt-home .pd-metric-target text { fill:#b9d499; font-size:8px; }
+.pt-home .pd-metric-chart p { margin:0; color:#849d80; text-align:center; font:8px/1.5 Inter,sans-serif; }
+@media (width<=650px) {
+  .pt-home .coach-demo .pd-profile { padding-bottom:15px; }
+  .pt-home .coach-demo .pd-profile>.pd-tiny-label { display:block; margin-bottom:8px; }
+  .pt-home .coach-demo .pd-profile-metric { min-height:83px; align-items:flex-start; padding:9px 7px; }
+  .pt-home .coach-demo .pd-profile-metric em { white-space:normal; line-height:1.5; }
+  .pt-home .coach-demo .pd-metric-arrow { display:none; }
+  .pt-home .pd-metric-chart { margin-top:10px; padding:10px 10px 7px; }
+  .pt-home .pd-metric-chart svg { max-height:155px; }
+}

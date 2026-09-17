@@ -24,7 +24,6 @@ describe("recovered demo integration", () => {
   it.each([
     ["Help me work on my dribbling", "Build your ball control", "Figure-8 dribble"],
     ["Help me work on my passing", "Find your passing rhythm", "Wall pass rhythm"],
-    ["Help me work on my shooting", "Develop your shooting", "One-step laces strike"],
   ])("keeps sample context aligned with the request: %s", (request, context, drill) => {
     const html = renderToStaticMarkup(<WorkoutDemo initialRequest={request} />);
     expect(html).toContain(context);
@@ -44,8 +43,8 @@ describe("recovered demo integration", () => {
     expect(html).toContain('aria-live="polite"');
   });
   it("uses a drill-specific setup with accessible player, ball and movement descriptions", () => {
-    const html = renderToStaticMarkup(<DemoPitch focus="shooting" />);
-    expect(html).toContain("One-step laces strike:");
+    const html = renderToStaticMarkup(<DemoPitch focus="passing" />);
+    expect(html).toContain("Wall pass rhythm:");
     expect(html).toContain("Solid circle: player; white dot: ball; dashed line: movement.");
     expect(html).toContain("marker-end");
     expect(html).not.toContain("setChoices");

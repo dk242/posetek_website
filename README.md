@@ -4,11 +4,17 @@ Shared source repository: [dk242/posetek_website](https://github.com/dk242/poset
 Public website: [posetek.net](https://posetek.net).
 
 This repository includes the scrolling homepage, all nine annotation updates,
-the clearer pose, training and technique experience, and the mobile app showcase
-published September 16, 2026 as deployment `6aab00ac8f7bad5e4a2afd2a`.
+the clearer pose, training and technique experience, the mobile app showcase,
+and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
+The latest release was published September 16, 2026 as `6aab2fc35884120dc73147f5`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/MOBILE_APP_SHOWCASE_PRODUCTION.json).
+[the latest production receipt](deployment/DRILL_VIDEO_COACH_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
+
+The two public drill clips and posters are committed in
+`app/src/pages/home/product/media/`; ordinary builds need no Firebase access.
+See [the drill and coach update](deployment/DRILL_VIDEO_COACH_UPDATE.md) for
+media provenance, responsive behavior and the read-only preparation script.
 
 **Feed source available:** the complete feed feature stack is now committed:
 recovered editable React frontend, original deployed Firebase backend, typed API

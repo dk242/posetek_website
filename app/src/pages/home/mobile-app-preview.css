@@ -15,6 +15,10 @@
 .pt-home .app-device-content { padding:0 16px; }
 .pt-home .app-device-context { display:flex; justify-content:space-between; color:#b8cdbf; font-size:10px; gap:10px; }
 .pt-home .app-device-content h3 { margin:10px 0 18px; font:650 23px/1.2 system-ui,sans-serif; letter-spacing:-.6px; }
+.pt-home .app-device-drill-label { display:block; margin:14px 0 5px; color:#b9cdbf; font-size:10px; }
+.pt-home .app-device-drill-select { display:block; width:100%; min-height:44px; padding:8px 26px 8px 10px; margin-bottom:14px; color:#f0f5ed; background:#102e20; border:1px solid #52715a; border-radius:8px; font:600 16px/1.3 system-ui,sans-serif; }
+.pt-home .app-device-media .drill-video-start-label svg { width:24px; height:24px; aspect-ratio:auto; }
+.pt-home .app-device-media .drill-video-error p { color:#d3e2d6; margin:0; font-size:12px; }
 .pt-home .app-device-media { border:1px solid #466950; border-radius:19px; background:#193d28; overflow:hidden; }
 .pt-home .app-device-media .drill-explainer { margin:0; padding:8px 4px 0; border:0; background:none; }
 .pt-home .app-device-media svg { display:block; width:100%; height:auto; border:0; aspect-ratio:360/230; }

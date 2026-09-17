@@ -1,0 +1,54 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aab2fc35884120dc73147f5",
+  "state": "ready",
+  "publishedAt": "2026-09-17T00:12:05.241Z",
+  "publishedLocal": "September 16, 2026, 5:12:05 PM PDT",
+  "url": "https://posetek.net",
+  "immutableUrl": "https://6aab2fc35884120dc73147f5--posetek.netlify.app",
+  "releaseMethod": "Reviewed draft promoted unchanged; GitHub source updated with [skip netlify]",
+  "changes": [
+    "Sample workouts contain only Figure-8 dribble DRB-006 and Wall pass rhythm PAS-001",
+    "Approved Firebase demonstration footage beside diagrams on desktop; Overview/Demo switching on phone",
+    "Symmetric figure-eight route and centered straight wall-pass path",
+    "Dribbling, Top speed and Sessions cards select synchronized sample charts and coach answers",
+    "Phone preview selects either drill and resets local sample progress on change"
+  ],
+  "preservation": {
+    "baselineDeployId": "6aa9b6f0d8faf6177db8fd97",
+    "files": 171,
+    "result": "byte-for-byte unchanged",
+    "unaffectedSections": "Hero poses, six performance recordings, athlete profile and technique analysis",
+    "teammateCommit": "abf4106552c47d9679c0ace1eb1c6d0b43ef30c0",
+    "firebase": "Read-only source access; no catalog, rules or backend deployment"
+  },
+  "publishedInventory": {
+    "fileCount": 198,
+    "matchedProductionDistFiles": 197,
+    "platformGeneratedConfigFiles": 1
+  },
+  "verification": {
+    "homepageTests": 122,
+    "navigationAndBaselineTests": 11,
+    "typeScript": "passed",
+    "svelte": "0 errors, 0 warnings",
+    "productionBuild": "passed; existing lazy 3D chunk warning remains",
+    "draftAndLiveHttp": {
+      "homepageRoutes": 2,
+      "preservedFiles": 171,
+      "applicationRoutes": 22,
+      "applicationAssets": 74,
+      "homepageAssets": 25,
+      "result": "passed; homepage bytes and published inventory match local output"
+    },
+    "media": "Both full clips decoded successfully; HTTP 206 range responses and video/mp4 verified; browser readyState 4 and playback confirmed",
+    "browser": "Edge desktop and responsive viewports 1440/820/390/320px; both clips; phone selection/progress reset; Overview switch and offscreen pausing; coach cards, keyboard selection, question synchronization and workout handoff; no horizontal overflow or captured console errors/warnings",
+    "limitations": "Physical iOS/Safari and authenticated application workflows were not exercised; video failure fallback was reviewed in source, not forced in the browser"
+  },
+  "mediaProvenance": "app/src/pages/home/product/media/provenance.json",
+  "designDecisions": "deployment/DRILL_VIDEO_COACH_UPDATE.md",
+  "rollback": {
+    "deployId": "6aab00ac8f7bad5e4a2afd2a",
+    "url": "https://6aab00ac8f7bad5e4a2afd2a--posetek.netlify.app"
+  }
+}

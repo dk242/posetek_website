@@ -22,13 +22,36 @@ describe("the published sample workout", () => {
     expect(plan.segments.at(-1)).toEqual({ kind: "work", drill: 1, set: 3, seconds: 45 });
   });
 
-  it("retains light-energy shooting doses and does not substitute shooting for a passing request", () => {
-    const plan = createDemoWorkout({ minutes: 15, energy: "low", focus: "shooting" });
-    expect(plan.drills.map(drill => [drill.focus, drill.sets, drill.workSeconds, drill.restSeconds])).toEqual([
-      ["shooting", 2, 64, 75], ["shooting", 2, 64, 75],
+  it("puts passing first when requested and retains lighter work and rest doses", () => {
+    const plan = createDemoWorkout({ minutes: 15, energy: "low", focus: "passing" });
+    expect(plan.drills.map(drill => [drill.id, drill.sets, drill.workSeconds, drill.restSeconds])).toEqual([
+      ["PAS-001", 3, 30, 45], ["DRB-006", 3, 45, 45],
     ]);
     expect(focusFromRequest("Help with receiving and passing")).toBe("passing");
-    expect(focusFromRequest("Improve my finishing")).toBe("shooting");
+    expect(focusFromRequest("Improve my finishing")).toBe("dribbling");
+  });
+
+  it("uses only the two approved demonstrations across every time, energy and priority choice", () => {
+    for (const focus of ["dribbling", "passing"] as const) {
+      for (const minutes of [15, 20, 30, 45, 60] as const) {
+        for (const energy of ["low", "normal", "high"] as const) {
+          const plan = createDemoWorkout({ focus, minutes, energy });
+          expect(plan.drills.map(drill => drill.id)).toEqual(focus === "passing"
+            ? ["PAS-001", "DRB-006"] : ["DRB-006", "PAS-001"]);
+          expect(plan.drills[0].focus).toBe(focus);
+          expect(plan.drills.every(drill => drill.unit === "seconds" && drill.sets >= 3 && drill.sets <= 5)).toBe(true);
+          expect(plan.durationSeconds).toBe(plan.segments.reduce((sum, segment) => sum + segment.seconds, 0));
+          expect(plan.segments.at(-1)?.kind).toBe("work");
+        }
+      }
+    }
+  });
+
+  it("retains longer high-energy work doses without exceeding the five-set limit", () => {
+    const plan = createDemoWorkout({ focus: "dribbling", minutes: 60, energy: "high" });
+    expect(plan.drills.map(drill => [drill.id, drill.sets, drill.workSeconds, drill.restSeconds])).toEqual([
+      ["DRB-006", 5, 75, 45], ["PAS-001", 5, 60, 45],
+    ]);
   });
 
   it("requires plan review before starting, and does not tick before training", () => {

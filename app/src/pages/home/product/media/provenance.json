@@ -1,0 +1,162 @@
+{
+  "preparedAt": "2026-09-17T00:00:06.014Z",
+  "purpose": "User-authorized public homepage copies of the approved app primary demonstrations. Source records and access rules are unchanged.",
+  "tools": {
+    "ffmpeg": "ffmpeg version 9.0-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers\r",
+    "ffprobe": "ffprobe version 9.0-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers\r"
+  },
+  "notes": [
+    "Only DRB-006 and PAS-001 were read.",
+    "FFmpeg autorotation is applied before proportional scaling; output metadata is stripped.",
+    "Audio is retained as AAC where present. No footage is cropped, stretched, or substituted.",
+    "Bearer credentials are kept in memory; Firebase token URLs are neither used nor persisted."
+  ],
+  "assets": [
+    {
+      "drillId": "DRB-006",
+      "name": "Figure-8 dribble",
+      "source": {
+        "bucket": "kickai-69dd0.firebasestorage.app",
+        "storagePath": "drillCatalogMedia/app/DRB-006/primaryDemo.mp4",
+        "generation": "1788831834526194",
+        "approval": "approved",
+        "sha256": "d20f8dd70a97e23cb461809977ac19e9cdfb4708acf442fc219a033cf52eac05",
+        "bytes": 34504369,
+        "width": 1920,
+        "height": 1080,
+        "durationSeconds": 11.985,
+        "videoCodec": "h264",
+        "pixelFormat": "yuv420p",
+        "frameRate": "143800/2397",
+        "rotationDegrees": -90,
+        "audioCodec": "aac"
+      },
+      "output": {
+        "file": "figure-8.mp4",
+        "sha256": "16a18117e6b45b1562be21e43eb8435948f813b9f575f2726674e5fbc1a81413",
+        "bytes": 1667926,
+        "width": 406,
+        "height": 720,
+        "durationSeconds": 11.983333,
+        "videoCodec": "h264",
+        "pixelFormat": "yuv420p",
+        "frameRate": "60/1",
+        "rotationDegrees": 0,
+        "audioCodec": "aac"
+      },
+      "poster": {
+        "file": "figure-8.jpg",
+        "seconds": 8,
+        "sha256": "734a4803f58812692ac989a812edb61bb3fc076b5660b0578f3fa0ff129ba7c1",
+        "bytes": 115215
+      },
+      "transcode": {
+        "program": "ffmpeg",
+        "arguments": [
+          "-hide_banner",
+          "-loglevel",
+          "error",
+          "-y",
+          "-i",
+          ".netlify/drill-demo-source/figure-8-1788831834526194.mp4",
+          "-map",
+          "0:v:0",
+          "-map",
+          "0:a:0?",
+          "-map_metadata",
+          "-1",
+          "-vf",
+          "scale=w='min(720,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2:reset_sar=1",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "medium",
+          "-crf",
+          "23",
+          "-pix_fmt",
+          "yuv420p",
+          "-c:a",
+          "aac",
+          "-b:a",
+          "128k",
+          "-movflags",
+          "+faststart",
+          "app/src/pages/home/product/media/figure-8.mp4"
+        ]
+      }
+    },
+    {
+      "drillId": "PAS-001",
+      "name": "Wall pass rhythm",
+      "source": {
+        "bucket": "kickai-69dd0.firebasestorage.app",
+        "storagePath": "drillCatalogMedia/3.4/PAS-001/primary_demo.mov",
+        "generation": "1788468661750095",
+        "approval": "approved",
+        "sha256": "cf5857cc05906e8421bb2caab164941bb6e5666e98e8888869d25ea8566628f5",
+        "bytes": 10394983,
+        "width": 3840,
+        "height": 2160,
+        "durationSeconds": 2.3,
+        "videoCodec": "h264",
+        "pixelFormat": "yuv420p",
+        "frameRate": "30/1",
+        "rotationDegrees": -90,
+        "audioCodec": "aac"
+      },
+      "output": {
+        "file": "wall-pass.mp4",
+        "sha256": "faf0ef2578cca645573955cfca6641290fe2efa8c310521ff6f7a2eefc97c734",
+        "bytes": 354260,
+        "width": 406,
+        "height": 720,
+        "durationSeconds": 2.3,
+        "videoCodec": "h264",
+        "pixelFormat": "yuv420p",
+        "frameRate": "30/1",
+        "rotationDegrees": 0,
+        "audioCodec": "aac"
+      },
+      "poster": {
+        "file": "wall-pass.jpg",
+        "seconds": 2,
+        "sha256": "f219b4254dc4216e3e9b527394cdb888d938a892a7e0cfc8f39eef2c357cbcab",
+        "bytes": 103063
+      },
+      "transcode": {
+        "program": "ffmpeg",
+        "arguments": [
+          "-hide_banner",
+          "-loglevel",
+          "error",
+          "-y",
+          "-i",
+          ".netlify/drill-demo-source/wall-pass-1788468661750095.mov",
+          "-map",
+          "0:v:0",
+          "-map",
+          "0:a:0?",
+          "-map_metadata",
+          "-1",
+          "-vf",
+          "scale=w='min(720,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2:reset_sar=1",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "medium",
+          "-crf",
+          "23",
+          "-pix_fmt",
+          "yuv420p",
+          "-c:a",
+          "aac",
+          "-b:a",
+          "128k",
+          "-movflags",
+          "+faststart",
+          "app/src/pages/home/product/media/wall-pass.mp4"
+        ]
+      }
+    }
+  ]
+}

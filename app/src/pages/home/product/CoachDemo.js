@@ -7,14 +7,22 @@ import * as jsxRuntime from "react/jsx-runtime";
 import { BlurFade } from "../../../components/magicui/blur-fade";
 import { TacticalIcon } from "../TacticalIcon";
 import { sampleAthlete, coachWorkoutRequest, coachQuestions } from "./product-demo";
+import { CoachMetricChart } from "./CoachMetricChart";
 import "./product-demo.css";
+import "./coach-metric-chart.css";
 function CoachDemo({ active = true, onOpenWorkout }) {
     let [selectedQuestion, setSelectedQuestion] = (0, React.useState)(0);
     let [visibleWords, setVisibleWords] = (0, React.useState)(1 / 0);
     let [hasInteracted, setHasInteracted] = (0, React.useState)(false);
     let [documentVisible, setDocumentVisible] = (0, React.useState)(true);
     let headingId = (0, React.useId)();
+    let chartId = (0, React.useId)();
     let question = coachQuestions[selectedQuestion];
+    let selectedMetric = sampleAthlete.metrics.find(metric => metric.key === question.metric);
+    const selectQuestion = index => {
+        setSelectedQuestion(index);
+        setHasInteracted(true);
+    };
     const summaryAnswer = question.answer.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
     let answerWords = summaryAnswer.split(` `);
     return (0, React.useEffect)(() => {
@@ -63,14 +71,14 @@ function CoachDemo({ active = true, onOpenWorkout }) {
                                     })
                                 ]
                             }), (0, jsxRuntime.jsx)(`p`, {
-                                className: `pd-tiny-label`, children: `The profile behind the answer`
+                                className: `pd-tiny-label`, children: `Choose a result to explore`
                             }), (0, jsxRuntime.jsx)(`div`, {
-                                className: `pd-metrics`, children: sampleAthlete.metrics.map(e => {
-                                    let t = Math.min(...e.values);
-                                    let n = Math.max(...e.values);
-                                    let r = e.values.map((e, r) => `${4 + r * 25},${34 - (e - t) / Math.max(n - t, 1e-6) * 26}`).join(` `);
-                                    return (0, jsxRuntime.jsxs)(`div`, {
-                                        className: `pd-profile-metric`, "data-highlighted": e.key === question.metric, children: [
+                                className: `pd-metrics`, role: `group`, "aria-label": `Explore sample results`, children: sampleAthlete.metrics.map(e => {
+                                    return (0, jsxRuntime.jsxs)(`button`, {
+                                        type: `button`, className: `pd-profile-metric`, "aria-label": e.label,
+                                        "aria-pressed": e.key === question.metric, "aria-controls": chartId,
+                                        onClick: () => selectQuestion(coachQuestions.findIndex(item => item.metric === e.key)),
+                                        "data-highlighted": e.key === question.metric, children: [
                                             (0, jsxRuntime.jsxs)(`div`, {
                                                 children: [
                                                     (0, jsxRuntime.jsx)(`span`, {
@@ -85,20 +93,14 @@ function CoachDemo({ active = true, onOpenWorkout }) {
                                                         children: e.trend
                                                     })
                                                 ]
-                                            }), (0, jsxRuntime.jsxs)(`svg`, {
-                                                viewBox: `0 0 84 40`, className: `pd-sparkline`, "aria-hidden": `true`, children: [
-                                                    (0, jsxRuntime.jsx)(`path`, {
-                                                        d: `M4 36h75`, className: `pd-chart-baseline`
-                                                    }), (0, jsxRuntime.jsx)(`polyline`, {
-                                                        points: r
-                                                    }), e.values.map((e, r) => (0, jsxRuntime.jsx)(`circle`, {
-                                                        cx: 4 + r * 25, cy: 34 - (e - t) / Math.max(n - t, 1e-6) * 26, r: r === 3 ? 3 : 1.5
-                                                    }, r))
-                                                ]
+                                            }), (0, jsxRuntime.jsx)(`span`, {
+                                                className: `pd-metric-arrow`, "aria-hidden": `true`, children: `↗`
                                             })
                                         ]
                                     }, e.key);
                                 })
+                            }), (0, jsxRuntime.jsx)(CoachMetricChart, {
+                                id: chartId, metric: selectedMetric
                             }), (0, jsxRuntime.jsxs)(`div`, {
                                 className: `pd-context-chip`, children: [
                                     (0, jsxRuntime.jsx)(`span`, {
@@ -129,10 +131,8 @@ function CoachDemo({ active = true, onOpenWorkout }) {
                                 ]
                             }), (0, jsxRuntime.jsx)(`div`, {
                                 className: `pd-question-chips`, "aria-label": `Sample questions`, children: coachQuestions.map((e, t) => (0, jsxRuntime.jsx)(`button`, {
-                                    type: `button`, "aria-pressed": t === selectedQuestion, onClick: () => {
-                                        setSelectedQuestion(t);
-                                        setHasInteracted(true);
-                                    }, children: e.question
+                                    type: `button`, "aria-pressed": t === selectedQuestion,
+                                    onClick: () => selectQuestion(t), children: e.question
                                 }, e.id))
                             }), (0, jsxRuntime.jsxs)(`div`, {
                                 className: `pd-chat-thread`, children: [

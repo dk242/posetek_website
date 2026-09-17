@@ -38,7 +38,29 @@ The homepage production build still enforces and preserves its 171-file applicat
 baseline. A future application release needs a separate full application review
 and deliberate baseline reconciliation.
 
-### Current revision: showing the mobile application
+### Current revision: two drill videos and interactive coach results
+
+Deployment `6aab2fc35884120dc73147f5` was published September 16, 2026 at
+5:12:05 PM PDT (September 17, 00:12:05.241 UTC). The homepage sample now uses
+only Figure-8 dribble (`DRB-006`) and Wall pass rhythm (`PAS-001`). Approved
+Firebase library footage appears beside corrected diagrams on desktop, with
+Overview / Demo switching below 760px and inside the phone. Clips preserve their
+portrait proportions, start on request and pause when hidden. The phone selects
+either drill and resets its local sample progress when selection changes.
+
+Coach Dribbling, Top speed and Sessions cards select the corresponding sample
+chart and answer, synchronized with the existing question chips. The figure-eight
+route has mirrored loops; wall passes follow one centered straight axis. Mobile
+source remains reference-only. The two public derivatives and their provenance
+are committed; rebuilding the site requires no Firebase credentials.
+
+The reviewed draft was promoted unchanged, with all 171 application/public
+baseline files preserved. Teammate rules commit `abf4106` remains in the shared
+history; this release did not deploy Firebase rules or modify catalog data.
+Read `deployment/DRILL_VIDEO_COACH_UPDATE.md` and
+`deployment/DRILL_VIDEO_COACH_PRODUCTION.json` for details and rollback.
+
+### Previous revision: showing the mobile application
 
 Deployment `6aab00ac8f7bad5e4a2afd2a` was published September 16, 2026 at
 1:50:04 PM PDT (20:50:04.855 UTC). The hero now explicitly identifies PoseTek as a

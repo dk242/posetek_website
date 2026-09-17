@@ -8,6 +8,7 @@ import { MagicCard } from "../../../components/magicui/magic-card";
 import { BlurFade } from "../../../components/magicui/blur-fade";
 import { TacticalIcon } from "../TacticalIcon";
 import { DemoPitch } from "./DrillDiagram";
+import { DrillMedia } from "./DrillMedia";
 import { createDemoWorkout, formatDuration, workoutReducer, formatDose, initialWorkoutState, focusFromRequest } from "./product-demo";
 import { focusWorkoutHeading } from "./workout-focus";
 import "./product-demo.css";
@@ -105,8 +106,7 @@ function WorkoutDemo({ active = true, initialRequest = ``, requestId = 0 }) {
     let focus = workout?.choices.focus || choices.focus;
     let focusContext = {
         dribbling: `Build your ball control`,
-        passing: `Find your passing rhythm`,
-        shooting: `Develop your shooting`
+        passing: `Find your passing rhythm`
     }[focus];
     let updateChoice = (e, t) => setChoices(n => ({
         ...n, [e]: t
@@ -208,9 +208,9 @@ Your focus.` : workout?.title
                                                     (0, jsxRuntime.jsxs)(`fieldset`, {
                                                         children: [
                                                             (0, jsxRuntime.jsx)(`legend`, {
-                                                                children: `Choose a training focus`
+                                                                children: `Choose your priority`
                                                             }), (0, jsxRuntime.jsx)(`div`, {
-                                                                className: `pd-options pd-focus`, children: [`dribbling`, `passing`, `shooting`].map(e => (0, jsxRuntime.jsx)(`button`, {
+                                                                className: `pd-options pd-focus`, children: [`dribbling`, `passing`].map(e => (0, jsxRuntime.jsx)(`button`, {
                                                                     type: `button`, "aria-pressed": choices.focus === e, onClick: () => updateChoice(`focus`, e), children: e
                                                                 }, e))
                                                             })
@@ -292,7 +292,7 @@ Your focus.` : workout?.title
                                     }), (0, jsxRuntime.jsx)(DemoPitch, {
                                         focus: workout.choices.focus
                                     }), (0, jsxRuntime.jsx)(`ol`, {
-                                        children: [`Select your focus drills`, `Balance the work and rest`, `Prepare the instructions`].map((e, t) => (0, jsxRuntime.jsxs)(`li`, {
+                                                        children: [`Order your two drills`, `Balance the work and rest`, `Prepare the instructions`].map((e, t) => (0, jsxRuntime.jsxs)(`li`, {
                                             "data-complete": preparationStep > t, children: [
                                                 (0, jsxRuntime.jsx)(`span`, {
                                                     children: preparationStep > t ? (0, jsxRuntime.jsx)(CheckIcon, {}) : `0${t + 1}`
@@ -343,7 +343,7 @@ Your focus.` : workout?.title
                                                 ]
                                             })
                                         ]
-                                    }), (0, jsxRuntime.jsx)(DemoPitch, { drillId: workout.drills[Math.min(selectedDrillIndex, workout.drills.length - 1)].id, focus: workout.choices.focus }), (0, jsxRuntime.jsx)(`div`, {
+                                    }), (0, jsxRuntime.jsx)(DrillMedia, { drillId: workout.drills[Math.min(selectedDrillIndex, workout.drills.length - 1)].id, active }), (0, jsxRuntime.jsx)(`div`, {
                                         className: `pd-proposal-list`, children: workout.drills.map((e, t) => (0, jsxRuntime.jsx)(MagicCard, {
                                             className: `pd-drill-card`, gradientFrom: `#b7f34a`, gradientTo: `#4bd7e8`, gradientColor: `#b7f34a12`, gradientOpacity: .4, children: (0, jsxRuntime.jsxs)(`div`, {
                                                 className: `pd-drill-row`, children: [
@@ -363,7 +363,7 @@ Your focus.` : workout?.title
                                                             }), (0, jsxRuntime.jsx)(`p`, { className: `pd-drill-setup`, children: e.setup })
                                                         ]
                                                     }), (0, jsxRuntime.jsx)(TacticalIcon, {
-                                                        kind: e.focus === `dribbling` ? `control` : e.focus === `shooting` ? `explore` : `cut`
+                                                        kind: e.focus === `dribbling` ? `control` : `cut`
                                                     })
                                                 ]
                                             })
@@ -417,8 +417,8 @@ Your focus.` : workout?.title
                                         ]
                                     }), (0, jsxRuntime.jsxs)(`div`, {
                                         className: `pd-session-scene`, children: [
-                                            (0, jsxRuntime.jsx)(DemoPitch, {
-                                                drillId: currentDrill.id, focus: currentDrill.focus
+                                            (0, jsxRuntime.jsx)(DrillMedia, {
+                                                drillId: currentDrill.id, active
                                             }), (0, jsxRuntime.jsxs)(`div`, {
                                                 className: `pd-timer`, style: {
                                                     "--timer-progress": currentSegment.seconds ? state.remaining / currentSegment.seconds : 0

@@ -1,9 +1,10 @@
 /**
  * Sample-only product logic recovered from product-demo-fcPr5ZHv.js in the
  * approved September 15 deployment. No API requests, persistence, or live plans.
- * The published dose rules, data, rounding, and transition semantics are retained.
+ * The published dribbling/passing dose rules and transition semantics are retained.
+ * The public showcase is limited to two drills with approved demonstration media.
  */
-export type DemoFocus = "dribbling" | "passing" | "shooting";
+export type DemoFocus = "dribbling" | "passing";
 export type DemoEnergy = "low" | "normal" | "high";
 export interface WorkoutChoices {
   minutes: 15 | 20 | 30 | 45 | 60;
@@ -65,50 +66,26 @@ const drillCatalog: Record<DemoFocus, Omit<DemoDrill, "sets" | "reps" | "unit" |
     instruction: "Pass and receive repeatedly. Alternate feet, using one or two touches.",
     cue: "Plant beside the ball. First touch sets the next pass.",
   },
-  shooting: {
-    id: "SHT-003", name: "One-step laces strike", focus: "shooting",
-    setup: "A stationary ball and a safe target. Leave space for your follow-through.",
-    instruction: "Take one approach step and strike with your laces. Reset the ball after each attempt.",
-    cue: "Firm ankle. Clean instep contact. Finish balanced.",
-  },
 };
 const workoutCopy: Record<DemoFocus, readonly [string, string]> = {
   dribbling: ["Own your next touch", "Controlled touches first. Build speed when the ball stays close."],
   passing: ["Find your passing rhythm", "Receive with purpose and make the next pass clean."],
-  shooting: ["Pick your corner", "Build a repeatable setup and finish with intent."],
 };
 
 export function focusFromRequest(request: string): DemoFocus {
-  return /shoot|finish|kick/i.test(request) ? "shooting"
-    : /pass|receiv/i.test(request) ? "passing" : "dribbling";
+  return /pass|receiv/i.test(request) ? "passing" : "dribbling";
 }
 
 export function createDemoWorkout(choices: WorkoutChoices): DemoWorkout {
   const extended = choices.minutes >= 30;
   const primarySets = choices.minutes === 15 ? 3 : choices.minutes >= 45 ? 5 : 4;
-  const secondaryFocus: DemoFocus = choices.focus === "passing" ? "dribbling" : choices.focus === "shooting" ? "shooting" : "passing";
+  const secondaryFocus: DemoFocus = choices.focus === "passing" ? "dribbling" : "passing";
   const drills: DemoDrill[] = [choices.focus, secondaryFocus].map((focus, index) => {
     const light = choices.energy === "low";
-    const sets = focus === "shooting"
-      ? choices.minutes === 60 ? 4 : choices.minutes >= 20 ? 3 : 2
-      : Math.min(5, index === 0 ? primarySets : choices.minutes === 60 ? 5 : extended ? 4 : 3);
-    const reps = focus === "shooting" ? 8
-      : focus === "passing" ? light ? 30 : extended || choices.energy === "high" ? 60 : 45
+    const sets = Math.min(5, index === 0 ? primarySets : choices.minutes === 60 ? 5 : extended ? 4 : 3);
+    const reps = focus === "passing" ? light ? 30 : extended || choices.energy === "high" ? 60 : 45
       : light ? 45 : choices.energy === "high" && extended ? 75 : 60;
-    const workSeconds = focus === "shooting" ? reps * 8 : reps;
-    const restSeconds = focus === "shooting" ? light ? 75 : choices.energy === "high" ? 45 : 60 : 45;
-    const drill = index === 1 && choices.focus === "passing" ? {
-      id: "DRB-009", name: "Weak-foot gate circuit", focus,
-      setup: "Three short gates in a square, a ball, and space to turn.",
-      instruction: "Carry the ball through each gate with your weaker foot. Turn, then finish with a pass.",
-      cue: "Use small touches and keep the final pass controlled.",
-    } : index === 1 && choices.focus === "shooting" ? {
-      id: "SHT-004", name: "Four-corner accuracy grid", focus,
-      setup: "Mark four safe target zones on a goal or wall.",
-      instruction: "Choose a corner before each shot. Rotate targets and count accurate finishes.",
-      cue: "Place before power. Recover your balance after every shot.",
-    } : drillCatalog[focus];
-    return { ...drill, sets, reps, unit: focus === "shooting" ? "shots" : "seconds", workSeconds, restSeconds };
+    return { ...drillCatalog[focus], sets, reps, unit: "seconds", workSeconds: reps, restSeconds: 45 };
   });
   const segments: WorkoutSegment[] = [];
   drills.forEach((drill, drillIndex) => {
