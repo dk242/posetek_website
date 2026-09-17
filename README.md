@@ -9,16 +9,18 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 1:33:55 AM PDT as
-`6aaba570721b0d41e0eabf90`.
+The latest release was published September 17, 2026 at 2:31:39 AM PDT as
+`6aabb282bcbad486db278962`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/VACAVILLE_WEBSITE_PRODUCTION.json).
+[the latest production receipt](deployment/TEAM_INSIGHTS_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Website follow-up live:** canonical account
 hierarchy and reviewed personalized planning now serve
-admin, staff and athlete web surfaces. Native mobile generation is unchanged;
-the separate Insights prototype remains development-only. Read the superseding
+admin, staff and athlete web surfaces. Native mobile generation is unchanged.
+Team Insights is now live for admins, organization managers and assigned coaches;
+read the [integration handoff](docs/insights/INTEGRATION.md) for reporting semantics,
+current-access checks, bounded reads and the scoped callable release. Read the
 [Vacaville website handoff](docs/VACAVILLE_WEBSITE_UPDATE.md) for scope, workbook
 aggregates, privacy boundaries and current validation. The release preserves the
 approved Players and Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and

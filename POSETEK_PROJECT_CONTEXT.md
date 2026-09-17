@@ -6,7 +6,39 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Current release: Vacaville account hierarchy and personalized web planning
+### Current release: Team Insights for admins and club staff
+
+Deployment `6aabb282bcbad486db278962` is live at https://posetek.net, published
+September 17, 2026 at 2:31:39 AM PDT (`2026-09-17T09:31:39.235Z`), from source
+`55d46ea`. See [`deployment/TEAM_INSIGHTS_PRODUCTION.json`](deployment/TEAM_INSIGHTS_PRODUCTION.json)
+and [`docs/insights/INTEGRATION.md`](docs/insights/INTEGRATION.md).
+
+Taiyo's Team Insights prototype is integrated at `/insights`, with persistent
+admin navigation and contextual links from canonical organization/team rosters
+and coach dashboards. Admins select organizations, managers see every current
+organization team, and coaches see only currently assigned teams. Independent
+legacy coaches retain their existing dashboard. Organization/team context survives
+player results and return navigation; stale roster mirrors cannot populate the
+canonical coach dashboard.
+
+The new `getClubInsights` callable (generation 1, Node 22, us-central1, version 1)
+returns allowlisted aggregates with bounded reads and final current-access checks.
+It counts recording documents, including failed/duplicate outputs, rather than
+successful tests or app visits. Metric trends reject explicitly invalid or
+incomplete results. Dates and Monday week boundaries use UTC; historical records
+follow the current player profile. No athlete data, rules, planner, workbook or
+native mobile changes were deployed in this release.
+
+Validation passed 835 frontend tests, TypeScript, 19 handler/wrapper tests,
+48 existing backend regressions, 18 release-tool tests and 25 release composition
+checks. Live admin/manager reports reconciled all four club teams; cross-club and
+signed-out requests were denied. Hosted admin and manager sign-ins, player links,
+return context and 390px/26-week layouts passed. Coach restrictions and revocation
+use synthetic fixtures. The exact preview was promoted; 302 local files match the
+303-file published inventory. The homepage/Coaches page and 30 marketing assets
+remain byte-for-byte preserved. The current application baseline is 270 files.
+
+### Previous release: Vacaville account hierarchy and personalized web planning
 
 Deployment `6aaba570721b0d41e0eabf90` is live at https://posetek.net, published
 September 17, 2026 at 1:33:55 AM PDT (`2026-09-17T08:33:55.137Z`) from application
@@ -19,7 +51,8 @@ The approved September 17 follow-up adds a canonical organization/staff/team
 account hierarchy and one reviewed personalized-planner workflow across admin,
 coach/manager and athlete web surfaces. Named team labels do not create staff
 accounts. Current membership and player team ownership take priority over legacy
-roster mirrors. The separate Insights prototype remains development-only.
+roster mirrors. That release kept the separate Insights prototype development-only;
+the follow-up above now integrates it in production.
 
 The reconciled workbook retains 36 athletes (16 girls, 20 boys): 10 fully tested,
 24 partially tested and 2 with no recorded tests; none are classified as having

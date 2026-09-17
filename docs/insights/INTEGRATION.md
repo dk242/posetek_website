@@ -1,8 +1,11 @@
 # Team Insights integration
 
-This follow-up integrates Taiyo's `609faa0` Team Insights prototype into the
-existing application. The original [worklog](WORKLOG.md) remains a record of
-the prototype. Release results and recovery IDs are recorded separately.
+**Live at [posetek.net/insights](https://posetek.net/insights).** Deployment
+`6aabb282bcbad486db278962` was published September 17, 2026 at 2:31:39 AM PDT
+from source `55d46ea`. It integrates Taiyo's `609faa0` Team Insights prototype
+into the existing application. The original [worklog](WORKLOG.md) remains a
+record of the prototype. See the [production receipt](../../deployment/TEAM_INSIGHTS_PRODUCTION.json)
+for verified release hashes, checks and recovery IDs.
 
 ## Product and access contract
 
@@ -66,3 +69,12 @@ promote that exact artifact after verification. Record the previous production
 deployment; reconcile `deployment/homepage-baseline.json` only after readback.
 Keep owner tokens, live responses, local source packages and release captures
 under ignored `.netlify/` paths. Never add them to Git.
+
+The recorded release passed 835 frontend tests, TypeScript, 16 handler and 3
+wrapper tests, 48 existing backend regressions, 18 release-tool tests and 25
+composition checks. All four live manager team rosters matched canonical records;
+admin access and signed-out/cross-organization denial passed. Hosted admin and
+manager sign-ins, player results/context and a 390px, 26-week layout passed;
+coach restrictions and revocation were exercised with synthetic fixtures.
+The deployed six-file source package was downloaded and checksum-verified.
+The ordinary marketing build subsequently preserved all 270 application files.

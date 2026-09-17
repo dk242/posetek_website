@@ -1,5 +1,9 @@
 # Vacaville roster and website update
 
+The later [Team Insights integration](insights/INTEGRATION.md) supersedes this
+release's development-only Insights decision and its application baseline.
+This document and receipt retain the earlier workbook/planner rollout details.
+
 ## Status
 
 **Live at [posetek.net](https://posetek.net).** Netlify deployment

@@ -1,0 +1,94 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aabb282bcbad486db278962",
+  "state": "ready",
+  "publishedAt": "2026-09-17T09:31:39.235Z",
+  "publishedLocal": "September 17, 2026, 2:31:39 AM PDT",
+  "url": "https://posetek.net/insights",
+  "immutableUrl": "https://6aabb282bcbad486db278962--posetek.netlify.app/insights",
+  "artifactSourceCommit": "55d46ea",
+  "prototypeSourceCommit": "609faa0",
+  "releaseMethod": "Verified Netlify preview promoted unchanged after the scoped callable deployment",
+  "changes": [
+    "Production Team Insights route and persistent admin navigation",
+    "Contextual organization/team entries for managers and assigned coaches",
+    "Canonical coach rosters, scoped player results and return navigation",
+    "Bounded read-only aggregates with final current-membership and player-ownership checks",
+    "Explicit recording-document, historical-transfer, incomplete-metric and UTC semantics"
+  ],
+  "backend": {
+    "name": "getClubInsights",
+    "project": "kickai-69dd0",
+    "region": "us-central1",
+    "generation": 1,
+    "runtime": "nodejs22",
+    "versionId": "1",
+    "timeoutSeconds": 120,
+    "sourceSha256": "ecc3464dfd5f0bf393cb5cc28a434b80d857db90f88a994b08ba513d418fded5",
+    "downloadedSourceSha256": "ecc3464dfd5f0bf393cb5cc28a434b80d857db90f88a994b08ba513d418fded5",
+    "planHash": "a48eb2aa91dac627a629d09333e251d2a38cdda1c405733c19f31375209fcd9c",
+    "sourceFiles": 6,
+    "unrelatedFunctionsPreserved": true,
+    "verifiedAt": "2026-09-17T09:21:16Z",
+    "rulesChanges": false,
+    "athleteDataWrites": 0
+  },
+  "preservation": {
+    "previousApplicationBaseline": "6aaba570721b0d41e0eabf90",
+    "unchangedExistingFiles": 227,
+    "applicationSha1": "ef5ca137787e34050aafb62be550dcd8f220a561",
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingFiles": 32,
+    "newUniqueAssets": 42,
+    "applicationBaselineFiles": 270,
+    "publishedInventoryFiles": 303,
+    "matchedLocalFiles": 302,
+    "platformGeneratedConfigFiles": 1,
+    "homepageAndCoachesUnchanged": true,
+    "plannerGatewayWorkbookAndNativeMobileUnchanged": true
+  },
+  "verification": {
+    "frontend": {
+      "tests": 835,
+      "files": 61,
+      "result": "passed"
+    },
+    "focusedFrontend": {
+      "tests": 77,
+      "files": 8,
+      "result": "passed",
+      "overlapsFullSuite": true
+    },
+    "typeScript": "passed",
+    "handlerTests": 16,
+    "scopedEntrypointTests": 3,
+    "existingBackendRegressions": 48,
+    "releaseToolTests": 18,
+    "releaseCompositionTests": 25,
+    "preview": {
+      "filesChecked": 210,
+      "routesChecked": 11,
+      "applicationSha1": "ef5ca137787e34050aafb62be550dcd8f220a561"
+    },
+    "liveCallable": {
+      "managerTeams": 4,
+      "canonicalRostersMatch": true,
+      "danielPlayers": 6,
+      "denied": [
+        "signed-out",
+        "cross-organization",
+        "invalid-window"
+      ]
+    },
+    "browser": "Fresh hosted admin and manager sign-ins; admin organization selection; all four manager teams; six-player team report; player results and organization/team return context; desktop and 390px layout with 26 weeks; no hosted or production console errors; live production admin report verified.",
+    "limits": "Coach role and revoked-access cases use synthetic fixtures. Physical phone/Safari not exercised. Counts describe recording documents, not independently successful tests. Dates and week buckets use UTC; transferred history follows current profiles.",
+    "futureMarketingBuild": "Passed: ordinary build preserved all 270 released application files"
+  },
+  "rollback": {
+    "websiteDeployId": "6aaba570721b0d41e0eabf90",
+    "websiteUrl": "https://6aaba570721b0d41e0eabf90--posetek.netlify.app",
+    "backend": "New function; guarded rollback can remove only this verified version after reverting website links. Preserve recorded data and other services.",
+    "instructions": "deployments/club-insights/README.md",
+    "privateReceiptDirectory": ".netlify/insights-function-release/"
+  }
+}

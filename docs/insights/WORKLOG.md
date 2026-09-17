@@ -1,5 +1,11 @@
 # Club insights — worklog
 
+The prototype below was integrated and released on September 17, 2026.
+See [INTEGRATION.md](INTEGRATION.md) and
+[the production receipt](../../deployment/TEAM_INSIGHTS_PRODUCTION.json)
+for the current access, reporting, navigation, deployment and recovery contract.
+The original worklog is retained below as historical evidence.
+
 Branch `worktree-club-insights`. Website repo only; the mobile app and gateway are untouched.
 
 ## Goal

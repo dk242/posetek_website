@@ -11,13 +11,15 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aaba570721b0d41e0eabf90`, published
-September 17, 2026 at 1:33:55 AM PDT. It publishes the canonical account hierarchy
-and reviewed personalized web planner while preserving the exact Players and
+The latest recorded production release is `6aabb282bcbad486db278962`, published
+September 17, 2026 at 2:31:39 AM PDT. It integrates Team Insights for admins,
+organization managers and assigned coaches, preserving the account hierarchy,
+reviewed personalized web planner and exact Players and
 Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and concurrent source
 commit `38a817e`. Gateway, rules and personalized configuration are live; native
-mobile generation is unchanged. Read `deployment/VACAVILLE_WEBSITE_PRODUCTION.json`
-for the current receipt, `docs/VACAVILLE_WEBSITE_UPDATE.md` for the web rollout,
+mobile generation is unchanged. Read `deployment/TEAM_INSIGHTS_PRODUCTION.json`
+for the current receipt, `docs/insights/INTEGRATION.md` for dashboard semantics and
+scoped callable deployment, `docs/VACAVILLE_WEBSITE_UPDATE.md` for the prior web rollout,
 `deployment/COACHES_PAGE_PRODUCTION.json` for the prior marketing receipt,
 `deployment/COACHES_PAGE_UPDATE.md` for the tailored team service and sample data,
 `deployment/HOMEPAGE_ANNOTATIONS_2026-09-15.md` for the requested annotations, and
@@ -42,7 +44,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 228 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 270 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 
