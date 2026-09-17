@@ -37,11 +37,17 @@ function storageFolderCandidates(playerId, drill, rep, bucketName) {
       throw new Error("Recording path is outside the shared athlete and drill");
     }
     const suffix = path.slice(prefix.length).replace(/\/$/, "");
-    const match = /^(session[1-9]\d*)(?:\/(kick[1-9]\d*))?(?:\/([A-Za-z0-9_.-]+\.(?:mov|mp4|json)))?$/i.exec(suffix);
+    const match = /^(session[1-9]\d*)(?:\/(kick[1-9]\d*)(?:\/(capture_[a-f0-9]{32}))?)?(?:\/([A-Za-z0-9_.-]+\.(?:mov|mp4|json)))?$/i.exec(suffix);
     if (!match || suffix.split("/").some(part => part === "." || part === "..")) {
       throw new Error("Invalid recording path");
     }
-    folders.push(prefix + match[1] + (match[2] ? "/" + match[2] : ""));
+    const folder = prefix + match[1] + (match[2] ? "/" + match[2] : "") + (match[3] ? "/" + match[3] : "");
+    if (match[3]) {
+      if (rep.captureId !== undefined && rep.captureId !== match[3].slice(8)) throw new Error("Recording capture identity differs from its path");
+      // Immutable capture paths must never borrow a legacy retry's artifacts.
+      return [folder];
+    }
+    folders.push(folder);
   }
   folders.push(`${prefix}session${positiveNumber(rep.sessionNumber, 1)}/kick${positiveNumber(rep.repNumber, 1)}`);
   return [...new Set(folders)];

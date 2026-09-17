@@ -4,6 +4,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { finiteNumber, metricValue, resultUsable } from "../../lib/result-values";
+import { poseFrames } from "../../lib/pose-playback";
 import benchmarks from "../../lib/benchmarks";
 import {
   configs,
@@ -27,10 +29,7 @@ export interface Rep {
 export type FramePoint = { x: number; y: number; visibility: number | null } | null;
 export type Frame = FramePoint[];
 
-export function asNumber(value: unknown): number | null {
-  const number = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(number) ? number : null;
-}
+export const asNumber = finiteNumber;
 
 export function asInteger(value: unknown): number | null {
   const number = asNumber(value);
@@ -72,7 +71,7 @@ export function average(values: number[]): number | null {
 }
 
 export function averageField(reps: Rep[], field: string): number | null {
-  return average(reps.map(rep => asNumber(rep[field])).filter((value): value is number => value !== null));
+  return average(reps.filter(resultUsable).map(rep => metricValue(rep, field)).filter((value): value is number => value !== null));
 }
 
 export function formatTrend(reps: Rep[], lowerIsBetter: boolean): string {
@@ -118,7 +117,7 @@ export function sessionGroups(reps: Rep[], lowerIsBetter: boolean): SessionGroup
 
 export function repMetric(rep: Record<string, any>, fields: string[]): number | null {
   for (const field of fields) {
-    const value = asNumber(rep[field]);
+    const value = metricValue(rep, field);
     if (value !== null) return value;
   }
   return null;
@@ -165,13 +164,13 @@ export function summaryMetrics(drillKey: PageDrillKey, reps: Rep[], lowerIsBette
 // Rep normalization used for authenticated Firestore loads (loadReps).
 export function normalizeAuthRep(docId: string, data: Record<string, any>, drillConfig: DrillConfig): Rep {
   const primaryFields = drillConfig.primaryFields || [drillConfig.primaryField as string];
-  const primary = primaryFields.map(field => asNumber(data[field])).find(value => value !== null) ?? null;
+  const primary = primaryFields.map(field => metricValue(data, field)).find(value => value !== null) ?? null;
   return {
     id: docId,
     ...data,
     _statsDrill: drillConfig.key,
     primary,
-    createdAtMillis: timestampMillis(data.createdAt),
+    createdAtMillis: asNumber(data.createdAtMillis) ?? timestampMillis(data.createdAt),
     sessionNumber: asInteger(data.sessionNumber) || 1,
     repNumber: asInteger(data.repNumber) || asInteger(data.absoluteRepNumber) || 1,
     absoluteRepNumber: asInteger(data.absoluteRepNumber),
@@ -184,7 +183,7 @@ export function normalizeSharedRep(rep: Record<string, any>, drillConfig: DrillC
   return {
     ...(rep as Rep),
     _statsDrill: drillConfig.key,
-    primary: drillConfig.primaryField !== undefined ? asNumber(rep[drillConfig.primaryField]) : null,
+    primary: drillConfig.primaryField !== undefined ? metricValue(rep, drillConfig.primaryField) : null,
     createdAtMillis: asNumber(rep.createdAtMillis) || 0,
     sessionNumber: asInteger(rep.sessionNumber) || 1,
     repNumber: asInteger(rep.repNumber) || asInteger(rep.absoluteRepNumber) || 1,
@@ -205,20 +204,8 @@ export function folderCandidates(rep: Rep, playerId: string, drillKey: string): 
   return [...new Set(folders.filter(Boolean))];
 }
 
-export function normalizeFrames(value: unknown): Frame[] {
-  if (!Array.isArray(value)) return [];
-  return value.map(frame =>
-    Array.isArray(frame)
-      ? frame.map((point: unknown): FramePoint => {
-          if (!Array.isArray(point) || point.length < 2) return null;
-          const x = asNumber(point[0]);
-          const y = asNumber(point[1]);
-          const visibility = asNumber(point[3]);
-          if (x === null || y === null || (visibility !== null && visibility < 0.1)) return null;
-          return { x, y, visibility };
-        })
-      : [],
-  );
+export function normalizeFrames(value: unknown, metadata: Record<string, any> = {}): Frame[] {
+  return poseFrames(value, metadata).map(frame => frame.map(point => point.x === null || point.y === null ? null : { x: point.x, y: point.y, visibility: point.visibility ?? null }));
 }
 
 export function validPoint(frame: Frame | undefined, index: number): { x: number; y: number; visibility: number | null } | null {
@@ -238,13 +225,11 @@ export function parsePoint(value: unknown): { x: number; y: number } | null {
   if (!Array.isArray(value) || value.length < 2) return null;
   const x = asNumber(value[0]);
   const y = asNumber(value[1]);
-  return x === null || y === null ? null : { x, y };
+  return x === null || y === null || x < 0 || x > 1 || y < 0 || y > 1 ? null : { x, y };
 }
 
 export function mergedMetric(artifacts: Record<string, any>, rep: Record<string, any> | null | undefined, field: string): number | null {
-  const meta = (artifacts["metadata.json"] || {}) as Record<string, any>;
-  const artifactValue = asNumber(meta[field]);
-  return artifactValue !== null ? artifactValue : asNumber(rep?.[field]);
+  return metricValue(rep || {}, field, artifacts["metadata.json"] || {});
 }
 
 export interface ShuttleBounds {
@@ -293,17 +278,17 @@ export function markerDefs(drillKey: PageDrillKey, artifacts: Record<string, any
   if (drillKey === "broadJump") {
     const fit = (artifacts["foot_piecewise_fit.json"] || {}) as Record<string, any>;
     const keyFrames = (artifacts["key_frames.json"] || []) as any[];
-    const takeoff = asInteger(fit.takeoffFrameIndex) ?? asInteger(keyFrames[0]) ?? asInteger(rep.takeoffFrame);
-    const landing = asInteger(fit.landingFrameIndex) ?? asInteger(keyFrames[1]) ?? asInteger(rep.landingFrame);
+    const takeoff = rep.resultStatus ? metricValue(rep, "takeoffFrame") : asInteger(fit.takeoffFrameIndex) ?? asInteger(keyFrames[0]) ?? asInteger(rep.takeoffFrame);
+    const landing = rep.resultStatus ? metricValue(rep, "landingFrame") : asInteger(fit.landingFrameIndex) ?? asInteger(keyFrames[1]) ?? asInteger(rep.landingFrame);
     return [
       { label: "Takeoff", icon: "flight_takeoff", frame: takeoff },
       { label: "Landing", icon: "flight_land", frame: landing },
     ];
   }
   const meta = (artifacts["metadata.json"] || {}) as Record<string, any>;
-  const start = asInteger(meta.startFrame) ?? asInteger(rep.startFrame);
-  const turn = asInteger(meta.apexFrame) ?? asInteger(rep.apexFrame);
-  const finish = asInteger(meta.endFrame) ?? asInteger(rep.endFrame);
+  const start = rep.resultStatus ? metricValue(rep, "startFrame") : asInteger(meta.startFrame) ?? asInteger(rep.startFrame);
+  const turn = rep.resultStatus ? metricValue(rep, "apexFrame") : asInteger(meta.apexFrame) ?? asInteger(rep.apexFrame);
+  const finish = rep.resultStatus ? metricValue(rep, "endFrame") : asInteger(meta.endFrame) ?? asInteger(rep.endFrame);
   return [
     { label: "Start", icon: "flag", frame: start },
     { label: "Turn", icon: "switch_access_shortcut", frame: turn },
@@ -325,10 +310,10 @@ export function repMetricCards(drillKey: PageDrillKey, artifacts: Record<string,
     const height = mergedMetric(artifacts, rep, "jumpHeight");
     const fit = (artifacts["foot_piecewise_fit.json"] || {}) as Record<string, any>;
     const keyFrames = (artifacts["key_frames.json"] || []) as any[];
-    const takeoff = asInteger(fit.takeoffFrameIndex) ?? asInteger(keyFrames[0]) ?? asInteger(rep.takeoffFrame);
-    const landing = asInteger(fit.landingFrameIndex) ?? asInteger(keyFrames[1]) ?? asInteger(rep.landingFrame);
-    const fps = asNumber(meta.framesPerSecond) || 120;
-    const flight = takeoff !== null && landing !== null && landing > takeoff ? (landing - takeoff) / fps : null;
+    const takeoff = rep.resultStatus ? metricValue(rep, "takeoffFrame") : asInteger(fit.takeoffFrameIndex) ?? asInteger(keyFrames[0]) ?? asInteger(rep.takeoffFrame);
+    const landing = rep.resultStatus ? metricValue(rep, "landingFrame") : asInteger(fit.landingFrameIndex) ?? asInteger(keyFrames[1]) ?? asInteger(rep.landingFrame);
+    const fps = asNumber(meta.framesPerSecond ?? meta.fps);
+    const flight = resultUsable(rep) && fps !== null && fps > 0 && takeoff !== null && landing !== null && landing > takeoff ? (landing - takeoff) / fps : null;
     const foot = meta.footSide || fit.footSide || "—";
     return [
       { icon: "straighten", label: "Distance", value: distance === null ? "—" : `${metersToFeet(distance).toFixed(1)} ft` },

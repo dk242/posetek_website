@@ -1,8 +1,9 @@
 "use strict";
 
 const { randomUUID } = require("node:crypto");
-const { playerSegment, storageFolderCandidates } = require("./athlete-storage-paths");
-const { millis, drillOf, duplicateIds, qualifyRep, workoutEvents } = require("./insights-v2-qualification");
+const { playerSegment } = require("./athlete-storage-paths");
+const { millis, duplicateIds, qualifyRep, workoutEvents } = require("./insights-v2-qualification");
+const { createProcessingEvidenceReader, failureMatchesRep } = require("./processing-evidence");
 const PROJECTION_VERSION = 2;
 const MAX_HISTORY = 20000;
 const MAX_WORKOUTS = 10000;
@@ -44,42 +45,7 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
     if (!playerSegment(playerId)) throw new HttpsError("invalid-argument", "Invalid player.");
     await stateRef(playerId).set({ token: randomUUID(), dirtyAtMillis: now() });
   }
-  async function readJson(name) {
-    const file = bucket.file(name);
-    let metadata;
-    try { [metadata] = await file.getMetadata(); } catch (error) { if (error.code === 404) return null; throw error; }
-    if (!Number.isFinite(Number(metadata.size)) || Number(metadata.size) > 2 * 1024 * 1024) throw new HttpsError("resource-exhausted", "A processing evidence file is too large to verify.");
-    const [bytes] = await bucket.file(name, { generation: metadata.generation }).download();
-    if (bytes.length > 2 * 1024 * 1024) throw new HttpsError("resource-exhausted", "A processing evidence file is too large to verify.");
-    try { return JSON.parse(bytes.toString("utf8")); } catch { return null; }
-  }
-  async function readEvidence(playerId, rep, cache, failures) {
-    const fallback = { failures: failures.filter(failure => failureMatchesRep(failure, rep, [])) };
-    if (injectedEvidence) return { ...fallback, ...await injectedEvidence(playerId, rep) };
-    const drill = drillOf(rep);
-    let folders;
-    const hasCoordinates = Number.isSafeInteger(rep.sessionNumber) && rep.sessionNumber > 0
-      && Number.isSafeInteger(rep.repNumber) && rep.repNumber > 0;
-    const hasPath = typeof rep.storagePath === "string" && Boolean(rep.storagePath);
-    if (!hasPath && !hasCoordinates) return fallback;
-    try {
-      folders = storageFolderCandidates(playerId, drill, rep, bucket.name);
-      if (!hasCoordinates) folders = folders.slice(0, 1);
-    } catch { return fallback; }
-    let artifact = {};
-    for (const folder of folders) {
-      if (!cache.has(folder)) cache.set(folder, Promise.all([readJson(`${folder}/metadata.json`), readJson(`${folder}/reprocess_context.json`)]));
-      const [metadata, context] = await cache.get(folder);
-      if (metadata) { artifact = { metadata, context }; break; }
-    }
-    let revision = null;
-    const revisionId = rep.adminRevision?.revisionId;
-    if (typeof revisionId === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(revisionId)) {
-      const snap = await db.collection("players").doc(playerId).collection("reps").doc(rep.id).collection("revisions").doc(revisionId).get();
-      revision = snap.exists ? snap.data() : null;
-    }
-    return { ...artifact, revision, failures: failures.filter(f => failureMatchesRep(f, rep, folders)) };
-  }
+  const { readEvidence } = createProcessingEvidenceReader({ db, bucket, HttpsError, readEvidence: injectedEvidence });
   async function cleanupPages(playerId, previous, published) {
     // Old failed rebuilds can leave unpublished pages. They are eligible only
     // after 24 hours; publication itself has a ten-minute deadline below.
@@ -111,13 +77,14 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
       return { deleted: true, playerId };
     }
     const token = state.data()?.token || null;
-    const [repDocs, logDocs, failures] = await Promise.all([
+    const [repDocs, logDocs, failures, corrections] = await Promise.all([
       completeQuery(playerRef.collection("reps"), maxHistory, HttpsError),
       completeQuery(playerRef.collection("workoutLogs"), maxWorkouts, HttpsError),
       injectedFailures ? injectedFailures(playerId) : completeQuery(db.collection("failureCases").where("playerDocumentID", "==", playerId), 5000, HttpsError)
         .then(docs => docs.map(doc => ({ ...doc.data(), id: doc.id }))),
+      playerRef.collection("insightMetadata").doc("resultCorrections").get(),
     ]);
-    const reps = repDocs.map(doc => ({ ...doc.data(), id: doc.id, playerId })), duplicates = duplicateIds(reps), cache = new Map(), linkedFailures = new Set();
+    const reps = repDocs.map(doc => ({ ...doc.data(), id: doc.id, playerId })), duplicates = duplicateIds(reps, corrections.data()), cache = new Map(), linkedFailures = new Set();
     const testing = await mapBounded(reps, 8, async rep => {
       const evidence = duplicates.has(rep.id) ? {} : await readEvidence(playerId, rep, cache, failures);
       for (const failure of evidence.failures || []) linkedFailures.add(failure);
@@ -184,20 +151,5 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
     return { summary, testing: pages.flatMap(page => page.testing), workouts: pages.flatMap(page => page.workouts), failures: pages.flatMap(page => page.failures) };
   }
   return { invalidateInsightPlayer, rebuildInsightPlayer, loadInsightPlayer };
-}
-function failureMatchesRep(failure, rep, folders) {
-  // Capture folders/numbers can be reused. An explicit different rep id is
-  // evidence of another attempt, even when its artifact folder is identical.
-  if (failure.repId !== null && failure.repId !== undefined && failure.repId !== "") return failure.repId === rep.id;
-  // Native hard-failure retries can reuse numeric session/rep coordinates and
-  // folders. Explicit different session document ids identify different attempts.
-  if (failure.sessionDocId && rep.sessionId && failure.sessionDocId !== rep.sessionId) return false;
-  const folder = failure.storage?.repArtifactFolder;
-  if (typeof folder === "string" && folders.includes(folder.replace(/\/$/, ""))) return true;
-  const failureDrill = drillOf({ drillType: failure.drillType });
-  if (failureDrill === "unknown" || failureDrill !== drillOf(rep) || !Number.isSafeInteger(failure.repNumber)
-    || failure.repNumber !== rep.repNumber) return false;
-  return Boolean((failure.sessionDocId && rep.sessionId && failure.sessionDocId === rep.sessionId)
-    || (Number.isSafeInteger(failure.sessionNumber) && failure.sessionNumber > 0 && failure.sessionNumber === rep.sessionNumber));
 }
 module.exports = { createInsightProjection, completeQuery, mapBounded, failureMatchesRep, PROJECTION_VERSION, MAX_AGE_MS };

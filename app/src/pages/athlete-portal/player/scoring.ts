@@ -1,3 +1,4 @@
+import { metricValue, resultUsable } from "../../../lib/result-values";
 // One player scoring path shared by Profile, Overall standings and plan intake.
 // Mirrors AthleteStatsBuilder and uses the same versioned benchmark dataset.
 import bundled from './D1Benchmarks.json';
@@ -22,11 +23,12 @@ export function profileCell(athlete: Row, now = new Date()): string {
   return `${band}|${gender}`;
 }
 export function valueFor(rep: Row, fields: string[]): number | null {
-  for (const f of fields) { const n = positive(rep[f]); if (n !== null) return n; }
+  for (const f of fields) { const n = metricValue(rep, f); if (n !== null) return n; }
   return null;
 }
 const sameCourse = (a: Row, b: Row) => positive(a.markerDistance) !== null && positive(b.markerDistance) !== null && Math.abs(Number(a.markerDistance) - Number(b.markerDistance)) / Math.max(Number(a.markerDistance), Number(b.markerDistance)) <= 0.05;
-export function comparisons(reps: Row[]) {
+export function comparisons(sourceReps: Row[]) {
+  const reps = sourceReps.filter(resultUsable);
   const kicks = reps.filter(r => drillKey(r) === 'shooting');
   const dribbles = reps.filter(r => drillKey(r) === 'dribbling' && positive(r.totalTime)).sort((a, b) => Number(a.totalTime) - Number(b.totalTime) || Number(!!positive(b.markerDistance)) - Number(!!positive(a.markerDistance)) || String(a.id).localeCompare(String(b.id)));
   const foot = (r: Row, key: string) => String(r[key] || '').toLowerCase();
@@ -42,7 +44,8 @@ export function comparisons(reps: Row[]) {
     slowdown: fastest && cod ? 100 * (fastest.totalTime / cod - 1) : null,
     multiplier: fastest && cod ? 0.8 + 0.2 * Math.min(cod / fastest.totalTime, 1) : 1 };
 }
-export function playerProfile(reps: Row[], athlete: Row = {}, dataset: Row = defaultDataset) {
+export function playerProfile(sourceReps: Row[], athlete: Row = {}, dataset: Row = defaultDataset) {
+  const reps = sourceReps.filter(resultUsable);
   const cell = profileCell(athlete), comparisonsValue = comparisons(reps);
   const metrics = METRICS.filter(m => !m.placeholder).map(m => {
     const reference = positive(dataset.cells?.[cell]?.[m.key]?.percentiles?.p50);

@@ -220,7 +220,7 @@ test("legacy organization codes cannot admit staff or move club identities", asy
 });
 test("leaderboards use canonical team assignments despite broad stale coach rosters", async () => {
   const { db } = harness();
-  const boards = createTeamLeaderboard({ db, HttpsError });
+  const boards = createTeamLeaderboard({ db, HttpsError, effectiveResults: { listForPlayer: async () => ({ reps: [] }) } });
   const result = await boards.getTeamLeaderboard({ uid: "athlete-a" });
   assert.deepEqual(result.athletes.map((p) => p.id), ["pa"]);
   assert.equal(result.teamId, "a");

@@ -4,7 +4,9 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import PosePlayback from "../../../components/PosePlayback";
+import { attemptLabel, resultLabel, sameResultStatus } from "../../../lib/result-values";
 import type { Drill } from "../lib/drills";
 import type { Access } from "../lib/loaders";
 import { authArtifacts, fetchJson, sharedArtifacts } from "../lib/loaders";
@@ -56,7 +58,7 @@ export default function SessionView({ drill, folder, selectedId, reps, access, p
             data-session-rep={rep.id}
             onClick={() => onSelectRep(rep.id)}
           >
-            Rep {repNumber(rep)}
+            {attemptLabel(rep, sessionReps)}
           </button>
         ))}
       </nav>
@@ -81,6 +83,8 @@ interface ViewerData {
   frames: PosePoint[][];
   metrics: MetricTile[];
   markers: FrameMarker[];
+  metadata: Record<string, any>;
+  mediaSource?: string;
 }
 
 interface RepViewerProps {
@@ -94,13 +98,6 @@ interface RepViewerProps {
 function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps) {
   const [data, setData] = useState<ViewerData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const stageRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const sliderRef = useRef<HTMLInputElement | null>(null);
-  const playRef = useRef<HTMLButtonElement | null>(null);
-  const speedRef = useRef<HTMLButtonElement | null>(null);
-  const viewerRef = useRef<{ setFrame: (next: unknown) => void } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,17 +105,23 @@ function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps)
       const payload = access === "shared"
         ? await sharedArtifacts(drill, rep, shareToken)
         : await authArtifacts(drill, rep, playerId!);
+      if (rep.resultStatus && payload.resultStatus && !sameResultStatus(rep.resultStatus, payload.resultStatus)) {
+        throw new Error("This result changed since it was opened. Refresh the athlete results to view the latest revision.");
+      }
       const urls = payload.artifactUrls || {};
       const [pose, metadata] = await Promise.all([
         fetchJson(urls["pose.json"]).catch(() => null),
         fetchJson(urls["metadata.json"]).catch(() => null),
       ]);
       if (cancelled) return;
+      const meta = { ...(metadata || {}) };
       setData({
         mediaUrl: payload.mediaUrl || null,
-        frames: parsePose(pose),
-        metrics: repMetricSpecs(drill, rep, metadata || {}),
-        markers: frameMarkers(drill, rep, metadata || {}),
+        frames: parsePose(pose, meta),
+        metadata: meta,
+        mediaSource: payload.source,
+        metrics: repMetricSpecs(drill, rep, meta),
+        markers: frameMarkers(drill, rep, rep.resultStatus ? { ...meta, ...rep } : meta),
       });
     })().catch(err => {
       console.error("[rep viewer]", err);
@@ -127,162 +130,6 @@ function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps)
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // setupViewer — imperative canvas/video/slider wiring, verbatim from legacy.
-  useEffect(() => {
-    if (!data) return;
-    const frames = data.frames;
-    const canvas = canvasRef.current, stage = stageRef.current, slider = sliderRef.current;
-    const play = playRef.current, speedButton = speedRef.current;
-    if (!canvas || !stage || !slider || !play || !speedButton) return;
-    const video = videoRef.current;
-    let frame = 0, playing = false, rate = 1;
-    let timer: ReturnType<typeof setInterval> | undefined;
-    const rates = [.25, .5, 1, 2];
-
-    function draw(index: number, dpr: number, width: number, height: number) {
-      const ctx = canvas!.getContext("2d");
-      if (!ctx) return;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, width, height);
-      const points = frames[index] || [];
-      if (!points.length) return;
-      let content = { x: 0, y: 0, w: width, h: height };
-      if (video?.videoWidth) {
-        const scale = Math.min(width / video.videoWidth, height / video.videoHeight);
-        content = {
-          x: (width - video.videoWidth * scale) / 2,
-          y: (height - video.videoHeight * scale) / 2,
-          w: video.videoWidth * scale,
-          h: video.videoHeight * scale,
-        };
-      }
-      const max = Math.max(...points.flatMap(p => [p.x || 0, p.y || 0]), 1);
-      const absolute = max > 2;
-      const map = (p: PosePoint) => ({
-        x: content.x + (absolute ? ((p.x as number) / (video?.videoWidth || max)) : (p.x as number)) * content.w,
-        y: content.y + (absolute ? ((p.y as number) / (video?.videoHeight || max)) : (p.y as number)) * content.h,
-      });
-      const edges: [number, number][] = points.length <= 20
-        ? [[0, 1], [0, 2], [1, 3], [2, 4], [5, 6], [5, 7], [7, 9], [6, 8], [8, 10], [5, 11], [6, 12], [11, 12], [11, 13], [13, 15], [12, 14], [14, 16]]
-        : [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [27, 29], [29, 31], [24, 26], [26, 28], [28, 30], [30, 32]];
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "#b7f34a";
-      ctx.shadowColor = "rgba(183,243,74,.5)";
-      ctx.shadowBlur = 7;
-      edges.forEach(([a, b]) => {
-        const p = points[a], q = points[b];
-        if (p && q && p.x !== null && p.y !== null && q.x !== null && q.y !== null) {
-          const m = map(p), n = map(q);
-          ctx.beginPath();
-          ctx.moveTo(m.x, m.y);
-          ctx.lineTo(n.x, n.y);
-          ctx.stroke();
-        }
-      });
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#f7fbf9";
-      points.forEach(p => {
-        if (p && p.x !== null && p.y !== null) {
-          const m = map(p);
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-    }
-
-    function resize() {
-      const rect = stage!.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas!.width = Math.round(rect.width * dpr);
-      canvas!.height = Math.round(rect.height * dpr);
-      canvas!.style.width = `${rect.width}px`;
-      canvas!.style.height = `${rect.height}px`;
-      draw(frame, dpr, rect.width, rect.height);
-    }
-
-    function setFrame(next: unknown, seek = true) {
-      frame = Math.max(0, Math.min(frames.length - 1, Number(next) || 0));
-      slider!.value = String(frame);
-      if (video && seek && video.duration && frames.length > 1) video.currentTime = frame / (frames.length - 1) * video.duration;
-      draw(frame, Math.min(window.devicePixelRatio || 1, 2), stage!.clientWidth, stage!.clientHeight);
-    }
-
-    function toggle() {
-      if (video) {
-        if (video.paused) video.play();
-        else video.pause();
-        return;
-      }
-      playing = !playing;
-      const icon = play!.querySelector("span");
-      if (icon) icon.textContent = playing ? "pause" : "play_arrow";
-      clearInterval(timer);
-      if (playing) timer = setInterval(() => {
-        if (frame >= frames.length - 1) {
-          playing = false;
-          clearInterval(timer);
-          const endIcon = play!.querySelector("span");
-          if (endIcon) endIcon.textContent = "play_arrow";
-          return;
-        }
-        setFrame(frame + 1, false);
-      }, 1000 / (30 * rate));
-    }
-
-    const onSliderInput = () => setFrame(slider.value);
-    const onSpeedClick = () => {
-      rate = rates[(rates.indexOf(rate) + 1) % rates.length];
-      speedButton.textContent = `${rate}×`;
-      if (video) video.playbackRate = rate;
-      if (playing) {
-        playing = false;
-        toggle();
-      }
-    };
-    play.addEventListener("click", toggle);
-    slider.addEventListener("input", onSliderInput);
-    speedButton.addEventListener("click", onSpeedClick);
-
-    const videoHandlers: [string, EventListener][] = [];
-    if (video) {
-      const onLoaded = () => resize();
-      const onTime = () => {
-        if (frames.length > 1 && video.duration) setFrame(Math.round(video.currentTime / video.duration * (frames.length - 1)), false);
-      };
-      const onPlay = () => {
-        const icon = play.querySelector("span");
-        if (icon) icon.textContent = "pause";
-      };
-      const onPause = () => {
-        const icon = play.querySelector("span");
-        if (icon) icon.textContent = "play_arrow";
-      };
-      videoHandlers.push(["loadedmetadata", onLoaded], ["timeupdate", onTime], ["play", onPlay], ["pause", onPause]);
-      videoHandlers.forEach(([name, handler]) => video.addEventListener(name, handler));
-    }
-
-    const observer = new ResizeObserver(resize);
-    observer.observe(stage);
-    resize();
-    viewerRef.current = { setFrame };
-
-    return () => {
-      viewerRef.current = null;
-      clearInterval(timer);
-      observer.disconnect();
-      play.removeEventListener("click", toggle);
-      slider.removeEventListener("input", onSliderInput);
-      speedButton.removeEventListener("click", onSpeedClick);
-      if (video) {
-        videoHandlers.forEach(([name, handler]) => video.removeEventListener(name, handler));
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
-      }
-    };
-  }, [data]);
 
   if (error !== null) {
     return (
@@ -297,44 +144,8 @@ function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps)
 
   return (
     <>
-      <section className="pose-card">
-        <div className="pose-stage" id="poseStage" ref={stageRef}>
-          <span className="viewer-badge">{drill.label.toUpperCase()}</span>
-          {data.mediaUrl ? <video id="poseVideo" ref={videoRef} playsInline preload="metadata" src={data.mediaUrl} /> : null}
-          <canvas id="poseCanvas" ref={canvasRef} />
-          {!data.mediaUrl && !data.frames.length ? <p className="viewer-empty">No video or pose data is available for this rep.</p> : null}
-        </div>
-        <div className="playback-bar">
-          <button className="play-button" id="playButton" type="button" aria-label="Play" ref={playRef}>
-            <span className="material-symbols-outlined">play_arrow</span>
-          </button>
-          <input
-            id="frameSlider"
-            ref={sliderRef}
-            type="range"
-            min={0}
-            max={Math.max(0, data.frames.length - 1)}
-            defaultValue={0}
-            aria-label="Frame"
-          />
-          <button className="speed-button" id="speedButton" type="button" ref={speedRef}>1×</button>
-        </div>
-      </section>
-      {data.markers.length ? (
-        <div className="frame-markers">
-          {data.markers.map(marker => (
-            <button
-              key={marker.label}
-              className="frame-marker"
-              type="button"
-              data-frame={marker.frame}
-              onClick={() => viewerRef.current?.setFrame(marker.frame)}
-            >
-              {marker.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      {resultLabel(rep) ? <p role="status">{resultLabel(rep)}</p> : null}
+      <PosePlayback frames={data.frames} metadata={data.metadata} mediaUrl={data.mediaUrl} mediaSource={data.mediaSource} markers={data.markers} title={drill.label} />
       <div className="rep-metrics">
         {data.metrics.map(item => (
           <article key={item.label} className="rep-metric">

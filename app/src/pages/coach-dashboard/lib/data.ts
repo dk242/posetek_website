@@ -7,7 +7,7 @@
 import { getClubContext } from "../../../lib/organization-data";
 import { selectedTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
-import firebase, { auth, db } from "../../../lib/firebase";
+import firebase, { auth, cloud, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
 import { DRILLS } from "../../athlete-portal/lib/drills";
@@ -73,11 +73,11 @@ export interface AthleteBundle {
 export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle> {
   const player = db.collection("players").doc(playerId);
   const [repsSnapshot, plansSnapshot, logsSnapshot] = await Promise.all([
-    player.collection("reps").get(),
+    cloud.httpsCallable("getAthleteEffectiveResults")({ playerId }),
     player.collection("trainingPlans").get(),
     player.collection("workoutLogs").get(),
   ]);
-  const all = repsSnapshot.docs.map(normalizeRep);
+  const all = ((repsSnapshot.data as any).reps || []).map(normalizeRep);
   const byDrill: Record<string, any[]> = {};
   DRILLS.forEach(drill => { byDrill[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
   return {

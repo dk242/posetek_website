@@ -5,10 +5,11 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { db } from "../../../lib/firebase";
+import { visibleAttempts } from "../../../lib/result-values";
+import { cloud, db } from "../../../lib/firebase";
 import { DRILLS } from "../../athlete-portal/lib/drills";
 import type { Drill } from "../../athlete-portal/lib/drills";
-import { listFreeRecordStorage } from "../../athlete-portal/lib/loaders";
+import { listFreeRecordStorage, loadFreeRecordReps } from "../../athlete-portal/lib/loaders";
 import { accepted, mergeUnique, normalizeRep } from "../../athlete-portal/lib/metrics";
 
 export interface AdminResults {
@@ -21,10 +22,11 @@ export const RESULT_DRILLS: Drill[] = DRILLS.filter(drill => drill.key !== "free
 export async function loadAdminResults(playerId: string): Promise<AdminResults> {
   const playerDoc = await db.collection("players").doc(playerId).get();
   if (!playerDoc.exists) throw new Error("That athlete could not be found.");
-  const snapshot = await playerDoc.ref.collection("reps").get();
-  const all = snapshot.docs.map(normalizeRep);
+  const response = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId });
+  const all = visibleAttempts(((response.data as any).reps || []).map(normalizeRep));
   const reps: Record<string, any[]> = Object.fromEntries(DRILLS.map(drill => [drill.key, []]));
   DRILLS.forEach(drill => { reps[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
+  reps.freeRecord = await loadFreeRecordReps(playerId);
   try {
     reps.freeRecord = mergeUnique(reps.freeRecord, await listFreeRecordStorage(playerId));
   } catch (error) {

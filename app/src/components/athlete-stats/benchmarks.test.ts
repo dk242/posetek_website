@@ -51,8 +51,8 @@ describe("format", () => {
     expect(format("ballSpeed", NaN)).toBe("—");
     expect(format("ballSpeed", Infinity)).toBe("—");
     expect(format("does-not-exist", 5)).toBe("—");
-    // Legacy quirk: Number(null) is 0, which is finite, so null formats as zero.
-    expect(format("ballSpeed", null)).toBe("0.0 mph");
+    // Missing measurements must remain unavailable.
+    expect(format("ballSpeed", null)).toBe("—");
   });
 });
 

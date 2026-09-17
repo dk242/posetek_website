@@ -49,7 +49,8 @@ class ReleaseTests(unittest.TestCase):
         self.api.deployed(self.run)
         with contextlib.redirect_stdout(io.StringIO()): release.verify(self.run, self.api)
         self.assertTrue(json.loads((self.run / 'verified.json').read_text())['unrelatedFunctionsPreserved'])
-        self.assertEqual(len(list((self.run / 'source').iterdir())), 11)
+        self.assertEqual(len(list((self.run / 'source').iterdir())), 12)
+        self.assertTrue((self.run / 'source' / 'processing-evidence.js').is_file())
     def test_refuses_local_source_drift(self):
         self.api.deployed(self.run)
         (self.run / 'source' / 'index.js').write_text('changed')

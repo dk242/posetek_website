@@ -7,6 +7,7 @@
 
 const { playerSegment } = require("./athlete-storage-paths");
 const { isClubAdmin, clubMember, memberCanAccessPlayer } = require("./club-access");
+const { mapBounded } = require("./insights-v2-projection");
 
 const CANONICAL_UID_FIELDS = ["authenticationUID", "userUID"];
 const MAX_ROSTER = 200;
@@ -25,12 +26,15 @@ function projectedRep(doc) {
   const rep = { id: doc.id };
   for (const field of STRING_FIELDS) if (typeof data[field] === "string") rep[field] = data[field].slice(0, 40);
   for (const field of NUMERIC_FIELDS) if (typeof data[field] === "number" && Number.isFinite(data[field])) rep[field] = data[field];
-  const createdAt = data.createdAt?.toMillis?.();
+  const createdAt = data.createdAt?.toMillis?.() ?? data.createdAtMillis;
   if (typeof createdAt === "number") rep.createdAtMillis = createdAt;
+  if (data.resultStatus) rep.resultStatus = { qualified: data.resultStatus.qualified === true,
+    duplicate: data.resultStatus.duplicate === true, reason: data.resultStatus.reason,
+    revisionId: data.resultStatus.revisionId ?? null };
   return rep;
 }
 
-function createTeamLeaderboard({ db, HttpsError }) {
+function createTeamLeaderboard({ db, HttpsError, effectiveResults }) {
   async function firstMatch(collection, field, value, operator = "==") {
     const result = await db.collection(collection).where(field, operator, value).limit(1).get();
     return result.empty ? null : result.docs[0];
@@ -90,16 +94,36 @@ function createTeamLeaderboard({ db, HttpsError }) {
       const members = Array.isArray(coach.data()?.members) ? coach.data().members : [];
       ids = [...new Set([...members, player.id])].filter(playerSegment).slice(0, MAX_ROSTER);
     }
-    const athletes = await Promise.all(ids.map(async (id) => {
+    if (!effectiveResults?.listForPlayer) throw new HttpsError("unavailable", "Verified standings are temporarily unavailable.");
+    const athletes = await mapBounded(ids, 4, async (id) => {
       const profile = await db.collection("players").doc(id).get();
       if (!profile.exists) return null;
       const data = profile.data() || {};
       // Recheck assignment before accessing reps; cross-team or newly migrated
       // records in legacy projections cannot leak into a stale roster.
       if (clubOrganizationId ? data.organizationId !== clubOrganizationId || data.teamId !== selectedTeam : Object.hasOwn(data, "organizationId")) return null;
-      const reps = await db.collection("players").doc(id).collection("reps").get();
-      return { id, firstName: String(data.firstName || "").slice(0, 100), lastName: String(data.lastName || "").slice(0, 100), reps: reps.docs.map(projectedRep) };
-    }));
+      const result = await effectiveResults.listForPlayer(id);
+      const current = (await db.collection("players").doc(id).get()).data();
+      if (!current || (clubOrganizationId ? current.organizationId !== clubOrganizationId || current.teamId !== selectedTeam : Object.hasOwn(current, "organizationId"))) return null;
+      const reps = result.reps.filter(rep => rep.resultStatus?.qualified === true && rep.resultStatus?.duplicate === false)
+        .map(rep => projectedRep({ id: rep.id, data: () => ({ ...rep, repType: rep.repType === "shooting" ? "side_kick" : rep.repType }) }));
+      return { id, firstName: String(data.firstName || "").slice(0, 100), lastName: String(data.lastName || "").slice(0, 100), reps };
+    });
+    // Evidence may take time to load. Recheck current roster authority before
+    // returning any teammate data; revoked membership never gets cached access.
+    const currentPlayer = await ownedPlayer(uid), currentBound = currentPlayer?.data() || {};
+    if (selectedTeam) {
+      const team = await db.collection("teams").doc(selectedTeam).get();
+      const ownTeam = currentPlayer && currentBound.organizationId === clubOrganizationId && currentBound.teamId === selectedTeam;
+      const staff = await clubMember(db, clubOrganizationId, uid);
+      if (!team.exists || team.data().organizationId !== clubOrganizationId
+        || (!ownTeam && !isClubAdmin({ uid, email, emailVerified }) && !memberCanAccessPlayer(staff, uid, { teamId: selectedTeam }))) throw new HttpsError("permission-denied", "You do not have access to that team.");
+    } else {
+      const currentCoach = currentPlayer && !Object.hasOwn(currentBound, "organizationId") ? await rosterFor(currentPlayer) : null;
+      const members = currentCoach?.data()?.members;
+      if (!currentPlayer || currentPlayer.id !== player.id || currentCoach?.id !== coachId
+        || !Array.isArray(members) || ids.some(id => id !== currentPlayer.id && !members.includes(id))) throw new HttpsError("permission-denied", "Your team assignment changed. Reload the standings.");
+    }
     return { playerId: player?.id || null, coachId, ...(selectedTeam ? { teamId: selectedTeam, organizationId: clubOrganizationId } : {}), athletes: athletes.filter(Boolean) };
   }
 

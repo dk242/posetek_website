@@ -54,9 +54,9 @@ describe("asNumber / asInteger", () => {
     expect(asNumber(3.5)).toBe(3.5);
     expect(asNumber("2.25")).toBe(2.25);
   });
-  it("mirrors the legacy Number() coercion quirks", () => {
-    expect(asNumber(null)).toBe(0); // Number(null) === 0, like the legacy helper
-    expect(asNumber("")).toBe(0);
+  it("keeps missing numeric data unavailable", () => {
+    expect(asNumber(null)).toBeNull();
+    expect(asNumber("")).toBeNull();
     expect(asNumber(undefined)).toBeNull();
     expect(asNumber("abc")).toBeNull();
     expect(asNumber(NaN)).toBeNull();
@@ -65,7 +65,7 @@ describe("asNumber / asInteger", () => {
   it("rounds integers", () => {
     expect(asInteger("17.6")).toBe(18);
     expect(asInteger(undefined)).toBeNull();
-    expect(asInteger(null)).toBe(0);
+    expect(asInteger(null)).toBeNull();
   });
 });
 
@@ -96,9 +96,9 @@ describe("unit conversions and formatting", () => {
     expect(formatPrimary("changeOfDirection", 4.415)).toBe("4.42 s");
     expect(formatPrimary("dribbling", "8.5")).toBe("8.50 s");
   });
-  it("keeps the legacy null-becomes-zero quirk", () => {
-    expect(formatPrimary("broadJump", null)).toBe("0.0 ft");
-    expect(formatPrimary("dribbling", null)).toBe("0.00 s");
+  it("keeps null primary metrics unavailable", () => {
+    expect(formatPrimary("broadJump", null)).toBe("—");
+    expect(formatPrimary("dribbling", null)).toBe("—");
   });
   it("formats seconds with an em-dash placeholder", () => {
     expect(formatSeconds(null)).toBe("—");

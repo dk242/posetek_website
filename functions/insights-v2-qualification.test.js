@@ -40,6 +40,16 @@ test("pathless jump mirror deduplicates only with explicit matching session and 
   assert.equal(duplicateIds([original, { ...original, id: "another" }]).size, 0);
   assert.equal(qualifyRep(mirror, evidence, true).attempt, 0);
 });
+test("cross-drill duplicateOf requires private server-reviewed correction and refuses missing targets, chains, self-links and foreign players", () => {
+  const target = { id: "broad", repType: "broadJump", playerId: "player", storagePath: "player/broadJump/session1/kick1", broadJumpDistance: 1.4 };
+  const mirror = { id: "mirror", repType: "jump", playerId: "player", duplicateOf: "broad", jumpHeight: 0.3 };
+  const correction = { schemaVersion: 1, repairId: "reviewed-repair", reviewedAtMillis: 1000, duplicateReps: { mirror: "broad" } };
+  assert.equal(duplicateIds([target, mirror]).size, 0);
+  assert.deepEqual([...duplicateIds([target, mirror], correction)], ["mirror"]);
+  for (const reps of [[mirror], [target, { ...mirror, duplicateOf: "mirror" }], [{ ...target, duplicateOf: "mirror" }, mirror], [{ ...target, playerId: "foreign" }, mirror]]) assert.equal(duplicateIds(reps, correction).size, 0);
+  assert.equal(duplicateIds([target, mirror], { ...correction, duplicateReps: { mirror: "broad", broad: "mirror" } }).size, 0);
+  assert.equal(duplicateIds([target, mirror], { ...correction, repairId: "" }).size, 0);
+});
 
 test("demographics never infer division or age from names and team labels", () => {
   assert.deepEqual(demographics({ firstName: "Example", teamName: "Girls U15", age: 14 }, {}, NOW), { division: "unknown", age: null, ageBand: "unknown" });

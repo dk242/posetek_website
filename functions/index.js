@@ -47,10 +47,14 @@ const clubs = createClubs({ invitations: playerInvitations, db, FieldValue: admi
 // Admin rep tools (see rep-revisions.js): the only writer of athlete reps
 // outside the phone, gated on the same verified @posetek.net predicate the rules use.
 const repRevisions = createRepRevisions({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+const { createEffectiveResults } = require("./effective-results");
+const effectiveResults = createEffectiveResults({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), HttpsError: functions.https.HttpsError });
+exports.getAthleteEffectiveResults = functions.runWith({ timeoutSeconds: 120, memory: "512MB" }).https.onCall((data, context) => effectiveResults.getResults(data || {}, requireCaller(context)));
+exports.getAthleteRepMedia = functions.runWith({ timeoutSeconds: 120, memory: "512MB" }).https.onCall((data, context) => effectiveResults.getMedia(data || {}, requireCaller(context)));
 
 // Signed, server-issued result shares (see athlete-shares.js). Legacy
 // documents were client-writable; their tokens and pointers are never accepted.
-const athleteShareFunctions = functions.runWith({ secrets: ["ATHLETE_SHARE_SIGNING_KEY"] });
+const athleteShareFunctions = functions.runWith({ secrets: ["ATHLETE_SHARE_SIGNING_KEY"], timeoutSeconds: 120, memory: "512MB" });
 const athleteShares = createAthleteShares({
   db, crypto, Timestamp: admin.firestore.Timestamp, HttpsError: functions.https.HttpsError,
   signingKey: () => process.env.ATHLETE_SHARE_SIGNING_KEY,
@@ -61,7 +65,7 @@ const admission = createAdmission({
   db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError,
   randomInt: (max) => crypto.randomInt(max),
 });
-const teamLeaderboard = createTeamLeaderboard({ db, HttpsError: functions.https.HttpsError });
+const teamLeaderboard = createTeamLeaderboard({ db, HttpsError: functions.https.HttpsError, effectiveResults });
 const clubInsights = createClubInsights({ db, HttpsError: functions.https.HttpsError });
 const ATHLETE_ARTIFACT_URL_TTL_MS = 15 * 60 * 1000;
 const ATHLETE_SHARE_REP_TYPES = {
@@ -254,19 +258,9 @@ exports.getAthleteResultsShare = athleteShareFunctions.https.onCall(async (data)
   if (drill === "freeRecord") {
     reps = await sharedFreeRecordRows(share.playerDocId);
   } else {
-    const repsSnapshot = await playerRef.collection("reps").get();
-    reps = repsSnapshot.docs
-      .filter((doc) => {
-        const rep = doc.data() || {};
-        return repMatchesDrill(rep, drill);
-      })
-      .map((doc) => sanitizedAthleteRep(doc, drill))
-      .sort(
-        (left, right) =>
-          (right.createdAtMillis || 0) - (left.createdAtMillis || 0) ||
-          (right.absoluteRepNumber || 0) - (left.absoluteRepNumber || 0)
-      );
+    reps = (await effectiveResults.listForPlayer(share.playerDocId, drill)).reps;
   }
+  await verifiedAthleteShare(data?.token, drill);
   const player = playerDoc.data() || {};
   return {
     athlete: {
@@ -287,6 +281,11 @@ exports.getAthleteSharedRepArtifacts = athleteShareFunctions.https.onCall(async 
   const repId = String(data?.repId || "").trim();
   if (!repId || repId.includes("/")) throw athleteShareError();
   const { share } = await verifiedAthleteShare(data?.token, drill);
+  if (drill !== "freeRecord") {
+    const result = await effectiveResults.mediaForPlayer(share.playerDocId, drill, repId);
+    await verifiedAthleteShare(data?.token, drill);
+    return result;
+  }
   const bucket = admin.storage().bucket();
   const fileNames = ATHLETE_SHARE_ARTIFACTS[drill] || [];
   let folders;

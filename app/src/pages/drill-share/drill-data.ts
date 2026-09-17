@@ -1,15 +1,19 @@
-// Firebase access ported from athlete-drill-view.js. Collection names, field
-// fallbacks, query shapes and error messages are byte-identical to the legacy file.
+// Dedicated authenticated drill pages use the same identity and current club
+// membership checks as the athlete portal. Shared links retain their own protocol.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { cloud, db, storage } from "../../lib/firebase";
-import { findCoach, findPlayer } from "../../lib/identity";
+import { visibleAttempts, sameResultStatus } from "../../lib/result-values";
+import { cloud, db } from "../../lib/firebase";
+import { findCoach, findPlayer, ownsPlayer } from "../../lib/identity";
+import { loadClubMembership } from "../../lib/organization-data";
+import { canAccessClubPlayer } from "../../lib/organization";
+import { refreshAdminIdentity } from "../admin/lib/identity";
 import { configs, type DrillConfig, type PageDrillConfig } from "./drill-config";
-import { folderCandidates, normalizeAuthRep, previewArtifacts, type Rep } from "./drill-lib";
+import { normalizeAuthRep, previewArtifacts, type Rep } from "./drill-lib";
 
 export interface ViewerInfo {
-  role: "coach" | "player" | "shared";
+  role: "admin" | "manager" | "coach" | "player" | "shared";
   uid?: string;
   docId?: string;
   data: Record<string, any>;
@@ -20,70 +24,50 @@ export interface PlayerInfo {
   data: Record<string, any>;
 }
 
-// UID-first identity resolution shared with every legacy page (firebase-identity.js).
-export async function resolveViewer(user: { uid: string; email?: string | null }): Promise<ViewerInfo> {
-  const coachDoc = await findCoach(db, user.uid);
-  if (coachDoc) {
-    return { role: "coach", uid: user.uid, docId: coachDoc.id, data: coachDoc.data() || {} };
-  }
-  const playerDoc = await findPlayer(db, user.uid);
-  if (!playerDoc) {
-    throw new Error("Your login is valid, but it is not linked to an athlete profile yet. Ask your coach to connect your account.");
-  }
-  return { role: "player", uid: user.uid, docId: playerDoc.id, data: playerDoc.data() || {} };
-}
-
-export async function resolveAuthorizedPlayer(viewer: ViewerInfo, requestedId: string | null): Promise<PlayerInfo> {
-  if (viewer.role === "player") {
-    if (requestedId && requestedId !== viewer.docId) {
-      throw new Error("This link belongs to a different athlete account. Sign in with the account associated with this result.");
-    }
-    return { id: viewer.docId as string, data: viewer.data };
-  }
-
-  if (!requestedId) {
-    throw new Error("This coach link is missing a player. Open the athlete from your roster, then copy their results link.");
-  }
-
-  const playerDoc = await db.collection("players").doc(requestedId).get();
-  if (!playerDoc.exists) throw new Error("The athlete profile in this link no longer exists.");
+export async function resolveAuthenticatedDrillPlayer(
+  user: { uid: string; email?: string | null; isAnonymous?: boolean }, requestedId: string | null,
+): Promise<{ viewer: ViewerInfo; player: PlayerInfo }> {
+  if (!user.uid || user.isAnonymous) throw new Error("Sign in to view athlete results.");
+  const identity = await refreshAdminIdentity(user);
+  if (identity.uid !== user.uid) throw new Error("Your account changed. Reload these results.");
+  const playerDoc = requestedId
+    ? await db.collection("players").doc(requestedId).get()
+    : await findPlayer(db, user.uid);
+  if (!playerDoc?.exists) throw new Error("This athlete profile could not be found. Open the athlete from your roster, then copy their results link.");
   const playerData = playerDoc.data() || {};
-  const members = Array.isArray(viewer.data.members) ? viewer.data.members : [];
+  const player = { id: playerDoc.id, data: playerData };
+  if (identity.isAdmin) return { viewer: { role: "admin", uid: user.uid, data: {} }, player };
+  if (ownsPlayer(playerDoc, user.uid)) return { viewer: { role: "player", uid: user.uid, docId: playerDoc.id, data: playerData }, player };
+  // A migrated athlete is authorized only by current canonical membership;
+  // stale legacy roster mirrors never substitute for a revoked assignment.
+  if (Object.hasOwn(playerData, "organizationId")) {
+    if (typeof playerData.organizationId !== "string" || !playerData.organizationId) throw new Error("You do not have permission to view this athlete.");
+    const membership = await loadClubMembership(user.uid, playerData.organizationId);
+    if (!canAccessClubPlayer(membership, playerData)) throw new Error("You do not have permission to view this athlete.");
+    return { viewer: { role: membership!.role, uid: user.uid, data: {} }, player };
+  }
+  const coachDoc = await findCoach(db, user.uid);
+  const coachData = coachDoc?.data() || {};
+  const members = Array.isArray(coachData.members) ? coachData.members : [];
   const linkedCoachIds = [playerData.coachUID, playerData.coachId, playerData.coachDocId].filter(Boolean);
-  const authorized = members.includes(requestedId) || linkedCoachIds.includes(viewer.uid) || linkedCoachIds.includes(viewer.docId);
+  const authorized = Boolean(coachDoc && (members.includes(playerDoc.id) || linkedCoachIds.includes(user.uid) || linkedCoachIds.includes(coachDoc.id)));
   if (!authorized) throw new Error("This athlete is not on your roster, so their results cannot be opened from this account.");
-  return { id: playerDoc.id, data: playerData };
+  return { viewer: { role: "coach", uid: user.uid, docId: coachDoc!.id, data: coachData }, player };
 }
 
 export async function loadReps(playerId: string, drillConfig: DrillConfig): Promise<Rep[]> {
-  const repsRef = db.collection("players").doc(playerId).collection("reps");
-  const accepted = drillConfig.acceptedRepTypes || [drillConfig.key];
-  const snapshots = await Promise.all(accepted.flatMap(type => [
-    repsRef.where("repType", "==", type).get(),
-    repsRef.where("drillType", "==", type).get(),
-  ]));
-
-  const seen = new Set<string>();
-  const reps: Rep[] = [];
-  snapshots.flatMap(snapshot => snapshot.docs).forEach(doc => {
-    if (seen.has(doc.id)) return;
-    seen.add(doc.id);
-    reps.push(normalizeAuthRep(doc.id, doc.data() || {}, drillConfig));
-  });
-  reps.sort((a, b) => (b.createdAtMillis - a.createdAtMillis) || ((b.absoluteRepNumber || 0) - (a.absoluteRepNumber || 0)));
-  return reps;
+  const response = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId, drill: drillConfig.key });
+  const reps = visibleAttempts(((response.data as any).reps || []) as Record<string, any>[])
+    .map(rep => normalizeAuthRep(rep.id, rep, drillConfig));
+  return reps.sort((a, b) => b.createdAtMillis - a.createdAtMillis || (b.absoluteRepNumber || 0) - (a.absoluteRepNumber || 0));
 }
 
 export async function loadStatsReps(playerId: string): Promise<Rep[]> {
-  const repGroups = await Promise.all(Object.values(configs).map(drillConfig => loadReps(playerId, drillConfig)));
-  return repGroups.flat();
-}
-
-async function fetchStorageJson(path: string) {
-  const url = await storage.ref(path).getDownloadURL();
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  const response = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId });
+  return visibleAttempts(((response.data as any).reps || []) as Record<string, any>[]).flatMap(rep => {
+    const config = Object.values(configs).find(config => config.acceptedRepTypes.includes(rep.repType || rep.drillType));
+    return config ? [normalizeAuthRep(rep.id, rep, config)] : [];
+  }).sort((a, b) => b.createdAtMillis - a.createdAtMillis);
 }
 
 export interface LoadArtifactsOptions {
@@ -96,42 +80,22 @@ export interface LoadArtifactsOptions {
 
 export async function loadArtifacts({ rep, config, playerId, shareToken, preview }: LoadArtifactsOptions): Promise<Record<string, any>> {
   if (preview) return previewArtifacts(config, rep);
-  if (shareToken) {
-    const getArtifacts = cloud.httpsCallable("getAthleteSharedRepArtifacts");
-    const response = await getArtifacts({
-      token: shareToken,
-      drill: config.key,
-      repId: rep.id,
-    });
-    const urls = ((response as any)?.data?.artifactUrls || {}) as Record<string, string>;
-    const pairs = await Promise.all(config.artifacts.map(async fileName => {
-      const url = urls[fileName];
-      if (!url) return [fileName, null] as const;
-      try {
-        const artifactResponse = await fetch(url, { cache: "no-store", referrerPolicy: "no-referrer" });
-        if (!artifactResponse.ok) throw new Error(`HTTP ${artifactResponse.status}`);
-        return [fileName, await artifactResponse.json()] as const;
-      } catch {
-        return [fileName, null] as const;
-      }
-    }));
-    return { folder: "shared", ...Object.fromEntries(pairs) };
+  const response = shareToken
+    ? await cloud.httpsCallable("getAthleteSharedRepArtifacts")({ token: shareToken, drill: config.key, repId: rep.id })
+    : await cloud.httpsCallable("getAthleteRepMedia")({ playerId, drill: config.key, repId: rep.id });
+  const payload = (response.data || {}) as any;
+  if (rep.resultStatus && payload.resultStatus && !sameResultStatus(rep.resultStatus, payload.resultStatus)) {
+    throw new Error("This result changed. Refresh the athlete results to view the latest revision.");
   }
-  const folders = folderCandidates(rep, playerId as string, config.key);
-  for (const folder of folders) {
+  const urls = payload.artifactUrls || {};
+  const pairs = await Promise.all(config.artifacts.map(async fileName => {
+    const url = urls[fileName];
+    if (!url) return [fileName, null];
     try {
-      const pairs = await Promise.all(config.artifacts.map(async fileName => {
-        try {
-          return [fileName, await fetchStorageJson(`${folder}/${fileName}`)] as const;
-        } catch {
-          return [fileName, null] as const;
-        }
-      }));
-      const artifacts = Object.fromEntries(pairs) as Record<string, any>;
-      if (artifacts["pose.json"] || artifacts["metadata.json"]) return { folder, ...artifacts };
-    } catch {
-      /* Try the next compatible folder. */
-    }
-  }
-  return { folder: folders[0] || "" };
+      const artifactResponse = await fetch(url, { cache: "no-store", referrerPolicy: "no-referrer" });
+      if (!artifactResponse.ok) throw new Error(`HTTP ${artifactResponse.status}`);
+      return [fileName, await artifactResponse.json()];
+    } catch { return [fileName, null]; }
+  }));
+  return { ...Object.fromEntries(pairs), mediaUrl: payload.mediaUrl || null, mediaSource: payload.source || "unavailable", resultStatus: payload.resultStatus };
 }

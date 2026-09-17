@@ -6,10 +6,9 @@
 import type { Drill } from "./drills";
 import { DRILLS } from "./drills";
 
-export const num = (value: unknown): number | null => {
-  const parsed = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
+export { finiteNumber as num } from "../../../lib/result-values";
+import { finiteNumber as num, metricValue, resultUsable } from "../../../lib/result-values";
+import { poseFrames } from "../../../lib/pose-playback";
 
 export const mean = (values: number[]): number | null =>
   values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
@@ -48,7 +47,7 @@ export function normalizeRep(doc: any): any {
 }
 
 export function metricRaw(rep: any, drill: Drill): number | null {
-  return num(drill.metric === null ? undefined : rep[drill.metric]) ?? num(drill.fallback === undefined ? undefined : rep[drill.fallback]);
+  return drill.metric ? metricValue(rep, drill.metric, {}, drill.fallback ? [drill.fallback] : []) : null;
 }
 
 export function displayValue(raw: number | null, drill: Drill): number | null {
@@ -130,16 +129,16 @@ export function dashboardMetrics(drill: Drill, reps: any[]): MetricTile[] {
     { label: "Recent Trend", value: trendText(raw, drill) },
   ];
   if (drill.key === "shooting") {
-    const angles = reps.map(rep => num(rep.launch_angle) ?? num(rep.launchAngle)).filter((v): v is number => v !== null);
+    const angles = reps.map(rep => metricValue(rep, "launch_angle", {}, ["launchAngle"])).filter((v): v is number => v !== null);
     metrics.splice(2, 0, { label: "Avg Launch Angle", value: angles.length ? `${mean(angles)!.toFixed(1)}°` : "—" });
   }
   if (drill.key === "dribbling") {
-    const values = reps.map(rep => num(rep.avgBallDistance)).filter((v): v is number => v !== null);
+    const values = reps.map(rep => metricValue(rep, "avgBallDistance")).filter((v): v is number => v !== null);
     metrics.splice(2, 0, { label: "Ball Distance", value: values.length ? `${(mean(values)! * 39.3701).toFixed(1)} in` : "—" });
   }
   if (["dribbling", "changeOfDirection"].includes(drill.key)) {
     ([["Start / Out", "phase1Time"], ["Turn", "phase2Time"], ["End / Back", "phase3Time"]] as [string, string][]).forEach(([label, key]) => {
-      const values = reps.map(rep => num(rep[key])).filter((v): v is number => v !== null);
+      const values = reps.map(rep => metricValue(rep, key)).filter((v): v is number => v !== null);
       metrics.push({ label, value: values.length ? `${mean(values)!.toFixed(2)} s` : "—" });
     });
   }
@@ -148,24 +147,12 @@ export function dashboardMetrics(drill: Drill, reps: any[]): MetricTile[] {
 
 export function allStatsReps(reps: Record<string, any[]>): any[] {
   return DRILLS.filter(d => d.key !== "freeRecord").flatMap(drill =>
-    reps[drill.key].map(rep => ({ ...rep, _statsDrill: drill.key })),
+    reps[drill.key].filter(resultUsable).map(rep => ({ ...rep, _statsDrill: drill.key })),
   );
 }
 
-export interface PosePoint {
-  x: number | null;
-  y: number | null;
-}
-
-export function parsePose(raw: any): PosePoint[][] {
-  const source = Array.isArray(raw) ? raw : (Array.isArray(raw?.frames) ? raw.frames : []);
-  return source.map((frame: any) => {
-    const points = Array.isArray(frame) ? frame : (frame?.landmarks || frame?.pose || []);
-    return points.map((point: any) =>
-      Array.isArray(point) ? { x: num(point[0]), y: num(point[1]) } : { x: num(point?.x), y: num(point?.y) },
-    );
-  });
-}
+export type { PosePoint } from "../../../lib/pose-playback";
+export const parsePose = poseFrames;
 
 export interface FrameMarker {
   label: string;
@@ -179,16 +166,16 @@ export function frameMarkers(drill: Drill, rep: any, meta: any): FrameMarker[] {
       : ["dribbling", "changeOfDirection"].includes(drill.key)
         ? [["Start", meta.startFrame ?? rep.startFrame], ["Turn", meta.apexFrame ?? meta.phase1EndFrame ?? rep.apexFrame], ["End", meta.endFrame ?? rep.endFrame]]
         : drill.key === "sprint"
-          ? [["Start", meta.startFrame], ["Finish", meta.endFrame ?? meta.finishFrame]]
+          ? [["Start", meta.startFrame ?? rep.startFrame], ["Finish", meta.endFrame ?? meta.finishFrame ?? rep.endFrame ?? rep.finishFrame]]
           : drill.key === "jump"
-            ? [["Peak", meta.peakFrame ?? meta.apexFrame]]
+            ? [["Peak", meta.peakFrame ?? meta.apexFrame ?? rep.peakFrame ?? rep.apexFrame]]
             : [];
-  return keys.filter(([, frame]) => num(frame) !== null).map(([label, frame]) => ({ label, frame: Number(frame) }));
+  return keys.filter(([, frame]) => num(frame) !== null && Number.isInteger(Number(frame)) && Number(frame) >= 0).map(([label, frame]) => ({ label, frame: Number(frame) }));
 }
 
 export function repMetricSpecs(drill: Drill, rep: any, meta: any): MetricTile[] {
   const value = (key: string, ...fallbacks: string[]): number | null =>
-    num(meta[key]) ?? num(rep[key]) ?? fallbacks.map(k => num(meta[k]) ?? num(rep[k])).find(v => v !== null) ?? null;
+    metricValue(rep, key, meta, fallbacks);
   switch (drill.key) {
     case "shooting":
       return [

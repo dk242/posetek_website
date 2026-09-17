@@ -7,7 +7,7 @@ const BUCKET = "kickai-69dd0.firebasestorage.app";
 const RECORD_COLLECTIONS = new Set(["reps", "workoutLogs", "trainingSessions", "insightMetadata"]);
 function storageOwner(object) {
   if (object?.bucket !== BUCKET || typeof object.name !== "string") return null;
-  const match = /^([A-Za-z0-9_-]+)\/(deadballShot|sprint|jump|broadJump|changeOfDirection|dribbling|freeRecord)\/session[1-9]\d*\/(?:kick[1-9]\d*\/)?(metadata|reprocess_context)\.json$/.exec(object.name);
+  const match = /^([A-Za-z0-9_-]+)\/(deadballShot|sprint|jump|broadJump|changeOfDirection|dribbling|freeRecord)\/session[1-9]\d*\/(?:kick[1-9]\d*\/(?:capture_[a-f0-9]{32}\/)?)?(metadata|reprocess_context)\.json$/.exec(object.name);
   return match && playerSegment(match[1]) ? match[1] : null;
 }
 function createInsightsEntrypoints(functions, admin, caller) {

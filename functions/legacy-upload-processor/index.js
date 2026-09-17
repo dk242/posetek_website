@@ -8,6 +8,7 @@ const isRepairArchive = createRepairGuard(process.env.POSETEK_REPAIR_ARCHIVES);
 const storage = new Storage();
 const processorURL = "https://kickai-processor-839600313930.us-west1.run.app";
 const bodyScanURL = "https://kickai-bodyscan-839600313930.us-west1.run.app";
+const locallyProcessedDrills = new Set(["deadballShot", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling"]);
 // const processorURL = "https://kickai-processor-keycy7dkua-uc.a.run.app"
 
 exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) => {
@@ -22,6 +23,24 @@ exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) 
     }
     const bucketName = event.data.bucket;
     const filePath = event.data.name;
+
+    // Native processing has already written this attempt and its artifacts.
+    // Retain its video for playback without creating a second cloud result.
+    // This marker is routing metadata, never an authorization decision. Free
+    // Record, diagnostic bundles and unmarked legacy uploads keep their route.
+    const segments = typeof filePath === "string" ? filePath.split("/") : [];
+    if (event.data.metadata?.posetekLocalProcessed === "true"
+      && event.data.metadata?.posetekContextVersion === "1"
+      && /^[A-Za-z0-9_-]{1,128}$/.test(segments[0] || "")
+      && locallyProcessedDrills.has(segments[1])
+      && /^session[1-9]\d*$/.test(segments[2] || "")
+      && /^kick[1-9]\d*$/.test(segments[3] || "")
+      && /\.mov$/i.test(filePath)) {
+      logger.log("Native recording archived; no cloud processing requested.", {
+        bucket: bucketName, name: filePath, generation: event.data.generation,
+      });
+      return;
+    }
 
     // 🛑 Skip if not a .mov (or not a video)
     if (filePath.endsWith('mov')) {
@@ -39,24 +58,14 @@ exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) 
         });
 
       logger.log("Sending video to processor:", filePath);
-      logger.log("Signed URL:", signedUrl);
-
-      await axios.post(processorURL, {
-        gcs_path: filePath,
-        video_url: signedUrl,
-      })
-      .then((res) => {
+      try {
+        const res = await axios.post(processorURL, { gcs_path: filePath, video_url: signedUrl });
         logger.log("Processor responded with status:", res.status);
-        logger.log("Processor responded with data:", res.data);
-      })
-      .catch((err) => {
-        logger.error("Axios failed:", err.message);
-        if (err.response) {
-          logger.error("Response status:", err.response.status);
-          logger.error("Response data:", err.response.data);
-        }
-      });
-      logger.log("Successfully sent to processor.");
+      } catch (err) {
+        // Do not claim delivery or introduce event retries: the legacy
+        // processor has no verified idempotent request contract.
+        logger.error("Video processor request failed.", { status: err?.response?.status || null, code: err?.code || null });
+      }
       return;
     }
 
@@ -84,13 +93,9 @@ exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) 
           bucket: bucketName,
         });
 
-        logger.log("BodyScan responded:", { status: res.status, data: res.data });
+        logger.log("BodyScan responded:", { status: res.status });
       } catch (err) {
-        logger.error("BodyScan request failed:", err?.message || err);
-        if (err?.response) {
-          logger.error("Response status:", err.response.status);
-          logger.error("Response data:", err.response.data);
-        }
+        logger.error("BodyScan request failed.", { status: err?.response?.status || null, code: err?.code || null });
       }
 
       return;
@@ -99,7 +104,7 @@ exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) 
     // end new code...
 
   } catch (err) {
-    logger.error("Error sending to processor:", err);
+    logger.error("Upload processor could not route the object.", { code: err?.code || null });
   }
 });
 
