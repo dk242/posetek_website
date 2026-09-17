@@ -79,7 +79,7 @@ test("foreign, missing, reclassified, duplicate and already-qualified source att
   for (const rows of cases) assert.equal(validatedEntry(entry(), "player", rows, NOW), null);
 });
 
-test("strict fields reject unsupported methods, COD, malformed values, stale dates and foreign provenance", () => {
+test("strict fields reject mismatched methods or axes, malformed values, stale dates and foreign provenance", () => {
   const changes = [e => e.id = "../id", e => e.status = "approved", e => e.method = "assumed_score", e => e.confidence = "high",
     e => e.drill = "changeOfDirection", e => e.axis = "agility", e => e.kind = "verifiedResult", e => delete e.reviewedByUid,
     e => e.estimatedTotalSeconds = "10", e => e.estimatedTotalSeconds = NaN, e => e.estimatedTotalSeconds = Infinity,
@@ -101,7 +101,7 @@ test("malformed or foreign documents, duplicate entries and unsupported drill re
     const h = harness({ seed: { [DOC]: value } }); assert.deepEqual(await read(h), []);
   }
   const duplicate = harness({ entries: [entry(), { ...entry(), id: "another-id" }] }); assert.deepEqual(await read(duplicate), []);
-  const h = harness(); assert.deepEqual(await read(h, [row], "changeOfDirection"), []); assert.equal(h.reads.includes(DOC), false);
+  const h = harness(); assert.deepEqual(await read(h, [row], "sprint"), []); assert.equal(h.reads.includes(DOC), false);
 });
 
 test("source generations and MD5 must still match; deleted originals hide estimates and transport errors propagate", async () => {
@@ -135,4 +135,108 @@ test("extra private annotations are not exposed or used as public estimate copy"
   const result = await read(harness({ entries: [e] })); assert.equal(result.length, 1);
   assert.equal(result[0].assumption, "Maintains the observed return pace to the finish."); assert.match(result[0].limitation, /conditional estimate/);
   assert.equal(Object.hasOwn(result[0], "secretNote"), false);
+});
+
+const COD_FOLDER = "player/changeOfDirection/session1/kick2", COD_SOURCE = `${COD_FOLDER}/change_of_direction.mov`;
+const codRow = { ...row, id: "cod", repType: "changeOfDirection", drillType: "changeOfDirection", storageFolder: COD_FOLDER };
+function codEntry() {
+  const e = entry();
+  return { ...e, id: "reviewed-cod-v1", repId: "cod", drill: "changeOfDirection", axis: "agility",
+    method: "partial_shuttle_visual_start_v1", protocolConfirmed: true, startBoundary: "visualBracket",
+    lowerSeconds: 8, upperSeconds: 14, observedCourseFraction: 0.65,
+    source: { ...e.source, repId: "cod", drill: "changeOfDirection", storagePath: COD_SOURCE, generation: "456" } };
+}
+function mixedHarness(options = {}) {
+  const h = harness({ entries: [entry(), codEntry()], ...options, seed: {
+    "players/player/reps/cod": { repType: "changeOfDirection", drillType: "changeOfDirection",
+      createdAt: FakeTimestamp.fromMillis(RECORDED), sessionNumber: 1, repNumber: 2, totalTime: null, storagePath: COD_SOURCE },
+    ...options.seed,
+  } });
+  h.objects.set(COD_SOURCE, { generation: "456", md5Hash: MD5 });
+  return h;
+}
+
+test("one player may retain separate Ball Control and Agility projections with fixed method-specific caveats", async () => {
+  const h = mixedHarness(), result = await read(h, [row, codRow]);
+  assert.equal(result.length, 2); assert.deepEqual(new Set(result.map(e => e.axis)), new Set(["ballControl", "agility"]));
+  const cod = result.find(e => e.drill === "changeOfDirection");
+  assert.equal(cod.method, "partial_shuttle_visual_start_v1"); assert.match(cod.assumption, /visually bracketed start/);
+  assert.match(cod.assumption, /constant observed pace/); assert.match(cod.limitation, /Most of the return/);
+  assert.match(cod.limitation, /wide range.*sensitivity range, not a confidence interval/);
+  for (const key of ["protocolConfirmed", "startBoundary", "source", "reviewedByUid", "totalTime", "resultStatus"])
+    assert.equal(Object.hasOwn(cod, key), false);
+});
+
+test("each measured drill supersedes only its own estimate, and both suppress all private reads", async () => {
+  for (const [measuredRow, remaining] of [[row, "changeOfDirection"], [codRow, "dribbling"]]) {
+    const h = mixedHarness(), measured = { ...measuredRow, id: "new-measured", totalTime: 9,
+      resultStatus: { qualified: true, duplicate: false } };
+    const result = await read(h, [row, codRow, measured]);
+    assert.deepEqual(result.map(e => e.drill), [remaining]);
+    assert.deepEqual(h.calls, [remaining === "dribbling" ? SOURCE : COD_SOURCE]);
+  }
+  const h = mixedHarness(), measured = [row, codRow].map(r => ({ ...r, resultStatus: { qualified: true, duplicate: false } }));
+  assert.deepEqual(await read(h, measured), []); assert.equal(h.reads.includes(DOC), false); assert.deepEqual(h.calls, []);
+});
+
+test("drill filtering returns only the requested estimate and never inspects the other recording", async () => {
+  for (const drill of ["dribbling", "changeOfDirection"]) {
+    const h = mixedHarness(); assert.deepEqual((await read(h, [row, codRow], drill)).map(e => e.drill), [drill]);
+    assert.deepEqual(h.calls, [drill === "dribbling" ? SOURCE : COD_SOURCE]);
+  }
+});
+
+test("Agility requires explicit confirmed protocol, visual start and the exact approved drill-axis-method tuple", () => {
+  assert(validatedEntry(codEntry(), "player", [codRow], NOW));
+  const changes = [e => delete e.protocolConfirmed, e => e.protocolConfirmed = false, e => e.protocolConfirmed = "true",
+    e => delete e.startBoundary, e => e.startBoundary = "automated", e => e.axis = "ballControl",
+    e => e.method = "constant_return_pace_v1", e => e.drill = "sprint", e => e.source.drill = "sprint",
+    e => e.source.storagePath = "player/sprint/session1/kick2/sprint.mov", e => e.observedCourseFraction = 0.5999,
+    e => e.observedCourseFraction = 1, e => e.recordedAtMillis = NOW - WINDOW_MS - 1,
+    e => e.estimatedTotalSeconds = 61, e => e.lowerSeconds = 11, e => e.upperSeconds = 9];
+  for (const change of changes) { const e = codEntry(); change(e); assert.equal(validatedEntry(e, "player", [codRow], NOW), null); }
+  const boundary = codEntry(); boundary.observedCourseFraction = 0.60;
+  assert(validatedEntry(boundary, "player", [codRow], NOW));
+  const dribble = entry(); dribble.observedCourseFraction = 0.74;
+  assert.equal(validatedEntry(dribble, "player", [row], NOW), null);
+});
+
+test("Agility rejects duplicate or stale classification, source fields, generation and fingerprint", async () => {
+  for (const changed of [{ ...codRow, repType: "sprint" }, { ...codRow, drillType: "sprint" },
+    { ...codRow, resultStatus: { qualified: false, duplicate: true } },
+    { ...codRow, resultStatus: { qualified: true, duplicate: false } }])
+    assert.equal(validatedEntry(codEntry(), "player", [changed], NOW), null);
+  for (const patch of [{ repType: "sprint" }, { drillType: "sprint" },
+    { storagePath: "player/sprint/session1/kick2/sprint.mov" }, { createdAt: FakeTimestamp.fromMillis(RECORDED + 1) }]) {
+    const h = mixedHarness(); await h.db.collection("players").doc("player").collection("reps").doc("cod").update(patch);
+    assert.deepEqual(await read(h, [codRow], "changeOfDirection"), []); assert.deepEqual(h.calls, []);
+  }
+  for (const metadata of [{ generation: "457", md5Hash: MD5 }, { generation: "456", md5Hash: Buffer.alloc(16).toString("base64") }]) {
+    const h = mixedHarness(); h.objects.set(COD_SOURCE, metadata); assert.deepEqual(await read(h, [codRow]), []);
+  }
+});
+
+test("malformed or duplicate Agility entries cannot displace a valid separate Dribbling estimate", async () => {
+  const bad = codEntry(); bad.protocolConfirmed = false;
+  assert.deepEqual((await read(mixedHarness({ entries: [entry(), bad] }), [row, codRow])).map(e => e.drill), ["dribbling"]);
+  const h = mixedHarness({ entries: [entry(), codEntry(), { ...codEntry(), id: "other-cod-review" }] });
+  assert.deepEqual((await read(h, [row, codRow])).map(e => e.drill), ["dribbling"]);
+});
+
+test("authenticated mixed-axis response preserves measured rows, honors drill filters and ignores client replacements", async () => {
+  const h = mixedHarness({ evidence: async (_playerId, rep) => {
+    const folder = rep.id === "cod" ? COD_FOLDER : FOLDER, storagePath = rep.id === "cod" ? COD_SOURCE : SOURCE;
+    return { folder, metadata: { resultsValid: false, processingStatus: "partial", totalTime: null },
+      context: { rep: { playerDocId: "player", repId: rep.id, videoStoragePath: storagePath }, result: { resultsValid: false, primaryMetric: null } } };
+  } });
+  const before = await h.service.listForPlayer("player", undefined, true);
+  assert.equal(h.reads.includes(DOC), false); assert.deepEqual(h.calls, []);
+  const result = await h.service.getResults({ playerId: "player", provisionalEstimates: [{ ...codEntry(), estimatedTotalSeconds: 2 }] }, admin);
+  assert.deepEqual(result.reps, before.reps); assert.equal(result.provisionalEstimates.length, 2);
+  assert(result.reps.every(rep => rep.totalTime === null && rep.resultStatus.qualified === false));
+  for (const drill of ["dribbling", "changeOfDirection"]) {
+    const filtered = await h.service.getResults({ playerId: "player", drill }, admin);
+    assert.equal(filtered.reps.length, 1); assert.deepEqual(filtered.provisionalEstimates.map(e => e.drill), [drill]);
+    assert.equal(filtered.provisionalEstimates[0].estimatedTotalSeconds, 10);
+  }
 });

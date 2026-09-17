@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { parseProvisionalEstimates, provisionalDribbling, provisionalScore, type ProvisionalEstimate } from './provisional-estimates';
+import { parseProvisionalEstimates, provisionalDribbling, activeProvisionalEstimates, provisionalScore, type ProvisionalEstimate } from './provisional-estimates';
 import AthleteStats from '../components/athlete-stats/AthleteStats';
 import { buildProfile } from '../components/athlete-stats/profile';
 import { playerProfile, intakeSnapshot } from '../pages/athlete-portal/player/scoring';
@@ -16,6 +16,10 @@ const estimate: ProvisionalEstimate = { id: 'review-one', repId: source.id, dril
   lowerSeconds: 9.2, upperSeconds: 9.4, observedCourseFraction: .955,
   recordedAtMillis, reviewedAtMillis: recordedAtMillis + 1000, confidence: 'low',
   assumption: 'Maintains the observed return pace to the finish.', limitation: 'Finish was not recorded.' };
+const agilitySource = { ...source, id: 'partial-shuttle', repType: 'changeOfDirection' };
+const agilityEstimate: ProvisionalEstimate = { ...estimate, id: 'review-shuttle', repId: agilitySource.id,
+  drill: 'changeOfDirection', axis: 'agility', method: 'partial_shuttle_visual_start_v1',
+  estimatedTotalSeconds: 7, lowerSeconds: 6.4, upperSeconds: 7.9, observedCourseFraction: .653 };
 
 describe('reviewed provisional dribbling', () => {
   it('uses only supported separately supplied estimates matched to an incomplete recording', () => {
@@ -72,5 +76,39 @@ describe('reviewed provisional dribbling', () => {
     const output = personalizedParams([measured], {}, null, DEFAULT_INTAKE, ['passing'], 'Coach context', [estimate], [source, measured]);
     expect(output.intake.goals).toEqual(['passing']);
     expect(output.intake.freeTextGoals).toBe('Coach context');
+  });
+  it('valid tests supersede only their matching estimate and reject mixed methods or missing source identity', () => {
+    const estimates = [estimate, agilityEstimate], sources = [source, agilitySource];
+    expect(activeProvisionalEstimates(estimates, sources)).toEqual(estimates);
+    const cod = { ...agilitySource, id: 'measured-cod', totalTime: 6.6, resultStatus: { qualified: true, duplicate: false } };
+    const dribble = { ...source, id: 'measured-dribble', totalTime: 8, resultStatus: { qualified: true, duplicate: false } };
+    expect(activeProvisionalEstimates(estimates, [...sources, cod])).toEqual([estimate]);
+    expect(activeProvisionalEstimates(estimates, [...sources, dribble])).toEqual([agilityEstimate]);
+    expect(activeProvisionalEstimates(estimates, [...sources, cod, dribble])).toEqual([]);
+    expect(activeProvisionalEstimates(estimates, [source, { ...agilitySource, repType: 'sprint' }])).toEqual([estimate]);
+    expect(parseProvisionalEstimates([{ ...agilityEstimate, method: 'constant_return_pace_v1' }, { ...agilityEstimate, observedCourseFraction: .59 }])).toEqual([]);
+  });
+  it('both charts show two independent estimates with honest missing coverage and start uncertainty', () => {
+    const estimates = [estimate, agilityEstimate], sources = [source, agilitySource];
+    const legacy = renderToStaticMarkup(<AthleteStats reps={[]} estimateReps={sources} provisionalEstimates={estimates} />);
+    const self = renderToStaticMarkup(<SkillProfile profile={playerProfile(sources)} estimates={estimates} />);
+    for (const html of [legacy, self]) {
+      expect(html).toContain('65 est.'); expect(html).toContain('67 est.');
+      expect(html).toContain('About 7.0 s'); expect(html).toContain('visually estimated');
+      expect(html).toContain('most of the return is projected');
+    }
+    expect(legacy).toContain('0/5 recorded'); expect(playerProfile(sources).overall).toBeNull();
+    expect(self).toContain('vs your standard');
+  });
+  it('planning includes both assumptions within the intake limit and preserves existing goals', () => {
+    const estimates = [estimate, agilityEstimate], sources = [source, agilitySource];
+    const output = personalizedParams([], {}, null, DEFAULT_INTAKE, [], '', estimates, sources);
+    expect(output.intake.goals).toEqual(['dribbling', 'speedAgility']);
+    expect(output.intake.freeTextGoals).toContain('~7.0s');
+    expect(output.intake.freeTextGoals).toContain('~9.3s');
+    expect(output.intake.freeTextGoals).toContain('~65% course seen');
+    expect(output.intake.freeTextGoals.length).toBeLessThanOrEqual(500);
+    expect(output.statsProfile).toEqual(personalizedParams([], {}, null, DEFAULT_INTAKE).statsProfile);
+    expect(personalizedParams([], {}, null, DEFAULT_INTAKE, ['passing', 'shooting'], '', estimates, sources).intake.goals).toEqual(['passing', 'shooting']);
   });
 });

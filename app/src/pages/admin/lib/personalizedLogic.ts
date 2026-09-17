@@ -2,7 +2,7 @@
 import { planV3JobParams } from "./planJobs";
 import type { PlanIntakeForm } from "./planJobs";
 import { accountContext, accountPlayerPath, accountQuery } from "./accountHierarchy";
-import { estimatePlanningContext, provisionalDribbling, type ProvisionalEstimate } from '../../../lib/provisional-estimates';
+import { estimatePlanningContext, activeProvisionalEstimates, type ProvisionalEstimate } from '../../../lib/provisional-estimates';
 
 export const PERSONALIZED_ENGINE = "personalized-v1";
 export const PERSONALIZED_CAPABILITIES = ["generate_personalized_plan", "activate_personalized_plan", "discard_personalized_plan", "assess_personalized_plan"] as const;
@@ -19,11 +19,15 @@ export function recentEvidence(reps: any[], now = Date.now()) {
 export function personalizedParams(reps: any[], player: any, age: number | null, intake: PlanIntakeForm, goals: string[] = [], freeTextGoals = "", provisionalEstimates: ProvisionalEstimate[] = [], estimateReps: any[] = reps): Record<string, any> {
   const evidence = recentEvidence(reps);
   const params = planV3JobParams(evidence.reps, player, age, intake);
-  const estimate = provisionalDribbling(provisionalEstimates, recentEvidence(estimateReps).reps);
-  const context = estimatePlanningContext(estimate);
+  const estimates = activeProvisionalEstimates(provisionalEstimates, recentEvidence(estimateReps).reps);
+  const context = estimatePlanningContext(estimates);
   const text = [freeTextGoals.trim(), context].filter(Boolean).join('\n\n');
   if (text.length > 500) throw new Error('Shorten the training context to leave room for the estimated result.');
-  const planningGoals = estimate && !goals.includes('dribbling') && goals.length < 2 ? [...goals, 'dribbling'] : goals;
+  const planningGoals = [...goals];
+  for (const estimate of estimates) {
+    const goal = estimate.drill === 'dribbling' ? 'dribbling' : 'speedAgility';
+    if (!planningGoals.includes(goal) && planningGoals.length < 2) planningGoals.push(goal);
+  }
   return { ...params, intake: { ...params.intake, goals: planningGoals, freeTextGoals: text || null }, engineVersion: PERSONALIZED_ENGINE,
     ...(evidence.window ? { evidenceWindow: evidence.window } : {}) };
 }
