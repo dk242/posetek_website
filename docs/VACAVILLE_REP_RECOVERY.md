@@ -1,4 +1,4 @@
-# Vacaville September 16 measurement recovery
+# Vacaville measurement recovery
 
 The user authorized repairs after the roster and ownership repair. On September
 17, eleven failed September 16 attempts were repaired in production: four dribbling
@@ -6,7 +6,8 @@ times, one change-of-direction time, three broad jumps, two shots and one vertic
 jump. Each original rep document received an audited admin revision. Rep identity,
 recording date, session, player and team ownership were preserved.
 
-This is a data repair, with no application, function, rule or website deployment.
+This first pass was a data repair, with no application, function, rule or website
+deployment.
 The earlier ownership repair and its historical receipts remain documented in
 [`VACAVILLE_DATA_REPAIR.md`](VACAVILLE_DATA_REPAIR.md).
 
@@ -51,8 +52,8 @@ Shooting artifacts were separately read back and compared to the reviewed values
 Additional jump artifacts were generation/hash checked, backed up and verified.
 Original videos and diagnostic bundles were not rewritten.
 
-The live organization reporting check passed for all 36 roster members. September
-16 remains 101 documents / 87 distinct attempts / 14 duplicate documents, with
+At the first-pass checkpoint, the live organization reporting check passed for all
+36 roster members. September 16 remained 101 documents / 87 distinct attempts / 14 duplicate documents, with
 75 qualifying results (previously 64) and 12 unresolved results. Historical
 reporting remains 325 documents, with 255 qualifying results (previously 244).
 All seven affected players retained their rep identity sets and team ownership;
@@ -63,7 +64,7 @@ the original snapshot, publication manifests, source downloads and
 `applied-revisions/` journals. Athlete-specific outcomes are in the private
 `VACAVILLE_REP_REPAIR_RESULTS.md`; do not commit those files or credentials.
 
-Final profile and organization verification is recorded in the private
+First-pass profile and organization verification is recorded in the private
 `verified-player-effects.json`. The web profile calculates scores from rep
 measurements and current approved benchmarks. A repaired attempt can add a missing
 axis or improve a best value; a weaker repaired attempt can leave the chart score
@@ -98,3 +99,104 @@ can invoke the legacy processor; JSON repair does not require them.
 The callable and additional auxiliary writes are separate operations, not a
 single cross-service transaction. All eleven runs reached verified completion;
 the journals and backups remain necessary for future reconciliation.
+
+## Second pass: historical results and mislabeled attempts
+
+On September 17, the authorized second pass repaired eight more numerical results:
+four August change-of-direction times, one September 16 dribbling time and three
+September 16 broad jumps. One additional September 16 recording was reclassified
+as a broad jump without publishing a distance or height because its landing could
+not be measured reliably. These are corrections to existing attempts; category
+changes do not create another attempt or necessarily increase the qualifying total.
+
+The four August times use complete original recordings and reviewed event timing.
+The dribbling attempt was recorded under change of direction, but visibly includes
+the ball and a complete return. The three broad jumps were recorded under vertical
+jump. Their saved pose, reviewed jump windows and native broad-jump calculation
+provide the replacement measurements. The incomplete fourth broad jump remains
+partial with null distance, height and event frames. No missing landing was inferred.
+
+The user confirmed that the physical black ArUco square is **5.875 inches
+(0.149225 m)**. The three newly measured broad jumps were corrected from the
+historical 7-inch scale using the 47/56 ratio, with consistent derived artifacts.
+The four jump results published in the first pass already agree with the
+5.875-inch calibration from their original marker corners and saved scale; those results
+required no calibration change.
+
+### Classification and duplicate contract
+
+Each category migration retains the existing rep ID, player, recording date and
+historical session/rep numbers. The original Storage folder remains an untouched
+audit archive. The active canonical folder contains an identical video and pose,
+rewritten context/metadata, and reviewed auxiliary artifacts where measurements
+are valid. A new session document represents the corrected category; the source
+session count is reduced and an empty historical session is retained.
+
+Canonical rep, session changes, existing pathless jump mirror and private duplicate
+correction are written together with raw Firestore before-images and update-time
+preconditions. The mirror keeps its document identity, clears its height aliases
+and records `duplicateOf` pointing to the canonical rep. Cross-drill duplicate
+authority is the server-owned, client-denied document
+`players/{playerId}/insightMetadata/resultCorrections`, with `schemaVersion: 1`,
+`repairId`, `reviewedAtMillis` and a merged `duplicateReps` map. The writable
+`duplicateOf` field alone is insufficient authority. Readers must use the matching
+reviewed correction contract; preserving the mirror must not create a second
+test or retain the mislabeled vertical score.
+
+### Processor guard and recovery
+
+Before copying videos into their corrected folders, the deployed `onVideoUpload`
+archive guard was extended by ten exact bucket/path-and-MD5 entries, retaining its
+sixteen existing entries. Revision `onvideoupload-00025-vic` was verified active
+with **26 guard entries** on September 17. Each of the five copied-video events
+was independently verified in the processor logs as skipped without requesting
+processing. This was an environment-only extension with the function source
+unchanged. The guard receipt is separate from the
+concurrent application/reader remediation release and does not establish that
+release's status. Preserve the complete guard map during later deployments.
+
+Destination objects are created only if absent and verified by generation and
+hash before the Firestore cutover. The admin revision then records the reviewed
+result and is read back with its metadata and reader artifacts. The intentionally
+partial attempt remains `noPrimaryResult`; it is not an accepted numerical repair.
+Storage staging, Firestore cutover and admin revision are separate journaled
+operations rather than one transaction across services.
+
+Rollback requires the migration journal in addition to ordinary revision history.
+Restore the canonical rep, source/target sessions, mirror and private correction
+mapping together under fresh ownership/precondition checks. Handle only destination
+objects whose generations belong to that run; the original folder needs no video
+rewrite. Stop on later edits or later correction mappings. The ordinary admin
+revision restore alone does not undo category, session or duplicate changes.
+
+### Second-pass verification checkpoint
+
+Verification completed at **2026-09-17T21:08:20.691Z**. The September 16
+report contains **101 documents / 87 attempts /
+14 duplicate documents**, with **74 qualifying
+results** and **13 results without a qualifying measurement**.
+The cumulative report contains **325 documents /
+298 attempts / 27 duplicate documents**,
+with **258 qualifying results** and
+**40 results without a qualifying measurement**.
+Organization testing status is **12 fully tested /
+22 partially tested / 2 unrecorded**.
+
+All 36 included athletes retain the same 325 rep document identities and team
+assignments. The fifteen earlier revisions and five category migrations reconcile
+chronologically with their final rep, session and duplicate-correction documents.
+All 36 effective-results responses and both date-mode reports match direct
+qualification evidence. Fresh hosted profile checks show the recovered dribbling
+and broad-jump results feeding the skill chart. The original reports and repair
+receipts remain unchanged.
+
+The original twelve failed September 16 attempts still require complete footage
+or retesting. The newly identified incomplete broad jump is a separate unresolved
+attempt. Earlier checkpoint figures above remain historical observations, not
+current totals. Failure reports and the audit workbook remain unchanged.
+
+Private source recordings, athlete-specific measurements, before-images,
+manifests, guard receipts and migration journals remain under
+`.netlify/vacaville-rep-investigation/second-pass/`; do not commit them. Preserve
+the final verifier output alongside those journals. No credentials, signed media
+URLs or individual athlete identifiers belong in the public handoff.
