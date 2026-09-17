@@ -9,11 +9,19 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 2:22:42 PM PDT as
-`6aac59bb9c49063e622aa65a`.
+The latest release was published September 17, 2026 at 3:22:58 PM PDT as
+`6aac666c61025a8e62e8c399`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/TESTING_AUDIT_PRODUCTION.json).
+[the latest production receipt](deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
+
+**Reviewed Dribbling estimates live:** authenticated skill maps can show a labeled,
+conditional estimate for reviewed near-finish recordings. Coaches may include it
+as low-confidence planning context. Measured results, completion counts, rankings,
+Insights and shared results are unchanged. Two additional mislabeled attempts now
+appear in their correct Dribbling history and remain incomplete. Read the
+[estimate and recovery contract](docs/PROVISIONAL_DRIBBLING_RECOVERY.md). Preserve
+the current 30-entry archive guard in `onvideoupload-00026-bup` and all repair journals.
 
 **Testing audit fixes live:** reviewed results, duplicate suppression, independent
 metric validity and exact-attempt video/pose replay are deployed. Read the
@@ -115,8 +123,8 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 228 application/public
-files from deployment `6aaba570721b0d41e0eabf90`. A fresh build downloads and
+`deployment/homepage-baseline.json`, and preserves all 462 application/public
+files from deployment `6aac666c61025a8e62e8c399`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.

@@ -1,7 +1,7 @@
 {
-  "deploymentId": "6aac59bb9c49063e622aa65a",
+  "deploymentId": "6aac666c61025a8e62e8c399",
   "sourceCommit": null,
-  "url": "https://6aac59bb9c49063e622aa65a--posetek.netlify.app",
+  "url": "https://6aac666c61025a8e62e8c399--posetek.netlify.app",
   "applicationPath": "/application.html",
   "platformConfig": {
     "path": "/netlify.toml",
@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "/application.html",
-      "sha": "b689dec19e4d0a6f21ef3d2f93f0d63a479680fd",
+      "sha": "e0007854d684f92c1ece5dcba8345bc0c8736e83",
       "size": 1309
     },
     {
@@ -38,6 +38,11 @@
     {
       "path": "/assets/accounts-c2rash5t.js",
       "sha": "eb3ba62eda984cd8864af9911edeceed42e240b1",
+      "size": 8820
+    },
+    {
+      "path": "/assets/accounts-cvacab9b.js",
+      "sha": "5ea80611a2b1af67f85ce28b634a067f16852b6d",
       "size": 8820
     },
     {
@@ -76,6 +81,11 @@
       "size": 2680
     },
     {
+      "path": "/assets/adminhome-pwprnjg3.js",
+      "sha": "550c250c0119d3dfa40e5608b2fc3544ba1e1af3",
+      "size": 2680
+    },
+    {
       "path": "/assets/adminhome-ujgbda1m.js",
       "sha": "7eaee5fc09d3df42a0b6ad13350c597de67184c9",
       "size": 2392
@@ -84,6 +94,11 @@
       "path": "/assets/adminpage-blba6n5y.css",
       "sha": "34176752b6ae234ed5e0ce42a8690b553e5d2232",
       "size": 33033
+    },
+    {
+      "path": "/assets/adminpage-bupy-izi.js",
+      "sha": "a6da070c8af54dc13b64377ffe5034ad20677864",
+      "size": 10099
     },
     {
       "path": "/assets/adminpage-caa6fe1i.js",
@@ -131,6 +146,11 @@
       "size": 2281
     },
     {
+      "path": "/assets/adminresults-d8x0al3m.js",
+      "sha": "6fd91cc9a24c6f2940637fe2f6bdc86d613fa892",
+      "size": 2281
+    },
+    {
       "path": "/assets/adminresults-dck1h-kd.js",
       "sha": "a2d2abcdf2671774f7f38eb7d792f1869b89cbff",
       "size": 2234
@@ -154,6 +174,11 @@
       "path": "/assets/analysisworkspace-bpevv-aw.js",
       "sha": "91d613df727b7899ba5dde67921fc8e83e289cc6",
       "size": 31167
+    },
+    {
+      "path": "/assets/analysisworkspace-byq-u2wm.js",
+      "sha": "f033e36150a4a80125b6708937291eb3a1c352c4",
+      "size": 31102
     },
     {
       "path": "/assets/analysisworkspace-c7kkck8s.js",
@@ -196,6 +221,11 @@
       "size": 6078
     },
     {
+      "path": "/assets/athleteportalpage-bjhjftsy.js",
+      "sha": "e7f27a60271d46854a7e03c6036bfea12f535c2c",
+      "size": 219244
+    },
+    {
       "path": "/assets/athleteportalpage-byvqpzq2.js",
       "sha": "4d95ef07555510c860f9645a18968a4910a68317",
       "size": 221091
@@ -234,6 +264,16 @@
       "path": "/assets/athletestats-bnhyxc3b.js",
       "sha": "0245c28c6c09f2716d590fdde8e6faf898ffa2c6",
       "size": 13985
+    },
+    {
+      "path": "/assets/athletestats-caayndbb.js",
+      "sha": "10ff3571e17a7739f86e4f6d223a1ced6a0d8b2f",
+      "size": 16138
+    },
+    {
+      "path": "/assets/athletestats-chdg7ls1.css",
+      "sha": "03c275c3e7f2f5e918db114802e7465d19bad73d",
+      "size": 12860
     },
     {
       "path": "/assets/athletestats-cjo3bfrm.js",
@@ -296,6 +336,11 @@
       "size": 5025
     },
     {
+      "path": "/assets/catalog-dhvmlcrl.js",
+      "sha": "5f081d81f1d964be8f763b7abc7f319919fe399a",
+      "size": 5025
+    },
+    {
       "path": "/assets/catalog-do4jsmwe.js",
       "sha": "62e37f4b1e6f65ef1550481827b6063c0016b597",
       "size": 5025
@@ -336,6 +381,11 @@
       "size": 37283
     },
     {
+      "path": "/assets/coachdashboardpage-etcaqma7.js",
+      "sha": "84584bc44905b55d08ef7dab254c1e57bb246530",
+      "size": 37395
+    },
+    {
       "path": "/assets/coachdemo-blzfwfpx.js",
       "sha": "1e2566588d97dca6d879edf5b0172b54d083dab5",
       "size": 6691
@@ -344,6 +394,11 @@
       "path": "/assets/coachdemo-bu_ucrww.js",
       "sha": "54b35ab6641f11f00ac8ea32edd505fafb4db93b",
       "size": 6740
+    },
+    {
+      "path": "/assets/coachdemo-byof2uti.js",
+      "sha": "146a39a54a709a2eecb2f4543dbed1470bbe190b",
+      "size": 6691
     },
     {
       "path": "/assets/coachdemo-cdcps9_2.js",
@@ -364,6 +419,11 @@
       "path": "/assets/coachdemo-dgnkpnvq.js",
       "sha": "b54acc2490b7dd3f065579d1b299935c9c3ef870",
       "size": 6740
+    },
+    {
+      "path": "/assets/coachdetail-bmvp7bb5.js",
+      "sha": "0f35c57e6514024d671cb97b46c697913766e8d2",
+      "size": 4476
     },
     {
       "path": "/assets/coachdetail-bnoqlgsj.js",
@@ -426,6 +486,11 @@
       "size": 9046
     },
     {
+      "path": "/assets/data-zf0r_cii.js",
+      "sha": "ee601213bbed95c7dbc202f18e9194fd7b43f198",
+      "size": 17732
+    },
+    {
       "path": "/assets/draco_decoder-c32yeggz.wasm",
       "sha": "b048235474cbf09ef35e5861a74a747f4bef3fa1",
       "size": 285747
@@ -454,6 +519,11 @@
       "path": "/assets/drilldashboard-bpw8460g.js",
       "sha": "daaa8ecbc3a67e4d6c6313ada58be09d61b2643a",
       "size": 4652
+    },
+    {
+      "path": "/assets/drilldashboard-c2rukjag.js",
+      "sha": "85fe4ffd371521690765d9405cf1cf90049c9802",
+      "size": 4660
     },
     {
       "path": "/assets/drilldashboard-c5hkbmxl.js",
@@ -491,6 +561,11 @@
       "size": 5646
     },
     {
+      "path": "/assets/drilldetail-bxwtlqt4.js",
+      "sha": "9cc5c164a3662db788bfab3ae4537df0ac226ea9",
+      "size": 5646
+    },
+    {
       "path": "/assets/drilldetail-c2do8g9u.js",
       "sha": "099cd2c89c9f635892b81ee724820c90c0224d26",
       "size": 5685
@@ -519,6 +594,11 @@
       "path": "/assets/drillform-bjuwdcmw.js",
       "sha": "47bef9b84356ff577df26020162396a6952390b0",
       "size": 17545
+    },
+    {
+      "path": "/assets/drillform-d54n1rft.js",
+      "sha": "8c1a908efa63d0143ef5bca404a9ac311c3d0d1f",
+      "size": 17488
     },
     {
       "path": "/assets/drillform-dkq2yyxe.js",
@@ -556,6 +636,11 @@
       "size": 4977
     },
     {
+      "path": "/assets/drilllibrary-dhfco_of.js",
+      "sha": "d9b97cf6d7d316d0007cfc22815191f93021bdab",
+      "size": 4977
+    },
+    {
       "path": "/assets/drilllibrary-dtbw4ieu.js",
       "sha": "1dad440f89465ad63aac8400c48970bdd568b7a3",
       "size": 5011
@@ -589,6 +674,11 @@
       "path": "/assets/drillsharepage-bybmzogb.js",
       "sha": "38f7f019640c95102bc682a1fb001d5f98149c17",
       "size": 38609
+    },
+    {
+      "path": "/assets/drillsharepage-ckbpjbji.js",
+      "sha": "ac8c4002d3c6efe523f0fcbd0657fe5b13ac3e66",
+      "size": 33648
     },
     {
       "path": "/assets/drillsharepage-cpyabjgv.js",
@@ -629,6 +719,11 @@
       "path": "/assets/feedpage-cm50ztlq.js",
       "sha": "266213d3fc559c2a8859e92a276f49c00bb591b4",
       "size": 26670
+    },
+    {
+      "path": "/assets/feedpage-dv9pa36o.js",
+      "sha": "37ebb31a2278f8be56d65e8849e67baa6d77399c",
+      "size": 26727
     },
     {
       "path": "/assets/feedpage-ihutorhz.js",
@@ -691,6 +786,11 @@
       "size": 180922
     },
     {
+      "path": "/assets/homepage-dazxvcw2.js",
+      "sha": "abbe232713076463d5c2f3a7be2e2b967701241f",
+      "size": 180922
+    },
+    {
       "path": "/assets/homepage-dixdbohp.css",
       "sha": "e1895073bd5787fa7a835962fef6a0096b6255ce",
       "size": 32744
@@ -713,6 +813,11 @@
     {
       "path": "/assets/identity-a_wpmo2f.js",
       "sha": "b947d3e87d6cf7c8a88bae16f0c9a77f0bc72f19",
+      "size": 1354
+    },
+    {
+      "path": "/assets/identity-bskgizrz.js",
+      "sha": "fe8b6f2cb72f776307e0b9ab6148b5409199354a",
       "size": 1354
     },
     {
@@ -766,6 +871,11 @@
       "size": 1010245
     },
     {
+      "path": "/assets/index-svbaichn.js",
+      "sha": "395a815e4df5ed93a75e99a8e719f1f24ad7e977",
+      "size": 1010253
+    },
+    {
       "path": "/assets/index-ue68kfeb.js",
       "sha": "1be69d5a1f09a437a8b06f085a573d0b3ea11c42",
       "size": 234286
@@ -779,6 +889,11 @@
       "path": "/assets/insightspage-be7zukrb.css",
       "sha": "c9ca84f8687e3d7aa1c34eb0e9b03492a9e682e9",
       "size": 4101
+    },
+    {
+      "path": "/assets/insightspage-cprylo7h.js",
+      "sha": "ac98baacd949f24edd65e382d95282efda5a5c25",
+      "size": 45189
     },
     {
       "path": "/assets/insightspage-cxtigno2.js",
@@ -799,6 +914,11 @@
       "path": "/assets/insightspage-znfeycxq.js",
       "sha": "880b1ced5d6f7b69969609035b7038290f5b307e",
       "size": 45189
+    },
+    {
+      "path": "/assets/landingpage-bqzrfqzs.js",
+      "sha": "446b1325a6686c20fc890f600870a3a155d1c9df",
+      "size": 25189
     },
     {
       "path": "/assets/landingpage-br12zhjj.js",
@@ -846,6 +966,11 @@
       "size": 17701
     },
     {
+      "path": "/assets/loaders-bdd9olmx.js",
+      "sha": "922ffa2649c39468c4b63f3544618e4e4f3a47d8",
+      "size": 17775
+    },
+    {
       "path": "/assets/loaders-cdt-xnyn.js",
       "sha": "54d8e03d53be2a36ebd323694413e8645f903ef4",
       "size": 16764
@@ -881,6 +1006,11 @@
       "size": 14256
     },
     {
+      "path": "/assets/monitoraccounts-btosnyjb.js",
+      "sha": "0490d306ca5c220f2d758fbc0252a3c124ba1b10",
+      "size": 14256
+    },
+    {
       "path": "/assets/monitoraccounts-c9hedyqe.js",
       "sha": "4f6e40c82a75bd8252be50b85e333cbefe28f849",
       "size": 14295
@@ -894,6 +1024,11 @@
       "path": "/assets/monitoraccounts-d44sc-s9.js",
       "sha": "1ca8766e3ff93f38f1ce42d417783b9c87985ea5",
       "size": 6547
+    },
+    {
+      "path": "/assets/mount-6awdbpgm.js",
+      "sha": "36de8163c3c054971694f459260039b431703bf2",
+      "size": 851667
     },
     {
       "path": "/assets/mount-beylwlr4.js",
@@ -929,6 +1064,11 @@
       "path": "/assets/mount-dl9nca7l.css",
       "sha": "92aac38cde59c0e259686613041735889bb55ae8",
       "size": 152
+    },
+    {
+      "path": "/assets/movementdemo-bad4tktl.js",
+      "sha": "e6acd19bbdbbb40c8d7c3d0f9d2f1dda036a4eb8",
+      "size": 443616
     },
     {
       "path": "/assets/movementdemo-c1qwa18k.js",
@@ -1006,6 +1146,11 @@
       "size": 1301
     },
     {
+      "path": "/assets/notfoundpage-cv_tr2tz.js",
+      "sha": "9ce60680a1cf79721b337c080d5f994a78edda9f",
+      "size": 1301
+    },
+    {
       "path": "/assets/notfoundpage-d2qqhrlo.js",
       "sha": "eacff7fc5ff3bed48561969129ca1482bd6a3b08",
       "size": 1345
@@ -1031,6 +1176,11 @@
       "size": 1532
     },
     {
+      "path": "/assets/organization-data-nalpib7k.js",
+      "sha": "a6760d81d7cf82832d7f763987b7fd0a96d998c5",
+      "size": 1532
+    },
+    {
       "path": "/assets/organization-data-oz5sfxbs.js",
       "sha": "0550d8204374b516e06ce04abfcfcef76475b41c",
       "size": 1535
@@ -1038,6 +1188,11 @@
     {
       "path": "/assets/organizationpage-bku2w9jk.js",
       "sha": "073e5a2b95adfba55423c1b9f9e5af12274a8f58",
+      "size": 17474
+    },
+    {
+      "path": "/assets/organizationpage-d3pqmkmk.js",
+      "sha": "6b0e38f2d7725e290d39e68ba733d20019f8ebc1",
       "size": 17474
     },
     {
@@ -1069,6 +1224,11 @@
       "path": "/assets/personalizedprograms-b46llvyr.js",
       "sha": "8461cecdc8a22e8dcd5e3a0a8d4e5b7a6f5f9029",
       "size": 34550
+    },
+    {
+      "path": "/assets/personalizedprograms-bb7rndsb.js",
+      "sha": "a893b31f7f859a59cea1e37c4772b2716069f24c",
+      "size": 36024
     },
     {
       "path": "/assets/personalizedprograms-bnk_2nin.js",
@@ -1116,6 +1276,11 @@
       "size": 196
     },
     {
+      "path": "/assets/plannerredirect-cd9lnvcw.js",
+      "sha": "93f111eedc64bc868604a28b577d98680af9f860",
+      "size": 196
+    },
+    {
       "path": "/assets/plannerredirect-cix73ri-.js",
       "sha": "2be74472a7c677b8dfcd9be65d00c2633e65c2ff",
       "size": 196
@@ -1139,6 +1304,11 @@
       "path": "/assets/playerdetail-bglogg7i.js",
       "sha": "2becd14b56c1f3109e92adf81681a2a3539e21ee",
       "size": 15464
+    },
+    {
+      "path": "/assets/playerdetail-bmnc21as.js",
+      "sha": "b83708bd5e52679743ba3b9e8fb8119d442fc4b2",
+      "size": 15420
     },
     {
       "path": "/assets/playerdetail-cj9cv5hy.js",
@@ -1206,6 +1376,11 @@
       "size": 5785
     },
     {
+      "path": "/assets/poseplayback-ccvv-hql.js",
+      "sha": "0be1c87e9c73c8ee0a86dcdf1ba759f69482d897",
+      "size": 5793
+    },
+    {
       "path": "/assets/privacypage-b6rvw5uw.js",
       "sha": "5c988cf75696db74adc6600e7fcc1a454e14ea88",
       "size": 9229
@@ -1231,6 +1406,11 @@
       "size": 3463
     },
     {
+      "path": "/assets/privacypage-d_ja493c.js",
+      "sha": "c8d396784ef40da30de542f9eec704f3612c718b",
+      "size": 9229
+    },
+    {
       "path": "/assets/privacypage-dceydt1n.js",
       "sha": "4019cae25baf8a72e023a033f9874171624c2d00",
       "size": 9229
@@ -1244,6 +1424,11 @@
       "path": "/assets/product-demo-dszq9ptv.css",
       "sha": "b63893d41123f7cb050c7bcc92371853670755f4",
       "size": 20120
+    },
+    {
+      "path": "/assets/programspage-b7aojqpv.js",
+      "sha": "5905f444569db4659442d68c12771e5f373e1276",
+      "size": 1139
     },
     {
       "path": "/assets/programspage-bgttfcre.js",
@@ -1271,6 +1456,11 @@
       "size": 1224
     },
     {
+      "path": "/assets/provisional-estimates-dtj8ht5y.js",
+      "sha": "549b739059a68c635b4ee01af32ab7659f7f036e",
+      "size": 5248
+    },
+    {
       "path": "/assets/reptools-c2cwfwlq.js",
       "sha": "a87175b3b1bfab946039acaea8fe6991a6e21636",
       "size": 36252
@@ -1283,6 +1473,11 @@
     {
       "path": "/assets/reptools-cna5c_fp.js",
       "sha": "e9a7437fd5977a30262550d42ead9bb4ae0a6527",
+      "size": 36208
+    },
+    {
+      "path": "/assets/reptools-cyxkl53b.js",
+      "sha": "c5ebf7e56f2ddd3a7e3dbc8ae87be27a64633e55",
       "size": 36208
     },
     {
@@ -1299,6 +1494,11 @@
       "path": "/assets/reptools-dwzmdakz.js",
       "sha": "0990e5479e8f20a8626dfcd3b96e68291396e57a",
       "size": 36208
+    },
+    {
+      "path": "/assets/reptoolsdata-bx9grpn1.js",
+      "sha": "1b0d67ca5c8d679a1caea96e804c49cef193f713",
+      "size": 18087
     },
     {
       "path": "/assets/reptoolsdata-crbadjv9.js",
@@ -1336,6 +1536,11 @@
       "size": 777
     },
     {
+      "path": "/assets/results-bhgjcma7.js",
+      "sha": "362319b6c9de7e6a841a724eb7a73d7c2fd20bd9",
+      "size": 913
+    },
+    {
       "path": "/assets/results-cm-uzxbc.js",
       "sha": "981d95c64a57972172b88d68044c3862048ed4af",
       "size": 905
@@ -1363,6 +1568,11 @@
     {
       "path": "/assets/rosterpage-c7_62qyy.js",
       "sha": "a548bea78db2e073b4f2458f446383047e9668b3",
+      "size": 12404
+    },
+    {
+      "path": "/assets/rosterpage-cfxyo2yf.js",
+      "sha": "e0868fd70928b056e4640c8b399acd347da78bf6",
       "size": 12404
     },
     {
@@ -1416,6 +1626,11 @@
       "size": 4705
     },
     {
+      "path": "/assets/staffinvitepage-hixwqp8_.js",
+      "sha": "3fa84d7f4bb9e0f98215157c58fba9b8162ca59e",
+      "size": 4625
+    },
+    {
       "path": "/assets/techniquedemo-b62l-srp.js",
       "sha": "c738ed7ceb060e1a7dc2b44a4a43495caae47474",
       "size": 55593
@@ -1429,6 +1644,11 @@
       "path": "/assets/techniquedemo-bii80dqv.css",
       "sha": "66e84f19625cd070784c8fb24d7137db0914bc92",
       "size": 9075
+    },
+    {
+      "path": "/assets/techniquedemo-cg2llajb.js",
+      "sha": "b5b20df73b3c3048210d3665aa7fed08d05ef421",
+      "size": 55593
     },
     {
       "path": "/assets/techniquedemo-cgevdmms.js",
@@ -1471,6 +1691,11 @@
       "size": 234
     },
     {
+      "path": "/assets/use-body-background-cksqos_h.js",
+      "sha": "b993cc767ff7327f658c06040a97c6f205b756ba",
+      "size": 234
+    },
+    {
       "path": "/assets/use-body-background-crimudal.js",
       "sha": "b50e923bd95b9b8e86c1260c3efc6f037cd954f4",
       "size": 234
@@ -1506,6 +1731,11 @@
       "size": 365
     },
     {
+      "path": "/assets/use-theme-color-c3onclpb.js",
+      "sha": "2541f506499db4792c5afe0a665469120a22ddff",
+      "size": 365
+    },
+    {
       "path": "/assets/use-theme-color-dxhwqjdv.js",
       "sha": "a67f0323ad01d178845190508113803b2bcbfd84",
       "size": 409
@@ -1534,6 +1764,11 @@
       "path": "/assets/useaccountload-dqc61lzp.js",
       "sha": "34dbfaf055e14dba00eed8ff1dd9159171201226",
       "size": 738
+    },
+    {
+      "path": "/assets/useaccountload-dyuwb8mu.js",
+      "sha": "0bd9c11c7965d03b16bc7049f212f80665059253",
+      "size": 658
     },
     {
       "path": "/assets/useaccountload-u4pimsrg.js",
@@ -1566,6 +1801,11 @@
       "size": 1923
     },
     {
+      "path": "/assets/workoutdemo-cgndxyir.js",
+      "sha": "3f733e8e42afa115b444e8cfbbb058473e03f6cc",
+      "size": 47765
+    },
+    {
       "path": "/assets/workoutdemo-cli_zung.js",
       "sha": "c42ad328ea21fdeea813042873af5f2c863fc34f",
       "size": 47765
@@ -1579,6 +1819,11 @@
       "path": "/assets/workoutdemo-mjvbe1te.js",
       "sha": "d6d8a884c4745513597586095603ba62dc8f97b5",
       "size": 47765
+    },
+    {
+      "path": "/assets/workouteditor-0kclpxkg.js",
+      "sha": "8d72b0e4ee508d295c5eba82e72f9b14e164b114",
+      "size": 40056
     },
     {
       "path": "/assets/workouteditor-bdayxewn.js",

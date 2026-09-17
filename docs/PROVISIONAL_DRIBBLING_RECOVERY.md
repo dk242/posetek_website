@@ -7,6 +7,14 @@ attempts remain incomplete; no projected value is written as a measured result.
 Athlete identities, recordings, source hashes and measurement journals stay in
 ignored private evidence, outside Git.
 
+The website is live as `6aac666c61025a8e62e8c399`, published September 17, 2026
+at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`), from source `e1c4101` on
+`codex/provisional-dribbling-recovery`. The authenticated reader is ACTIVE
+version 3. See the [sanitized production receipt](../deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
+for the scoped backend source verification, website inventory, test results and
+preservation checks. Production review confirmed the two labeled estimates and
+planner option without generating or activating a workout plan.
+
 ## Reader and display contract
 
 `getAthleteEffectiveResults` adds an authenticated-only `provisionalEstimates`
@@ -81,13 +89,12 @@ was unchanged. Preserve the full current map during later deployments.
 
 ## Evidence and recovery
 
-Private evidence lives under
-`.netlify/vacaville-rep-investigation/third-pass-samantha/`, including the two
+Private evidence lives under the ignored
+`.netlify/vacaville-rep-investigation/` repair directories, including the two
 classification manifests and journals, independent verification, decoded-timing
 estimate method/receipt, and a separate two-document estimate seed plan/journal.
-The exact guard extension evidence is under
-`second-pass/third-pass-samantha/upload-guard/`. Earlier repair journals are
-immutable historical records.
+The exact guard extension has its own private upload-guard receipt. Earlier
+repair journals are immutable historical records.
 
 Estimate publication uses one atomic compare-and-set commit for the two private
 documents, with before-images, pinned evidence and pre/post source checks. It

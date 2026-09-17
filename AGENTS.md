@@ -11,15 +11,19 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aac59bb9c49063e622aa65a`, published
-September 17, 2026 at 2:22:42 PM PDT. Testing audit remediation adds canonical
+The latest recorded production release is `6aac666c61025a8e62e8c399`, published
+September 17, 2026 at 3:22:58 PM PDT. Reviewed provisional Dribbling estimates add
+explicitly labeled skill-map and optional planning context without changing
+measured results, qualification, rankings or Insights. Read
+`deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
+`docs/PROVISIONAL_DRIBBLING_RECOVERY.md`. The preceding testing audit adds canonical
 qualified results, proven duplicate suppression, exact capture media and truthful
 pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
-`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 413 files.
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 462 files.
 Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
 capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
-native repository rules. Preserve the 26-entry video archive guard in
-`onvideoupload-00025-vic` and the separate historical repair journals.
+native repository rules. Preserve the 30-entry video archive guard in
+`onvideoupload-00026-bup` and the separate historical repair journals.
 Expanded Insights includes demographics,
 verified testing, workout outcomes and estimated active use for admins,
 organization managers and assigned coaches, preserving the account hierarchy,
@@ -58,7 +62,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 413 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 462 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 

@@ -200,3 +200,42 @@ manifests, guard receipts and migration journals remain under
 `.netlify/vacaville-rep-investigation/second-pass/`; do not commit them. Preserve
 the final verifier output alongside those journals. No credentials, signed media
 URLs or individual athlete identifiers belong in the public handoff.
+
+## Later September 17 classification and conditional-estimate follow-up
+
+Two additional September 16 attempts were recorded under Change of Direction
+but visibly used a ball. They now appear under one Dribbling session with their
+original rep IDs, dates and rep numbers. The source session retains its valid
+agility attempt. Both transferred recordings end before a measurable finish:
+their primary and unsupported secondary metrics remain null and neither is
+qualified. Source recordings and calibration were retained, with exact archived
+copies accompanying the destination artifacts. Separate compare-and-set journals
+record the rep and session changes and the complete rollback boundary.
+
+Separately, the user authorized one-time conditional estimates from two reviewed
+near-finish Dribbling clips. Two server-owned private documents were published
+atomically after evidence and source checks. These estimates add labeled skill-map
+markers and optional low-confidence planning context; they do not repair a missing
+finish or add a measured result. Authenticated reader checks confirmed unchanged
+measured rows and qualification, and the additional classification-only athlete
+has no estimate. A later qualified Dribbling test suppresses its estimate. No
+Agility estimate was published. The failed recordings, audit workbook, historical
+repair reports and remaining evidence gaps are preserved.
+
+The archive guard now has 30 entries in `onvideoupload-00026-bup`, retaining all
+26 earlier entries and the same processor source. The authenticated reader's
+separate source-only release is ACTIVE version 3. The website follow-up is
+`6aac666c61025a8e62e8c399`, published at `2026-09-17T22:22:58.156Z` (3:22:58 PM PDT).
+See the [production receipt](../deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
+and [estimate method, limits and recovery contract](PROVISIONAL_DRIBBLING_RECOVERY.md).
+Earlier counts above remain checkpoint records; classification-only transfers
+and conditional estimates add no qualified results. No workout plan was generated
+or activated during this publication.
+
+The later repair evidence remains in the ignored
+`.netlify/vacaville-rep-investigation/` directories; backend and website checks
+are in `.netlify/provisional-dribbling-release/`. Retain those private receipts
+alongside the original journals. Withdrawing an estimate requires its own current
+document-version check; undoing a category transfer additionally requires its
+session, rep and artifact journal. Neither operation should overwrite a later
+review or alter the historical repairs.

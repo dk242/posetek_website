@@ -153,3 +153,40 @@ rollback. Do not overwrite historical repair revisions. The original workbook,
 failure reports, source recordings and duplicate records remain evidence.
 Reversing a historical category migration requires its private repair journal;
 restoring only a metric revision does not undo session and duplicate mappings.
+
+## September 17 follow-up: provisional Dribbling context
+
+The later website release is `6aac666c61025a8e62e8c399`, published at
+`2026-09-17T22:22:58.156Z` (3:22:58 PM PDT), from source `e1c4101` on
+`codex/provisional-dribbling-recovery`. The release figures and verification
+above remain records of the earlier testing-audit checkpoint. The current
+[production receipt](../deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json) and
+[estimate handoff](PROVISIONAL_DRIBBLING_RECOVERY.md) record the follow-up.
+
+Two near-finish Dribbling clips support separately labeled conditional estimates
+on authenticated skill maps and optional low-confidence planning context. The
+finish remains unrecorded. Estimates add no qualified result, completed category,
+overall rating, ranking or Insights value and are not returned by shared readers.
+The scoped authenticated reader is ACTIVE version 3; measured result projections
+were identical before and after deployment and estimate publication. No Agility
+estimate or workout plan was published by this follow-up.
+
+Two further mislabeled attempts now belong to one Dribbling session. Their rep
+IDs, dates and original footage were preserved; unsupported metrics remain null,
+and both remain unqualified. The original successful agility attempt is intact.
+The separate private migration journals retain all source, session and artifact
+before-images. The video archive guard is now 30 entries in
+`onvideoupload-00026-bup`, with the prior 26 entries and processor source preserved.
+Use that current map for future releases, while retaining the older receipts.
+
+Production contains 494 verified local files and 495 inventory entries. The
+reconciled baseline protects 462 application/public files, with approved marketing
+bytes unchanged. Production review confirmed both labeled estimates, unchanged
+measured counts and the enabled, reversible planning option; no generation was
+submitted. Baseline/release tests passed 19/19. The initial frontend suite had
+928 passes and one home-pose timeout; its isolated rerun passed 10/10. The later
+six-test provisional suite passed 6/6, and TypeScript plus 402 preview HTTP checks
+across 11 routes passed. Backend checks passed 37 workspace tests and 32 packaged
+candidate tests; one private fixture was intentionally omitted from the package
+after passing in the workspace. This is not a new complete-suite pass claim.
+Taiyo's native candidate and outstanding Mac/iPhone/TestFlight work are unchanged.

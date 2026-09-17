@@ -20,8 +20,9 @@ used that calibration and remain unchanged.
 
 The first pass made no deployment changes. The second pass extended the existing
 video processor's exact archive guard to 26 entries in verified revision
-`onvideoupload-00025-vic`, with source unchanged. Preserve that environment map
-during later deployments. The concurrent application/reader remediation has its
+`onvideoupload-00025-vic`, with source unchanged. The later follow-up below expands
+that map to 30 entries; preserve the full current map during later deployments.
+The concurrent application/reader remediation has its
 own release receipts and is not a website release performed by this data repair.
 Twelve original failures and one newly identified incomplete broad jump still
 require complete footage or retesting. See
@@ -30,9 +31,48 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
-### Current release: Testing audit remediation
+### Current release: Reviewed provisional Dribbling evidence
 
-Deployment `6aac59bb9c49063e622aa65a` is live at https://posetek.net, published
+Deployment `6aac666c61025a8e62e8c399` is live at https://posetek.net, published
+September 17, 2026 at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`). Application
+source `e1c410153549a0e65dd36738d840391901059807` is pushed on
+`codex/provisional-dribbling-recovery`. See
+[`deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json`](deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
+and [`docs/PROVISIONAL_DRIBBLING_RECOVERY.md`](docs/PROVISIONAL_DRIBBLING_RECOVERY.md).
+
+Two reviewed near-finish Dribbling recordings now have explicitly labeled,
+conditional estimates on authenticated skill maps and optional low-confidence
+planning context. The estimates remain separate from measured results, overall
+ratings, qualification, completion counts, rankings, Insights and shared results.
+They disappear when a qualified Dribbling result becomes available. No Agility
+estimate was published, and this release generated or activated no workout plan.
+
+The authenticated `getAthleteEffectiveResults` reader is ACTIVE version 3. Its
+source-only deployment preserved configuration, all 57 checked function IAM
+policies, 56 unrelated central function definitions and rules releases. The
+current video processor is `onvideoupload-00026-bup` with all 30 archive guards;
+its source and the prior 26 entries remain intact. Two further mislabeled attempts
+were moved to one Dribbling session with the same IDs and original recordings.
+Both remain incomplete, and the successful original agility attempt is unchanged.
+Two separately journaled private estimate documents add no measured results.
+
+The verified website contains 494 local files matching the 495-file production
+inventory. The reconciled protected baseline has 462 application/public files.
+Approved Players and Coaches marketing bytes are unchanged. Production review
+confirmed both labeled estimates, unchanged measured counts and an enabled
+planner with the reversible estimate option. Baseline/release checks passed 19/19.
+The initial frontend suite passed 928 tests with one five-second home-pose timeout;
+that file passed all 10 tests in isolation. After a sixth provisional test was
+added, its focused suite passed 6/6. TypeScript, 402 preview HTTP checks and 11
+preview routes passed. Backend validation passed 37 workspace tests and 32
+immutable-candidate tests, with one private fixture deliberately excluded from
+the candidate and already passed in the workspace. These are separate checks,
+not a claim that a final complete frontend suite was rerun. Native display and
+the outstanding Mac/iPhone/TestFlight acceptance remain unchanged.
+
+### Previous release: Testing audit remediation
+
+Deployment `6aac59bb9c49063e622aa65a` was published at https://posetek.net on
 September 17, 2026 at 2:22:42 PM PDT (`2026-09-17T21:22:42.725Z`). See
 [`deployment/TESTING_AUDIT_PRODUCTION.json`](deployment/TESTING_AUDIT_PRODUCTION.json)
 and [`docs/TESTING_AUDIT_BUILD_HANDOFF.md`](docs/TESTING_AUDIT_BUILD_HANDOFF.md).
@@ -44,7 +84,7 @@ confidence, aspect ratio and recorded timestamps. Legacy clips without trustwort
 timing support manual pose inspection rather than invented synchronization.
 
 The unchanged verified candidate contains 445 local files matching the 446-file
-production inventory; the protected application baseline now contains 413 files.
+production inventory; its protected application baseline contained 413 files.
 Approved Players and Coaches marketing bytes remain intact. The original workbook
 is unchanged; its 264 overlapping issue rows have a separate private disposition
 ledger. The independent post-repair checkpoint above has 258 qualifying results,
@@ -232,7 +272,7 @@ cloud Firebase configuration unless a developer explicitly changes it.
 
 That source handoff did not deploy frontend/backend or modify production data;
 its 171-file preservation baseline was historical. The later application release
-above reconciles the current baseline to 228 files. Future application releases
+above then reconciled that baseline to 228 files. Future application releases
 still need a full application review and deliberate baseline reconciliation.
 
 ### Previous marketing release: public coaches and clubs page
@@ -670,7 +710,7 @@ npm --prefix app run build:marketing
 
 The production command is `node scripts/build-production.mjs`. In the current
 release architecture it verifies the live app against the September 17 baseline,
-preserves 228 application/public files, serves the preserved application through `/application.html`, and
+preserves 462 application/public files, serves the preserved application through `/application.html`, and
 adds the isolated homepage at `/` and `/index.html` with assets under
 `/marketing/assets/`. Output is `production-dist`. The ordinary application build
 outputs `dist` and is a different path; editing app source alone does not replace
@@ -725,8 +765,13 @@ Initial preparation verification (before the scrolling update):
 
 ## Context documents and precedence
 
-1. `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`:
-   current application/backend release, validation, privacy and recovery.
+1. `deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
+   `docs/PROVISIONAL_DRIBBLING_RECOVERY.md`: current application/backend release,
+   conditional-estimate contract, validation, privacy and recovery.
+   `deployment/TESTING_AUDIT_PRODUCTION.json` and
+   `docs/TESTING_AUDIT_BUILD_HANDOFF.md` record the preceding testing remediation.
+   `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`
+   retain the earlier application build and hierarchy/planning handoff.
    `deployment/COACHES_PAGE_PRODUCTION.json` records the preserved marketing release.
    `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json` is a historical viewer receipt;
    `deployment/VIEWER_DESIGN_REFERENCE.md` records the viewer design decisions.
