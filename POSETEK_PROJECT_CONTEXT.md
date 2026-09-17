@@ -6,6 +6,17 @@ business document is included.
 
 ## Readiness and source provenance
 
+### September 16 measurement recovery
+
+After the ownership repair, eleven failed attempts were repaired in place on
+September 17 using reviewed original recordings and audited admin revisions.
+Twelve attempts still require complete footage or retesting. Original videos,
+failure reports, fourteen duplicate documents and the audit workbook were
+preserved. This data repair made no deployment changes. See
+[`docs/VACAVILLE_REP_RECOVERY.md`](docs/VACAVILLE_REP_RECOVERY.md) for evidence,
+verification and the additional jump-artifact recovery boundary. Earlier release
+checkpoint totals below describe their original observation, before this repair.
+
 ### Current release: Expanded Insights
 
 Deployment `6aabc66e9bcc60cc5c2ee12c` is live at https://posetek.net/insights,
