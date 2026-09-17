@@ -9,18 +9,22 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 2:31:39 AM PDT as
-`6aabb282bcbad486db278962`.
+The latest release was published September 17, 2026 at 4:05:05 AM PDT as
+`6aabc66e9bcc60cc5c2ee12c`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/TEAM_INSIGHTS_PRODUCTION.json).
+[the latest production receipt](deployment/EXPANDED_INSIGHTS_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Website follow-up live:** canonical account
 hierarchy and reviewed personalized planning now serve
 admin, staff and athlete web surfaces. Native mobile generation is unchanged.
-Team Insights is now live for admins, organization managers and assigned coaches;
-read the [integration handoff](docs/insights/INTEGRATION.md) for reporting semantics,
-current-access checks, bounded reads and the scoped callable release. Read the
+Expanded Insights is live for admins, organization managers and assigned coaches,
+with demographic charts, verified testing, workout outcomes and prospective
+estimated active use. Read the [expanded handoff](docs/insights/EXPANDED_INSIGHTS_HANDOFF.md)
+for definitions, retention, release/recovery and Taiyo's separate iPhone branch.
+The [V2 API contract](docs/insights/V2_CONTRACT.md) documents current-access checks,
+complete totals and pagination. Native usage begins only after the new build is
+compiled, tested and installed through Taiyo's Mac/TestFlight workflow. Read the
 [Vacaville website handoff](docs/VACAVILLE_WEBSITE_UPDATE.md) for scope, workbook
 aggregates, privacy boundaries and current validation. The release preserves the
 approved Players and Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and

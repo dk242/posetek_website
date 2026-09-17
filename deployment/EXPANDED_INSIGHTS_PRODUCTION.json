@@ -1,0 +1,201 @@
+{
+  "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+  "deployId": "6aabc66e9bcc60cc5c2ee12c",
+  "state": "ready",
+  "publishedAt": "2026-09-17T11:05:05.592Z",
+  "publishedLocal": "September 17, 2026, 4:05:05 AM PDT",
+  "url": "https://posetek.net/insights",
+  "immutableUrl": "https://6aabc66e9bcc60cc5c2ee12c--posetek.netlify.app/insights",
+  "artifactSourceCommit": "706f103",
+  "releaseMethod": "Verified Netlify preview promoted unchanged after scoped backend, rules, reporting metadata and retention verification",
+  "changes": [
+    "Overview, Testing, Workouts and Usage share canonical scopes, filters, dates and player drilldowns",
+    "Verified six-exercise qualification with current accepted revisions and separate failure evidence",
+    "Workout outcomes, prescriptions and duration evidence remain separate from estimated active use",
+    "Prospective athlete-only website/iPhone usage contract with overlap deduplication and bounded retention"
+  ],
+  "backend": {
+    "project": "kickai-69dd0",
+    "region": "us-central1",
+    "generation": 1,
+    "runtime": "nodejs22",
+    "functions": [
+      {
+        "name": "getClubInsightsV2",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "recordInsightUsage",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightPlayer",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightRecords",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightRevisions",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightFailures",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightArtifacts",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "projectInsightArtifactDeletes",
+        "versionId": "1",
+        "sourceSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+        "status": "ACTIVE"
+      }
+    ],
+    "sourceFiles": 10,
+    "sourceArchiveSha256": "d02813682d0d37591c4db5190e0e0edc96d06f0365eb109ccca2c815b71ada53",
+    "cliRuntimeMetadata": {
+      "bytes": 112,
+      "sha256": "5a516fc06a04d088f5327cb214c34742e486eaf4177d6de992e2c7a6f30bfe72",
+      "contents": "Only public Firebase projectId and storageBucket"
+    },
+    "unrelatedFunctionsPreserved": true,
+    "triggerRuntimeAndIamVerified": true,
+    "verifiedAt": "2026-09-17T11:03:43.267Z"
+  },
+  "controlPlane": {
+    "ruleset": "projects/kickai-69dd0/rulesets/d34f91b0-6a41-4194-b05e-97c334b1986a",
+    "rulesSha256": "330ec5024d1a5206ed2b99be5c43afb2603ed34899fa5a6cb87001fad540f03c",
+    "reportingMetadataProfiles": 38,
+    "includedAthletes": 36,
+    "explicitlyExcludedTestProfiles": 2,
+    "projectionVersion": 2,
+    "sourceMeasurementsWorkoutsAndTimestampsUnchanged": true,
+    "usageEnabledAt": "2026-09-17T11:02:56.310Z",
+    "ttlPolicies": {
+      "insightUsageIntervals": "ACTIVE / 90 days from receipt",
+      "insightUsageDetailDays": "ACTIVE / 90 days from UTC date",
+      "insightUsageDaily": "ACTIVE / 24 calendar months, aggregate bins only",
+      "insightUsageActors": "ACTIVE / one day"
+    }
+  },
+  "checkpoint": {
+    "date": "2026-09-16",
+    "timeZone": "America/Los_Angeles",
+    "athletes": 36,
+    "boysDivision": 20,
+    "girlsDivision": 16,
+    "ageKnown": 16,
+    "ageUnknown": 20,
+    "fullyTested": 10,
+    "partiallyTested": 24,
+    "noSuccessfulTests": 0,
+    "noRecordedTests": 2,
+    "cumulative": {
+      "recordingDocuments": 325,
+      "distinctRecordedAttempts": 298,
+      "qualifyingResults": 244,
+      "duplicateDocuments": 27,
+      "noResultDocuments": 54,
+      "needsReview": 0
+    },
+    "september16": {
+      "recordingDocuments": 101,
+      "distinctRecordedAttempts": 87,
+      "qualifyingResults": 64,
+      "failureReports": 23,
+      "linkedFailureReports": 23,
+      "unmatchedFailureReports": 0
+    },
+    "workoutsInEightWeeks": {
+      "participatingAthletes": 4,
+      "logs": 5,
+      "completedAsLogged": 1,
+      "endedEarly": 1,
+      "noEndingRecord": 3,
+      "timerRecords": 0,
+      "elapsedEstimateRecords": 2,
+      "unknownDurationRecords": 3
+    },
+    "usage": "Historical absence remains Not collected; no synthetic athlete telemetry was written to production"
+  },
+  "preservation": {
+    "previousApplicationBaseline": "6aabb282bcbad486db278962",
+    "unchangedExistingApplicationFiles": 269,
+    "newApplicationAssets": 48,
+    "applicationBaselineFiles": 318,
+    "applicationSha1": "f841988c4bf87ff71e2ecb9c12e16f4c13afe786",
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingFiles": 32,
+    "homepageAndCoachesUnchanged": true,
+    "previewLocalFiles": 350,
+    "publishedInventoryFiles": 351,
+    "platformGeneratedConfigFiles": 1,
+    "existingHtmlDeliveryTransforms": 26,
+    "deliveryTransformsMatchPreviousProduction": true,
+    "plannerGatewayAndWorkbookUnchanged": true
+  },
+  "verification": {
+    "frontend": {
+      "tests": 893,
+      "files": 68,
+      "result": "passed"
+    },
+    "backend": {
+      "tests": 196,
+      "result": "passed"
+    },
+    "typeScript": "passed",
+    "insightsRulesAssertions": 216,
+    "existingPersonalizedRulesAssertions": 205,
+    "actualFirestoreSdkIntegrationTests": 7,
+    "releaseToolTests": 19,
+    "reportingImportTests": 3,
+    "previewFilesVerified": 350,
+    "applicationRoutesVerified": 8,
+    "liveApi": "Admin global scope, manager organization/team scope, canonical filters, 25/11 pagination, checkpoint totals and denial checks passed",
+    "browser": "Fresh hosted admin and manager sign-ins; four views; all four teams and Daniel six; chart filters, dates, return context and 390px layout; production smoke; no browser errors",
+    "limits": "Assigned coach and revoked-membership cases use synthetic fixtures. Physical iPhone, Xcode compilation and TestFlight validation remain for Taiyo. Source snapshots and current authorization are checked; Firestore/Storage events are asynchronous.",
+    "futureMarketingBuild": "Passed: ordinary production build preserved all 318 published application files"
+  },
+  "mobile": {
+    "repository": "https://github.com/athelyticsOG/posetek-mobile-app",
+    "branch": "codex/expanded-insights-usage",
+    "baseCommit": "98d8a051f0580785b70610f5c1a29a5246e08bfb",
+    "commit": "4307f13b96a48c6dcc5af53e72a517f4e7773d2e",
+    "handoff": "docs/plans/INSIGHT_USAGE_HANDOFF.md",
+    "xctestCasesAuthored": 18,
+    "nativeTestsExecuted": false,
+    "staticChecks": "Passed PBX/XML/source membership and diff checks",
+    "nativePlannerPreserved": true,
+    "appOrWidgetIdentityChanged": false,
+    "testFlightUploadPerformed": false,
+    "taiyoMessaged": false
+  },
+  "rollback": {
+    "websiteDeployId": "6aabb282bcbad486db278962",
+    "disableCollection": "Set insightSettings/usage.enabled to false",
+    "backend": "Eight additive endpoints; verify current exact source/version/IAM before reverting or removing only owned endpoints",
+    "rules": "Retain the new server-only rules and TTL policies during rollback. Do not restore broad legacy rules while Insights data exists.",
+    "instructions": "docs/insights/EXPANDED_INSIGHTS_HANDOFF.md",
+    "privateFunctionReceipts": ".netlify/expanded-insights-functions-v1/",
+    "privateControlPlaneReceipts": ".netlify/expanded-insights-control-plane/"
+  }
+}

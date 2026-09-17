@@ -6,7 +6,52 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Current release: Team Insights for admins and club staff
+### Current release: Expanded Insights
+
+Deployment `6aabc66e9bcc60cc5c2ee12c` is live at https://posetek.net/insights,
+published September 17, 2026 at 4:05:05 AM PDT (`2026-09-17T11:05:05.592Z`),
+from application source `706f103`. See
+[`deployment/EXPANDED_INSIGHTS_PRODUCTION.json`](deployment/EXPANDED_INSIGHTS_PRODUCTION.json)
+and [`docs/insights/EXPANDED_INSIGHTS_HANDOFF.md`](docs/insights/EXPANDED_INSIGHTS_HANDOFF.md).
+
+Overview, Testing, Workouts and Usage share current canonical scopes, filters,
+local dates, pagination and player-return context. Verified testing uses accepted
+revisions and processing evidence; charts distinguish recording documents,
+recorded attempts, qualifying results and separate failure reports. The live
+September 16 checkpoint matches 36 athletes, 20 boys/16 girls, 16 known ages,
+10 fully/24 partially/two unrecorded, 325 documents and 244 qualified results.
+Its 101 September 16 documents overlap 23 failure reports. Different explicit
+session IDs prevent older calibration failures from disqualifying later captures.
+Workout outcomes, prescribed sets, timer coverage and elapsed estimates are
+separate from product usage. No original measurements or workouts were rewritten.
+
+Eight additive generation-1 Node 22 functions are deployed and verified. V1 remains
+available for compatibility. Server-owned version-2 projections and private
+reporting metadata use new client-denied paths. Estimated active use is athlete
+self-activity only; overlapping devices count once. Exact intervals expire after
+90 days, aggregate summaries after 24 months, and all four TTL policies are active.
+Historical absence remains Not collected. Keep these private-path rules and TTL
+policies during a website/backend rollback; old rules do not protect new data.
+
+Validation passed 893 frontend tests, 196 backend tests, TypeScript, 216 new rules
+assertions, 205 existing planner rules assertions, seven actual Firestore SDK
+integration tests and 19 release-tool tests. Fresh hosted admin/manager sessions,
+four teams, Daniel's six players, filters, date modes, pagination, context return,
+390px layouts and production smoke passed with no browser errors. All 350 local
+files match the 351-file production inventory (one platform configuration file);
+26 inherited HTML delivery transforms match prior production. The homepage,
+Coaches page and 30 marketing assets are preserved. The new application baseline
+contains 318 files.
+
+Native usage is prepared and pushed at mobile commit
+`4307f13b96a48c6dcc5af53e72a517f4e7773d2e` on
+`codex/expanded-insights-usage`; original local mobile edits were preserved.
+Eighteen XCTest cases and a shared scheme are supplied, but Xcode compilation,
+device validation and TestFlight upload remain for Taiyo's Mac. No invitation or
+message was sent to him. The native planner and existing app/widget identities
+remain unchanged. The workbook and personalized gateway are unchanged.
+
+### Previous release: Team Insights for admins and club staff
 
 Deployment `6aabb282bcbad486db278962` is live at https://posetek.net, published
 September 17, 2026 at 2:31:39 AM PDT (`2026-09-17T09:31:39.235Z`), from source
@@ -36,7 +81,7 @@ signed-out requests were denied. Hosted admin and manager sign-ins, player links
 return context and 390px/26-week layouts passed. Coach restrictions and revocation
 use synthetic fixtures. The exact preview was promoted; 302 local files match the
 303-file published inventory. The homepage/Coaches page and 30 marketing assets
-remain byte-for-byte preserved. The current application baseline is 270 files.
+remain byte-for-byte preserved. That release's application baseline contains 270 files.
 
 ### Previous release: Vacaville account hierarchy and personalized web planning
 

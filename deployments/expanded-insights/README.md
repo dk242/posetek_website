@@ -30,14 +30,18 @@ in Git. The helper reads that session; it never prints or copies its token.
 
 ```powershell
 $releaseDir = '.netlify/expanded-insights-release-YYYYMMDDTHHMMSSZ'
-$credentialFile = '.netlify/expanded-insights-control-plane/owner-session.json'
+$credentialFile = '.netlify/owner-session.json'
 python -B deployments/expanded-insights/prepare.py --mode prepare --run-dir $releaseDir --credential-file $credentialFile
 npm --prefix "$releaseDir/source" ci --ignore-scripts
-firebase deploy --project kickai-69dd0 --config "$releaseDir/firebase.json" --only functions:expanded-insights --non-interactive
+$env:FUNCTIONS_DISCOVERY_TIMEOUT = '60'
+firebase deploy --project kickai-69dd0 --config "$releaseDir/firebase.json" --only functions:expanded-insights --non-interactive --force
 python -B deployments/expanded-insights/prepare.py --mode verify --run-dir $releaseDir --credential-file $credentialFile
 ```
 
 Use only `--only functions:expanded-insights` with the generated configuration.
+The 60-second discovery timeout allows this bundle's dependencies to initialize.
+`--force` acknowledges the new event functions' reviewed retry policies during a
+noninteractive deployment; keep it restricted to this exact eight-function scope.
 Do not use a project-wide `--only functions` deployment or the root Firebase
 configuration for this release. The generated codebase exposes exactly:
 
@@ -56,6 +60,13 @@ preparation; they lack the complete definition and IAM checks.
 
 Verification downloads each deployed version and checks every bundled source byte,
 the absence of unexpected files, and the unchanged prepared Firebase configuration.
+The Firebase CLI may append `.runtimeconfig.json` during upload. The verifier
+accepts it only when its complete JSON is exactly `firebase.projectId` and
+`firebase.storageBucket` with this release's expected project and bucket. Extra
+fields, duplicate keys, differing values and oversized content fail verification.
+Its SHA-256 and byte count are recorded without copying configuration values into
+the sanitized verification metadata. The ten prepared source-file hashes remain
+unchanged.
 It checks ACTIVE Node 22 endpoints, execution timeouts, memory and maximum instance
 counts, exact event resource/type/service/retry policy, callable labels, expected
 HTTPS URLs, public ingress and unconditional `allUsers` invoker access. Public

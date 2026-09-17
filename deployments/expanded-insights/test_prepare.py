@@ -17,11 +17,12 @@ class FakeApi:
     def inventory(self): return deepcopy(self.rows)
     def source(self, endpoint, version): return self.archives[endpoint]
     def iam(self, endpoint): return deepcopy(self.policies.get(endpoint, {'bindings': [], 'etag': 'fixture'}))
-    def deployed(self, run, extra=None):
+    def deployed(self, run, extra=None, runtime_config=None):
         data = io.BytesIO()
         with zipfile.ZipFile(data, 'w') as archive:
             for path in (run / 'source').iterdir(): archive.writestr(path.name, path.read_bytes())
             if extra: archive.writestr(extra, 'unexpected')
+            if runtime_config is not None: archive.writestr('.runtimeconfig.json', runtime_config)
         for name in release.ENDPOINTS:
             definition = release.expected_definitions()[name]
             row = {'name': release.PARENT + '/functions/' + name, 'status': 'ACTIVE', 'entryPoint': name, 'runtime': 'nodejs22', 'versionId': '1',
@@ -60,6 +61,39 @@ class ReleaseTests(unittest.TestCase):
     def test_refuses_unexpected_published_file(self):
         self.api.deployed(self.run, 'private.json')
         with self.assertRaisesRegex(RuntimeError, 'Unexpected file'): release.verify(self.run, self.api)
+    def test_accepts_only_expected_cli_runtime_config_and_records_its_hash(self):
+        data = json.dumps({'firebase': {'storageBucket': release.BUCKET, 'projectId': release.PROJECT}}, indent=2).encode()
+        self.api.deployed(self.run, runtime_config=data)
+        original_manifest = (self.run / 'manifest.json').read_bytes()
+        with contextlib.redirect_stdout(io.StringIO()): release.verify(self.run, self.api)
+        receipt = release.read(self.run / 'verified.json')
+        for row in receipt['functions'].values():
+            self.assertEqual(row['runtimeConfig'], {'present': True, 'sha256': release.sha(data),
+                'bytes': len(data), 'schema': 'firebase-project-and-bucket'})
+        self.assertEqual((self.run / 'manifest.json').read_bytes(), original_manifest)
+    def test_refuses_extra_values_and_secrets_in_cli_runtime_config(self):
+        allowed = {'firebase': {'projectId': release.PROJECT, 'storageBucket': release.BUCKET}}
+        values = [dict(allowed, secret='fixture-secret'),
+                  {'firebase': dict(allowed['firebase'], secret='fixture-secret')},
+                  {'firebase': dict(allowed['firebase'], projectId='other-project')},
+                  {'firebase': dict(allowed['firebase'], storageBucket='other-bucket')},
+                  {'firebase': {'projectId': release.PROJECT}}, {}, None]
+        for value in values:
+            with self.subTest(value=value):
+                self.api.deployed(self.run, runtime_config=json.dumps(value))
+                with self.assertRaisesRegex(RuntimeError, 'Unexpected deployed runtime configuration'):
+                    release.verify(self.run, self.api)
+                self.assertFalse((self.run / 'verified.json').exists())
+    def test_refuses_duplicate_keys_malformed_and_oversized_runtime_config(self):
+        valid = json.dumps({'firebase': {'projectId': release.PROJECT, 'storageBucket': release.BUCKET}})
+        values = ['{"firebase":{"secret":"fixture-secret"},' + valid[1:],
+                  valid.replace('"projectId":', '"projectId":"fixture-secret","projectId":'),
+                  '{invalid', b'\xff', ' ' * 4097]
+        for value in values:
+            with self.subTest(value=value[:40]):
+                self.api.deployed(self.run, runtime_config=value)
+                with self.assertRaisesRegex(RuntimeError, 'runtime configuration'):
+                    release.verify(self.run, self.api)
     def test_refuses_source_mismatch(self):
         self.api.deployed(self.run)
         data = io.BytesIO()

@@ -58,6 +58,24 @@ def read(path): return json.loads(Path(path).read_text(encoding='utf-8-sig'))
 def write(path, data): Path(path).write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
 def require(ok, message):
     if not ok: raise RuntimeError(message)
+def validate_runtime_config(data):
+    """Allow only the non-secret Firebase config appended by the CLI upload."""
+    require(len(data) <= 4096, 'Deployed runtime configuration exceeds its bound')
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, 'Duplicate key in deployed runtime configuration')
+            result[key] = value
+        return result
+    try:
+        config = json.loads(data.decode('utf-8'), object_pairs_hook=unique_object)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise RuntimeError('Invalid deployed runtime configuration') from None
+    require(config == {'firebase': {'projectId': PROJECT, 'storageBucket': BUCKET}},
+            'Unexpected deployed runtime configuration')
+    return {'present': True, 'sha256': sha(data), 'bytes': len(data),
+            'schema': 'firebase-project-and-bucket'}
+
 def private(path):
     path = Path(path).resolve()
     require(path.is_relative_to(ROOT / '.netlify'), 'Artifacts must be inside ignored .netlify')
@@ -164,16 +182,21 @@ def verify(run, api):
         after_iam[endpoint] = policy
         definition = validate_definition(endpoint, row, policy)
         archive = api.source(endpoint, row['versionId'])
+        runtime_config = {'present': False}
         with zipfile.ZipFile(io.BytesIO(archive)) as z:
             names = [name for name in z.namelist() if not name.endswith('/')]
             require(len(names) == len(set(names)), 'Duplicate files in deployed archive')
             require(set(manifest['files']).issubset(names), 'Required source absent from deployed archive')
-            require(set(names).issubset(set(manifest['files']) | {'.firebaseignore'}), 'Unexpected file in deployed archive')
+            require(set(names).issubset(set(manifest['files']) | {'.firebaseignore', '.runtimeconfig.json'}), 'Unexpected file in deployed archive')
             for name, expected in manifest['files'].items():
                 require(z.getinfo(name).file_size == expected['bytes'] and sha(z.read(name)) == expected['sha256'], 'Deployed source differs: ' + name)
             if '.firebaseignore' in names: require(z.read('.firebaseignore') == FIREBASE_IGNORE, 'Deployed ignore configuration differs')
+            if '.runtimeconfig.json' in names:
+                require(z.getinfo('.runtimeconfig.json').file_size <= 4096, 'Deployed runtime configuration exceeds its bound')
+                runtime_config = validate_runtime_config(z.read('.runtimeconfig.json'))
         results[endpoint] = {'versionId': row['versionId'], 'sourceSha256': sha(archive), 'status': row['status'],
-                             'definition': definition, 'iamSha256': sha(json.dumps(policy, sort_keys=True).encode())}
+                             'definition': definition, 'iamSha256': sha(json.dumps(policy, sort_keys=True).encode()),
+                             'runtimeConfig': runtime_config}
     require(api.inventory() == after, 'Function inventory changed during verification')
     require(all(api.iam(endpoint) == policy for endpoint, policy in after_iam.items()), 'Function IAM changed during verification')
     write(run / 'after.json', after)

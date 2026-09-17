@@ -1,5 +1,10 @@
 # Expanded PoseTek Insights
 
+Live September 17, 2026 at 4:05:05 AM PDT, deployment
+`6aabc66e9bcc60cc5c2ee12c`. The
+[production receipt](../../deployment/EXPANDED_INSIGHTS_PRODUCTION.json) records
+the verified artifact, backend versions, live reconciliation and recovery state.
+
 The `/insights` application route expands Taiyo's dashboard into Overview,
 Testing, Workouts and Usage. All four share the current canonical organization,
 team, dates and demographic filters. Administrators may select every canonical
@@ -129,3 +134,25 @@ coaches page and unrelated routes. A normal marketing-only build does not ship
 application changes. After promotion, update `deployment/homepage-baseline.json`
 from that exact production inventory and verify the ordinary marketing build
 preserves it. Do not promote a different rebuild than the tested preview.
+
+## Recovery order
+
+Disable `insightSettings/usage.enabled` if collection needs to stop. Restore the
+previous verified website deployment `6aabb282bcbad486db278962` when reverting
+the interface, and reconcile the preservation baseline to the restored artifact.
+The eight additive functions can remain available for existing clients during
+recovery. Their removal or replacement requires the exact version/source/IAM
+checks in the scoped release guide.
+
+Keep the new server-only Firestore restrictions and TTL policies even when the
+website or functions are rolled back. **Do not restore the old ruleset while
+Insights data exists**: its legacy fallback rules do not protect the new private
+collections. The rules change only closes access to new server-owned paths and
+does not require reverting to operate the earlier website. Preserve recorded
+measurements, workout logs and private migration receipts.
+
+The reporting metadata importer has a guarded rollback mode against its private
+before-images. It refuses to replace newer reporting metadata. Projections are
+derived caches; rebuild them from current source records rather than restoring
+an old cache over newer activity. The private control-plane receipts retain the
+previous ruleset and feature-gate state for comparison, not for a blanket restore.
