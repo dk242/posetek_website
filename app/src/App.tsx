@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import UsageTracking from "./lib/insight-usage/UsageTracking";
 
 const HomePage = lazy(() => import("./pages/home/HomePage"));
 const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
@@ -31,6 +32,7 @@ function Fallback() {
 export default function App() {
   return (
     <BrowserRouter>
+      <UsageTracking />
       <Suspense fallback={<Fallback />}>
         <Routes>
           <Route path="/" element={<HomePage />} />

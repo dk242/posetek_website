@@ -128,7 +128,7 @@ match /players/{playerId} {
   allow read: if isPosetekAdmin();
 }
 match /players/{playerId}/{subcollection}/{document=**} {
-  allow read: if isPosetekAdmin() && !(subcollection in ["coachWorkspace", "coachMemories", "aiConversations"]);
+  allow read: if isPosetekAdmin() && !(subcollection in ["coachWorkspace", "coachMemories", "aiConversations", "insightMetadata", "insightSummaries", "insightSummaryDays"]);
 }
 // Staff test recording into an existing athlete's recording spine; never delete.
 match /players/{playerId}/{recording}/{recordId} {
@@ -595,7 +595,7 @@ match /drillCatalogMeta/{docId} {
     }
 
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2']);
+      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';
@@ -605,9 +605,9 @@ match /drillCatalogMeta/{docId} {
     }
     match /players/{pid}/{sub}/{doc=**} {
       allow read: if (!clubPlayer(pid) || visiblePlayer(pid)) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays']);
       allow write: if !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays']);
     }
 
     // Kick evidence and expert-review projections (2026-09-08).

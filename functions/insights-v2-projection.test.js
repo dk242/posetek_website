@@ -1,0 +1,138 @@
+"use strict";
+const { test } = require("node:test");
+const assert = require("node:assert/strict");
+const { FakeFirestore, HttpsError } = require("./test-support/fake-firestore");
+const { createInsightProjection, failureMatchesRep } = require("./insights-v2-projection");
+const NOW = Date.UTC(2026, 8, 17);
+function bucketFixture(values) {
+  const reads = [];
+  return { name: "example.test", reads, file(name, options) { return {
+    async getMetadata() { reads.push({ name, operation: "metadata" }); if (!Object.hasOwn(values, name)) throw Object.assign(Error("missing"), { code: 404 }); return [{ generation: "7", size: Buffer.byteLength(JSON.stringify(values[name])) }]; },
+    async download() { assert.equal(options.generation, "7"); reads.push({ name, operation: "download" }); return [Buffer.from(JSON.stringify(values[name]))]; },
+  }; } };
+}
+function fixture(extra = {}, files = {}) {
+  const db = new FakeFirestore({ "players/p": { organizationId: "club" }, "players/p/reps/r": {
+    repType: "sprint", max_velocity: 8, sessionNumber: 1, repNumber: 1, createdAt: NOW - 1, storagePath: "p/sprint/session1/kick1" }, ...extra });
+  const bucket = bucketFixture({ "p/sprint/session1/kick1/metadata.json": { resultsValid: true, processingStatus: "complete" },
+    "p/sprint/session1/kick1/reprocess_context.json": { result: { resultsValid: true, primaryMetric: 8 } }, ...files });
+  return { db, bucket, ...createInsightProjection({ db, bucket, HttpsError, now: () => NOW }) };
+}
+
+test("projection verifies generation-pinned Storage evidence and publishes only safe event facts", async () => {
+  const service = fixture();
+  const result = await service.loadInsightPlayer("p");
+  assert.equal(result.testing[0].qualified, 1); assert.equal(result.summary.recordedDocuments, 1);
+  assert.equal(service.bucket.reads.filter(r => r.operation === "download").length, 2);
+  const json = JSON.stringify(result);
+  for (const forbidden of ["storagePath", "repArtifactFolder", "metadata.json", "reprocess_context", "byEmail", "note"]) assert.ok(!json.includes(forbidden));
+  const before = service.bucket.reads.length;
+  await service.loadInsightPlayer("p"); assert.equal(service.bucket.reads.length, before);
+});
+
+test("foreign recording paths cannot trigger Storage reads or qualification", async () => {
+  const service = fixture({ "players/p/reps/r": { repType: "sprint", max_velocity: 8, storagePath: "victim/sprint/session1/kick1" } });
+  const result = await service.loadInsightPlayer("p");
+  assert.equal(result.testing[0].qualified, 0); assert.equal(service.bucket.reads.length, 0);
+});
+
+test("missing recording coordinates never borrow session one evidence", async () => {
+  const service = fixture({ "players/p/reps/r": { repType: "sprint", max_velocity: 8 } });
+  const result = await service.loadInsightPlayer("p");
+  assert.equal(result.testing[0].qualified, 0); assert.equal(service.bucket.reads.length, 0);
+});
+
+test("failure links require exact rep, artifact folder or drill/session/number tuple", () => {
+  const rep = { id: "r", repType: "sprint", sessionNumber: 2, repNumber: 3, sessionId: "session" };
+  assert.equal(failureMatchesRep({ repId: "r" }, rep, []), true);
+  assert.equal(failureMatchesRep({ repId: "older", storage: { repArtifactFolder: "p/sprint/session2/kick3" } }, rep, ["p/sprint/session2/kick3"]), false);
+  assert.equal(failureMatchesRep({ storage: { repArtifactFolder: "p/sprint/session2/kick3/" } }, rep, ["p/sprint/session2/kick3"]), true);
+  assert.equal(failureMatchesRep({ drillType: "sprint", sessionNumber: 2, repNumber: 3 }, rep, []), true);
+  assert.equal(failureMatchesRep({ repId: null, sessionDocId: "older-session", drillType: "sprint", sessionNumber: 2, repNumber: 3 }, rep, []), false);
+  assert.equal(failureMatchesRep({ repId: "r", sessionDocId: "older-session" }, rep, []), true);
+  assert.equal(failureMatchesRep({ drillType: "jump", sessionNumber: 2, repNumber: 3 }, rep, []), false);
+  assert.equal(failureMatchesRep({ repNumber: 3 }, rep, []), false);
+});
+
+test("owner-scoped failure without repId can link through explicit recording coordinates", async () => {
+  const service = fixture({ "failureCases/f": { playerDocumentID: "p", repId: null, drillType: "sprint", sessionNumber: 1, repNumber: 1, createdAt: NOW } });
+  assert.equal((await service.loadInsightPlayer("p")).testing[0].qualified, 0);
+  assert.ok(service.db.queries.some(q => q.path === "failureCases" && q.filters[0][0] === "playerDocumentID"));
+});
+
+const fs = require("node:fs"), path = require("node:path");
+const privateDirectory = path.resolve(__dirname, "../.netlify/vacaville-sep16-repair");
+test("private full projection and scoped API reconcile approved history including linked failures", {
+  skip: !["completion-evidence.json", "audit-input.json"].every(name => fs.existsSync(path.join(privateDirectory, name))),
+}, async () => {
+  const { createInsightsV2 } = require("./insights-v2");
+  const evidence = JSON.parse(fs.readFileSync(path.join(privateDirectory, "completion-evidence.json")));
+  const audit = JSON.parse(fs.readFileSync(path.join(privateDirectory, "audit-input.json")));
+  const seed = { "organizations/fixture": { schemaVersion: 2, name: "Fixture" } }, files = {};
+  for (const player of evidence.roster) seed[`players/${player.id}`] = { organizationId: "fixture" };
+  for (const rep of evidence.reps) {
+    seed[`players/${rep.playerId}/reps/${rep.id}`] = rep;
+    if (rep.adminRevision) seed[`players/${rep.playerId}/reps/${rep.id}/revisions/${rep.adminRevision.revisionId}`] = { revisionId: rep.adminRevision.revisionId, fields: rep };
+  }
+  for (const failure of audit.failureCases) seed[`failureCases/${failure.id}`] = { ...failure, playerDocumentID: failure.canonicalPlayerId || failure.playerDocumentID };
+  for (const artifact of Object.values(evidence.artifacts)) for (const value of Object.values(artifact)) {
+    if (value.state === "read" && value.value !== null) files[value.objectName] = value.value;
+  }
+  const bucket = bucketFixture(files); bucket.name = evidence.bucket;
+  const service = createInsightsV2({ db: new FakeFirestore(seed), bucket, HttpsError, now: () => Date.parse(evidence.cutoffExclusive),
+    usageReader: async () => ({ complete: true, collected: false, webCollected: false, iosCollected: false, totalMillis: 0, webMillis: 0,
+      iosMillis: 0, overlapMillis: 0, featureMillis: {}, days: [], activeDays: 0, returning: false, latestAtMillis: null }) });
+  for (const player of evidence.roster) await service.rebuildInsightPlayer(player.id);
+  const result = await service.getClubInsightsV2({ scope: { kind: "global" } }, { uid: "fixture-admin", email: "fixture@posetek.net", emailVerified: true });
+  assert.equal(result.roster.included, 36); assert.equal(result.testing.recordedDocuments, 325);
+  assert.equal(result.testing.distinctAttempts, 298); assert.equal(result.testing.qualifyingTests, 244);
+  assert.equal(result.testing.duplicateDocuments, 27); assert.equal(result.testing.noResultDocuments, 54); assert.equal(result.testing.needsReview, 0);
+  assert.equal(result.testing.failureReports, 23);
+  assert.equal(result.testing.linkedFailureReports + result.testing.unmatchedFailureReports, 23);
+  assert.deepEqual(result.testing.statuses.map(row => row.count), [10, 24, 0, 2]);
+});
+
+const diagnosisPath = path.resolve(__dirname, "../.netlify/expanded-insights-control-plane/qualification-diagnosis.json");
+test("private live calibration failures from different session documents never invalidate current success", { skip: !fs.existsSync(diagnosisPath) }, () => {
+  const { qualifyRep, drillOf } = require("./insights-v2-qualification");
+  const { storageFolderCandidates } = require("./athlete-storage-paths");
+  const diagnosis = JSON.parse(fs.readFileSync(diagnosisPath));
+  let reports = 0, successes = 0;
+  for (const row of diagnosis.candidates) {
+    const folders = storageFolderCandidates(row.playerId, drillOf(row.rep), row.rep, "kickai-69dd0.firebasestorage.app");
+    const failures = row.evidence.failures.filter(failure => failureMatchesRep(failure, row.rep, folders));
+    reports += row.evidence.failures.length;
+    assert.equal(failures.length, 0, "Prior sessions must not link through reused recording coordinates");
+    successes += qualifyRep(row.rep, { ...row.evidence, failures }).qualified;
+  }
+  assert.equal(reports, 7); assert.equal(successes, 5);
+});
+
+test("dirty rebuild cleans only previous published pages and player deletion clears projections", async () => {
+  const service = fixture();
+  const first = await service.rebuildInsightPlayer("p");
+  await service.invalidateInsightPlayer("p");
+  const second = await service.rebuildInsightPlayer("p");
+  assert.notEqual(first.revisionId, second.revisionId);
+  for (const id of first.dayIds) assert.equal(service.db.snapshot(`players/p/insightSummaryDays/${id}`), undefined);
+  for (const id of second.dayIds) assert.ok(service.db.snapshot(`players/p/insightSummaryDays/${id}`));
+  service.db.docs.delete("players/p");
+  assert.equal((await service.rebuildInsightPlayer("p")).deleted, true);
+  assert.ok(![...service.db.docs.keys()].some(key => key.includes("insightSummary")));
+});
+
+test("missing immutable page is repaired rather than returning a partial or endlessly failing report", async () => {
+  const service = fixture();
+  const first = await service.rebuildInsightPlayer("p");
+  service.db.docs.delete(`players/p/insightSummaryDays/${first.dayIds[0]}`);
+  const recovered = await service.loadInsightPlayer("p");
+  assert.notEqual(recovered.summary.revisionId, first.revisionId);
+  assert.equal(recovered.testing.length, 1);
+});
+
+test("metadata transport failure cannot publish an unverified partial summary", async () => {
+  const service = fixture();
+  service.bucket.file = () => ({ async getMetadata() { throw Object.assign(Error("unavailable"), { code: 503 }); } });
+  await assert.rejects(service.rebuildInsightPlayer("p"), /unavailable/);
+  assert.equal(service.db.snapshot("players/p/insightSummaries/current"), undefined);
+});

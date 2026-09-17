@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { auth } from '../../../lib/firebase';
 import { blockDoseLine } from '../../../lib/contracts/drillV2';
 import { blockLogRow, skippedLogRow, SKIP_REASONS, endReasonFor, domainExposures } from '../lib/training';
@@ -21,6 +21,12 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
   const [now, setNow] = useState(() => Date.now()), [index, setIndex] = useState(() => Math.max(0, blocks.findIndex(b => !log?.blocks?.some((r: Row) => r.blockId === b.blockId && ['done', 'skipped'].includes(r.status)))));
   const [summary, setSummary] = useState(false), [skip, setSkip] = useState(false), [chat, setChat] = useState(''), [pain, setPain] = useState(false);
   const seconds = Math.floor(elapsed(clock, now));
+  const usageElement = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const report = () => window.dispatchEvent(new CustomEvent('posetek:usage-workout', { detail: { active: !!usageElement.current?.getClientRects().length && !preview && !summary && !chat && !log?.endedAt && reconcileClock(clock, Date.now()).runningSince !== null } }));
+    report(); const timer = setInterval(report, 500);
+    return () => { clearInterval(timer); window.dispatchEvent(new CustomEvent('posetek:usage-workout', { detail: { active: false } })); };
+  }, [clock, preview, summary, chat, log?.endedAt]);
   useEffect(() => { const id = setInterval(() => { const time = Date.now(); setNow(time); setClock(c => reconcileClock(c, time)); }, 500); return () => clearInterval(id); }, []);
   useEffect(() => { if (!preview) { try { localStorage.setItem(key, JSON.stringify(clock)); } catch { /* optional local clock */ } } }, [clock, key, preview]);
   const pause = () => {
@@ -59,7 +65,7 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
   };
   if (log?.endedAt) return <section className="portal-card"><h2>Workout saved</h2><p>This workout has ended.</p><button className="primary-cta" onClick={onExit}>Back to training</button></section>;
   if (chat) return <section><button className="text-button" onClick={() => setChat('')}>Back to workout</button><h2>Ask about this drill</h2><CoachChat key={block.blockId} playerId={playerId} preview={preview} capability="coaching_chat" initialText={chat.slice(0, 1900)} /></section>;
-  return <section className="player-guided" onClickCapture={() => setClock(c => interactClock(c, Date.now()))}>
+  return <section ref={usageElement} className="player-guided" onClickCapture={() => setClock(c => interactClock(c, Date.now()))}>
     <header className="player-workout-bar"><button aria-label="Back to training" onClick={() => { pause(); onExit(); }}>←</button><strong>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</strong><button onClick={() => clock.runningSince ? pause() : setClock(c => resumeClock(c, Date.now()))}>{clock.runningSince ? 'Pause' : 'Resume'}</button><button onClick={() => { pause(); setSummary(true); }}>End</button></header>
     {store.error && <p className="player-error" role="alert">{store.error} Your last confirmed progress is preserved. Retry the action.</p>}
     {store.saving && <p role="status">Saving progress…</p>}

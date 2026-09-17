@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <div className="page-header">
           <div className="eyebrow">Legal</div>
           <h1>Privacy Policy</h1>
-          <p className="last-updated">Last updated: March 4, 2026</p>
+          <p className="last-updated">Last updated: September 17, 2026</p>
         </div>
 
         <section>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             <li><strong>Performance data</strong> — session recordings, biomechanical metrics, rep data, and AI-generated analysis results</li>
             <li><strong>Payment information</strong> — for Premium purchases, payment is processed entirely by Stripe. PoseTek does not store your card number or banking details</li>
             <li><strong>Interest signup data</strong> — name, email, and position submitted through our Player Interest Signup form</li>
-            <li><strong>Usage data</strong> — pages visited, features used, and general interaction data collected through Firebase Analytics</li>
+            <li><strong>Usage data</strong> — estimated active time and feature categories in the signed-in website and supported iPhone builds, associated with the signed-in athlete. Collection pauses when the app is in the background or the screen is idle; progressing foreground videos and guided workouts can remain active. Usage reports do not contain page addresses, typed text, or screen recordings.</li>
           </ul>
         </section>
 
@@ -56,6 +56,7 @@ export default function PrivacyPage() {
             <li>Send email communications related to your analysis results and account activity</li>
             <li>Process Premium payments securely through Stripe</li>
             <li>Improve our platform and features based on usage patterns</li>
+            <li>Show testing coverage, workout participation, and estimated active use to PoseTek administrators and the athlete’s currently authorized organization managers and coaches</li>
             <li>Respond to support inquiries</li>
           </ul>
           <p>We do not sell your personal information to third parties.</p>
@@ -75,6 +76,7 @@ export default function PrivacyPage() {
           <h2><span className="section-num">5</span> Data Retention</h2>
           <p>We retain your account and performance data for as long as your account is active or as needed to provide our services. You may request deletion of your account and associated data at any time by contacting us.</p>
           <p>Payment records are retained as required for financial and legal compliance purposes.</p>
+          <p>Detailed active-use submissions are retained for 90 days and daily usage summaries for 24 months. Older app builds and dates before collection began may have no usage measurements.</p>
         </section>
 
         <section>

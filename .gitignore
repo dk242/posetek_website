@@ -3,6 +3,7 @@
 .firebase/
 firebase-debug.log*
 node_modules/
+__pycache__/
 /dist/
 /production-dist/
 /marketing-dist/

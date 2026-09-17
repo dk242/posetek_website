@@ -6,6 +6,8 @@ const { playerSegment, storageFolderCandidates } = require("./athlete-storage-pa
 
 admin.initializeApp();
 const db = admin.firestore();
+// Additive reporting and engagement endpoints; existing callables stay intact.
+Object.assign(exports, require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller));
 const { createPlayerInvitations } = require("./player-invitations");
 const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 exports.ensurePlayerSignupInvitation = functions.https.onCall((data, context) => playerInvitations.ensure(data?.playerId, requireCaller(context), { rotate: data?.rotate === true }));
