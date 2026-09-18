@@ -14,7 +14,7 @@ BALL={'dribbling','passing','receiving','shooting'}
 # A soccer workout should still favour a technical majority whenever legal doses
 # permit it; this is a composition target, not invented curriculum or extra volume.
 BALL_WORK_TARGET_SHARE=.55
-DOMAIN_LABELS={'plyometrics':'jump and landing','dribbling':'dribbling','passing':'passing',
+DOMAIN_LABELS={'plyometrics':'jumping','dribbling':'dribbling','passing':'passing',
                'receiving':'first touch','shooting':'shooting','speed':'speed','agility':'agility','strength':'strength'}
 
 
@@ -24,15 +24,11 @@ def _joined(items):
 
 
 def describe_intent(selected,catalog):
-    """Describe actual doses and positions; never imply equal or absent themes."""
+    """List actual domain minutes and positions without inferring a training emphasis."""
     minutes=Counter()
     for did,dose in selected:minutes[catalog[did]['domain']]+=dose['estimatedMinutes']
     domains=sorted(minutes,key=lambda d:(-minutes[d],d))
-    leaders=[d for d in domains if minutes[d]==minutes[domains[0]]]
-    intent=('Shared lead focus: ' if len(leaders)>1 else 'Lead focus: ')
-    intent+=_joined(f'{DOMAIN_LABELS[d]} ({minutes[d]} min)' for d in leaders)+'.'
-    support=[f'{DOMAIN_LABELS[d]} ({minutes[d]} min)' for d in domains if d not in leaders]
-    if support:intent+=' Supporting work: '+_joined(support)+'.'
+    intent='Time allocation: '+_joined(f'{DOMAIN_LABELS[d]} ({minutes[d]} min)' for d in domains)+'.'
     ordered=[catalog[did]['domain'] for did,_ in selected]
     # State only quality work that really opens this workout. Strength is a
     # separate domain, so its location is described separately below.
