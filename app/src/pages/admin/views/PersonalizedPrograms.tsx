@@ -231,7 +231,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
     <header className="personalized-heading"><span className="eyebrow">Personalized training</span><h1>{role === "athlete" ? "Your next training plan" : "Plans shaped by each player"}</h1>
       <p>Turn testing and training goals into a practical schedule. Review why each exercise is included and how to check progress, then choose <strong>Use this plan</strong> to make it active.</p></header>
     <nav className="personalized-steps" aria-label="Plan building steps"><ol>
-      <li><a href="#planner-evidence"><span>1</span><strong>Evidence</strong><small>Review the player</small></a></li>
+      <li><a href="#planner-evidence"><span>1</span><strong>Evidence</strong><small>{role === "athlete" ? "Review your results" : "Review the player"}</small></a></li>
       <li><a href="#planner-schedule"><span>2</span><strong>Schedule</strong><small>Set goals & time</small></a></li>
       <li><a href="#planner-review"><span>3</span><strong>Review</strong><small>See the exercises & why</small></a></li>
       <li><a href="#planner-use"><span>4</span><strong>Use plan</strong><small>Make the reviewed plan active</small></a></li>
@@ -240,7 +240,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
     {message && <div className="personalized-notice" role="status">{message}<button className="quiet-button" disabled={busy} onClick={() => setRetry(r => r + 1)}>Refresh connection</button></div>}
     {limited && <p className="personalized-notice">This roster reached the service display limit. Choose a smaller organization before selecting a batch.</p>}
     <div className="personalized-setup">
-      <section className="personalized-card" id="planner-evidence"><h2>1. Players & evidence</h2>
+      <section className="personalized-card" id="planner-evidence"><h2>{role === "athlete" ? "1. Your results & evidence" : "1. Players & evidence"}</h2>
         {role !== "athlete" && <><div className="personalized-fields"><label>Organization<select value={orgId || initial.current.orgId} onChange={e => { setTeamId(""); setOrgId(e.target.value); }} disabled={busy}>
           {!orgId && !initial.current.orgId && <option value="">Independent player</option>}{orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
           <label>Team<select value={teamId} onChange={e => { setTeamId(e.target.value); setSelected(new Set()); }}><option value="">All teams</option>{teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label></div>
@@ -278,8 +278,8 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         </div>}
       </section>
       <section className="personalized-card" id="planner-schedule"><h2>2. Goals & training schedule</h2>
-        <p className="personalized-meta">Choose a realistic weekly commitment. The draft will show how that time supports the player’s priorities.</p>
-        <p className="personalized-meta">Leave the goals unchecked to let the player’s test results guide priorities. Select up to two when you want additional coaching emphasis.</p>
+        <p className="personalized-meta">{role === "athlete" ? "Choose a weekly commitment that works for you. Your draft will show how that time supports your priorities." : "Choose a realistic weekly commitment. The draft will show how that time supports the player’s priorities."}</p>
+        <p className="personalized-meta">{role === "athlete" ? "Leave goals unchecked to let your results guide the plan, or choose up to two areas you want to focus on." : "Leave the goals unchecked to let the player’s test results guide priorities. Select up to two when you want additional coaching emphasis."}</p>
         <fieldset><legend>Optional coaching goals</legend><div className="personalized-equipment">{PLANNER_GOALS.map(goal => <label key={goal.id}><input type="checkbox" checked={goals.includes(goal.id)} disabled={busy || (!goals.includes(goal.id) && goals.length >= 2)} onChange={() => setGoals(old => old.includes(goal.id) ? old.filter(g => g !== goal.id) : [...old, goal.id])} />{goal.label}</label>)}</div></fieldset>
         <p className="personalized-meta">Speed focuses on straight-line running. Agility focuses on braking and changing direction.</p>
         <>
@@ -295,11 +295,11 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         <label>Minutes per session<select value={intake.minutesPerSession} onChange={e => setIntake({ ...intake, minutesPerSession: +e.target.value })}>{MINUTES_PER_SESSION.map(n => <option key={n}>{n}</option>)}</select></label>
         <label>Training setting<select value={intake.setting} onChange={e => setIntake({ ...intake, setting: e.target.value as typeof intake.setting })}>{SETTINGS.map(s => <option key={s} value={s}>{s === "halfAndHalf" ? "Half and half" : label(s)}</option>)}</select></label>
       </div><fieldset><legend>Available equipment</legend><div className="personalized-equipment">{EQUIPMENT_OPTIONS.map(e => <label key={e.id}><input type="checkbox" checked={intake.equipment.includes(e.id)} onChange={() => setIntake({ ...intake, equipment: intake.equipment.includes(e.id) ? intake.equipment.filter(v => v !== e.id) : [...intake.equipment, e.id] })} />{e.label}</label>)}</div></fieldset>
-        <label className="personalized-checkbox"><input type="checkbox" checked={intake.painFlag} onChange={e => setIntake({ ...intake, painFlag: e.target.checked })} />A selected player has pain requiring review</label>
-        {intake.painFlag && <p className="personalized-notice">Automated generation is paused. Review this player individually before prescribing.</p>}
+        <label className="personalized-checkbox"><input type="checkbox" checked={intake.painFlag} onChange={e => setIntake({ ...intake, painFlag: e.target.checked })} />{role === "athlete" ? "Something hurts, or I have an injury that needs review" : "A selected player has pain requiring review"}</label>
+        {intake.painFlag && <p className="personalized-notice">{role === "athlete" ? "Plan generation is paused. Talk to a parent, coach or qualified professional about the pain before continuing." : "Automated generation is paused. Review this player individually before prescribing."}</p>}
         <div className="personalized-time-budget"><strong>{intake.sessionsPerWeek * intake.minutesPerSession} minutes per week</strong><span>{intake.sessionsPerWeek} sessions × {intake.minutesPerSession} minutes · {intake.horizonWeeks} weeks</span><small>Exercise doses, rests and transitions must fit this time.</small></div>
         <p className="personalized-meta">Drills respect the player’s difficulty level and equipment. Dated results from the past 180 days inform the plan.</p>
-        <button type="button" className="primary-cta" disabled={!canGenerate} onClick={() => void generate()}>{busy ? "Submitting…" : `Generate ${selected.size || ""} draft${selected.size === 1 ? "" : "s"}`}</button>
+        <button type="button" className="primary-cta" disabled={!canGenerate} onClick={() => void generate()}>{busy ? "Submitting…" : role === "athlete" ? "Build my draft plan" : `Generate ${selected.size || ""} draft${selected.size === 1 ? "" : "s"}`}</button>
       </section>
     </div>
     {jobs.length > 0 && <section className="personalized-card"><h2>Generation & activation progress</h2><p className="personalized-meta">Each player is processed independently. Leaving this page does not cancel submitted jobs.</p>
@@ -309,8 +309,8 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         {job.error && <p role="status" className="is-error">{job.error.detail || job.error.message || "This operation failed."}</p>}
       </div>)}</div></section>}
     <section className="personalized-card personalized-review" id="planner-review"><h2>3. Review {athlete ? `— ${athlete.name}` : "a player"}</h2>
-      {athlete && <Link to={plannerPlayerDetailsLink(role, athlete, query.toString())}>Open player details & testing</Link>}
-      {!draft ? <p>Select a player and generate a draft to inspect their assessment, target coverage and workouts.</p> : <>
+      {athlete && <Link to={plannerPlayerDetailsLink(role, athlete, query.toString())}>{role === "athlete" ? "See my profile & test results" : "Open player details & testing"}</Link>}
+      {!draft ? <p>{role === "athlete" ? "Build a draft to review your exercises and why they were chosen. Your current plan stays active until you choose Use this plan." : "Select a player and generate a draft to inspect their assessment, target coverage and workouts."}</p> : <>
         <label>Saved draft<select value={draft.draftId} disabled={busy} onChange={e => { setDraftId(e.target.value); setReviewed(false); }}>{focusedDrafts.map(d => <option key={d.draftId} value={d.draftId}>{new Date(millis(d.createdAt)).toLocaleString()} · {d.status}</option>)}</select></label>
         <div className="personalized-notice"><strong>{draft.status === "activated" ? "This draft was activated." : draft.status === "discarded" ? "This draft was discarded." : "Draft — awaiting your review"}</strong><p>{draft.replacementPolicy}</p>{draft.status === "activated" && onActivated && <button className="primary-cta" onClick={onActivated}>Open training</button>}</div>
         <h3>Why this plan?</h3><p>{draft.plan.assessment.summary}</p><p>{draft.plan.assessment.inputs?.evidencePolicy?.reason}</p>
@@ -331,8 +331,8 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         <h3>Current and proposed workouts</h3><p>{!current ? "No active plan exists." : prescriptionSignature(current) === prescriptionSignature(draft.plan) ? "The executable workouts are identical. Similar needs can produce the same prescription; review the target coverage above." : "The proposed drills, doses or weekly schedule differ from the active plan."}</p>
         <div className="personalized-comparison"><WorkoutList title="Current plan" plan={current} /><WorkoutList title="Proposed draft" plan={draft.plan} /></div>
         {draft.status === "ready" && <div className="personalized-activation" id="planner-use"><h3>4. Use the reviewed plan</h3><p>Activation makes this plan available in the player’s training area on the website and through the existing mobile plan handoff. The server checks that the player’s plan and evidence are still current.</p>{stale && <p className="personalized-notice">The active plan or date has changed. Generate a fresh draft before activation.</p>}
-          <label className="personalized-checkbox"><input type="checkbox" checked={reviewed} disabled={!accessReady || !!stale || busy} onChange={e => setReviewed(e.target.checked)} />I reviewed the evidence, workouts and replacement policy for {athlete?.name}.</label>
-          <div className="personalized-row-actions"><button type="button" className="primary-cta" disabled={!accessReady || !reviewed || !!stale || busy || inFlight(focused) || !previewEnabled(config,"activate_personalized_plan")} onClick={() => void act("activate_personalized_plan")}>Use this plan for {athlete?.name}</button>
+          <label className="personalized-checkbox"><input type="checkbox" checked={reviewed} disabled={!accessReady || !!stale || busy} onChange={e => setReviewed(e.target.checked)} />{role === "athlete" ? "I reviewed my workouts and understand that using this plan replaces my active plan while keeping my history." : `I reviewed the evidence, workouts and replacement policy for ${athlete?.name}.`}</label>
+          <div className="personalized-row-actions"><button type="button" className="primary-cta" disabled={!accessReady || !reviewed || !!stale || busy || inFlight(focused) || !previewEnabled(config,"activate_personalized_plan")} onClick={() => void act("activate_personalized_plan")}>{role === "athlete" ? "Use this plan" : `Use this plan for ${athlete?.name}`}</button>
             <button type="button" className="quiet-button" disabled={!accessReady || busy || inFlight(focused) || !previewEnabled(config,"discard_personalized_plan")} onClick={() => void act("discard_personalized_plan")}>Discard draft</button></div>
         </div>}
       </>}

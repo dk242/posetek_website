@@ -4,11 +4,13 @@ import type { Row } from './execution';
 
 // Shared schedule counter serializes execution with gateway Apply. Every read
 // precedes writes, and callers publish only the transaction's confirmed result.
-export async function startPlayerWorkout(playerId: string, reviewed: Row): Promise<Row> {
+export async function startPlayerWorkout(playerId: string, reviewed: Row, onCreated?: (created: boolean) => void): Promise<Row> {
   const player = db.collection('players').doc(playerId);
   const logRef = player.collection('workoutLogs').doc(reviewed.id);
   const scheduleRef = player.collection('workoutSchedule').doc('current');
-  return db.runTransaction(async tx => {
+  let created = false;
+  const result = await db.runTransaction(async tx => {
+    created = false; // A retried transaction may find another device's committed log.
     const old = await tx.get(logRef);
     if (old.exists) { resumeWorkout(reviewed, { ...old.data(), id: old.id }); return old.data()!; }
     const plan = await tx.get(player.collection('trainingPlans').doc(reviewed.planId));
@@ -20,8 +22,11 @@ export async function startPlayerWorkout(playerId: string, reviewed: Row): Promi
     const value = initialLog(ready, firebase.firestore.Timestamp.now());
     tx.set(logRef, value);
     tx.update(scheduleRef, { revision: revision + 1, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    created = true;
     return value;
   });
+  onCreated?.(created);
+  return result;
 }
 
 export async function mutatePlayerWorkout(playerId: string, id: string, patch: (old: Row) => Row): Promise<Row> {

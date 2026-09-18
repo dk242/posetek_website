@@ -21,20 +21,29 @@ export function usePlayerWorkouts(playerId: string, planId: string | null, previ
   const current = useRef(logs); current.current = logs;
   const busy = useRef(false);
   const epoch = useRef(0);
+  const attached = useRef<string | null>(null);
   useEffect(() => {
     epoch.current++;
-    setLogs({}); setWorkouts([]); setLoaded(preview); setError(null);
-    if (preview || !planId) return;
+    const identity = `${playerId}:${preview}`;
+    if (attached.current !== identity) { current.current = {}; setLogs({}); setLoaded(preview); setError(null); attached.current = identity; }
+    if (preview) return;
     let active = true;
     const player = db.collection('players').doc(playerId);
-    const stop = player.collection('workoutLogs').where('planId', '==', planId).onSnapshot(s => {
+    // Old-plan snapshots remain executable; ad-hoc credit follows its actual date.
+    const stop = player.collection('workoutLogs').onSnapshot(s => {
       if (!active) return;
       setLogs(Object.fromEntries(s.docs.map(d => [d.id, { ...d.data(), id: d.id }]))); setLoaded(true);
     }, e => { if (active) setError(e.message); });
-    const stopWorkouts = player.collection('plannedWorkouts').where('planId', '==', planId).onSnapshot(s => {
+    return () => { active = false; epoch.current++; stop(); };
+  }, [playerId, preview]);
+  useEffect(() => {
+    setWorkouts([]);
+    if (preview || !planId) return;
+    let active = true;
+    const stopWorkouts = db.collection('players').doc(playerId).collection('plannedWorkouts').where('planId', '==', planId).onSnapshot(s => {
       if (active) setWorkouts(s.docs.map(d => ({ ...d.data(), id: d.id })));
     }, e => { if (active) setError(e.message); });
-    return () => { active = false; epoch.current++; stop(); stopWorkouts(); };
+    return () => { active = false; stopWorkouts(); };
   }, [playerId, planId, preview]);
 
   const run = async <T,>(action: () => Promise<T>): Promise<T> => {
@@ -52,11 +61,12 @@ export function usePlayerWorkouts(playerId: string, planId: string | null, previ
     const token = epoch.current;
     if (!loaded) throw new Error('Wait for workout history to load, then try again.');
     let saved: Row;
-    if (preview) saved = current.current[reviewed.id] || initialLog(reviewed, new Date());
-    else saved = await startPlayerWorkout(playerId, reviewed);
+    let timerStartedHere = false;
+    if (preview) { timerStartedHere = !current.current[reviewed.id]; saved = current.current[reviewed.id] || initialLog(reviewed, new Date()); }
+    else saved = await startPlayerWorkout(playerId, reviewed, created => { timerStartedHere = created; });
     if (epoch.current !== token) throw new Error('The selected player changed.');
     remember(reviewed.id, saved, token);
-    return resumeWorkout(reviewed, { ...saved, id: reviewed.id });
+    return { ...resumeWorkout(reviewed, { ...saved, id: reviewed.id }), timerStartedHere };
   });
   const mutate = (id: string, patch: (old: Row) => Row) => run(async () => {
     const token = epoch.current;

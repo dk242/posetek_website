@@ -4,6 +4,19 @@ import { findWorkout, localDayString, planLogId, weekWindow } from '../../../lib
 
 export type Row = Record<string, any>;
 
+/** Review and resume the stored prescription even after its parent plan changes. */
+export function savedWorkout(log: Row): Row | null {
+  if (!log.workoutSnapshot || !Array.isArray(log.workoutSnapshot.blocks)) return null;
+  return { ...log.workoutSnapshot, ...log, blocks: log.workoutSnapshot.blocks };
+}
+
+export function unfinishedWorkout(logs: Row[]): Row | null {
+  const millis = (v: any) => v?.toMillis?.() ?? new Date(v).getTime() ?? 0;
+  const log = logs.filter(l => l.schemaVersion === 2 && !l.endedAt && l.workoutSnapshot?.blocks?.length)
+    .sort((a, b) => (millis(a.startedAt) || 0) - (millis(b.startedAt) || 0))[0];
+  return log ? savedWorkout(log) : null;
+}
+
 export function executable(plan: Row, workout: Row, weekNumber: number, source = 'plan'): Row {
   const workoutId = String(workout.workoutId || workout.id);
   return { ...workout, id: source === 'plan' ? planLogId(plan.id, workoutId) : workoutId,

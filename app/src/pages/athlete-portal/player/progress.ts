@@ -10,7 +10,9 @@ export function weekProgress(plan: Row, week: Row | undefined, logs: Row[], reps
   const within = (v: any) => { const d = date(v); if (!window || !Number.isFinite(d.getTime())) return false; const day = localDayString(d, plan.timezone); return day >= window.start && day < window.end; };
   const slotIds = new Set((week?.workouts || []).map((w: Row) => w.workoutId));
   const unique = <T extends Row>(rows: T[]): T[] => [...new Map(rows.map(r => [r.id, r])).values()];
-  const included = unique(logs).filter(l => l.planId === plan.id && (l.source === 'plan' ? slotIds.has(l.workoutId) && l.id === planLogId(plan.id, l.workoutId) : l.source === 'adhoc' && within(l.startedAt)));
+  const included = unique(logs).filter(l => l.source === 'plan'
+    ? l.planId === plan.id && slotIds.has(l.workoutId) && l.id === planLogId(plan.id, l.workoutId)
+    : l.source === 'adhoc' && within(l.startedAt));
   const exposures: Record<string, number> = {}, minutes: Record<string, number> = {}, drillDone: Record<string, number> = {};
   const linked = new Set<string>();
   for (const log of included) {
@@ -32,7 +34,11 @@ export function weekProgress(plan: Row, week: Row | undefined, logs: Row[], reps
     if (covered.has(key) || free.has(key)) continue;
     free.add(key); exposures[domain] = (exposures[domain] || 0) + 1;
   }
-  const domains = [...new Set([...(week?.targets || []).map((t: Row) => t.domain), ...Object.keys(exposures)])].map(domain => ({ domain, done: exposures[domain] || 0, target: (week?.targets || []).find((t: Row) => t.domain === domain)?.exposures || 0, minutes: minutes[domain] || 0 }));
+  const domains = [...new Set<string>([...(week?.targets || []).map((t: Row) => t.domain), ...(week?.allocations || []).map((a: Row) => a.domain), ...Object.keys(exposures)])].map(domain => {
+    const targetMinutes = Math.max(0, Number((week?.allocations || []).find((a: Row) => a.domain === domain)?.minutes) || 0);
+    return { domain, done: exposures[domain] || 0, target: (week?.targets || []).find((t: Row) => t.domain === domain)?.exposures || 0,
+      minutes: minutes[domain] || 0, targetMinutes, minutesRemaining: Math.max(0, targetMinutes - (minutes[domain] || 0)) };
+  });
   const drillTargets: Record<string, number> = {};
   for (const w of week?.workouts || []) for (const id of new Set<string>((w.blocks || []).map((b: Row) => b.drillId))) drillTargets[id] = (drillTargets[id] || 0) + 1;
   return { domains, minutes: Object.values(minutes).reduce((a, b) => a + b, 0), drillDone, drillTargets };

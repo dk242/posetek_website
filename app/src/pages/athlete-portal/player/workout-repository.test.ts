@@ -39,16 +39,21 @@ beforeEach(() => {
 
 describe('acknowledged player workout transactions', () => {
   it('creates a snapshot and increments the shared schedule together under the player document ID', async () => {
-    const log = await startPlayerWorkout('player-doc', reviewed);
+    const created = vi.fn();
+    const log = await startPlayerWorkout('player-doc', reviewed, created);
     expect(log.workoutSnapshot.blocks).toEqual([block]);
     expect(fake.writes.map(w => w.path)).toEqual(['players/player-doc/workoutLogs/plan_w', 'players/player-doc/workoutSchedule/current']);
     expect(fake.writes[1].data.revision).toBe(8);
+    expect(created).toHaveBeenCalledWith(true);
+    expect(log).not.toHaveProperty('timerStartedHere');
   });
   it('resumes pinned work without rewriting it even after the active plan changed', async () => {
     const saved = initialLog(reviewed, 100);
     fake.docs.set('players/player-doc/workoutLogs/plan_w', saved);
     fake.docs.delete('players/player-doc/trainingPlans/plan');
-    expect(await startPlayerWorkout('player-doc', reviewed)).toEqual(saved);
+    const created = vi.fn();
+    expect(await startPlayerWorkout('player-doc', reviewed, created)).toEqual(saved);
+    expect(created).toHaveBeenCalledWith(false);
     expect(fake.writes).toEqual([]);
   });
   it('rejects revision drift without creating a log or advancing the schedule', async () => {
@@ -70,5 +75,10 @@ describe('acknowledged player workout transactions', () => {
     fake.docs.delete('players/player-doc/workoutLogs/plan_w'); fake.rejectCommit = true;
     await expect(startPlayerWorkout('player-doc', reviewed)).rejects.toThrow('permission-denied');
     expect(fake.writes).toEqual([]);
+  });
+  it('does not claim a locally started timer before the transaction acknowledges', async () => {
+    const created = vi.fn(); fake.rejectCommit = true;
+    await expect(startPlayerWorkout('player-doc', reviewed, created)).rejects.toThrow('permission-denied');
+    expect(created).not.toHaveBeenCalled();
   });
 });
