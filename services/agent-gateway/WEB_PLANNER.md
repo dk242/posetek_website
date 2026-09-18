@@ -1,4 +1,4 @@
-# Personalized web planner
+# Shared personalized planner
 
 This service is editable source recovered from the image serving the personalized
 admin pilot. `SOURCE_BASELINE.json` records the matching Cloud Build archive and
@@ -13,8 +13,14 @@ The website uses four capabilities: `assess_personalized_plan`,
 assigned coaches for their team, current managers for their club, and verified
 administrators for all players. Generation creates a draft. Its requester explicitly
 reviews and activates it; administrators may also manage existing pilot drafts.
-Native `generate_training_plan` and individual-workout editing retain their
-previous contracts and allowances.
+Native schema-3 `generate_training_plan` uses the same evidence-to-objective
+methodology and weekly exercise selection. It retains its existing direct
+active-plan persistence and ordinary daily allowance; the web flow still requires
+explicit draft activation. Individual-workout editing keeps its existing contract.
+See [`PERSONALIZED_PLANNER_METHODOLOGY.md`](../../docs/PERSONALIZED_PLANNER_METHODOLOGY.md)
+for evidence qualification, reviewed estimates, exercise mappings, UI behavior
+and the native reader boundary. Historical release checkpoints below describe
+their original deployments, not the current method's release status.
 
 Each personalized `config/llm.capabilities` entry requires literal `enabled: true`.
 `dailyLimitPolicy: "unlimited"` removes its product daily limit. The global feature
@@ -49,13 +55,16 @@ fenced by the current token; stale workers cannot publish or activate. Draft IDs
 and activation responses are idempotent. Current authorization and the complete
 testing/history baseline are rechecked during activation.
 
-Before deployment, drain personalized jobs started by the previous pilot handler.
+Before deployment, drain personalized and native plan-generation jobs started by
+the previous handler.
 `Dockerfile.release` overlays only reviewed source and knowledge onto the exact
 serving image, preserving its installed dependencies and operating-system layers.
 The ordinary `Dockerfile` remains available for a separately validated clean build.
 
-Release order is gateway, Firestore rules, the four explicit unlimited policies,
-then the website. Keep a private receipt with service configuration, active image,
+The original web rollout required gateway, Firestore rules, the four explicit
+unlimited policies, then the website. A methodology-only update preserves the
+already-live rules and capability settings: release gateway, then website. Keep a
+private receipt with service configuration, active image,
 source archive checksums, ruleset/release and config before-images. Recheck the
 current revision and each update precondition before mutation. Verify image digest,
 `/health`, configuration preservation and current-access reads. No production plan
@@ -101,7 +110,8 @@ $runUrl = "https://run.googleapis.com/v2/$serviceName"
 $docsUrl = "https://firestore.googleapis.com/v1/projects/$project/databases/(default)/documents"
 $rulesUrl = "https://firebaserules.googleapis.com/v1/projects/$project"
 $caps = @('assess_personalized_plan', 'generate_personalized_plan',
-          'activate_personalized_plan', 'discard_personalized_plan')
+          'activate_personalized_plan', 'discard_personalized_plan',
+          'generate_training_plan')
 function Save-Private($name, $value) {
   $file = Join-Path $releaseDir $name
   if (Test-Path -LiteralPath $file) { throw 'Receipt already exists; review it first.' }

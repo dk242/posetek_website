@@ -14,6 +14,7 @@ again.
 from __future__ import annotations
 
 import json
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -131,3 +132,36 @@ def test_fake_storage_matches_the_real_storage_surface():
 
     assert not missing_from_fake, f"FakeStorage is missing: {missing_from_fake}"
     assert not fake_only, f"FakeStorage invents methods production lacks: {fake_only}"
+
+
+def test_processing_evidence_download_uses_inspected_generation():
+    head=Mock(generation=123,md5_hash='AAAAAAAAAAAAAAAAAAAAAA==',size=2)
+    pinned=Mock();pinned.download_as_bytes.return_value=b'{}'
+    bucket=Mock();bucket.blob.side_effect=[head,pinned]
+    client=Mock();client.bucket.return_value=bucket
+    store=ArtifactStore(client,bucket_name='test-bucket')
+    assert store.read_evidence_json('owner/dribbling/session1/kick1/metadata.json')=={}
+    assert bucket.blob.call_args_list==[
+        call('owner/dribbling/session1/kick1/metadata.json'),
+        call('owner/dribbling/session1/kick1/metadata.json',generation=123)]
+    head.download_as_bytes.assert_not_called()
+
+
+def test_processing_evidence_size_guard_precedes_pinned_download():
+    head=Mock(generation=123,md5_hash='AAAAAAAAAAAAAAAAAAAAAA==',size=2*1024*1024+1)
+    bucket=Mock();bucket.blob.return_value=head
+    client=Mock();client.bucket.return_value=bucket
+    store=ArtifactStore(client,bucket_name='test-bucket')
+    with pytest.raises(ValueError,match='size limit'):
+        store.read_evidence_json('metadata.json')
+    assert bucket.blob.call_count==1
+    head.download_as_bytes.assert_not_called()
+
+
+def test_missing_processing_evidence_is_reported_as_file_not_found():
+    from google.api_core.exceptions import NotFound
+    head=Mock();head.reload.side_effect=NotFound('missing')
+    bucket=Mock();bucket.blob.return_value=head
+    client=Mock();client.bucket.return_value=bucket
+    with pytest.raises(FileNotFoundError):
+        ArtifactStore(client,bucket_name='test-bucket').object_metadata('missing.json')

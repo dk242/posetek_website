@@ -30,8 +30,28 @@ def intake_view(value):
                 'freeTextGoals painFlag age position')
 
 
+def priority_view(value):
+    return pick(value, 'id rank domain objectiveId label role evidenceBasis confidence reason limitation '
+                      'metricIds targetPct weeklyTargetMinutes allocationScope progressCheck eligibleDrillCount')
+
+
+def rationale_view(value):
+    return pick(value, 'methodologyVersion objectiveId priorityId evidenceBasis confidence reason progressCheck')
+
+
+def block_view(block):
+    result = pick(block, 'blockId order drillId drillName name kind domain sets reps repUnit perSide restSeconds restScope '
+                        'restBetweenSetsSeconds familiarizationReps estimatedMinutes whyIncluded')
+    if isinstance(block, dict) and 'trainingRationale' in block:
+        result['trainingRationale'] = rationale_view(block['trainingRationale'])
+    return result
+
+
 def assessment_view(value):
-    result = pick(value, 'engineVersion assessedAt summary dataGaps')
+    result = pick(value, 'engineVersion assessedAt summary dataGaps methodologyVersion')
+    if value.get('methodologyVersion') == 'evidence-objectives-v1':
+        result['priorities'] = rows(value.get('priorities'), priority_view)
+        result['estimatePolicy'] = pick(value.get('estimatePolicy'), 'enabled acceptedCount source')
     result['findings'] = rows(value.get('findings'), lambda row: pick(row,
         'domain basis confidence statement targetBeforePct targetAfterEvidencePct targetFinalPct applied limitation'))
     source = value.get('inputs') or value
@@ -41,6 +61,10 @@ def assessment_view(value):
     safe_peer['percentiles'] = amounts(peer.get('percentiles'), CATEGORY_DOMAIN)
     result['inputs'] = {'evidencePolicy': evidence_policy(source.get('evidencePolicy')),
                         'peer': safe_peer}
+    if value.get('methodologyVersion') == 'evidence-objectives-v1':
+        from gateway.program_profile import BEST_RESULT_METRICS
+        result['inputs']['bestResults'] = {mid: pick(row, 'drill category score bestCanonical repCount source referenceCanonical benchmarkGeneration lastRecordedAtMillis')
+            for mid, row in (source.get('bestResults') or {}).items() if mid in BEST_RESULT_METRICS}
     # Assessment jobs historically render these at the top level.
     result['evidencePolicy'] = result['inputs']['evidencePolicy']
     result['peer'] = safe_peer
@@ -52,15 +76,18 @@ def assessment_view(value):
     split = value.get('focusSplit') or {}
     result['focusSplit'] = (amounts(split) if any(key in DOMAINS for key in split)
                             else {key: amounts(split.get(key)) for key in ('base', 'afterGaps', 'final')})
+    if value.get('methodologyVersion') == 'evidence-objectives-v1' and not any(key in DOMAINS for key in split):
+        result['focusSplit'].update(pick(split, 'measuredPriorityDomains measuredPriorityMaxPct primaryObjectiveIds methodologyVersion'))
+        result['focusSplit']['capacityCapsPct'] = amounts(split.get('capacityCapsPct'))
+        table = split.get('tableRow') or {}
+        result['focusSplit']['tableRow'] = {**pick(table, 'position ageBand level version'), 'percentages': amounts(table.get('percentages'))}
     return result
 
 
 def workout_view(value):
     result = pick(value, 'workoutId revision order title intent theme estimatedMinutes budgetMinutes focusDomains '
         'nextBlockSequence editedBy editorUid editedAt previousRevision')
-    result['blocks'] = rows(value.get('blocks'), lambda block: pick(block,
-        'blockId order drillId drillName name kind domain sets reps repUnit perSide restSeconds restScope '
-        'restBetweenSetsSeconds familiarizationReps estimatedMinutes whyIncluded'))
+    result['blocks'] = rows(value.get('blocks'), block_view)
     result['check'] = pick(value.get('check'), 'timeStatus deltaMinutes intentStatus checkedAt notes adversarialPassed')
     return result
 
@@ -79,7 +106,9 @@ def week_view(value):
     result['check']['allocation'] = {'domains': rows((check.get('allocation') or {}).get('domains'),
         lambda row: pick(row, 'domain targetMinutes actualMinutes differenceMinutes toleranceMinutes met'))}
     projection = check.get('allocationProjection') or {}
-    result['check']['allocationProjection'] = {'foldedMinutesByDomain': amounts(projection.get('foldedMinutesByDomain'))}
+    result['check']['allocationProjection'] = {'foldedMinutesByDomain': amounts(projection.get('foldedMinutesByDomain')),
+        'cappedMinutesByDomain': amounts(projection.get('cappedMinutesByDomain')),
+        **pick(projection, 'domainSlotLimit unallocatedMinutes projectionReason')}
     return result
 
 

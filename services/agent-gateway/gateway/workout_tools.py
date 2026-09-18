@@ -117,7 +117,10 @@ def validate_workout(workout: dict, catalog: dict, profile: dict, frequency: dic
         if not isinstance(block, dict):
             violations.append(_violation("block_shape", "Block must be an object"))
             continue
-        if set(block) - BLOCK_FIELDS:
+        allowed_fields = BLOCK_FIELDS
+        if (plan or {}).get('assessment', {}).get('methodologyVersion') == 'evidence-objectives-v1':
+            allowed_fields = BLOCK_FIELDS | {'trainingRationale'}
+        if set(block) - allowed_fields:
             violations.append(_violation("block_fields", "Block contains unsupported fields, including any retest/recording fields", block))
         block_id = block.get("blockId")
         match = re.fullmatch(r"b([1-9][0-9]*)", block_id) if isinstance(block_id, str) else None
@@ -140,6 +143,10 @@ def validate_workout(workout: dict, catalog: dict, profile: dict, frequency: dic
         if row is None:
             violations.append(_violation("unknown_drill", "Every block must reference a known executable catalog drill", block))
             continue
+        if 'trainingRationale' in block:
+            from gateway.personalized_objectives import valid_rationale
+            if not valid_rationale(block['trainingRationale'], block, plan, catalog):
+                violations.append(_violation('training_rationale', 'Exercise rationale must match the reviewed objective and current catalog teaching content.', block))
         if drill_id in drills:
             violations.append(_violation("duplicate_drill", "A workout cannot repeat a drill; change its dose or choose another drill", block))
         drills.add(drill_id)

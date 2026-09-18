@@ -56,6 +56,31 @@ class ArtifactStore:
             self._bucket = self._client.bucket(self._bucket_name)
         return self._bucket
 
+    def object_metadata(self, path: str) -> dict:
+        """Read immutable source identity without downloading an athlete movie."""
+        from google.api_core.exceptions import NotFound
+        blob = self._get_bucket().blob(path)
+        try:
+            blob.reload()
+        except NotFound as exc:
+            raise FileNotFoundError(path) from exc
+        return {'generation': str(blob.generation), 'md5Hash': blob.md5_hash,
+                'size': blob.size}
+
+    def read_evidence_json(self, path: str) -> Any:
+        """Small processing evidence, pinned to the generation just inspected."""
+        meta = self.object_metadata(path)
+        if not isinstance(meta['size'], int) or not 0 <= meta['size'] <= 2 * 1024 * 1024:
+            raise ValueError('Processing evidence exceeds its size limit')
+        blob = self._get_bucket().blob(path, generation=int(meta['generation']))
+        raw = blob.download_as_bytes()
+        if len(raw) > 2 * 1024 * 1024:
+            raise ValueError('Processing evidence exceeds its size limit')
+        try:
+            return json.loads(raw)
+        except (ValueError, UnicodeError):
+            return None
+
     def download_json(self, path: str) -> Any:
         """Fetch and parse the JSON object at a bucket-relative `path`.
 
