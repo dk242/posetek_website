@@ -24,6 +24,11 @@ only an optional boolean estimate preference. Read
 The gateway-only description follow-up lists actual domain minutes without
 claiming a lead from nearly equal totals; prescriptions and website bytes remain
 unchanged by that release.
+The September 16 cohort now has twelve reviewed active schema-3 plans, four
+workouts each. Preserve these and their private contexts. Read
+`docs/SEP16_TRAINING_PLAN_ROLLOUT.md` and
+`deployment/SEP16_TRAINING_PLANS_ACTIVATED.json` before changing cohort plans;
+seven age assumptions were intake-only and must not be treated as recorded DOBs.
 Reviewed provisional Dribbling and Agility
 estimates add explicitly labeled skill-map and optional planning context,
 separate from measured results, qualification, rankings and Insights. A confirmed
