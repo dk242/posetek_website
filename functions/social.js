@@ -243,6 +243,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
     const candidates = new Map();
     for (let i = 0; i < keys.length; i += 30) {
       let q = scope === "community" ? db.collection("socialActivities").where("communityPublished", "==", true) : db.collection("socialActivities").where("audiences", "array-contains-any", keys.slice(i, i + 30));
+      if (scope === "community" && data.playerId) q = q.where("playerId", "==", data.playerId);
       q = q.orderBy("occurredAt", "desc").orderBy("id", "desc");
       if (cursor) q = q.startAfter(cursor.time, cursor.id);
       const page = await q.limit(80).get(); rows(page).forEach(a => candidates.set(a.id, a));

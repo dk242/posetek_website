@@ -183,8 +183,8 @@ new projection observers using the reviewed release workflow; preserve the
 original four projectors, auth deletion handler and protected processor. A
 code rollback does not erase community records or moderation decisions.
 
-Local validation: the complete backend plus migration suite passed 281 tests
-(278 passed, three existing private historical-fixture tests skipped), with
+Local validation: the complete backend plus migration suite passed 282 tests
+(279 passed, three existing private historical-fixture tests skipped), with
 zero failures. Real isolated Firestore/Storage emulators passed 336 assertions.
 The rule fixture now correctly expects the pre-existing verified-admin upload
 permission for an existing player; Storage rules themselves are untouched.

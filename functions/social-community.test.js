@@ -217,6 +217,16 @@ test("owner identity and forged profile/publication fields cannot grant access",
   await assert.rejects(f.api.setVisibility({ ...v2, id, audience: "community", hidden: false }, viewer("u2")), { code: "invalid-argument" });
   await assert.rejects(f.api.setVisibility({ ...v2, id, audience: "community", hidden: false, videos: true, commentsEnabled: true, selectedRepId: "another-capture" }, viewer("u2")), { code: "invalid-argument" });
 });
+test("community profile feed filters the chosen player before pagination", async () => {
+  const f = setup({ "players/p1/reps/r1": rep("r1", { storagePath: "p1/jump/session1/kick1" }) });
+  const targetId = await publish(f);
+  await f.api.rebuild("p1");
+  await f.api.saveCommunityProfile({ displayName: "Another author", discoverable: true, showClub: false }, viewer("u1"));
+  await f.api.setVisibility({ ...v2, id: idFor("p1", "session", "jump:s1"), audience: "community", hidden: false, videos: false, commentsEnabled: true }, viewer("u1"));
+  assert.equal((await f.api.getFeed({ ...v2, scope: "community" }, viewer("u3"))).items.length, 2);
+  const profile = await f.api.getFeed({ ...v2, scope: "community", playerId: "p2" }, viewer("u3"));
+  assert.deepEqual(profile.items.map(row => row.id), [targetId]); assert.equal(profile.cursor, null);
+});
 test("migration can prepare claimed players outside the legacy pilot while community stays gated", async () => {
   const f = setup({ "socialSettings/feed": { enabled: true, communityEnabled: false, organizationIds: ["pilot"] } });
   assert.equal((await f.api.rebuild("p2")).skipped, "outside pilot");
