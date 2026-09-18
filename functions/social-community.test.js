@@ -228,6 +228,24 @@ test("owner identity and forged profile/publication fields cannot grant access",
   await assert.rejects(f.api.setVisibility({ ...v2, id, audience: "community", hidden: false }, viewer("u2")), { code: "invalid-argument" });
   await assert.rejects(f.api.setVisibility({ ...v2, id, audience: "community", hidden: false, videos: true, commentsEnabled: true, selectedRepId: "another-capture" }, viewer("u2")), { code: "invalid-argument" });
 });
+test("owners inspect exact private recordings before consenting to share while outsiders require consent", async () => {
+  const path = "p2/jump/session1/kick1/right.mov";
+  const f = setup({}, { videos: [path] });
+  await f.api.rebuild("p2"); const id = idFor("p2", "session", "jump:s1");
+  assert.equal((await f.api.getContext(v2, viewer("u2"))).preferences.videos, false);
+  const own = await f.api.getDetail({ ...v2, id }, viewer("u2"));
+  assert.equal(own.canViewVideo, true); assert.equal(own.availableReps[0].canViewVideo, true);
+  assert.equal(f.signed.length, 0);
+  assert.equal((await f.api.media({ ...v2, id }, viewer("u2"))).url, `https://signed.example/${path}`);
+  await assert.rejects(f.api.getDetail({ ...v2, id }, viewer("u3")), { code: "permission-denied" });
+  await assert.rejects(f.api.media({ ...v2, id }, viewer("u3")), { code: "permission-denied" });
+  await publish(f, { videos: false });
+  assert.equal((await f.api.getDetail({ ...v2, id }, viewer("u3"))).availableReps[0].canViewVideo, false);
+  assert.equal((await f.api.media({ ...v2, id }, viewer("u3"))).url, null);
+  assert.equal((await f.api.getDetail({ ...v2, id }, viewer("u2"))).availableReps[0].canViewVideo, true);
+  await f.api.setVisibility({ ...v2, id, audience: "community", hidden: false, videos: true, commentsEnabled: true }, viewer("u2"));
+  assert.equal((await f.api.media({ ...v2, id }, viewer("u3"))).url, `https://signed.example/${path}`);
+});
 test("community profile feed filters the chosen player before pagination", async () => {
   const f = setup({ "players/p1/reps/r1": rep("r1", { storagePath: "p1/jump/session1/kick1" }) });
   const targetId = await publish(f);

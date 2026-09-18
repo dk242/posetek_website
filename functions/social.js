@@ -25,6 +25,9 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
   const videoAllowed = author => author.override.audience === "community"
     ? author.override.videos === true && author.override.publishedAt > (author.preferences.videosDisabledAt || 0)
     : author.preferences.videos !== false && author.override.videos !== false;
+  // Owners can inspect their own exact saved recording before choosing whether
+  // to share it. Audience authorization still runs before every media read.
+  const mediaAllowed = (c, author) => author.uid === c.uid || videoAllowed(author);
   const effective = createEffectiveResults({ db, bucket, HttpsError, now, readEvidence });
   const evidenceReader = createProcessingEvidenceReader({ db, bucket, HttpsError, readEvidence });
   const community = createSocialCommunity({ db, now, fail, segment, context, activity, present, playerRef, prefsRef });
@@ -167,7 +170,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
     if (!v2 && audience === "community") fail("failed-precondition", "Update PoseTek to view this community activity.");
     const published = audience === "community" && author.override.publisherUid === author.uid && author.override.publishedAt > (author.profile.withdrawnAt || 0) && !author.override.hidden && !author.profile.suspended;
     const selectedRepId = a.repIds.includes(author.override.selectedRepId) ? author.override.selectedRepId : a.repIds.at(-1) || null;
-    const videoConsent = videoAllowed(author);
+    const videoConsent = mediaAllowed(c, author);
     let availableReps = [];
     if (v2 && a.repIds.length) {
       const ids = [...new Set([selectedRepId, ...(includeRepChoices ? a.repIds.slice(-12) : [])])].filter(Boolean);
@@ -469,7 +472,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
   }
   async function media(data, auth) {
     const c = await context(auth, data.organizationId, data.viewAsPlayerId, data.contractVersion), { a, author } = await activity(c, data.id);
-    const consent = videoAllowed(author);
+    const consent = mediaAllowed(c, author);
     if (!consent || !a.repIds.length) return { url: null, expiresAt: null };
     const repId = data.repId ? segment(data.repId) : a.repIds.includes(author.override.selectedRepId) ? author.override.selectedRepId : a.repIds.at(-1);
     if (!a.repIds.includes(repId)) fail("permission-denied", "This rep is not part of the activity.");
@@ -478,7 +481,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
     const result = await effective.mediaForPlayer(a.playerId, a.drill, repId, { ttlMs: 300000, includeArtifacts: false });
     const fresh = await context(auth, data.organizationId, data.viewAsPlayerId, data.contractVersion);
     const current = (await activity(fresh, data.id)).author;
-    const stillConsents = videoAllowed(current);
+    const stillConsents = mediaAllowed(fresh, current);
     return result.resultStatus.qualified && stillConsents && result.mediaUrl ? { url: result.mediaUrl, expiresAt: result.expiresAtMillis } : { url: null, expiresAt: null };
   }
   async function rebuild(playerId, dryRun = false, options = {}) {

@@ -119,6 +119,9 @@ detail includes up to 12 recent choices plus an older selected rep if needed.
 `authorUid` is absent from V2. The existing media callable supplies five-minute
 signed URLs only after exact capture resolution, canonical qualification,
 current audience authorization and video consent; it rechecks after signing.
+The current owner can inspect their own exact saved video before granting
+sharing consent. Nonowners still require current audience access and video
+consent; owner permission is also rechecked after signing.
 No pose/artifact/private processing-context URL is exposed. Ambiguous or missing
 video returns unavailable. Links already issued expire within five minutes.
 
@@ -185,8 +188,8 @@ new projection observers using the reviewed release workflow; preserve the
 original four projectors, auth deletion handler and protected processor. A
 code rollback does not erase community records or moderation decisions.
 
-Local validation: the complete backend plus migration suite passed 282 tests
-(279 passed, three existing private historical-fixture tests skipped), with
+Local validation: the complete backend plus migration suite passed 283 tests
+(280 passed, three existing private historical-fixture tests skipped), with
 zero failures. Real isolated Firestore/Storage emulators passed 336 assertions.
 The rule fixture now correctly expects the pre-existing verified-admin upload
 permission for an existing player; Storage rules themselves are untouched.
