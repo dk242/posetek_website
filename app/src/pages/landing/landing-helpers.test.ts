@@ -135,15 +135,15 @@ describe("post-auth destinations", () => {
   });
 
   it("sends a signed-in player to the feed with the encoded id first", () => {
-    expect(playerHomeRoute("abc123")).toBe("/feed?player=abc123&userType=player");
-    expect(playerHomeRoute("a b/c")).toBe("/feed?player=a%20b%2Fc&userType=player");
+    expect(playerHomeRoute("abc123")).toBe("/athlete?player=abc123&userType=player");
+    expect(playerHomeRoute("a b/c")).toBe("/athlete?player=a%20b%2Fc&userType=player");
   });
 
   it("builds the signup destination with userType first and an optional player id", () => {
-    expect(playerSignupRoute(null)).toBe("/feed?userType=player");
-    expect(playerSignupRoute(undefined)).toBe("/feed?userType=player");
-    expect(playerSignupRoute("")).toBe("/feed?userType=player");
-    expect(playerSignupRoute("p 1")).toBe("/feed?userType=player&player=p%201");
+    expect(playerSignupRoute(null)).toBe("/athlete?userType=player");
+    expect(playerSignupRoute(undefined)).toBe("/athlete?userType=player");
+    expect(playerSignupRoute("")).toBe("/athlete?userType=player");
+    expect(playerSignupRoute("p 1")).toBe("/athlete?userType=player&player=p%201");
   });
 });
 

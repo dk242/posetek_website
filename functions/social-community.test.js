@@ -55,6 +55,17 @@ test("feature gate defaults closed without preventing owners reading saved setti
   await assert.rejects(f.api.discovery({}, viewer("u1")), { code: "failed-precondition" });
   await assert.rejects(f.api.saveCommunityProfile({ displayName: "Player", discoverable: true, showClub: false }, viewer("u1")), { code: "failed-precondition" });
 });
+
+test("first publication can distinguish an unsaved fallback name without exposing setup state to other players", async () => {
+  const f = setup();
+  assert.equal((await f.api.getCommunityProfile({}, viewer('u2'))).displayNameConfigured, false);
+  const saved = await f.api.saveCommunityProfile({ displayName: 'Alex P', discoverable: false, showClub: false }, viewer('u2'));
+  assert.equal(saved.displayNameConfigured, true);
+  assert.equal(saved.discoverable, false);
+  assert.equal(saved.clubName, '');
+  await publish(f);
+  assert.equal((await f.api.getCommunityProfile({ playerId: 'p2' }, viewer('u3'))).displayNameConfigured, undefined);
+});
 test("community publication is per activity; V1 omits new audience and asks detail clients to update", async () => {
   const f = setup({ "players/p2/reps/second": rep("second", { sessionId: "s2", sessionNumber: 2, storagePath: "p2/jump/session2/kick1" }) });
   const id = await publish(f);

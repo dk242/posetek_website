@@ -143,7 +143,9 @@ consent; a later explicit community publication can grant it again.
 
 Profiles contain only `{playerId,displayName,discoverable,clubName,relationship,
 mine,suspended,showClub,communityPostsWithdrawnAt}`. No UID, age/DOB, contact data,
-private measurements or roster payload is returned. Discovery scans up to 100
+private measurements or roster payload is returned. The owner's response also
+has `displayNameConfigured`, so the first-post composer requires saving a chosen
+name without confusing the abbreviated fallback with prior consent. Discovery scans up to 100
 opted-in profiles per call, returns at most 20 matching accessible people and
 may return an empty page with a continuation. Turning discovery off removes
 directory results, while direct profiles remain available from authorized

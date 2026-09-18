@@ -152,7 +152,7 @@ describe('player route and preview rendering', () => {
     expect(html).toContain('Player tabs'); expect(html).not.toContain('Coach view'); expect(html).toContain('no account changes');
     const navigation = html.match(/<nav class="player-bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
     expect((navigation.match(/<button/g) || []).length).toBe(5);
-    expect(navigation).toContain('>Home</span>'); expect(navigation).toContain('>You</span>');
+    expect(navigation).toContain('>Feed</span>'); expect(navigation).toContain('>You</span>');
     expect(navigation).not.toContain('AI Coach');
     expect(html.includes('Ask your AI Coach')).toBe(view === 'home' || view === 'training');
     if (view === 'aiCoach') expect(html).toContain('Your AI Coach');

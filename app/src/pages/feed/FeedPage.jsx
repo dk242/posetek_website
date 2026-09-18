@@ -2,11 +2,15 @@
 import * as React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../lib/firebase";
-import { callSocial } from "./api";
+import { callSocialV2 as callSocial } from "./api";
+import { CommunityInbox, CommunityModeration, CommunitySettings, CommunitySheet, Discovery, PublishActivity, ReportContent, SocialProfile } from './CommunityPanels';
 import { formatMeasurement, mergeActivities, initials, formatDate } from "./model";
+import { socialMediaLease } from './media-lease';
+import { athleteTabUrl, PlayerNavigation } from '../athlete-portal/player/player-navigation';
 import "./feed.css";
 import "../../styles/pose-portal.css";
 import "./feed-cascade.css";
+import '../../styles/player-finish.css';
 
 var sampleContext = {
   uid: `sample`,
@@ -19,6 +23,7 @@ var sampleContext = {
   staff: false,
   admin: false,
   enabled: true,
+  communityEnabled: true,
   preferences: {
     audience: `organization`,
     automatic: true,
@@ -152,8 +157,9 @@ var sampleActivities = [
   }
 ];
 var feedScopes = [
-  [`all`, `All activity`],
+  [`all`, `Your circle`],
   [`team`, `My team`],
+  [`community`, `Discover`],
   [`organization`, `My organization`],
   [`friends`, `Friends`],
   [`mine`, `My activity`]
@@ -162,7 +168,8 @@ var audienceLabels = {
   organization: `Organization + friends`,
   team: `Team only`,
   friends: `Friends only`,
-  private: `Only me`
+  private: `Only me`,
+  community: `PoseTek community`
 };
 function Icon({ name }) {
   return <span className={`material-symbols-outlined`} aria-hidden={`true`}>
@@ -170,6 +177,7 @@ function Icon({ name }) {
   </span>;
 }
 function FeedPage() {
+  const workspace = React.useContext(PlayerNavigation);
   let location = useLocation();
   let navigate = useNavigate();
   let query = new URLSearchParams(location.search);
@@ -179,16 +187,38 @@ function FeedPage() {
   let organizationId = query.get(`organizationId`) || void 0;
   let linkedPlayer = query.get(`connect`) || void 0;
   let activityId = query.get(`activity`) || void 0;
+  let memberId = query.get('member') || void 0;
+  let requestedPanel = memberId ? 'profile' : query.get('panel') || (linkedPlayer ? 'people' : 'feed');
   let [context, setContext] = React.useState(preview ? sampleContext : null);
   let [status, setStatus] = React.useState(preview ? `ready` : `loading`);
   let [error, setError] = React.useState(``);
-  let [scope, setScope] = React.useState(`all`);
-  let [panel, setPanel] = React.useState(linkedPlayer ? `people` : `feed`);
+  let [scope, setScope] = React.useState(feedScopes.some(([key]) => key === query.get('scope')) ? query.get('scope') : 'all');
+  let [panel, setPanelState] = React.useState(requestedPanel);
   let [activities, setActivities] = React.useState(preview ? sampleActivities : []);
   let [cursor, setCursor] = React.useState(null);
   let [loading, setLoading] = React.useState(false);
   let authRequest = React.useRef(0);
   let feedRequest = React.useRef(0);
+  let contextRef = React.useRef(context);
+  contextRef.current = context;
+  let feedCache = React.useRef(new Map());
+  const navigateFeed = (values) => {
+    const next = new URLSearchParams(location.search);
+    for (const [key, value] of Object.entries(values)) { if (value) next.set(key, value); else next.delete(key); }
+    navigate(`/feed?${next}`);
+  };
+  const setPanel = value => {
+    setPanelState(value);
+    navigateFeed({ panel: value === 'feed' ? null : value, member: null, activity: null, connect: value === 'people' ? linkedPlayer : null });
+  };
+  const openPerson = playerId => navigateFeed({ member: playerId, activity: null, panel: null, connect: null });
+  const openActivity = id => navigateFeed({ activity: id, member: null, panel: null, connect: null });
+  const viewer = React.useMemo(() => ({ organizationId, viewAsPlayerId }), [organizationId, viewAsPlayerId]);
+  React.useEffect(() => { setPanelState(requestedPanel); }, [requestedPanel]);
+  React.useEffect(() => {
+    const nextScope = new URLSearchParams(location.search).get('scope');
+    setScope(feedScopes.some(([key]) => key === nextScope) ? nextScope : 'all');
+  }, [location.search]);
   React.useEffect(() => {
     document.title = `Community | PoseTek`;
   }, []);
@@ -201,10 +231,10 @@ function FeedPage() {
     let r = auth.onAuthStateChanged(r => {
       let i = ++authRequest.current;
       ++feedRequest.current;
-      setActivities([]);
-      setContext(null);
-      setError(``);
-      setStatus(`loading`);
+      const sameViewer = contextRef.current?.uid === r?.uid;
+      if (!sameViewer) {
+        feedCache.current.clear(); setActivities([]); setContext(null); setError(''); setStatus('loading');
+      }
       if (!r) {
         navigate(`/signin?returnTo=` + encodeURIComponent(location.pathname + location.search), {
           replace: true
@@ -216,11 +246,16 @@ function FeedPage() {
         viewAsPlayerId: viewAsPlayerId
       }).then(e => {
         if (t && authRequest.current === i) {
-          setContext(e);
+          setContext(old => {
+            if (JSON.stringify(old) === JSON.stringify(e)) return old;
+            feedCache.current.clear();
+            return e;
+          });
           setStatus(`ready`);
         }
       }).catch(e => {
         if (t && authRequest.current === i) {
+          setActivities([]); setContext(null); feedCache.current.clear();
           setError(e.message);
           setStatus(`error`);
         }
@@ -236,14 +271,12 @@ function FeedPage() {
     preview,
     organizationId,
     viewAsPlayerId,
-    navigate,
-    location.pathname,
-    location.search
+    navigate
   ]); /* oxlint-enable react/set-state-in-effect */
   /* oxlint-enable react-hooks/exhaustive-deps */
   let loadFeed = React.useCallback(async (e = null) => {
     if (preview) {
-      setActivities(sampleActivities.filter(e => scope !== `mine` || e.mine));
+      setActivities(scope === 'mine' ? [{ ...sampleActivities[1], mine: true, playerId: 'sample', authorName: sampleContext.name }] : sampleActivities);
       return;
     }
     let t = ++feedRequest.current;
@@ -264,12 +297,17 @@ function FeedPage() {
         viewAsPlayerId: viewAsPlayerId
       });
       if (t === feedRequest.current) {
-        setActivities(t => e ? mergeActivities(t, n.items) : n.items);
+        setActivities(t => {
+          const items = e ? mergeActivities(t, n.items) : n.items;
+          feedCache.current.set(`${scope}:${activityId || ''}`, { items, cursor: n.cursor });
+          return items;
+        });
         setCursor(n.cursor);
       }
     }
     catch (e) {
       if (t === feedRequest.current) {
+        setActivities([]); feedCache.current.delete(`${scope}:${activityId || ''}`);
         setError(e.message);
       }
     }
@@ -289,8 +327,9 @@ function FeedPage() {
   /* oxlint-disable react-hooks/exhaustive-deps -- These refs are request counters, not DOM nodes; cleanup must invalidate their latest values. */
   React.useEffect(() => {
     if (context) {
-      setActivities([]);
-      setCursor(null);
+      const cached = feedCache.current.get(`${scope}:${activityId || ''}`);
+      if (cached) { setActivities(cached.items); setCursor(cached.cursor); }
+      else { setActivities([]); setCursor(null); }
       loadFeed();
     }
     return () => {
@@ -299,7 +338,9 @@ function FeedPage() {
   }, [context, loadFeed]); /* oxlint-enable react/set-state-in-effect */
   /* oxlint-enable react-hooks/exhaustive-deps */
   let feedUrl = `/feed` + (location.search || ``);
-  let athleteUrl = e => athletePreview ? feedUrl : `/athlete?view=${e}${preview ? `&preview=1` : ``}`;
+  let athleteUrl = e => athletePreview ? feedUrl : athleteTabUrl(e, preview, context?.playerId || null, workspace.athleteSearch);
+  const invalidateFeed = () => { ++feedRequest.current; feedCache.current.clear(); setActivities([]); setCursor(null); void loadFeed(); };
+  let community = preview || context?.communityEnabled === true;
   let staffOnly = !!context && (context.staff || context.admin) && !context.playerId;
   let tabs = staffOnly ? [
     [
@@ -321,12 +362,7 @@ function FeedPage() {
     [
       feedUrl,
       `home`,
-      `Home`
-    ],
-    [
-      athleteUrl(`drills`),
-      `sports_soccer`,
-      `Drills`
+      `Feed`
     ],
     [
       athleteUrl(`training`),
@@ -334,9 +370,14 @@ function FeedPage() {
       `Training`
     ],
     [
-      athleteUrl(`leaderboards`),
-      `leaderboard`,
-      `Leaderboards`
+      athleteUrl(`drills`),
+      `sports_soccer`,
+      `Drills`
+    ],
+    [
+      athleteUrl(`aiCoach`),
+      `forum`,
+      `Coach`
     ],
     [
       athleteUrl(`home`),
@@ -356,6 +397,7 @@ function FeedPage() {
         {`THE WORK. TOGETHER.`}
       </span>
       <div className={`social-header-actions`}>
+        {community && context?.playerId && <button aria-label="Activity inbox" onClick={() => setPanel('inbox')}><Icon name="notifications" /></button>}
         <button aria-label={`Find people`} onClick={() => setPanel(`people`)}>
           <Icon name={`person_add`} />
         </button>
@@ -394,6 +436,8 @@ function FeedPage() {
             <Icon name={`tune`} />
             {`Sharing settings`}
           </button>
+          {community && <button aria-current={panel === 'discover' ? 'page' : undefined} onClick={() => setPanel('discover')}><Icon name="explore" />Discover players</button>}
+          {community && context?.playerId && <button aria-current={panel === 'inbox' ? 'page' : undefined} onClick={() => setPanel('inbox')}><Icon name="notifications" />Activity inbox</button>}
           {context?.admin && <button onClick={() => setPanel(`moderation`)}>
             <Icon name={`flag`} />
             {`Reports`}
@@ -475,27 +519,17 @@ function FeedPage() {
               </Link>
             </div>
             <nav className={`social-filters`} aria-label={`Activity audience`}>
-              {feedScopes.map(([e, t]) => <button aria-pressed={e === scope} onClick={() => {
+              {feedScopes.filter(([e]) => community || e !== 'community').map(([e, t]) => <button aria-pressed={e === scope} onClick={() => {
                 setScope(e);
-                if (activityId) {
-                  navigate(`/feed?` + new URLSearchParams({
-                    ...organizationId ? {
-                      organizationId: organizationId
-                    } : {},
-                    ...viewAsPlayerId ? {
-                      viewAsPlayerId: viewAsPlayerId
-                    } : {},
-                    ...preview ? {
-                      preview: `1`
-                    } : {}
-                  }));
-                }
+                navigateFeed({ scope: e, activity: null, member: null, panel: null });
               }} key={e}>
                 {t}
               </button>)}
             </nav>
+            {community && scope === 'community' && <div className="social-mobile-links"><button onClick={() => setPanel('discover')}><Icon name="person_search" />Find community players</button><button onClick={() => setPanel('settings')}>Your community profile</button></div>}
             <div className={`social-feed`} aria-busy={loading}>
-              {activities.map(e => <ActivityCard activity={e} organizationId={organizationId} preview={preview} onChange={e => setActivities(t => t.map(t => t.id === e.id ? e : t))} onPerson={e => {
+              {activities.map(e => <ActivityCard activity={e} organizationId={organizationId} preview={preview} communityEnabled={community} onBlocked={id => { feedCache.current.clear(); setActivities(old => old.filter(item => item.playerId !== id)); }} onChange={e => { feedCache.current.clear(); setActivities(t => t.map(t => t.id === e.id ? e : t)); }} onPerson={e => {
+                if (community) { openPerson(e); return; }
                 navigate(`/feed?` + new URLSearchParams({
                   connect: e,
                   ...organizationId ? {
@@ -508,7 +542,7 @@ function FeedPage() {
                     preview: `1`
                   } : {}
                 }));
-                setPanel(`people`);
+                setPanelState(`people`);
               }} key={`${context.uid}:${e.id}`} />)}
             </div>
             {loading && <div className={`social-skeleton`} role={`status`}>
@@ -533,12 +567,16 @@ function FeedPage() {
               {`You’re all caught up. Time to put in the work.`}
             </p>}
           </>}
-          {panel === `people` && <People context={context} linkedPlayer={linkedPlayer} preview={preview} organizationId={organizationId} key={context.uid + (organizationId || ``) + (linkedPlayer || ``)} />}
-          {panel === `settings` && <SharingSettings context={context} preview={preview} organizationId={organizationId} onSave={e => setContext({
+          {panel === `people` && <People context={context} linkedPlayer={linkedPlayer} preview={preview} organizationId={organizationId} onMutated={invalidateFeed} key={context.uid + (organizationId || ``) + (linkedPlayer || ``)} />}
+          {panel === `settings` && <><SharingSettings context={context} preview={preview} organizationId={organizationId} onSave={e => setContext({
             ...context,
             preferences: e
-          })} key={`${context.uid}:${organizationId || ``}`} />}
-          {panel === `moderation` && context.admin && <Moderation organizationId={organizationId} />}
+          })} key={`${context.uid}:${organizationId || ``}`} />{community && context.playerId && <CommunitySettings viewer={viewer} preview={preview} onMutated={invalidateFeed} key={`settings:${context.uid}:${viewAsPlayerId || ''}`} />}</>}
+          {panel === 'discover' && community && <Discovery viewer={viewer} preview={preview} onPerson={openPerson} key={`discovery:${context.uid}:${viewAsPlayerId || ''}`} />}
+          {panel === 'profile' && memberId && community && <SocialProfile viewer={viewer} preview={preview} playerId={memberId} onActivity={openActivity} onMutated={invalidateFeed} onBack={() => setPanel('feed')} key={`profile:${context.uid}:${memberId}:${viewAsPlayerId || ''}`} />}
+          {panel === 'inbox' && community && context.playerId && <CommunityInbox viewer={viewer} preview={preview} onPerson={openPerson} onActivity={openActivity} key={`inbox:${context.uid}:${viewAsPlayerId || ''}`} />}
+          {['discover', 'profile', 'inbox'].includes(panel) && !community && <div className="social-empty"><h2>Community features are getting ready.</h2><p>Your existing team activity and training are available.</p><button onClick={() => setPanel('feed')}>Back to activity</button></div>}
+          {panel === `moderation` && context.admin && <><Moderation organizationId={organizationId} />{community && <CommunityModeration viewer={viewer} />}</>}
         </>}
       </main>
       <aside className={`social-right`}>
@@ -570,8 +608,9 @@ function FeedPage() {
       </aside>
     </div>
     <nav className={`social-bottom`} aria-label={staffOnly ? `Staff navigation` : `Player tabs`}>
-      {tabs.map(([e, t, n]) => <Link to={e} aria-current={n === `Home` ? `page` : void 0} onClick={() => {
-        if (n === `Home`) {
+      {tabs.map(([e, t, n]) => <Link to={e} aria-current={n === `Home` || n === 'Feed' ? `page` : void 0} onClick={event => {
+        if (n === `Home` || n === 'Feed') {
+          event.preventDefault();
           setPanel(`feed`);
         }
       }} key={n}>
@@ -583,21 +622,53 @@ function FeedPage() {
     </nav>
   </div>;
 }
-function ActivityCard({ activity, organizationId, preview, onChange, onPerson }) {
+function ActivityCard({ activity, organizationId, preview, onChange, onPerson, communityEnabled = false, onBlocked = () => {} }) {
   let viewAsPlayerId = new URLSearchParams(useLocation().search).get(`viewAsPlayerId`) || void 0;
   let [busy, setBusy] = React.useState(false);
   let [error, setError] = React.useState(``);
   let [commentsOpen, setCommentsOpen] = React.useState(false);
-  let [videoUrl, setVideoUrl] = React.useState(``);
+  let [mediaLease, setMediaLease] = React.useState(null);
+  let [mediaBusy, setMediaBusy] = React.useState(false);
+  const videoUrl = activity.canViewVideo ? mediaLease?.url || '' : '';
+  const videoElement = React.useRef(null);
   let [videoNotice, setVideoNotice] = React.useState(``);
   let [reportReason, setReportReason] = React.useState(``);
   let [notice, setNotice] = React.useState(``);
+  let [publishing, setPublishing] = React.useState(false);
+  let [commentDraft, setCommentDraft] = React.useState('');
+  let pendingCommentId = React.useRef('');
+  let [selectedRep, setSelectedRep] = React.useState(activity.selectedRepId || '');
+  let mediaRequest = React.useRef(0);
   let mounted = React.useRef(true);
   let viewerUid = auth.currentUser?.uid;
+  React.useEffect(() => { setBusy(false); }, []);
+  const clearMedia = React.useCallback(() => {
+    ++mediaRequest.current;
+    if (videoElement.current) { videoElement.current.pause(); videoElement.current.removeAttribute('src'); videoElement.current.load(); }
+    setMediaLease(null); setMediaBusy(false);
+  }, []);
+  React.useEffect(() => {
+    const hide = () => { if (document.hidden) clearMedia(); };
+    window.addEventListener('posetek:player-route-leave', clearMedia);
+    window.addEventListener('pagehide', clearMedia);
+    document.addEventListener('visibilitychange', hide);
+    return () => {
+      window.removeEventListener('posetek:player-route-leave', clearMedia);
+      window.removeEventListener('pagehide', clearMedia);
+      document.removeEventListener('visibilitychange', hide);
+      clearMedia();
+    };
+  }, [clearMedia, activity.id, activity.canViewVideo, activity.audience, activity.hidden, activity.selectedRepId, selectedRep]);
+  React.useEffect(() => {
+    if (!mediaLease) return;
+    const timer = setTimeout(() => { clearMedia(); setVideoNotice('Video link expired. Tap Watch saved rep to reload it.'); }, Math.max(0, mediaLease.expiresAt - Date.now()));
+    return () => clearTimeout(timer);
+  }, [mediaLease, clearMedia]);
   React.useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
+      ++mediaRequest.current;
     };
   }, []);
   let runAction = async (e) => {
@@ -661,6 +732,8 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
       {activity.subtitle}
       {activity.partial ? ` · Finished with partial work` : ``}
     </p>
+    {activity.caption && <p className="social-caption">{activity.caption}</p>}
+    {activity.audience === 'community' && <p className="social-audience-label">{activity.communityPublished === false ? 'Not currently shared with the community' : 'Shared with signed-in PoseTek members'}</p>}
     <div className={`social-metrics`}>
       {activity.metrics.map(e => <div key={e.label}>
         <span>
@@ -681,8 +754,8 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
         {` · 100 = reference median for this metric`}
       </span>
     </div>}
-    {videoUrl ? <video className={`social-video`} src={videoUrl} controls={true} playsInline={true} preload={`metadata`} onError={() => {
-      setVideoUrl(``);
+    {videoUrl ? <video ref={videoElement} className={`social-video`} src={videoUrl} controls={true} playsInline={true} preload={`metadata`} onError={() => {
+      clearMedia();
       setVideoNotice(`Video link expired or unavailable. Tap Watch saved rep to retry.`);
     }} /> : activity.chart.length > 0 ? <div className={`social-chart`} role={`img`} aria-label={`Last ${activity.chart.length} rep results: ${activity.chart.map(e => e.toFixed(1)).join(`, `)}`}>
       <div className={`social-chart-heading`}>
@@ -714,21 +787,25 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
         {`One session closer.`}
       </small>
     </div>}
-    {activity.canViewVideo && !videoUrl && <button className={`social-watch`} disabled={busy} onClick={() => {
+    {activity.canViewVideo && activity.availableReps?.length > 1 && <label className="social-rep-choice">Saved rep<select value={selectedRep} onChange={event => { clearMedia(); setSelectedRep(event.target.value); setVideoNotice(''); }}><option value="">Featured rep</option>{activity.availableReps.filter(rep => rep.canViewVideo).map(rep => <option key={rep.id} value={rep.id}>{rep.label}</option>)}</select></label>}
+    {activity.canViewVideo && !videoUrl && <button className={`social-watch`} disabled={busy || mediaBusy} onClick={() => {
       if (!preview) {
-        setBusy(true);
+        setMediaBusy(true);
         setError(``);
+        const request = ++mediaRequest.current;
         (async () => {
           let n = await callSocial(`getSocialMedia`, {
             id: activity.id,
             organizationId: organizationId,
-            viewAsPlayerId: viewAsPlayerId
+            viewAsPlayerId: viewAsPlayerId,
+            ...(selectedRep ? { repId: selectedRep } : {})
           });
-          if (mounted.current && auth.currentUser?.uid === viewerUid) {
-            setVideoUrl(n.url || ``);
-            setVideoNotice(n.url ? `` : `No saved video is available for this rep.`);
+          if (mounted.current && auth.currentUser?.uid === viewerUid && request === mediaRequest.current) {
+            const lease = socialMediaLease(n);
+            setMediaLease(lease);
+            setVideoNotice(lease ? `` : `No current saved video is available for this rep.`);
           }
-        })().catch(e => setError(e.message)).finally(() => setBusy(false));
+        })().catch(e => { if (mounted.current && request === mediaRequest.current) setError(e.message); }).finally(() => { if (mounted.current && request === mediaRequest.current) setMediaBusy(false); });
       }
     }}>
       <Icon name={`play_circle`} />
@@ -750,13 +827,16 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
     </div>
     <div className={`social-card-actions`}>
       <button disabled={busy || !!viewAsPlayerId} aria-pressed={activity.liked} onClick={() => void runAction(async () => {
-        await callSocial(`setSocialKudos`, {
+        const before = activity;
+        onChange({ ...activity, liked: !activity.liked, kudos: Math.max(0, activity.kudos + (activity.liked ? -1 : 1)) });
+        try { await callSocial(`setSocialKudos`, {
           id: activity.id,
           liked: !activity.liked,
           organizationId: organizationId,
           viewAsPlayerId: viewAsPlayerId
         });
         await refreshActivity();
+        } catch (error) { if (mounted.current && auth.currentUser?.uid === viewerUid) onChange(before); throw error; }
       })}>
         <Icon name={`thumb_up`} />
         {`Kudos`}
@@ -766,13 +846,20 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
         {`Comment`}
       </button>
       <button onClick={() => void runAction(async () => {
-        await navigator.clipboard.writeText(`${window.location.origin}/feed?activity=${encodeURIComponent(activity.id)}`);
-        setNotice(`Activity link copied. Your sharing settings still apply.`);
+        const url = `${window.location.origin}/feed?activity=${encodeURIComponent(activity.id)}`;
+        if (navigator.share) {
+          try { await navigator.share({ title: activity.title, url }); }
+          catch (error) { if (error.name !== 'AbortError') throw error; }
+        } else {
+          await navigator.clipboard.writeText(url);
+          setNotice(`Activity link copied. Your sharing settings still apply.`);
+        }
       })}>
         <Icon name={`ios_share`} />
         {`Share`}
       </button>
     </div>
+    {communityEnabled && activity.mine && <button className="community-publish social-watch" disabled={busy || !!viewAsPlayerId} onClick={() => setPublishing(true)}><Icon name="publish" />{activity.communityPublished ? 'Edit community post' : 'Share your progress'}</button>}
     <details className={`social-card-options`}>
       <summary>
         {`Activity options`}
@@ -790,7 +877,7 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
             });
             await refreshActivity();
           })}>
-            {Object.entries(audienceLabels).map(([e, t]) => <option value={e} key={e}>
+            {Object.entries(audienceLabels).filter(([e]) => e !== 'community' || activity.audience === 'community').map(([e, t]) => <option value={e} key={e} disabled={e === 'community'}>
               {t}
             </option>)}
           </select>
@@ -798,20 +885,20 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
         <button disabled={busy || !!viewAsPlayerId} onClick={() => void runAction(async () => {
           await callSocial(`setSocialVisibility`, {
             id: activity.id,
-            audience: activity.audience,
-            hidden: !activity.hidden,
+            audience: activity.audience === 'community' ? 'private' : activity.audience,
+            hidden: activity.audience === 'community' ? false : !activity.hidden,
             organizationId: organizationId,
             viewAsPlayerId: viewAsPlayerId
           });
           await refreshActivity();
         })}>
-          {activity.hidden ? `Show activity again` : `Hide activity from others`}
+          {activity.audience === 'community' ? 'Withdraw community post' : activity.hidden ? `Show activity again` : `Hide activity from others`}
         </button>
       </> : <form onSubmit={n => {
         n.preventDefault();
         runAction(async () => {
-          await callSocial(`reportSocialActivity`, {
-            id: activity.id,
+          await callSocial(communityEnabled ? `reportSocialContent` : `reportSocialActivity`, {
+            ...(communityEnabled ? { targetType: 'activity', activityId: activity.id } : { id: activity.id }),
             reason: reportReason,
             organizationId: organizationId,
             viewAsPlayerId: viewAsPlayerId
@@ -828,8 +915,13 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
           {`Send report`}
         </button>
       </form>}
+      {!activity.mine && communityEnabled && <button disabled={busy || !!viewAsPlayerId} onClick={() => void runAction(async () => {
+        await callSocial('socialConnection', { playerId: activity.playerId, action: 'block', organizationId, viewAsPlayerId });
+        if (mounted.current && auth.currentUser?.uid === viewerUid) onBlocked(activity.playerId);
+      })}>Block player</button>}
     </details>
-    {commentsOpen && <Comments activity={activity} preview={preview} organizationId={organizationId} onChanged={refreshActivity} />}
+    {commentsOpen && <CommunitySheet title="Comments" onClose={() => setCommentsOpen(false)}><Comments activity={activity} preview={preview} organizationId={organizationId} onChanged={refreshActivity} draft={commentDraft} onDraftChange={setCommentDraft} pendingIdRef={pendingCommentId} communityEnabled={communityEnabled} /></CommunitySheet>}
+    {publishing && <PublishActivity activity={activity} viewer={{ organizationId, viewAsPlayerId }} preview={preview} onClose={() => setPublishing(false)} onSaved={() => void refreshActivity().catch(e => setError(e.message))} />}
     {notice && <p className={`social-notice`} role={`status`}>
       {notice}
     </p>}
@@ -838,25 +930,29 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson })
     </p>}
   </article>;
 }
-function Comments({ activity, organizationId, preview, onChanged }) {
+function Comments({ activity, organizationId, preview, onChanged, draft = '', onDraftChange, pendingIdRef, communityEnabled = false }) {
   let viewAsPlayerId = new URLSearchParams(useLocation().search).get(`viewAsPlayerId`) || void 0;
   let [comments, setComments] = React.useState([]);
   let [cursor, setCursor] = React.useState(null);
-  let [text, setText] = React.useState(``);
+  let [text, setTextState] = React.useState(draft);
+  const setText = value => { setTextState(value); onDraftChange?.(value); };
   let [error, setError] = React.useState(``);
   let [busy, setBusy] = React.useState(false);
-  let pendingCommentId = React.useRef(``);
+  let localPendingId = React.useRef(``);
+  let pendingCommentId = pendingIdRef || localPendingId;
   let mounted = React.useRef(true);
+  let requestEpoch = React.useRef(0);
   let loadComments = React.useCallback(async (r = null) => {
     if (preview)
       return;
+    const epoch = requestEpoch.current;
     let i = await callSocial(`getSocialComments`, {
       id: activity.id,
       cursor: r,
       organizationId: organizationId,
       viewAsPlayerId: viewAsPlayerId
     });
-    if (mounted.current) {
+    if (mounted.current && epoch === requestEpoch.current) {
       setComments(e => r ? [...e, ...i.items] : i.items);
       setCursor(i.cursor);
     }
@@ -868,6 +964,7 @@ function Comments({ activity, organizationId, preview, onChanged }) {
   ]);
   React.useEffect(() => {
     mounted.current = true;
+    setBusy(false);
     loadComments().catch(e => {
       if (mounted.current) {
         setError(e.message);
@@ -875,23 +972,25 @@ function Comments({ activity, organizationId, preview, onChanged }) {
     });
     return () => {
       mounted.current = false;
+      ++requestEpoch.current;
     };
   }, [loadComments]);
   let saveComment = async (e) => {
+    const epoch = requestEpoch.current;
+    const current = () => mounted.current && epoch === requestEpoch.current;
     setBusy(true);
     setError(``);
     try {
-      await e();
-      await loadComments();
-      await onChanged();
+      await e(current);
+      if (current()) { await loadComments(); await onChanged(); }
     }
     catch (e) {
-      if (mounted.current) {
+      if (current()) {
         setError(e.message);
       }
     }
     finally {
-      if (mounted.current) {
+      if (current()) {
         setBusy(false);
       }
     }
@@ -918,6 +1017,7 @@ function Comments({ activity, organizationId, preview, onChanged }) {
       })}>
         {`Delete`}
       </button>}
+      {communityEnabled && <ReportContent viewer={{ organizationId, viewAsPlayerId }} preview={preview} target={{ targetType: 'comment', activityId: activity.id, commentId: n.id }} />}
     </div>)}
     {cursor && <button disabled={busy} onClick={() => void loadComments(cursor).catch(e => setError(e.message))}>
       {`More comments`}
@@ -925,13 +1025,13 @@ function Comments({ activity, organizationId, preview, onChanged }) {
     {!comments.length && <p>
       {`Start the encouragement.`}
     </p>}
-    <form onSubmit={r => {
+    {activity.commentsEnabled === false ? <p>Comments are turned off for this activity.</p> : activity.canComment === false ? <p>You can read this discussion. Commenting is not available for this account.</p> : <form onSubmit={r => {
       r.preventDefault();
       if (preview || viewAsPlayerId) {
         setError(`Read-only preview. Comments are available on real activity after sign-in.`);
         return;
       }
-      saveComment(async () => {
+      saveComment(async current => {
         pendingCommentId.current ||= crypto.randomUUID();
         await callSocial(`saveSocialComment`, {
           id: activity.id,
@@ -940,27 +1040,26 @@ function Comments({ activity, organizationId, preview, onChanged }) {
           organizationId: organizationId,
           viewAsPlayerId: viewAsPlayerId
         });
-        setText(``);
-        pendingCommentId.current = ``;
+        if (current()) { setText(``); pendingCommentId.current = ``; }
       });
     }}>
       <label htmlFor={`comment-${activity.id}`}>
         {`Add a comment`}
       </label>
-      <textarea id={`comment-${activity.id}`} required={true} maxLength={1000} value={text} onChange={e => {
+      <textarea id={`comment-${activity.id}`} disabled={busy} required={true} maxLength={1000} value={text} onChange={e => {
         pendingCommentId.current = ``;
         setText(e.target.value);
       }} />
       <button className={`social-primary`} disabled={busy || !!viewAsPlayerId || !text.trim()}>
         {`Post comment`}
       </button>
-    </form>
+    </form>}
     {error && <p role={`alert`}>
       {error}
     </p>}
   </section>;
 }
-function People({ context, linkedPlayer, organizationId, preview }) {
+function People({ context, linkedPlayer, organizationId, preview, onMutated }) {
   let viewAsPlayerId = new URLSearchParams(useLocation().search).get(`viewAsPlayerId`) || void 0;
   let [people, setPeople] = React.useState([]);
   let [cursor, setCursor] = React.useState(null);
@@ -1009,6 +1108,7 @@ function People({ context, linkedPlayer, organizationId, preview }) {
       mounted.current = false;
     };
   }, [loadPeople]); /* oxlint-enable react/set-state-in-effect */
+  React.useEffect(() => { setBusy(false); }, []);
   let changeConnection = async (e, t) => {
     if (preview || viewAsPlayerId) {
       setNotice(`Read-only preview. Connections are available after sign-in.`);
@@ -1023,6 +1123,7 @@ function People({ context, linkedPlayer, organizationId, preview }) {
         organizationId: organizationId,
         viewAsPlayerId: viewAsPlayerId
       });
+      if (mounted.current) onMutated?.();
       await loadPeople();
     }
     catch (e) {
@@ -1074,10 +1175,10 @@ function People({ context, linkedPlayer, organizationId, preview }) {
           {t.name}
         </strong>
         <small>
-          {t.mine ? `You` : t.relationship === `accepted` ? `Friends` : t.sameTeam ? `Your teammate` : t.uid ? `PoseTek athlete` : `Not signed up yet`}
+          {t.mine ? `You` : t.relationship === `accepted` ? `Friends` : t.sameTeam ? `Your teammate` : (t.canConnect ?? !!t.uid) ? `PoseTek athlete` : `Not signed up yet`}
         </small>
       </div>
-      {!t.mine && t.uid && context.playerId && <div className={`social-person-actions`}>
+      {!t.mine && (t.canConnect ?? !!t.uid) && context.playerId && <div className={`social-person-actions`}>
         {t.relationship === `none` && <button disabled={busy || !!viewAsPlayerId} onClick={() => void changeConnection(t, `request`)}>
           {`Connect`}
         </button>}
@@ -1148,7 +1249,7 @@ function SharingSettings({ context, organizationId, preview, onSave }) {
             ...preferences,
             audience: e.target.value
           })}>
-            {Object.entries(audienceLabels).map(([e, t]) => <option value={e} key={e}>
+            {Object.entries(audienceLabels).filter(([e]) => e !== 'community').map(([e, t]) => <option value={e} key={e}>
               {t}
             </option>)}
           </select>

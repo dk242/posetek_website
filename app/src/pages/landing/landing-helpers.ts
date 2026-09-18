@@ -92,7 +92,7 @@ export function coachOrgStep2Copy(action: CoachOrgAction | null): CoachOrgStep2C
 
 // MARK: - Post-auth destinations
 // Preserve the published role destinations and existing identity query strings.
-// Players enter the community feed; coaches keep their roster destination.
+// Players enter their profile; explicit same-origin return destinations still win.
 
 /** legacy: coachesview.html?userType=coach */
 export function coachHomeRoute(): string {
@@ -101,12 +101,12 @@ export function coachHomeRoute(): string {
 
 /** Published player sign-in destination. */
 export function playerHomeRoute(playerId: string): string {
-  return "/feed?player=" + encodeURIComponent(playerId) + "&userType=player";
+  return "/athlete?player=" + encodeURIComponent(playerId) + "&userType=player";
 }
 
 /** Published player signup destination, with an optional resolved player ID. */
 export function playerSignupRoute(playerId: string | null | undefined): string {
-  return "/feed?userType=player" + (playerId ? "&player=" + encodeURIComponent(playerId) : "");
+  return "/athlete?userType=player" + (playerId ? "&player=" + encodeURIComponent(playerId) : "");
 }
 
 // MARK: - Admission callables (functions/admission.js) — payload shapes

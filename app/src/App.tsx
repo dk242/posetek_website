@@ -1,15 +1,14 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import UsageTracking from "./lib/insight-usage/UsageTracking";
+import PlayerWorkspace, { normalizedPlayerPath, playerPaths } from './pages/athlete-portal/player/PlayerWorkspace';
 
 const HomePage = lazy(() => import("./pages/home/HomePage"));
 const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
-const FeedPage = lazy(() => import("./pages/feed/FeedPage"));
 const OrganizationPage = lazy(() => import("./pages/organization/OrganizationPage"));
 const StaffInvitePage = lazy(() => import("./pages/staff-invite/StaffInvitePage"));
 const RosterPage = lazy(() => import("./pages/roster/RosterPage"));
 const CoachDashboardPage = lazy(() => import("./pages/coach-dashboard/CoachDashboardPage"));
-const AthletePortalPage = lazy(() => import("./pages/athlete-portal/AthletePortalPage"));
 const DrillSharePage = lazy(() => import("./pages/drill-share/DrillSharePage"));
 const InsightsPage = lazy(() => import("./pages/insights/InsightsPage"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
@@ -34,6 +33,16 @@ export default function App() {
     <BrowserRouter>
       <UsageTracking />
       <Suspense fallback={<Fallback />}>
+        <ApplicationRoutes />
+      </Suspense>
+    </BrowserRouter>
+  );
+}
+
+function ApplicationRoutes() {
+  const location = useLocation();
+  if (playerPaths.has(normalizedPlayerPath(location.pathname))) return <PlayerWorkspace />;
+  return (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/index.html" element={<HomePage />} />
@@ -41,8 +50,6 @@ export default function App() {
           <Route path="/signin" element={<LandingPage />} />
           <Route path="/kickai.html" element={<LandingPage />} />
 
-          <Route path="/feed" element={<FeedPage />} />
-          <Route path="/feed.html" element={<FeedPage />} />
 
           <Route path="/organization" element={<OrganizationPage />} />
           <Route path="/join" element={<StaffInvitePage />} />
@@ -58,8 +65,6 @@ export default function App() {
               it own /admin/drills, /admin/accounts and everything under them. */}
           <Route path="/admin/*" element={<AdminPage />} />
 
-          <Route path="/athlete" element={<AthletePortalPage />} />
-          <Route path="/profile.html" element={<AthletePortalPage />} />
 
           <Route path="/drills/broad-jump" element={<DrillSharePage drill="broadJump" />} />
           <Route path="/broadJumpPage.html" element={<DrillSharePage drill="broadJump" />} />
@@ -73,7 +78,5 @@ export default function App() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </Suspense>
-    </BrowserRouter>
   );
 }

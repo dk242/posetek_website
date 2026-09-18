@@ -1,7 +1,7 @@
 # Player experience
 
-The player route is a mobile-first React surface with Profile, AI Coach, Drills,
-Training and Leaderboards. `AthletePortalPage` selects it only for resolved
+The player route is a mobile-first React surface with Feed, Training, Drills,
+Coach and You. Team standings are available within You. `AthletePortalPage` selects it only for resolved
 `athlete` access and the explicit sample preview. Coach, organization, admin and
 shared-results access continue through their existing surfaces. Identity remains
 in `lib/identity.ts` and the portal loader: a player document ID is not assumed to
@@ -11,7 +11,7 @@ be an authentication UID.
 
 | Area | Implementation | Shared behavior |
 | --- | --- | --- |
-| Player navigation | `player/PlayerExperience.tsx` | Five tabs, browser history, old profile/results deep links; chats and an opened Training tab retain state across tab changes |
+| Player navigation | `player/PlayerExperience.tsx`, `PlayerWorkspace.tsx` | Five tabs, browser history, old profile/results deep links; chat drafts, training, feed filters and scroll survive Feed transitions; identity boundaries clear private state |
 | Profile | `PlayerProfile.tsx`, `scoring.ts` | Club, physical measurements/body scan, five-axis rating, metric availability, matched-course and weak-foot comparisons, session activity |
 | Technique | `TechniqueAnalysis.tsx` | Single-kick analysis jobs, saved reports, published feedback tied to the current source job, saved valid left/right comparisons |
 | Drills | Existing `DrillDashboard` and `SessionView` | Cloud metric results, progress, pose/replay artifacts and optional saved videos; no capture or processing |
@@ -38,7 +38,7 @@ changed. Every v2 log mutation and its `workoutSchedule/current.revision + 1`
 write share a Firestore transaction. UI progress changes only after acknowledgement;
 failed saves preserve the last confirmed state. Finished logs cannot reopen.
 Local clocks are account/player/log scoped, survive reload and cap inactivity at
-30 minutes. Paused rest retains its remaining duration.
+30 minutes. Paused rest retains its remaining duration. Runtime also pins the current drill and workout revision; leaving the route pauses it. Paused workouts cannot record sets or skip drills.
 
 Weekly progress uses the mobile plan-week fold: one domain exposure per workout,
 integer half minutes for partial blocks, and deduplicated linked/free recorded
@@ -59,7 +59,7 @@ processing and new body scans remain in the mobile app.
 
 The mobile repository is the source of truth for the player behavior and its
 binding contracts. `player/mobile-parity.json` records the reviewed source hashes;
-the JSON benchmark bundle is byte-identical to the mobile source.
+the JSON benchmark bundle is identical to the mobile source after checkout newline normalization.
 
 Run `npm --prefix app run check:player-parity` with the mobile checkout beside this
 repo, or `node scripts/check-player-parity.mjs /path/to/mobile`. A changed or
@@ -71,8 +71,7 @@ does not replace semantic review or cross-client acceptance testing.
 Relevant mobile references are `docs/LLM_GATEWAY_CONTRACT.md`,
 `docs/TRAINING_PROGRAM_V3_CONTRACT.md`, `docs/PLAYER_PROFILE_INPUTS_CONTRACT.md`,
 `KickAI/Stats/`, and `KickAI/TrainingPlans/`. Changes to shared payloads must land
-compatibly in both clients and the gateway. No function/rules changes are part of
-this player port.
+compatibly in both clients and the gateway. The original player port had no function/rules changes. The community candidate adds narrowly scoped social contracts; see `PLAYER_COMMUNITY_IMPLEMENTATION.md` and its backend handoff.
 
 ## Validation
 

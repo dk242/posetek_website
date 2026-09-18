@@ -6,6 +6,17 @@ business document is included.
 
 ## Readiness and source provenance
 
+### Player community candidate (not yet production)
+
+`codex/player-community-experience` implements the approved phone-web parity and
+community plan, starting from main `61ef7cc`. The user confirmed that existing
+layouts and containers must stay intact; the Refero-informed finish changes
+surface/color, borders, typography and feedback. Read
+`docs/PLAYER_COMMUNITY_IMPLEMENTATION.md` and `docs/PLAYER_COMMUNITY_DESIGN.md`
+for decisions, differences and rollout gates. This is a candidate: it does not
+supersede the production receipt below. Native source, active cohort plans,
+private contexts, gateway and marketing bytes remain outside its mutation scope.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published

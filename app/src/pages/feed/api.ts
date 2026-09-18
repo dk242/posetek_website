@@ -11,12 +11,14 @@ export interface SocialTransport {
 const mutationNames = new Set<SocialCallableName>([
   "setSocialKudos", "saveSocialComment", "setSocialVisibility", "socialConnection",
   "saveSocialPreferences", "reportSocialActivity",
+  'saveSocialCommunityProfile', 'withdrawSocialCommunityPosts', 'markSocialInboxRead', 'reportSocialContent',
 ]);
 
 export function createSocialApi(transport: SocialTransport): SocialApi {
   return async <Name extends SocialCallableName>(name: Name, data: SocialRequests[Name]) => {
-    const viewer = data as { viewAsPlayerId?: string; id?: string };
-    const mutation = mutationNames.has(name) || (name === "moderateSocialActivity" && !!viewer.id);
+    const viewer = data as { viewAsPlayerId?: string; id?: string; action?: string };
+    const mutation = mutationNames.has(name) || (name === "moderateSocialActivity" && !!viewer.id)
+      || (name === 'moderateSocialContent' && !!viewer.action);
     // Defense in depth for new consumers. The recovered backend also enforces
     // this rule; removing disabled buttons can never authorize an admin preview write.
     if (viewer.viewAsPlayerId && mutation) throw new Error("Athlete previews are read-only.");
@@ -26,3 +28,6 @@ export function createSocialApi(transport: SocialTransport): SocialApi {
 }
 
 export const callSocial = createSocialApi(cloud);
+
+/** Opt-in versioned reads keep existing native/legacy consumers on their contract. */
+export const callSocialV2: SocialApi = (name, data) => callSocial(name, { ...data, contractVersion: 2 });

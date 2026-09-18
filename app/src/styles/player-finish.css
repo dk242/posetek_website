@@ -1,0 +1,86 @@
+/* The existing container geometry is the design target. See PLAYER_COMMUNITY_DESIGN.md. */
+:where(.pt-player, .social-app) {
+  --player-signal: #b7f34a;
+  --player-surface: #123329;
+  --player-surface-active: #1d4335;
+  --player-line: #78998938;
+  --player-ink: #f6faf8;
+  --player-soft: #b4c9bd;
+  --player-fast: 120ms;
+  --player-transition: 200ms;
+  accent-color: var(--player-signal);
+  -webkit-tap-highlight-color: #b7f34a20;
+}
+:where(.pt-player, .social-app) :where(button, a, input, textarea, select, summary) {
+  touch-action: manipulation;
+}
+:where(.pt-player, .social-app) :where(button, a) {
+  transition: background-color var(--player-fast) ease-out, border-color var(--player-fast) ease-out,
+    color var(--player-fast) ease-out, box-shadow var(--player-fast) ease-out;
+}
+:where(.pt-player, .social-app) :where(h1, h2, h3) { text-wrap: balance; }
+.pt-player .portal-card, .social-app .social-card {
+  border-color: var(--player-line);
+  background-color: var(--player-surface);
+  box-shadow: inset 0 1px 0 #d4f5e509, 0 2px 6px #020e0b18;
+}
+.pt-player .player-header, .social-app .social-header {
+  border-bottom-color: #b5d2c21f;
+}
+.pt-player .player-wordmark, .social-app .social-brand { letter-spacing: -.055em; }
+.pt-player .player-rating strong, .pt-player .player-rest strong,
+.pt-player .player-metric strong, .social-app .social-metrics strong {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  letter-spacing: -.04em;
+}
+.pt-player .player-radar polygon { stroke-linejoin: round; }
+.pt-player .player-skill-tabs button[aria-pressed='true'],
+.pt-player .player-week-rail button[aria-pressed='true'] {
+  background-color: var(--player-surface-active);
+  border-color: #b7f34a99;
+  box-shadow: inset 0 0 0 1px #b7f34a12;
+}
+.pt-player .primary-cta, .social-app .social-primary {
+  background-color: var(--player-signal);
+  color: #10251a;
+  box-shadow: inset 0 1px 0 #ffffff44, 0 2px 4px #07181022;
+}
+.pt-player .player-bottom-nav, .social-app .social-bottom {
+  border-color: #72958345;
+  box-shadow: 0 -6px 24px #03110c33;
+}
+.pt-player .player-bottom-nav [aria-current='page'] .material-symbols-outlined,
+.social-app .social-bottom [aria-current='page'] .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 600;
+}
+.pt-player .player-bottom-nav [aria-current='page'],
+.social-app .social-bottom [aria-current='page'] { font-weight: 700; }
+.pt-player .player-meter i, .pt-player progress, .social-app .social-bars span {
+  transition: width var(--player-transition) ease-out, height var(--player-transition) ease-out;
+}
+.social-app .social-kudos-dot { color: var(--player-signal); }
+.social-app .social-card-actions button[aria-pressed='true'] {
+  color: var(--player-signal);
+  background-color: #b7f34a0d;
+}
+:where(.pt-player, .social-app) :where(button, a, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--player-signal);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .pt-player button:not(:disabled):hover, .social-app button:not(:disabled):hover {
+    border-color: #b7f34a66;
+  }
+  .pt-player .primary-cta:not(:disabled):hover, .social-app .social-primary:not(:disabled):hover {
+    background-color: #c5fb70;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.pt-player, .social-app) *, :where(.pt-player, .social-app) *::before,
+  :where(.pt-player, .social-app) *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

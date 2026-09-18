@@ -97,7 +97,7 @@ describe("social callable transport", () => {
       saveSocialPreferences: { audience: "team", automatic: true, videos: false },
       reportSocialActivity: { id: "activity-1", reason: "Please review" },
       moderateSocialActivity: { id: "activity-1", hidden: true },
-    } satisfies SocialRequests;
+    } satisfies Pick<SocialRequests, typeof socialCallableNames[number]>;
     const payload = { ok: true };
     const invoke = vi.fn(async () => ({ data: payload }));
     const httpsCallable = vi.fn(() => invoke);
@@ -147,7 +147,8 @@ describe("social callable transport", () => {
   it("documents every callable used by the recovered UI with no deployed runtime dependency", () => {
     const source = readFileSync(new URL("./FeedPage.jsx", import.meta.url), "utf8");
     const used = [...new Set([...source.matchAll(/callSocial\(`([^`]+)`/g)].map(match => match[1]))].sort();
-    expect(used).toEqual([...socialCallableNames].sort());
+    expect(used).toEqual(socialCallableNames.filter(name => name !== 'reportSocialActivity').sort());
+    expect(source).toContain('communityEnabled ? `reportSocialContent` : `reportSocialActivity`');
     expect(source).not.toMatch(/from ["'](?:https?:|.*(?:index-|firebase-|rolldown-runtime-))/);
     const names: SocialCallableName[] = [...socialCallableNames];
     expect(names).toHaveLength(14);

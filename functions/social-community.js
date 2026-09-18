@@ -47,6 +47,7 @@ function createSocialCommunity({ db, now, fail, segment, context, activity, pres
     const fallback = [clean(p.data().firstName, 40), clean(p.data().lastName, 1)].filter(Boolean).join(" ") || "Athlete";
     const club = saved.showClub && p.data().organizationId ? await db.collection("organizations").doc(p.data().organizationId).get() : null;
     return { playerId: p.id, displayName: saved.displayName || fallback, discoverable: saved.discoverable === true,
+      ...(mine ? { displayNameConfigured: !!saved.displayName } : {}),
       clubName: clean(club?.data()?.name), relationship: relationship(c, uid), mine,
       suspended: mine ? saved.suspended === true : false, showClub: saved.showClub === true, communityPostsWithdrawnAt: mine ? saved.withdrawnAt || null : null };
   }

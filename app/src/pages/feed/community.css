@@ -1,0 +1,50 @@
+.community-sheet { width: min(600px, calc(100vw - 24px)); max-height: 86dvh; overflow-y: auto; overscroll-behavior: contain; border: 1px solid #78998960; border-radius: 20px; padding: 24px; background: #123329; color: #f6faf8; font: 15px/1.5 Inter, system-ui, sans-serif; }
+.community-sheet::backdrop { background: #02140dd9; }
+.community-sheet > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.community-sheet > header h2 { margin: 0; font-size: 22px; }
+.community-sheet button, .community-sheet input, .community-sheet select, .community-sheet textarea { font: inherit; color: inherit; min-height: 44px; border: 1px solid #ffffff33; border-radius: 12px; background: #071c15; padding: 10px 12px; }
+.community-sheet button { cursor: pointer; }
+.community-sheet > header button { min-width: 44px; font-size: 24px; }
+.community-sheet :focus-visible { outline: 2px solid #b7f34a; outline-offset: 3px; }
+.community-sheet label, .community-settings label, .community-search label, .community-report label { display: grid; gap: 8px; margin: 16px 0; }
+.community-sheet textarea, .community-sheet input:not([type=checkbox]), .community-sheet select { width: 100%; box-sizing: border-box; font-size: 16px; }
+.community-sheet textarea { min-height: 96px; resize: vertical; }
+.community-sheet .social-primary { background: #b7f34a; color: #10251a; width: 100%; font-weight: 700; }
+.community-sheet .community-check, .community-settings .community-check { display: flex; gap: 12px; align-items: flex-start; }
+.community-check input[type=checkbox] { width: 20px; height: 20px; min-height: 20px; margin-top: 3px; flex: 0 0 20px; accent-color: #b7f34a; }
+.community-muted { color: #b4c9bd; font-size: 13px; }
+.community-post-preview { border: 1px solid #78998938; border-radius: 14px; padding: 16px; background: #0a241b; }
+.community-post-preview h3 { margin: 6px 0; font-size: 20px; }
+.community-caption { white-space: pre-wrap; overflow-wrap: anywhere; }
+.community-search { display: flex; align-items: end; gap: 12px; margin-bottom: 20px; }
+.community-search label { flex: 1; min-width: 0; margin: 0; }
+.community-search input { width: 100%; min-width: 0; }
+.community-people, .community-inbox, .community-profile-activity { display: grid; gap: 8px; margin-top: 20px; }
+.social-app .community-person, .social-app .community-inbox > button { width: 100%; display: flex; gap: 14px; align-items: center; padding: 14px 0; background: transparent; border: 0; border-bottom: 1px solid #78998938; border-radius: 0; text-align: left; }
+.community-person > span:nth-child(2), .community-inbox > button > span:nth-child(2) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.community-person small, .community-inbox small { display: block; color: #b4c9bd; font-size: 12px; margin-top: 4px; }
+.community-profile-heading { display: flex; gap: 16px; align-items: center; margin-top: 20px; }
+.community-profile-heading h1 { margin: 4px 0; overflow-wrap: anywhere; }
+.community-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.community-profile-activity > button { display: grid; gap: 8px; text-align: left; padding: 16px; }
+.community-settings { margin-top: 24px; }
+.community-report { margin-top: 20px; }
+.community-report summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+.community-report textarea { width: 100%; min-height: 80px; }
+.community-unread { width: 7px; height: 7px; border-radius: 50%; background: #b7f34a; flex: 0 0 7px; }
+.community-inbox .is-read { color: #b4c9bd; }
+.community-report-row { border-bottom: 1px solid #78998938; padding-block: 16px; }
+.social-app .social-card-options .community-publish { width: 100%; margin: 12px 0; }
+.social-app .social-caption { white-space: pre-wrap; overflow-wrap: anywhere; margin: 12px 0 20px; }
+.social-app .social-audience-label { color: #b4c9bd; font-size: 12px; margin-top: 6px; }
+.social-app .social-more-filters { position: relative; flex: 0 0 auto; }
+.social-app .social-more-filters summary { min-height: 44px; padding: 12px; cursor: pointer; white-space: nowrap; }
+.social-app .social-more-filters > div { display: flex; gap: 8px; }
+@media (max-width: 600px) {
+  .community-sheet { margin: auto auto 8px; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); max-height: 88dvh; }
+  .community-search { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .community-sheet[open] { animation: community-enter 180ms ease-out; }
+  @keyframes community-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+}

@@ -2,18 +2,19 @@
  * Times are epoch milliseconds; callable results are the Firebase `data` payload.
  * Firestore is never accessed directly by this feature. See PROVENANCE.md.
  */
-export type SocialAudience = "organization" | "team" | "friends" | "private";
-export type FeedScope = "all" | "team" | "organization" | "friends" | "mine";
+export type SocialAudience = "organization" | "team" | "friends" | "private" | "community";
+export type FeedScope = "all" | "team" | "organization" | "friends" | "mine" | "community";
 export type ConnectionAction = "request" | "accept" | "remove" | "block" | "unblock";
 export type ConnectionRelationship = "none" | "sent" | "received" | "accepted" | "blocked";
 
 export interface SocialPreferences {
-  audience: SocialAudience;
+  audience: Exclude<SocialAudience, 'community'>;
   automatic: boolean;
   videos: boolean;
 }
 
 export interface SocialViewer {
+  contractVersion?: 2;
   /** Organization override is honored by the server only for administrators. */
   organizationId?: string;
   /** Administrator-only athlete impersonation. Every mutation is forbidden. */
@@ -34,6 +35,7 @@ export interface SocialContext {
   preferences: SocialPreferences;
   adminViewer?: boolean;
   previewPlayerId?: string | null;
+  communityEnabled?: boolean;
 }
 
 export interface SocialMetric { label: string; value: number; unit: string }
@@ -41,7 +43,7 @@ export interface SocialActivity {
   id: string;
   playerId: string;
   authorName: string;
-  authorUid: string | null;
+  authorUid?: string | null;
   teamName: string;
   title: string;
   subtitle: string;
@@ -60,6 +62,12 @@ export interface SocialActivity {
   kudos: number;
   liked: boolean;
   comments: number;
+  caption?: string;
+  selectedRepId?: string | null;
+  availableReps?: { id: string; label: string; canViewVideo: boolean }[];
+  commentsEnabled?: boolean;
+  canComment?: boolean;
+  communityPublished?: boolean;
 }
 
 export interface TimeCursor { time: number; id: string }
@@ -72,6 +80,7 @@ export interface SocialComment {
   canDelete: boolean;
 }
 export interface SocialPerson {
+  canConnect?: boolean;
   playerId: string;
   name: string;
   uid: string | null;
@@ -97,7 +106,7 @@ type MutationResult = { ok: true };
 
 export interface SocialRequests {
   getSocialContext: SocialViewer;
-  getSocialFeed: SocialViewer & { scope?: FeedScope; cursor?: TimeCursor | null };
+  getSocialFeed: SocialViewer & { scope?: FeedScope; cursor?: TimeCursor | null; playerId?: string };
   getSocialActivity: ActivityRequest;
   getSocialComments: ActivityRequest & { cursor?: TimeCursor | null };
   getSocialPeople: SocialViewer & { cursor?: string | null; playerId?: string };
@@ -106,11 +115,51 @@ export interface SocialRequests {
   setSocialKudos: ActivityRequest & { liked: boolean };
   saveSocialComment: ActivityRequest & { commentId: string } &
     ({ text: string; remove?: false } | { remove: true });
-  setSocialVisibility: ActivityRequest & { audience: SocialAudience; hidden: boolean };
+  setSocialVisibility: ActivityRequest & { audience: SocialAudience; hidden: boolean; caption?: string; selectedRepId?: string | null; videos?: boolean; commentsEnabled?: boolean };
   socialConnection: SocialViewer & { playerId: string; action: ConnectionAction };
   saveSocialPreferences: SocialViewer & SocialPreferences;
   reportSocialActivity: ActivityRequest & { reason: string };
   moderateSocialActivity: SocialViewer & ({ id?: never; hidden?: never } | { id: string; hidden: boolean });
+  getSocialCommunityProfile: SocialViewer & { playerId?: string };
+  saveSocialCommunityProfile: SocialViewer & { displayName: string; discoverable: boolean; showClub: boolean };
+  getSocialDiscovery: SocialViewer & { query?: string; cursor?: string | null };
+  withdrawSocialCommunityPosts: SocialViewer;
+  getSocialInbox: SocialViewer & { cursor?: TimeCursor | null };
+  markSocialInboxRead: SocialViewer & { ids: string[] };
+  reportSocialContent: SocialViewer & { targetType: 'activity' | 'comment' | 'profile'; activityId?: string; commentId?: string; playerId?: string; reason: string };
+  moderateSocialContent: SocialViewer & { reportId?: string; action?: 'hideActivity' | 'removeComment' | 'suspendProfile' | 'restoreProfile' | 'dismiss' };
+}
+
+export interface CommunityProfile {
+  playerId: string;
+  displayName: string;
+  displayNameConfigured?: boolean;
+  discoverable: boolean;
+  showClub?: boolean;
+  clubName: string;
+  relationship: ConnectionRelationship;
+  mine: boolean;
+  suspended: boolean;
+  communityPostsWithdrawnAt: number | null;
+}
+export interface InboxItem {
+  id: string;
+  type: 'request' | 'accepted' | 'kudos' | 'comment';
+  actor: { playerId: string | null; displayName: string };
+  activityId?: string;
+  createdAt: number;
+  read: boolean;
+}
+export interface CommunityReport {
+  id: string;
+  targetType: 'activity' | 'comment' | 'profile';
+  activityId?: string;
+  commentId?: string;
+  playerId?: string;
+  reason: string;
+  createdAt: number;
+  resolved?: boolean;
+  targetSuspended?: boolean;
 }
 
 export interface SocialResponses {
@@ -121,6 +170,14 @@ export interface SocialResponses {
   getSocialPeople: { people: SocialPerson[]; cursor: string | null };
   getSocialMedia: { url: string | null; expiresAt: number | null };
   getSocialAdminDirectory: SocialAdminDirectory;
+  getSocialCommunityProfile: CommunityProfile;
+  saveSocialCommunityProfile: CommunityProfile;
+  getSocialDiscovery: { people: CommunityProfile[]; cursor: string | null };
+  withdrawSocialCommunityPosts: MutationResult;
+  getSocialInbox: { items: InboxItem[]; cursor: TimeCursor | null; unreadCount: number; unreadCountIsLowerBound: boolean };
+  markSocialInboxRead: MutationResult;
+  reportSocialContent: MutationResult;
+  moderateSocialContent: { reports: CommunityReport[] } | MutationResult;
   setSocialKudos: MutationResult;
   saveSocialComment: MutationResult;
   setSocialVisibility: MutationResult;
@@ -141,4 +198,10 @@ export const socialCallableNames = [
   "getSocialPeople", "getSocialMedia", "getSocialAdminDirectory", "setSocialKudos",
   "saveSocialComment", "setSocialVisibility", "socialConnection", "saveSocialPreferences",
   "reportSocialActivity", "moderateSocialActivity",
+] as const satisfies readonly SocialCallableName[];
+
+export const communityCallableNames = [
+  'getSocialCommunityProfile', 'saveSocialCommunityProfile', 'getSocialDiscovery',
+  'withdrawSocialCommunityPosts', 'getSocialInbox', 'markSocialInboxRead',
+  'reportSocialContent', 'moderateSocialContent',
 ] as const satisfies readonly SocialCallableName[];
