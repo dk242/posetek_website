@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "release": "Neutral workout time-allocation descriptions",
+  "status": "backend-only-production-release-verified",
+  "verifiedAt": "2026-09-18T01:13:01.386Z",
+  "previousReleaseReceipt": "deployment/EVIDENCE_PLANNER_PRODUCTION.json",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/evidence-linked-planner",
+    "commit": "903b4540f4eae37dd9e2fa944d08c00d62ef8a2c",
+    "archiveSha256": "62c05fa8fbdeb6772a9fcc6b4115548d6f97dfe0ed68f51c421908bbe01a9dbe",
+    "archiveGeneration": "1789693315164040",
+    "committedFileCount": 166,
+    "exactCommittedArchiveExportVerified": true,
+    "runtimeFileChanged": "services/agent-gateway/gateway/program_composition.py"
+  },
+  "backend": {
+    "project": "kickai-69dd0",
+    "region": "us-west1",
+    "service": "agent-gateway",
+    "revision": "agent-gateway-web-62c05fa8fbde",
+    "image": "us-west1-docker.pkg.dev/kickai-69dd0/cloud-run-source-deploy/agent-gateway@sha256:edfdd6d0fbfb196a9c339afd273086cb6a1735ed167d129dae4d145a578c1f9b",
+    "trafficPercent": 100,
+    "buildId": "b00664db-d4ce-4067-ae9f-6aa47eabdcd9",
+    "buildStatus": "SUCCESS",
+    "buildFinishedAt": "2026-09-18T01:10:58.092755Z",
+    "sourceGenerationHashStepsAndImageProvenanceVerified": true,
+    "runtimeConfigurationPreserved": true,
+    "capabilityPoliciesAndQuotasPreserved": true,
+    "iamAndProtectedFunctionsPreserved": true,
+    "oldTrafficTagsPreserved": true,
+    "healthAndUnauthenticatedChecksPassed": true
+  },
+  "change": {
+    "description": "List every actual domain-minute total in descending order as Time allocation, without inferring a lead or supporting emphasis from nearly equal totals.",
+    "example": "Time allocation: jumping (19 min), dribbling (18 min) and speed (18 min).",
+    "plyometricsLabel": "jumping",
+    "unsupportedLandingTechniqueClaimRemoved": true,
+    "actualFreshFirstAndStrengthPositionsPreserved": true,
+    "catalogRestReminderPreserved": true,
+    "textLimitCharacters": 400,
+    "drillSelectionDosesOrderFocusDomainsBudgetsCapsAndProgressionUnchanged": true,
+    "independentCheckerAndRetryPolicyUnchanged": true,
+    "existingSavedPlansNotRewrittenByRelease": true
+  },
+  "validation": {
+    "compositionTestsPassed": 34,
+    "adminNativeAndEvidenceIntegrationTestsPassed": 111,
+    "replayAndAdversarialTestsPassed": 42,
+    "replayAndAdversarialTestsSkipped": 6,
+    "skipReason": "Existing private historical model recordings are excluded from the source handoff.",
+    "releaseGuardTestsPassed": 14,
+    "independentSyntheticProfilesCompared": 19,
+    "allComparedPrescribedDrillIdsDosesOrderAndBudgetsUnchanged": true,
+    "authoredReplayTapesRefreshed": 18,
+    "replayChangesLimitedToContextFingerprints": true,
+    "providerStrategiesAndAcceptanceAssertionsUnchanged": true,
+    "protectedNonReplayFilesVerifiedUnchanged": 13,
+    "historicalPrivateRecordingsUnchanged": true,
+    "immutableCandidateFullPytestProcess": {
+      "status": "SUCCESS",
+      "requiredStepIndex": 1,
+      "allowsFailure": false,
+      "exactReviewedCommandVerified": true,
+      "numericPassAndSkipCounts": null,
+      "limitation": "Cloud Logging did not expose the final pytest summary. Successful mandatory full-suite process completion was verified; no numeric total is inferred."
+    }
+  },
+  "preserved": {
+    "websiteDeploymentId": "6aac7f6c315a6190c054fba7",
+    "websiteAndMarketingBytesUnchangedByRelease": true,
+    "firestoreRuleset": "projects/kickai-69dd0/rulesets/26c8462d-3866-412c-b4ba-2bc76f37bc07",
+    "rulesUnchanged": true,
+    "plannerConfigurationUnchanged": true,
+    "effectiveResultsReader": "getAthleteEffectiveResults version 4",
+    "videoProcessorRevision": "onvideoupload-00027-guw",
+    "archiveGuardEntries": 32,
+    "nativeBinaryRequestContractAndPersistenceUnchanged": true,
+    "nativePlanSchemaVersion": 3,
+    "nativeGenerationDailyLimit": 1,
+    "adminDraftReviewAndExplicitActivationUnchanged": true
+  },
+  "rollback": {
+    "revision": "agent-gateway-web-e75e9318d15d",
+    "image": "us-west1-docker.pkg.dev/kickai-69dd0/cloud-run-source-deploy/agent-gateway@sha256:2d2c4fcc1e71292d9f8e9541ccdf4b30145f19fcfd90840ebee4c4e763a3cd5b",
+    "procedure": "Drain planner jobs and restore 100 percent traffic to the retained prior gateway revision while preserving existing traffic tags and service configuration. This backend-only rollback does not require a website, rules, IAM, quota or native deployment and must not delete or rewrite saved plans, drafts, athlete data or workout logs."
+  },
+  "privacy": "This receipt contains no athlete identities, individual result values, invitation codes or credentials. Cohort activation results are recorded separately."
+}

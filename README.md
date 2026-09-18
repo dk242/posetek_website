@@ -12,7 +12,7 @@ Both pages share persistent Players / Coaches navigation.
 The latest release was published September 17, 2026 at 5:35:06 PM PDT as
 `6aac7f6c315a6190c054fba7`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/EVIDENCE_PLANNER_PRODUCTION.json).
+[the website production receipt](deployment/EVIDENCE_PLANNER_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Evidence-linked planning live:** the admin planner and mobile-generated plans
@@ -23,6 +23,9 @@ limit and active-plan behavior. Read the
 [methodology and delivery contract](docs/PERSONALIZED_PLANNER_METHODOLOGY.md).
 Existing plans and recording repairs are preserved. Native source-contract
 validation does not replace installed-iPhone acceptance.
+The [gateway description follow-up](deployment/PLANNER_INTENT_PRODUCTION.json)
+is live at revision `agent-gateway-web-62c05fa8fbde`. It reports actual training
+minutes with neutral wording while preserving exercise selection and workload.
 
 **Reviewed Dribbling and Agility estimates live:** authenticated skill maps show
 separately labeled conditional estimates, with optional low-confidence planning

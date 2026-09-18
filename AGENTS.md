@@ -14,12 +14,16 @@ local reference captures, dependencies, and credentials out of Git.
 The latest recorded production release is `6aac7f6c315a6190c054fba7`, published
 September 17, 2026 at 5:35:06 PM PDT. Evidence-linked personalized planning now
 serves the current admin planner and native schema-3 generation through shared
-gateway revision `agent-gateway-web-e75e9318d15d`. Coaching goals are optional.
+gateway revision `agent-gateway-web-62c05fa8fbde`. Coaching goals are optional.
 Admin plans remain drafts until activated; native generation retains its existing
 permissions, schema and daily limit of one. The narrow request-rules update permits
 only an optional boolean estimate preference. Read
-`deployment/EVIDENCE_PLANNER_PRODUCTION.json` and
+`deployment/EVIDENCE_PLANNER_PRODUCTION.json`,
+`deployment/PLANNER_INTENT_PRODUCTION.json` and
 `docs/PERSONALIZED_PLANNER_METHODOLOGY.md` before planner changes.
+The gateway-only description follow-up lists actual domain minutes without
+claiming a lead from nearly equal totals; prescriptions and website bytes remain
+unchanged by that release.
 Reviewed provisional Dribbling and Agility
 estimates add explicitly labeled skill-map and optional planning context,
 separate from measured results, qualification, rankings and Insights. A confirmed

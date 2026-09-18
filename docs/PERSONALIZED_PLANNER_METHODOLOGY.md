@@ -120,3 +120,42 @@ Source and offline contract checks are distinct from installed-device acceptance
 Windows validation does not establish the installed iPhone build, Xcode execution
 or TestFlight acceptance. The separate native recording-remediation handoff still
 requires its documented Mac/iPhone validation.
+
+## September 17 backend description follow-up
+
+The backend-only follow-up was verified September 17 at 6:13 PM PDT
+(`2026-09-18T01:13:01.386Z`). Its immutable identifiers, checks and rollback are
+recorded in [the intent release receipt](../deployment/PLANNER_INTENT_PRODUCTION.json).
+The prior methodology release receipt remains a historical record of that rollout.
+
+Session intent now lists every actual domain-minute total in descending order,
+for example: “Time allocation: jumping (19 min), dribbling (18 min) and speed
+(18 min).” It avoids declaring a single lead area when totals are nearly equal.
+The generic plyometrics label is “jumping”; a category name alone does not
+establish that the selected exercises teach landing technique. Descriptions still
+state a fresh-first sequence only when it is present, identify actual strength
+block positions, retain the prescribed-rest reminder and respect the 400-character
+limit.
+
+The selection, prescribed doses, ordering, domain allocations, caps, progression,
+independent checker and retry policy are unchanged. Independent comparisons across
+19 synthetic profiles confirmed identical exercise IDs, doses, order and budgets.
+Only context fingerprints changed in 18 authored replay tapes; provider strategies,
+acceptance assertions and historical private recordings were preserved.
+
+Validation passed 34 composition tests, 111 admin/native/evidence integration tests,
+42 replay/adversarial tests and 14 release-guard tests. Six existing replay skips
+reflect private historical recordings excluded from the source handoff. The exact
+committed candidate also completed the mandatory full test process successfully
+inside Cloud Build. Its final numeric summary was unavailable in Cloud Logging,
+so no whole-container pass or skip total is inferred.
+
+This release changes only gateway descriptions for newly generated plans. It does
+not rewrite existing prescriptions or change website bytes, Firestore rules,
+planner configuration, IAM, the 32-entry video archive guard, the effective-results
+reader, or the native binary, request contract, schema-3 persistence and daily
+generation limit. Both admin and native generation receive the shared description
+change. Rollback restores gateway revision `agent-gateway-web-e75e9318d15d` after
+draining jobs, preserving existing traffic tags and saved athlete data; this
+follow-up requires no website or rules rollback. Cohort plan activation outcomes
+are documented separately.
