@@ -31,6 +31,22 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
+### September 16 cohort: twelve active training plans
+
+The user-authorized cohort rollout is complete. Final readback at
+`2026-09-18T01:24:20.280434Z` confirmed exactly one reviewed active schema-3 plan
+for each of twelve September 16 testers: two weeks, two solo sessions per week,
+48 workouts total. Priorities were chosen automatically, with reviewed estimates
+enabled. Seven
+missing ages used the user-approved team-peer assumptions in plan intake only;
+profiles and birthdays are unchanged. Existing recordings, estimates, workout
+logs, historical drafts and the original four activations were preserved.
+The existing signup claim links users to the same canonical player IDs where
+the active plans are stored; this operation did not send invitations or claim
+accounts. See [the rollout handoff](docs/SEP16_TRAINING_PLAN_ROLLOUT.md) and
+[activation receipt](deployment/SEP16_TRAINING_PLANS_ACTIVATED.json). Historical
+pilot receipts below retain their unactivated status at their original checkpoints.
+
 ### Current gateway follow-up: accurate workout descriptions
 
 Gateway revision `agent-gateway-web-62c05fa8fbde` serves all traffic, verified at

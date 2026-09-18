@@ -26,6 +26,9 @@ validation does not replace installed-iPhone acceptance.
 The [gateway description follow-up](deployment/PLANNER_INTENT_PRODUCTION.json)
 is live at revision `agent-gateway-web-62c05fa8fbde`. It reports actual training
 minutes with neutral wording while preserving exercise selection and workload.
+The [September 16 cohort rollout](docs/SEP16_TRAINING_PLAN_ROLLOUT.md) is complete:
+twelve reviewed active plans and 48 workouts, stored under the existing player
+profiles for later signup. Planning-age assumptions did not change birthdays.
 
 **Reviewed Dribbling and Agility estimates live:** authenticated skill maps show
 separately labeled conditional estimates, with optional low-confidence planning
