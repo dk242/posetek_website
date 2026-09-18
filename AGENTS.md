@@ -11,8 +11,16 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aac6cc0bfb1ddbe0a73e636`, published
-September 17, 2026 at 3:47:35 PM PDT. Reviewed provisional Dribbling and Agility
+The latest recorded production release is `6aac7f6c315a6190c054fba7`, published
+September 17, 2026 at 5:35:06 PM PDT. Evidence-linked personalized planning now
+serves the current admin planner and native schema-3 generation through shared
+gateway revision `agent-gateway-web-e75e9318d15d`. Coaching goals are optional.
+Admin plans remain drafts until activated; native generation retains its existing
+permissions, schema and daily limit of one. The narrow request-rules update permits
+only an optional boolean estimate preference. Read
+`deployment/EVIDENCE_PLANNER_PRODUCTION.json` and
+`docs/PERSONALIZED_PLANNER_METHODOLOGY.md` before planner changes.
+Reviewed provisional Dribbling and Agility
 estimates add explicitly labeled skill-map and optional planning context,
 separate from measured results, qualification, rankings and Insights. A confirmed
 Sprint-to-Agility classification correction removes the incomplete attempt from
@@ -22,7 +30,7 @@ measured Sprint results while preserving the genuine Sprint attempt. Read
 historical checkpoint. The preceding testing audit adds canonical
 qualified results, proven duplicate suppression, exact capture media and truthful
 pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
-`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 510 files.
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 560 files.
 Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
 capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
 native repository rules. Preserve the 32-entry video archive guard in
@@ -33,7 +41,7 @@ organization managers and assigned coaches, preserving the account hierarchy,
 reviewed personalized web planner and exact Players and
 Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and concurrent source
 commit `38a817e`. Gateway, rules and personalized configuration are live; native
-mobile generation is unchanged. Native usage is included in the new remediation
+mobile generation uses the shared methodology above. Native usage is included in the new remediation
 branch (the prior `codex/expanded-insights-usage` branch is historical) for Taiyo's Mac/TestFlight release;
 it is unavailable until athletes install that build. Read
 `deployment/EXPANDED_INSIGHTS_PRODUCTION.json` for the prior Insights receipt,
@@ -65,7 +73,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 510 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 560 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 

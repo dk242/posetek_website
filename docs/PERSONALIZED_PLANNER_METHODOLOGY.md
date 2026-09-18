@@ -3,8 +3,9 @@
 The September 17 methodology connects a player's supported testing needs to
 training priorities, time allocations, eligible library exercises and progress
 checks. It covers the existing admin personalized planner and schema-3 mobile
-generation. Release status and immutable deployment identifiers are recorded in
-the production receipt after verification.
+generation. The September 17 release is live; immutable deployment identifiers,
+validation and rollback are recorded in the
+[production receipt](../deployment/EVIDENCE_PLANNER_PRODUCTION.json).
 
 ## Evidence and exercise selection
 
@@ -47,8 +48,9 @@ checksum, and whether a qualified result has superseded that same drill.
 The admin interface sends an explicit estimate preference through its visible
 checkbox. Existing mobile schema-3 requests use eligible reviewed estimates by
 default; an explicit false preference opts out. Estimates remain low-confidence
-support and do not alter measured reps, skill-map scoring, rankings, testing
-completion, or Insights. A later qualified test takes precedence when a new
+support. Using them in planning does not change measured reps, the existing
+skill-map scoring and labeled estimate display, rankings, testing completion,
+or Insights. A later qualified test takes precedence when a new
 assessment or plan is generated. Saved workout prescriptions do not silently
 change after a retest.
 
@@ -66,6 +68,10 @@ Short schedules retain their primary objectives while reconciling complete sets
 with available domain slots. Combined age/level priority limits apply to both
 projected targets and actual exercise minutes. Revised targets and any unassigned
 minutes are disclosed rather than silently adding time or erasing an objective.
+Session duration remains a target with the existing `max(5 minutes, 10%)`
+tolerance; the weekly total has the same tolerance rule. Actual durations include
+transitions. The live two-session pilot is 65 and 63 minutes for a requested
+60-minute target, not two strict 60-minute windows.
 
 Every generated exercise carries a structured rationale and the existing short
 `whyIncluded` explanation. Activated admin plans and mobile-generated plans use

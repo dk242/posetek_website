@@ -31,9 +31,53 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
-### Current release: Reviewed provisional Agility evidence
+### Current release: Evidence-linked personalized planner
 
-Deployment `6aac6cc0bfb1ddbe0a73e636` is live at https://posetek.net, published
+Deployment `6aac7f6c315a6190c054fba7` is live at https://posetek.net, published
+September 17, 2026 at 5:35:06 PM PDT (`2026-09-18T00:35:06.349Z`). Application
+source `8a1445708a46b37090dd658c8c631c16ae3fd69c`, gateway source
+`5a2d62b3c18f197ca69041fc6821e6d45c258d5e` and request-rules source
+`55d63d1e2e448ef871e46f4d0488fc23e66c74b2` are pushed on
+`codex/evidence-linked-planner`. See the
+[production receipt](deployment/EVIDENCE_PLANNER_PRODUCTION.json) and
+[methodology handoff](docs/PERSONALIZED_PLANNER_METHODOLOGY.md).
+
+The current admin planner and native schema-3 generation share server-qualified
+evidence, bounded priorities, time allocation and reviewed exercise mappings.
+All coaching goals may remain unchecked; up to two optional goals add emphasis.
+Measured results, reviewed conditional estimates and general practice remain
+distinct. Each exercise includes an explanation and progress check; primary
+objectives require at least one reviewed relevant exercise. This does not imply
+every exercise or every minute in that domain has a metric-specific link.
+The web interface provides Evidence, Schedule, Review and Use plan steps.
+
+Gateway revision `agent-gateway-web-e75e9318d15d` serves all traffic. The only rules
+change permits optional boolean `useProvisionalEstimates` on personalized
+assessment/generation; actor checks and activation/discard contracts are unchanged.
+Native generation retains its existing active-plan behavior and daily limit of
+one. Admin generation remains a draft until explicitly activated. Current mobile
+readers use the existing exercise explanation; rich priority cards are web-only.
+Installed-iPhone/TestFlight acceptance was not performed by this release.
+
+One live two-week pilot draft passed saved-context, public projection and workout
+checks with four workouts and 22 explained exercise entries. It remains ready and
+unactivated. Existing reps, active plans, workout logs and schedules are unchanged.
+Its 65- and 63-minute sessions include transitions and satisfy the inherited 10%
+time tolerance; a requested 60 minutes is a target, not a strict ceiling. Some
+supporting exercise selections remain explicitly labeled general practice.
+
+All 592 local files match 593 production inventory entries. The reconciled
+baseline protects 560 application/public files and preserves approved marketing
+bytes. Validation includes 942 frontend tests, TypeScript, 353 rules assertions,
+19 application-release/baseline checks, native contract checks and a successful
+full candidate-container test process. Its final numerical pytest total was not
+available and is not inferred. The 32 recording archive guards, effective-results
+reader, four reviewed estimates, capability settings and repair journals remain
+unchanged. Historical receipts below remain records of their original checkpoints.
+
+### Previous release: Reviewed provisional Agility evidence
+
+Deployment `6aac6cc0bfb1ddbe0a73e636` was published at https://posetek.net on
 September 17, 2026 at 3:47:35 PM PDT (`2026-09-17T22:47:35.951Z`). Application
 source `64b1dca569b43bad319fbc7c116d22717be9ad5b` is pushed on
 `codex/provisional-dribbling-recovery`. See

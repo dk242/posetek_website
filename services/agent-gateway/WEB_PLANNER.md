@@ -15,12 +15,25 @@ administrators for all players. Generation creates a draft. Its requester explic
 reviews and activates it; administrators may also manage existing pilot drafts.
 Native schema-3 `generate_training_plan` uses the same evidence-to-objective
 methodology and weekly exercise selection. It retains its existing direct
-active-plan persistence and ordinary daily allowance; the web flow still requires
+active-plan persistence, schema-3 contract, permissions and daily allowance of one
+generation; the web flow still requires
 explicit draft activation. Individual-workout editing keeps its existing contract.
 See [`PERSONALIZED_PLANNER_METHODOLOGY.md`](../../docs/PERSONALIZED_PLANNER_METHODOLOGY.md)
 for evidence qualification, reviewed estimates, exercise mappings, UI behavior
 and the native reader boundary. Historical release checkpoints below describe
 their original deployments, not the current method's release status.
+
+The current evidence-methodology gateway is live as
+`agent-gateway-web-e75e9318d15d`. Website deployment
+`6aac7f6c315a6190c054fba7` was published September 17 at 5:35 PM PDT.
+The narrow shared Firestore rules update is deployed: personalized assessment
+and generation accept optional boolean `useProvisionalEstimates`, with omission
+retained for existing callers. Actor checks and activation/discard parameter
+allowlists are unchanged. Its emulator suite passed 353 assertions. The final
+sanitized release receipt, including the website promotion result, is at
+[`EVIDENCE_PLANNER_PRODUCTION.json`](../../deployment/EVIDENCE_PLANNER_PRODUCTION.json).
+Do not infer a numerical full-container test count from the historical checkpoint
+below; use that final receipt and the immutable build logs.
 
 Each personalized `config/llm.capabilities` entry requires literal `enabled: true`.
 `dailyLimitPolicy: "unlimited"` removes its product daily limit. The global feature
@@ -62,8 +75,10 @@ serving image, preserving its installed dependencies and operating-system layers
 The ordinary `Dockerfile` remains available for a separately validated clean build.
 
 The original web rollout required gateway, Firestore rules, the four explicit
-unlimited policies, then the website. A methodology-only update preserves the
-already-live rules and capability settings: release gateway, then website. Keep a
+unlimited policies, then the website. The current methodology rollout requires
+the gateway and the narrow optional-boolean request rules update before website
+promotion. Existing capability policies, including native generation's daily
+allowance of one, remain unchanged. Keep a
 private receipt with service configuration, active image,
 source archive checksums, ruleset/release and config before-images. Recheck the
 current revision and each update precondition before mutation. Verify image digest,
@@ -102,7 +117,7 @@ private because they can contain runtime configuration and secret references.
 $ErrorActionPreference = 'Stop'
 $project = 'kickai-69dd0'
 $region = 'us-west1'
-$expectedRevision = 'agent-gateway-web-43b9da983c41' # Check latest receipt first.
+$expectedRevision = 'agent-gateway-web-e75e9318d15d' # Check latest receipt first.
 $releaseDir = Join-Path (Get-Location) ('.netlify/gateway-release-' + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $releaseDir | Out-Null
 $serviceName = "projects/$project/locations/$region/services/agent-gateway"
@@ -110,8 +125,8 @@ $runUrl = "https://run.googleapis.com/v2/$serviceName"
 $docsUrl = "https://firestore.googleapis.com/v1/projects/$project/databases/(default)/documents"
 $rulesUrl = "https://firebaserules.googleapis.com/v1/projects/$project"
 $caps = @('assess_personalized_plan', 'generate_personalized_plan',
-          'activate_personalized_plan', 'discard_personalized_plan',
-          'generate_training_plan')
+          'activate_personalized_plan', 'discard_personalized_plan')
+$drainCaps = @($caps) + @('generate_training_plan')
 function Save-Private($name, $value) {
   $file = Join-Path $releaseDir $name
   if (Test-Path -LiteralPath $file) { throw 'Receipt already exists; review it first.' }
@@ -128,7 +143,7 @@ function Api($method, $uri, $body = $null) {
   Invoke-RestMethod @options | ConvertTo-Json -Depth 100 | ConvertFrom-Json -AsHashtable
 }
 function Assert-Drained {
-  foreach ($cap in $caps) {
+  foreach ($cap in $drainCaps) {
     $filters = @(
       @{fieldFilter=@{field=@{fieldPath='capability'};op='EQUAL';value=@{stringValue=$cap}}},
       @{fieldFilter=@{field=@{fieldPath='status'};op='IN';value=@{arrayValue=@{
@@ -297,7 +312,9 @@ guaranteed, do not publish. Verify the returned live ruleset name and source tex
 
 For config, require the current `config/llm.updateTime` to equal the saved before-image.
 If all four policies are already `unlimited`, leave config untouched. Otherwise
-prepare one Firestore commit with only the four policy paths masked:
+prepare one Firestore commit with only the four policy paths masked. `$caps`
+contains only personalized capabilities; `$drainCaps` also includes native
+generation for draining. Never use the drain list for a capability-policy update:
 
 ```powershell
 $configNow = Api GET "$docsUrl/config/llm"
@@ -372,4 +389,9 @@ firebase --config firebase.planner-test.json emulators:exec --only firestore --p
 
 That suite covers all four capabilities, scoped view queries, private context
 denials, forged server fields, roster changes and native generation compatibility.
+It also covers omitted/true/false estimate preferences, rejects malformed values
+and unknown parameters, and rejects the preference on activation/discard requests.
+The methodology tests cover server-qualified primary reconciliation, reviewed
+estimate identity and supersession, relevant exercise selection, combined
+age/level limits in targets and actual work, and evidence drift before activation.
 Neither suite contacts production athletes or model providers.
