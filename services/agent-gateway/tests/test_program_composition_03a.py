@@ -17,14 +17,14 @@ from gateway.workout_time import dose_violations, estimate_block, estimate_worko
 from tests.test_workout_tools_v3 import block, catalog_row, profile
 
 
-def test_intent_distinguishes_leading_volume_from_small_support_and_strength():
+def test_intent_lists_uneven_actual_volume_and_strength_without_emphasis_claims():
     rows = {did: catalog_row(did, domain) for did, domain in (
         ('SPD-501', 'speed'), ('DRB-501', 'dribbling'), ('PAS-501', 'passing'), ('STR-501', 'strength'))}
     selected = [(did, {'estimatedMinutes': minutes}) for did, minutes in (
         ('SPD-501', 8), ('DRB-501', 30), ('PAS-501', 4), ('STR-501', 12))]
     intent = describe_intent(selected, rows)
-    assert intent.startswith('Lead focus: dribbling (30 min).')
-    assert 'passing (4 min)' in intent
+    assert intent.startswith('Time allocation: dribbling (30 min), strength (12 min), speed (8 min) and passing (4 min).')
+    assert 'lead' not in intent.lower() and 'support' not in intent.lower()
     assert 'Start with fresh speed work.' in intent
     assert 'Strength work is in block 4.' in intent
     assert 'jump' not in intent and 'agility' not in intent
@@ -37,15 +37,44 @@ def test_intent_only_promises_quality_first_when_the_first_block_is_quality():
     assert 'speed (8 min)' in intent
 
 
-def test_equal_largest_domain_minutes_are_shared_leads_not_secondary_support():
+def test_equal_domain_minutes_are_reported_without_assigning_leads():
     rows = {did: catalog_row(did, domain) for did, domain in (
         ('SPD-501', 'speed'), ('PAS-501', 'passing'), ('SHT-501', 'shooting'), ('DRB-501', 'dribbling'))}
     selected = [(did, {'estimatedMinutes': minutes}) for did, minutes in (
         ('SPD-501', 6), ('PAS-501', 18), ('SHT-501', 18), ('DRB-501', 12))]
     intent = describe_intent(selected, rows)
-    assert intent.startswith('Shared lead focus: passing (18 min) and shooting (18 min).')
-    assert 'Supporting work: dribbling (12 min) and speed (6 min).' in intent
+    assert intent.startswith('Time allocation: passing (18 min), shooting (18 min), dribbling (12 min) and speed (6 min).')
+    assert 'lead' not in intent.lower() and 'support' not in intent.lower()
     assert 'Start with fresh speed work.' in intent
+
+
+def test_near_equal_actual_minutes_do_not_imply_a_lead_or_landing_technique():
+    rows = {did: catalog_row(did, domain) for did, domain in (
+        ('VJP-501', 'plyometrics'), ('VJP-502', 'plyometrics'),
+        ('SPD-501', 'speed'), ('DRB-501', 'dribbling'))}
+    selected = [(did, {'estimatedMinutes': minutes}) for did, minutes in (
+        ('VJP-501', 12), ('VJP-502', 7), ('SPD-501', 18), ('DRB-501', 18))]
+    before = deepcopy((selected, rows))
+    intent = describe_intent(selected, rows)
+    assert intent == ('Time allocation: jumping (19 min), dribbling (18 min) and speed (18 min). '
+                      'Start with fresh jumping and speed work. Keep the prescribed catalog rest.')
+    assert all(word not in intent.lower() for word in ('lead', 'support', 'landing'))
+    assert (selected, rows) == before
+
+
+def test_all_domains_and_multiple_strength_locations_fit_intent_text_limit():
+    domains = ['speed', 'plyometrics', 'agility', 'strength', 'passing',
+               'receiving', 'dribbling', 'shooting', 'strength']
+    rows = {f'DRILL-{i}': catalog_row(f'DRILL-{i}', domain) for i, domain in enumerate(domains)}
+    selected = [(did, {'estimatedMinutes': 5}) for did in rows]
+    intent = describe_intent(selected, rows)
+    assert len(intent) <= 400
+    assert 'strength (10 min)' in intent
+    for domain in set(domains) - {'strength'}:
+        assert f'{DOMAIN_LABELS[domain]} (5 min)' in intent
+    assert 'Start with fresh speed, jumping and agility work.' in intent
+    assert 'Strength work is in blocks 4 and 9.' in intent
+    assert intent.endswith('Keep the prescribed catalog rest.')
 
 
 @pytest.mark.parametrize('passing_minutes,strength_minutes', [(8, 6), (6, 8)])
@@ -72,7 +101,7 @@ def test_final_technical_emphasis_follows_fresh_speed_before_support_and_strengt
     assert [b['drillId'] for b in result['blocks']] == [
         'SPD-501', 'SPD-502', 'DRB-501', 'DRB-502', 'PAS-501', 'STR-501',
     ]
-    assert result['intent'].startswith('Lead focus: dribbling (23 min).')
+    assert result['intent'].startswith('Time allocation: dribbling (23 min), speed (18 min), ')
     assert 'Start with fresh speed work.' in result['intent']
     assert 'Strength work is in block 6.' in result['intent']
     assert result['estimatedMinutes'] == estimate_workout(result['blocks'])['estimatedMinutes'] == 60

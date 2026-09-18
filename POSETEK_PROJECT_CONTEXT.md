@@ -31,7 +31,27 @@ the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
 and the expanded rollback boundary. Earlier release checkpoint totals below
 remain records of their original observation.
 
-### Current release: Evidence-linked personalized planner
+### Current gateway follow-up: accurate workout descriptions
+
+Gateway revision `agent-gateway-web-62c05fa8fbde` serves all traffic, verified at
+`2026-09-18T01:13:01.386Z` (September 17, 6:13 PM PDT). Source commit
+`903b4540f4eae37dd9e2fa944d08c00d62ef8a2c` is pushed on
+`codex/evidence-linked-planner`. The backend-only fix lists actual domain minutes
+as “Time allocation” and uses “jumping” for the generic plyometrics label. It
+does not infer a lead from near-equal totals or claim landing technique from the
+category name. Exercise selection, prescribed doses, ordering, checks and retry
+policy are unchanged. All 19 synthetic comparisons preserved prescriptions;
+18 authored replay tapes changed only their context fingerprints.
+
+The immutable candidate completed its mandatory full test process successfully;
+the final numerical test total was unavailable and is not inferred. Website
+bytes, Firestore rules, planner configuration, IAM, the 32 archive guards,
+effective-results reader and native schema remain unchanged by this release.
+See [the follow-up receipt](deployment/PLANNER_INTENT_PRODUCTION.json) and
+[methodology handoff](docs/PERSONALIZED_PLANNER_METHODOLOGY.md). The website
+release and original pilot checkpoint below retain their historical facts.
+
+### Current website release: Evidence-linked personalized planner
 
 Deployment `6aac7f6c315a6190c054fba7` is live at https://posetek.net, published
 September 17, 2026 at 5:35:06 PM PDT (`2026-09-18T00:35:06.349Z`). Application
@@ -51,7 +71,8 @@ objectives require at least one reviewed relevant exercise. This does not imply
 every exercise or every minute in that domain has a metric-specific link.
 The web interface provides Evidence, Schedule, Review and Use plan steps.
 
-Gateway revision `agent-gateway-web-e75e9318d15d` serves all traffic. The only rules
+At this release checkpoint, gateway revision `agent-gateway-web-e75e9318d15d`
+served all traffic; the later gateway-only follow-up above supersedes it. The only rules
 change permits optional boolean `useProvisionalEstimates` on personalized
 assessment/generation; actor checks and activation/discard contracts are unchanged.
 Native generation retains its existing active-plan behavior and daily limit of
