@@ -57,6 +57,8 @@ const paths: Record<string, string> = {
   'arrow-right': 'M3 12h18M15 6l6 6-6 6',
   court: 'M3 2h18v20H3ZM3 12h18M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM8 2v4h8V2M8 22v-4h8v4',
   portrait: 'M3 3h18v18H3ZM15 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6 21v-2a6 6 0 0 1 12 0v2',
+  touch: 'M9 12V4a2 2 0 0 1 4 0v7l3-1 5 3-1 8H9l-6-7a2 2 0 0 1 3-2l3 3M5 5a6 6 0 0 1 12 0',
+  camera: 'M3 6h4l2-3h6l2 3h4v15H3V6ZM16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z',
   'cloud-off': 'm3 3 18 18M6 17a5 5 0 0 1-1-10M9 4a7 7 0 0 1 10 5 4 4 0 0 1 2 7M6 17h7',
   phone: 'M6 2h12v20H6ZM10 5h4M11 19h2',
   angle: 'M4 3v17h17M4 10a10 10 0 0 1 10 10',

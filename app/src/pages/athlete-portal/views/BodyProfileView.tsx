@@ -219,7 +219,7 @@ function BodyProfileContent({ ctx, compact, onMore }: { ctx: PortalContext; comp
               </>
             )}
           </div>
-          <p className="body-hint"><span className="material-symbols-outlined">touch_app</span>Tap a body segment to inspect its measurement.</p>
+          <p className="body-hint"><NativeIcon name="touch" />Tap a body segment to inspect its measurement.</p>
         </article>
         <div className="body-profile-details">
           <section className="portal-card">
@@ -252,7 +252,7 @@ function BodyProfileContent({ ctx, compact, onMore }: { ctx: PortalContext; comp
             </div>
           </section>
           <section className="portal-card scan-note">
-            <span className="material-symbols-outlined">photo_camera</span>
+            <NativeIcon name="camera" size={28} />
             <div>
               <h3>Capture on mobile</h3>
               <p>The body scan uses the iPhone capture flow for camera calibration and processing. New scans taken in the app appear here automatically.</p>

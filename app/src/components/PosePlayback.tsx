@@ -138,7 +138,7 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
     return () => { observer.disconnect(); video?.removeEventListener("loadedmetadata", draw); };
   }, [frame, frames, metadata, hasVideo, timed, overlay, highlightedJoints, selectedJoints]);
 
-  return <section className="pose-card">
+  return <section className={`pose-card${nativeControls ? ' native-pose-card' : ''}`}>
     <div ref={stageRef} className="pose-stage" style={{ position: "relative", width: "100%", minHeight: 280, aspectRatio: "16 / 9", background: "#03100b", overflow: "hidden" }}>
       <span className="viewer-badge">{title}</span>
       {hasVideo ? <video ref={videoRef} playsInline preload="metadata" src={mediaUrl!} controls={!frames.length || !timed}

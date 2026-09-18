@@ -1,6 +1,6 @@
 /* Active native sources: PoseTekTheme, PoseTekDashboardTheme, CoachPlayerView.
    Screen-specific colors retain their native roles (menu green, data lime). */
-:where(.pt-player, .social-app) {
+:is(.pt-pose.pt-player, .pt-pose.social-app) {
   --native-lime: #7cff18; --native-green: #38aa6a; --native-cyan: #20c8dc;
   --native-orange: #ff8c33; --native-chrome: #081816;
   --native-border: #ffffff1a; --native-muted: #ffffffa6;

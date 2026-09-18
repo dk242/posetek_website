@@ -106,7 +106,7 @@ export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalCont
       {route.view === 'drills' && activeDrill && <section className="player-drills">
         {!route.session && <button className="native-drill-back" onClick={() => go('drills')}><NativeIcon name="chevron-left" size={16} />Back to Drills</button>}
         {route.session ? <SessionView drill={activeDrill} folder={route.session} selectedId={route.rep} reps={reps[activeDrill.key] || []} access={ctx.access} playerId={ctx.playerId} shareToken={null} onBack={() => go('drills', activeDrill.key)} onSelectRep={id => go('drills', activeDrill.key, route.session!, String(id))} /> : <DrillDashboard playerMode playerId={ctx.playerId} preview={preview} drill={activeDrill} reps={reps[activeDrill.key] || []} athlete={athlete} onOpenRep={(folder, id) => go('drills', activeDrill.key, folder, String(id))} />}
-        <p className="muted-copy">Record and process new drills in the PoseTek app. Video appears here when it was saved to the cloud.</p>
+        {route.session && <p className="muted-copy">Record and process new drills in the PoseTek app. Video appears here when it was saved to the cloud.</p>}
       </section>}
       {visited.has('training') && <div className="player-tab-panel" hidden={route.view !== 'training'}><PlayerTraining ctx={playerCtx} statsProfile={intakeSnapshot(profile)} request={route.view === 'training' ? request : null} onAcknowledge={() => setRequest(null)} /></div>}
       {route.view === 'leaderboards' && <><button className="text-button" onClick={() => go('home')}>← Your profile</button><PlayerLeaderboards playerId={ctx.playerId!} preview={preview} reps={all} athlete={athlete} dataset={dataset} /></>}
