@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "release": "Phone player parity and deliberate community sharing",
+  "status": "draft-preview-only-production-rollout-pending",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/player-community-experience",
+    "baseCommit": "61ef7cc11c0b3090c4cfc22a7d9fbba4bd5cebb6",
+    "builtRuntimeCommit": "30952de4387a346c86475b1eb4fc2f1d7e2a0298",
+    "laterCommits": "Handoff records and optional ActivityCard declaration props only; runtime build unchanged",
+    "nativeReferenceCommit": "e2c37363ca0f29e068dcb65fbd373d94f3120fad",
+    "nativeRepositoryModified": false
+  },
+  "website": {
+    "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+    "deploymentId": "6aacc04ea454c9210b8fd34c",
+    "url": "https://6aacc04ea454c9210b8fd34c--posetek.netlify.app",
+    "state": "ready",
+    "context": "deploy-preview",
+    "publishedAt": null,
+    "createdAt": "2026-09-18T04:38:38.186Z",
+    "readyAt": "2026-09-18T04:38:52.984Z",
+    "applicationSha1": "b57a285ca70d8e4716514e265c654d4e038dfd8d",
+    "applicationBytes": 1309,
+    "unrelatedProtectedFilesPreserved": 611,
+    "addedApplicationAssets": 50,
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingFilesPreserved": 32,
+    "marketingSourceCommit": "38a817e",
+    "homepageSourceSha1": "1d242a0e2733dcc07ee21d3d7af4935ee2f36c0f",
+    "coachesSourceSha1": "0581430222a96caf034d1d6099adff7d4c68236d",
+    "functionsDeployed": false,
+    "edgeFunctionsDeployed": false
+  },
+  "remoteVerification": {
+    "checkedAt": "2026-09-18T04:46:53.733Z",
+    "httpFilesChecked": 694,
+    "filesMatchingSourceHashes": 668,
+    "legacyHtmlMatchingPreviousImmutableDeploymentAfterExistingNetlifyUrlProcessing": 26,
+    "routesChecked": [
+      "/athlete?preview=1",
+      "/athlete/?preview=1",
+      "/feed?preview=1",
+      "/feed/?preview=1",
+      "/signin"
+    ],
+    "productionUnchanged": true,
+    "productionDeploymentId": "6aac924a597bd46f15cf468a",
+    "productionApplicationSha1": "d40f15dcb599f71e51c469cb858ba255abf0c88c"
+  },
+  "validation": {
+    "frontendTests": { "passed": 1030, "files": 79 },
+    "backendAndMigrationTests": { "passed": 281, "skippedExistingPrivateFixtures": 3, "failed": 0 },
+    "firestoreAndStorageEmulatorAssertionsPassed": 336,
+    "releaseGuardTestsPassed": 19,
+    "pinnedMobileSourcesVerified": 11,
+    "typeScriptPassed": true,
+    "lintErrors": 0,
+    "lintWarnings": 172,
+    "guardedApplicationBuildPassed": true,
+    "buildLargeChunkWarningsRemain": true,
+    "independentBackendReviewCompleted": true,
+    "browserData": "Synthetic preview data only; no account writes",
+    "browserChecks": [
+      "Coach draft survives Feed and return",
+      "My activity selection survives training tab changes",
+      "Publication preview shows audience and declines sample writes",
+      "Partly completed workout returns paused at the same drill with confirmed set progress",
+      "Keep training resumes the saved drill",
+      "360px discovery and inbox fit, and Feed returns to the timeline",
+      "390px player and workout views inspected",
+      "430px hosted profile, feed and sharing settings fit without page overflow",
+      "Desktop profile inspected",
+      "No browser console errors observed",
+      "Temporary viewport overrides restored"
+    ]
+  },
+  "productionRollout": {
+    "socialFunctionsDeployed": false,
+    "firestoreRulesDeployed": false,
+    "firestoreIndexesDeployed": false,
+    "migrationApplied": false,
+    "featureFlagChanged": false,
+    "migrationPreflight": {
+      "mode": "read-only dry-run",
+      "project": "kickai-69dd0",
+      "pageLimit": 20,
+      "status": "blocked-before-first-page",
+      "reason": "Google Application Default Credentials unavailable",
+      "checkpointCreated": false,
+      "dataMutated": false
+    },
+    "remainingGates": [
+      "Deploy documented additive collection-deny rules and indexes before scoped social backend targets",
+      "Complete authenticated canonical projection dry-run, migration and coverage checks with community disabled",
+      "Verify signed-in cross-organization pilot, permission revocation and exact saved media",
+      "Accept physical iOS Safari and Android Chrome, keyboard, safe areas, reload recovery and web/native workout logs",
+      "Publish the verified candidate, reconcile the protected baseline and record production receipt before broad activation"
+    ]
+  },
+  "preserved": {
+    "existingPlayerLayoutsAndContainers": true,
+    "twelveActiveCohortPlansAndPrivateContexts": true,
+    "measuredResultsEstimatesAndRepairJournals": true,
+    "invitationContracts": true,
+    "gatewayRevision": "agent-gateway-web-62c05fa8fbde",
+    "captureProcessorRevision": "onvideoupload-00027-guw",
+    "videoArchiveGuards": 32,
+    "nativeGenerationPermissionsSchemaAndDailyLimit": true
+  },
+  "handoff": {
+    "implementation": "docs/PLAYER_COMMUNITY_IMPLEMENTATION.md",
+    "references": "docs/PLAYER_COMMUNITY_DESIGN.md",
+    "backendRolloutAndRecovery": "functions/SOCIAL_COMMUNITY.md"
+  },
+  "limitations": [
+    "Preview publication does not deploy Firebase backend, rules, indexes or migration",
+    "Real-account and physical-phone acceptance is outstanding",
+    "Native candidate still requires its separate Mac/iPhone/TestFlight acceptance",
+    "Capture, calibration, processing and new scans remain native-only"
+  ]
+}

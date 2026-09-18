@@ -17,6 +17,13 @@ for decisions, differences and rollout gates. This is a candidate: it does not
 supersede the production receipt below. Native source, active cohort plans,
 private contexts, gateway and marketing bytes remain outside its mutation scope.
 
+Draft deployment `6aacc04ea454c9210b8fd34c` contains runtime source `30952de`.
+Its `/athlete?preview=1` and `/feed?preview=1` routes use synthetic data. Read
+`deployment/PLAYER_COMMUNITY_CANDIDATE.json` for verification. No social backend,
+rules or migration was deployed by this work; the migration preflight stopped
+because Google application-default credentials were unavailable. Production
+rollout still needs authenticated migration and signed-in phone/device acceptance.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published

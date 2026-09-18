@@ -7,6 +7,8 @@ export interface ActivityCardProps {
   preview: boolean;
   onChange(activity: SocialActivity): void;
   onPerson(playerId: string): void;
+  communityEnabled?: boolean;
+  onBlocked?(playerId: string): void;
 }
 
 /** /feed and /feed.html share this page. ?preview=1 uses sample data only. */
