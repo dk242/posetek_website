@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "release": "Native player screens, scrolling feed video and drill work timers",
+  "status": "draft-preview-only-production-rollout-pending",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/player-community-experience",
+    "baseCommit": "61ef7cc11c0b3090c4cfc22a7d9fbba4bd5cebb6",
+    "builtRuntimeCommit": "fb5f0fe93378aac0354f17f990c23b89e3d2bda9",
+    "implementationCommit": "21347232295303bf129e0983673870e4d8c47eba",
+    "nativeReferenceCommit": "e2c37363ca0f29e068dcb65fbd373d94f3120fad",
+    "nativeRepositoryModified": false
+  },
+  "website": {
+    "siteId": "b1ccf990-286c-4367-bb67-ca0d9ea2a020",
+    "deploymentId": "6aacdc5a9d67561b3914ffbc",
+    "url": "https://6aacdc5a9d67561b3914ffbc--posetek.netlify.app",
+    "state": "ready",
+    "context": "deploy-preview",
+    "publishedAt": null,
+    "createdAt": "2026-09-18T06:38:18.151Z",
+    "readyReadbackUpdatedAt": "2026-09-18T06:38:33.340Z",
+    "applicationSha1": "d3911462add4b2d7284c96cca065fb7dba2ccbc3",
+    "applicationBytes": 1309,
+    "unrelatedProtectedFilesPreserved": 611,
+    "addedApplicationAssets": 55,
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingFilesPreserved": 32,
+    "marketingSourceCommit": "38a817e",
+    "homepageSourceSha1": "1d242a0e2733dcc07ee21d3d7af4935ee2f36c0f",
+    "coachesSourceSha1": "0581430222a96caf034d1d6099adff7d4c68236d",
+    "functionsDeployed": false,
+    "edgeFunctionsDeployed": false
+  },
+  "remoteVerification": {
+    "checkedAt": "2026-09-18T06:39:45.608Z",
+    "httpFilesChecked": 699,
+    "filesMatchingSourceHashes": 673,
+    "legacyHtmlMatchingPreviousImmutableDeploymentAfterNetlifyUrlProcessing": 26,
+    "routesChecked": [
+      "/athlete?preview=1",
+      "/athlete/?preview=1",
+      "/feed?preview=1",
+      "/feed/?preview=1",
+      "/signin"
+    ],
+    "productionUnchanged": true,
+    "productionDeploymentId": "6aac924a597bd46f15cf468a",
+    "productionApplicationSha1": "d40f15dcb599f71e51c469cb858ba255abf0c88c"
+  },
+  "validation": {
+    "frontendTests": {
+      "passed": 1107,
+      "files": 83,
+      "failed": 0
+    },
+    "backendAndMigrationTests": {
+      "passed": 298,
+      "skippedExistingPrivateFixtures": 3,
+      "failed": 0
+    },
+    "releaseGuardTestsPassed": 19,
+    "pinnedMobileSourcesVerified": 11,
+    "typeScriptPassed": true,
+    "lintErrors": 0,
+    "lintWarnings": 180,
+    "guardedApplicationBuildPassed": true,
+    "buildChunkWarningsRemain": true,
+    "independentReviews": [
+      "Canonical video and pose identity plus explicit consent",
+      "Frontend media lifecycle and overlay validation",
+      "Work/rest timer recovery and malformed cache handling"
+    ],
+    "browserData": "Synthetic preview records and labeled approved public demo clips only",
+    "browserViewports": [
+      {
+        "width": 360,
+        "height": 800
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 430,
+        "height": 932
+      },
+      {
+        "width": 1280,
+        "height": 900
+      }
+    ],
+    "browserChecks": [
+      "Five separate tabs; AI Coach draft retained on returning from Drills",
+      "Profile, body details, drill chooser, dashboard, session empty-media replay, Training overview, plan details, history and standings inspected",
+      "Completed workout set and rest state survive tab departure; workout returns paused",
+      "Compact 360px workout exposes work timer and anchored controls",
+      "Replay controls fit at 360px and 430px after visual overflow fix",
+      "One visible feed clip plays muted; previous clip clears; scroll return resets mute",
+      "Video progress and rep results remain below playing video",
+      "Desktop navigation centered; observed views fit without page-level horizontal overflow",
+      "Hosted Drills and feed autoplay inspected at390px",
+      "No browser console errors observed"
+    ],
+    "emulatorTestsRerun": false,
+    "priorEmulatorReceipt": "deployment/PLAYER_COMMUNITY_CANDIDATE.json"
+  },
+  "additions": {
+    "tabs": [
+      "Profile",
+      "AI Coach",
+      "Drills",
+      "Training",
+      "Feed"
+    ],
+    "drillWorkTimer": "Account/workout/revision-scoped local set and drill timing, separate from rest and session time; never auto-completes sets",
+    "feedPlayback": "Single visible muted player; reduced-motion/save-data manual play; expiry, identity and permission guards",
+    "poseOverlay": "Optional owner-and-selected-rep-bound consent; exact recording, normalized COCO17/MediaPipe33 skeleton, short foot trails and saved markers",
+    "poseLimits": {
+      "sourceBytes": 16777216,
+      "metadataBytes": 2097152,
+      "sourceFrames": 12000,
+      "seconds": 600,
+      "outputFrames": 300,
+      "outputBytes": 204800
+    }
+  },
+  "productionRollout": {
+    "socialFunctionsDeployed": false,
+    "firestoreRulesDeployed": false,
+    "firestoreIndexesDeployed": false,
+    "migrationApplied": false,
+    "featureFlagChanged": false,
+    "priorMigrationPreflight": "Stopped before first page: Google Application Default Credentials unavailable. No data mutation or migration checkpoint.",
+    "remainingGates": [
+      "Deploy documented scoped social contracts and additive rules/indexes with community disabled",
+      "Complete authenticated canonical projection migration and coverage checks",
+      "Signed-in cross-organization pilot with selected-rep pose consent, revocation, 240fps artifacts, exact media and expiry",
+      "Physical iOS Safari/Android Chrome keyboard, safe areas, backgrounding and web/native workout logs",
+      "Publish exact verified candidate and reconcile protected baseline before broad activation"
+    ]
+  },
+  "preserved": {
+    "twelveActiveCohortPlansAndPrivateContexts": true,
+    "measuredResultsEstimatesAndRepairJournals": true,
+    "invitationContracts": true,
+    "gatewayRevision": "agent-gateway-web-62c05fa8fbde",
+    "captureProcessorRevision": "onvideoupload-00027-guw",
+    "videoArchiveGuards": 32,
+    "nativeGenerationPermissionsSchemaAndDailyLimit": true
+  },
+  "handoff": {
+    "implementation": "docs/PLAYER_COMMUNITY_IMPLEMENTATION.md",
+    "design": "docs/PLAYER_COMMUNITY_DESIGN.md",
+    "pageAudit": "docs/PLAYER_COMMUNITY_NATIVE_AUDIT.md",
+    "backend": "functions/SOCIAL_COMMUNITY.md",
+    "historicalFirstPass": "deployment/PLAYER_COMMUNITY_CANDIDATE.json"
+  },
+  "limitations": [
+    "The preview does not deploy the Firebase media/pose backend or migrate social data",
+    "Private live pose playback and physical-phone acceptance remain pending",
+    "Public demo clips are labeled and are not the synthetic players' actual recordings; no pose is fabricated for them",
+    "Native capture/calibration/new body scans remain app-only; saved body view is2D",
+    "Specialized native drill analyzers/professional comparison visuals are not all identical; see page audit",
+    "Native source remains reference-only and retains separate Mac/iPhone/TestFlight acceptance"
+  ]
+}

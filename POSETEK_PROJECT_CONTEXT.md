@@ -21,7 +21,9 @@ private contexts, gateway and marketing bytes remain outside its mutation scope.
 
 Draft deployment `6aacc04ea454c9210b8fd34c` / source `30952de` is the historical
 first pass. The second-pass preview is recorded separately in
-`deployment/PLAYER_NATIVE_PARITY_CANDIDATE.json`. The `/athlete?preview=1` and
+`deployment/PLAYER_NATIVE_PARITY_CANDIDATE.json`: deployment
+`6aacdc5a9d67561b3914ffbc`, runtime `fb5f0fe`, 699 files/five routes verified,
+1,107 frontend and 298 backend/migration tests passed. The `/athlete?preview=1` and
 `/feed?preview=1` routes use synthetic data and labeled public demos. No social backend,
 rules or migration was deployed by this work; the migration preflight stopped
 because Google application-default credentials were unavailable. Production

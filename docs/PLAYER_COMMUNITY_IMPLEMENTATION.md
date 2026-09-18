@@ -8,6 +8,11 @@ candidate, recorded separately in `deployment/PLAYER_NATIVE_PARITY_CANDIDATE.jso
 Preview data is synthetic and does not modify accounts; approved public drill
 demonstrations are explicitly labeled separately from sample activity figures.
 
+Current review: [Drills and player screens](https://6aacdc5a9d67561b3914ffbc--posetek.netlify.app/athlete?preview=1&view=drills)
+and [scrolling feed](https://6aacdc5a9d67561b3914ffbc--posetek.netlify.app/feed?preview=1).
+Runtime source is `fb5f0fe93378aac0354f17f990c23b89e3d2bda9`. All 699 deployed
+files and five entry routes were verified; production remains unchanged.
+
 ## Confirmed product decisions
 
 - The approved second pass uses the active native application's screen structures and visual roles. It supersedes the earlier container-preservation instruction. The source/Refero lock is in `PLAYER_COMMUNITY_DESIGN.md`; page-by-page findings are in `PLAYER_COMMUNITY_NATIVE_AUDIT.md`.
@@ -47,8 +52,8 @@ demonstrations are explicitly labeled separately from sample activity figures.
 
 ## Validation and release gates
 
-The second-pass integrated frontend suite passed 1,106 tests in 83 files, followed
-by a focused regression for the late-acknowledged workout-start fix. The backend
+The final second-pass integrated frontend suite passed 1,107 tests in 83 files,
+including the late-acknowledged workout-start fix. The backend
 and migration suite passed 298 tests with three existing private fixtures skipped.
 The 11-source native parity check, TypeScript and 19 release-guard tests passed.
 Lint has no errors and retains warnings. Exact final counts and build/deployment
