@@ -19,10 +19,10 @@ function storage(objects = {}) {
     async getFiles({ prefix }) { return [[...map.keys()].filter(name => name.startsWith(prefix)).map(name => ({ name }))]; },
   };
 }
-function setup({ seed = {}, evidence = valid, objects = {}, inject = true } = {}) {
+function setup({ seed = {}, evidence = valid, objects = {}, inject = true, now } = {}) {
   const db = new FakeFirestore({ "players/player": { userUID: "athlete" }, "players/player/reps/rep": original, ...seed });
   const bucket = storage(objects);
-  const service = createEffectiveResults({ db, bucket, HttpsError, ...(inject ? { readEvidence: typeof evidence === "function" ? evidence : async () => evidence } : {}) });
+  const service = createEffectiveResults({ db, bucket, HttpsError, ...(now ? { now } : {}), ...(inject ? { readEvidence: typeof evidence === "function" ? evidence : async () => evidence } : {}) });
   return { db, bucket, service };
 }
 test("effective rows null every measurement for incomplete results and duplicates, even with positive stale metadata", () => {
@@ -146,4 +146,16 @@ test("shared evidence reader detects explicit sidecar identity conflict and pins
   const evidence = await reader.readEvidence("player", original);
   assert.equal(evidence.identityConflict, true); assert.equal(effectiveRep(original, evidence, false).resultStatus.qualified, false);
   assert.ok(bucket.calls.filter(c => c[0] === "download").every(c => c[2].generation === "123"));
+});
+test("internal social media options shorten expiry without changing default artifacts or signing", async () => {
+  const folder = original.storagePath;
+  const { service, bucket } = setup({ now: () => 1000, evidence: { ...valid, folder }, objects: { [`${folder}/video.mov`]: "movie", [`${folder}/pose.json`]: {} } });
+  const originalResponse = await service.getMedia({ playerId: "player", drill: "dribbling", repId: "rep", ttlMs: 99999999 }, admin);
+  assert.equal(originalResponse.expiresAtMillis, 901000); assert.ok(originalResponse.artifactUrls["pose.json"]);
+  const before = bucket.calls.filter(c => c[0] === "sign").length;
+  const snapshot = await service.getMediaInventory("player");
+  const inspected = await service.mediaForPlayer("player", "dribbling", "rep", { inventory: snapshot, ttlMs: 300000, includeArtifacts: false, sign: false });
+  assert.equal(inspected.expiresAtMillis, 301000); assert.equal(inspected.mediaUrl, true); assert.deepEqual(inspected.artifactUrls, {});
+  assert.equal(bucket.calls.filter(c => c[0] === "sign").length, before);
+  await assert.rejects(service.mediaForPlayer("another", "dribbling", "rep", { inventory: snapshot }), { code: "invalid-argument" });
 });

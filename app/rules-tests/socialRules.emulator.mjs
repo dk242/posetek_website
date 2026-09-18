@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getBytes } from 'firebase/storage';
+import { ref, uploadBytes, getBytes, deleteObject } from 'firebase/storage';
 
 const projectId = 'demo-posetek-feed';
 const env = await initializeTestEnvironment({
@@ -20,7 +20,7 @@ const contexts = [
   env.authenticatedContext('unverified', { email: 'staff@posetek.net', email_verified: false }),
 ];
 const roots = ['socialActivities', 'socialActivitySettings', 'socialPreferences', 'socialConnections',
-  'socialSettings', 'socialReports', 'socialRateLimits', 'playerSignupInvitations', 'playerSignupCodes'];
+  'socialSettings', 'socialReports', 'socialRateLimits', 'socialCommunityProfiles', 'socialInbox', 'socialModerationAudit', 'playerSignupInvitations', 'playerSignupCodes'];
 let checks = 0;
 const denied = async promise => { await assertFails(promise); checks++; };
 const allowed = async promise => { await assertSucceeds(promise); checks++; };
@@ -30,6 +30,7 @@ try {
     for (const root of roots) await setDoc(doc(db, root, 'fixture'), { marker: 'synthetic' });
     await setDoc(doc(db, 'socialActivities/fixture/comments/comment'), { text: 'Synthetic comment' });
     await setDoc(doc(db, 'socialActivities/fixture/kudos/athlete'), { uid: 'athlete' });
+    await setDoc(doc(db, 'socialInbox/athlete/items/fixture'), { type: 'comment', read: false });
     await setDoc(doc(db, 'players/player'), { authenticationUID: 'athlete', userUID: 'athlete', organizationId: 'org', teamId: 'team' });
     await uploadBytes(ref(context.storage(), 'player/session1/rep1/video.mp4'), new Uint8Array([1, 2, 3]), { contentType: 'video/mp4' });
   });
@@ -46,6 +47,8 @@ try {
       await denied(getDoc(doc(db, 'socialActivities/fixture/' + child)));
       await denied(setDoc(doc(db, 'socialActivities/fixture/' + child), { forged: true }));
     }
+    await denied(getDoc(doc(db, 'socialInbox/athlete/items/fixture')));
+    await denied(setDoc(doc(db, 'socialInbox/athlete/items/fixture'), { read: true }));
   }
   // Migration-sensitive recording policy stays intact while social media is
   // delivered through short-lived URLs issued by getSocialMedia.
@@ -54,8 +57,11 @@ try {
   await allowed(getBytes(media(contexts[1])));
   await denied(getBytes(media(contexts[2])));
   await allowed(getBytes(media(contexts[3])));
-  await denied(uploadBytes(media(contexts[3]), new Uint8Array([4]), { contentType: 'video/mp4' }));
-  assert.equal(checks, 250);
+  // Current production permits verified-admin repair uploads for an existing
+  // athlete; it still denies deleting their source recording.
+  await allowed(uploadBytes(media(contexts[3]), new Uint8Array([4]), { contentType: 'video/mp4' }));
+  await denied(deleteObject(media(contexts[3])));
+  assert.equal(checks, 336);
   console.log(`${checks} feed and recording access assertions passed against isolated emulators.`);
 } finally {
   await env.cleanup();

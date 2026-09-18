@@ -94,7 +94,7 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
       db.collection("players").doc(playerId).collection("insightMetadata").doc("resultCorrections").get(),
     ]);
     const reps = docs.map(doc => ({ ...doc.data(), id: doc.id }));
-    return { reps, failures: failures.map(doc => ({ ...doc.data(), id: doc.id })), duplicates: duplicateIds(reps, corrections.data()) };
+    return { playerId, reps, failures: failures.map(doc => ({ ...doc.data(), id: doc.id })), duplicates: duplicateIds(reps, corrections.data()) };
   }
   function resolvedFolder(playerId, rep, evidence, reps, duplicates) {
     if (duplicates.has(rep.id) || contextIdentityMatches(evidence.context, playerId, rep) === false) return null;
@@ -131,23 +131,29 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
     await authorize(data.playerId, auth);
     return { ...result, provisionalEstimates };
   }
-  async function signedFile(name, expires) {
+  async function signedFile(name, expires, sign = true) {
     let meta;
     try { [meta] = await bucket.file(name).getMetadata(); } catch (error) { if (Number(error.code) === 404) return null; throw error; }
     // Pin URLs to the inspected generation so a later overwrite cannot change
     // the video or JSON behind a response already authorized for this attempt.
+    if (!sign) return true;
     const [url] = await bucket.file(name, { generation: meta.generation }).getSignedUrl({ action: "read", expires });
     return url;
   }
-  async function mediaForPlayer(playerId, drill, repId) {
+  async function mediaForPlayer(playerId, drill, repId, options = {}) {
     validateDrill(drill);
     if (typeof repId !== "string" || !/^[A-Za-z0-9_-]{1,200}$/.test(repId)) fail("invalid-argument", "Choose a valid recording.");
-    const { reps, failures, duplicates } = await inventory(playerId);
+    // Internal callers may share one inventory across a bounded media list.
+    // No callable forwards client-provided options into this method.
+    const snapshot = options.inventory || await inventory(playerId);
+    if (snapshot.playerId !== playerId) fail("invalid-argument", "Media inventory owner does not match.");
+    const { reps, failures, duplicates } = snapshot;
     const rep = reps.find(rep => rep.id === repId && drillOf(rep) === drill);
     if (!rep) fail("not-found", "The recording is unavailable.");
-    const evidence = await reader.readEvidence(playerId, rep, new Map(), failures);
+    const evidence = await reader.readEvidence(playerId, rep, options.evidenceCache || new Map(), failures);
     const status = resultStatus(rep, qualifyRep(rep, evidence, duplicates.has(rep.id)));
-    const expiresAtMillis = now() + TTL_MS;
+    const ttlMs = Number.isFinite(options.ttlMs) ? Math.max(1000, Math.min(TTL_MS, options.ttlMs)) : TTL_MS;
+    const expiresAtMillis = now() + ttlMs;
     const response = { artifactUrls: {}, mediaUrl: null, source: "unavailable", expiresAtMillis, resultStatus: status };
     let folder = evidence.folder;
     if (!folder) {
@@ -160,13 +166,13 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
     });
     const useFolder = folder && !duplicates.has(rep.id) && identity !== false && (identity === true || !collision);
     if (useFolder) {
-      const entries = await mapBounded(ARTIFACTS[drill], 6, async name => [name, await signedFile(`${folder}/${name}`, expiresAtMillis)]);
+      const entries = await mapBounded(options.includeArtifacts === false ? [] : ARTIFACTS[drill], 6, async name => [name, await signedFile(`${folder}/${name}`, expiresAtMillis)]);
       response.artifactUrls = Object.fromEntries(entries.filter(([, url]) => url));
       const [files] = await bucket.getFiles({ prefix: `${folder}/`, maxResults: 100, autoPaginate: false });
       const movies = files.filter(file => /^[A-Za-z0-9_.-]+\.(mov|mp4)$/i.test(file.name.slice(folder.length + 1))).sort((a, b) => a.name.localeCompare(b.name));
       const claimedPath = evidence.context?.rep?.videoStoragePath;
       const movie = claimedPath ? movies.find(file => file.name === claimedPath) : movies.length === 1 ? movies[0] : null;
-      if (movie) response.mediaUrl = await signedFile(movie.name, expiresAtMillis);
+      if (movie) response.mediaUrl = await signedFile(movie.name, expiresAtMillis, options.sign !== false);
       if (response.mediaUrl) response.source = "recording";
     }
     if (!response.mediaUrl && !duplicates.has(rep.id)) {
@@ -185,7 +191,7 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
         if (report?.clip?.storagePath) {
           try { storageFolderCandidates(playerId, drill, { storagePath: report.clip.storagePath }, bucket.name); } catch { continue; }
         } else if (!reportOwners.length) continue;
-        const mediaUrl = await signedFile(`${prefix}/video.mov`, expiresAtMillis);
+        const mediaUrl = await signedFile(`${prefix}/video.mov`, expiresAtMillis, options.sign !== false);
         if (mediaUrl) { response.mediaUrl = mediaUrl; response.source = "diagnostic"; break; }
       }
     }
@@ -197,6 +203,6 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
     await authorize(data.playerId, auth);
     return result;
   }
-  return { getResults, getMedia, listForPlayer, mediaForPlayer, authorize };
+  return { getResults, getMedia, listForPlayer, mediaForPlayer, getMediaInventory: inventory, authorize };
 }
 module.exports = { createEffectiveResults, effectiveRep, resultStatus, ARTIFACTS };

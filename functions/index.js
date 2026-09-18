@@ -28,6 +28,9 @@ for (const [endpoint, handler] of Object.entries({
   saveSocialPreferences: "savePreferences", setSocialVisibility: "setVisibility", getSocialPeople: "people",
   socialConnection: "connect", setSocialKudos: "kudos", getSocialComments: "comments", saveSocialComment: "comment",
   reportSocialActivity: "report", moderateSocialActivity: "moderation", getSocialMedia: "media",
+  getSocialCommunityProfile: "getCommunityProfile", saveSocialCommunityProfile: "saveCommunityProfile",
+  getSocialDiscovery: "discovery", withdrawSocialCommunityPosts: "withdrawCommunityPosts",
+  getSocialInbox: "inbox", markSocialInboxRead: "markInboxRead", reportSocialContent: "reportContent", moderateSocialContent: "moderateContent",
 })) exports[endpoint] = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => social[handler](data || {}, requireCaller(context)));
 // Re-read authoritative inputs in a transaction: duplicate and out-of-order
 // mobile/web writes cannot publish an older projection over a newer result.
@@ -35,6 +38,19 @@ exports.projectSocialReps = functions.runWith({ timeoutSeconds: 120, failurePoli
 exports.projectSocialWorkouts = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/workoutLogs/{logId}").onWrite((_, context) => social.rebuild(context.params.playerId));
 exports.projectSocialSessions = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/trainingSessions/{sessionId}").onWrite((_, context) => social.rebuild(context.params.playerId));
 exports.projectSocialPlayer = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialResultCorrections = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/insightMetadata/resultCorrections").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialRepRevision = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/reps/{repId}/revisions/{revisionId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialFailureEvidence = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("failureCases/{failureId}").onWrite(async change => {
+  const owners = [...new Set([change.before.exists && change.before.data().playerDocumentID, change.after.exists && change.after.data().playerDocumentID].filter(playerSegment))];
+  for (const playerId of owners) await social.rebuild(playerId);
+});
+// Additive observer only. Never replace the protected native video processor.
+async function reprojectSocialStorageEvidence(object) {
+  const match = /^([A-Za-z0-9_-]{1,128})\/(deadballShot|sprint|jump|broadJump|changeOfDirection|dribbling)\/session[1-9]\d*(?:\/kick[1-9]\d*(?:\/capture_[a-f0-9]{32})?)?\/(metadata|reprocess_context)\.json$/.exec(object.name || "");
+  if (match && playerSegment(match[1])) await social.rebuild(match[1]);
+}
+exports.projectSocialProcessingEvidence = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).storage.bucket("kickai-69dd0.firebasestorage.app").object().onFinalize(reprojectSocialStorageEvidence);
+exports.projectSocialProcessingEvidenceRemoved = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).storage.bucket("kickai-69dd0.firebasestorage.app").object().onDelete(reprojectSocialStorageEvidence);
 // Auth deletion can precede roster cleanup. Immediately make retained results
 // unavailable socially without deleting the club's original athlete records.
 exports.closeSocialAccount = functions.runWith({ failurePolicy: true }).auth.user().onDelete(user =>

@@ -40,7 +40,7 @@ function benchmarkCell(p, now) {
 }
 function projectActivities(playerId, p, reps, logs, sessions, dataset = {}, now = Date.now()) {
   const result = [], groups = new Map(), covered = new Set();
-  const base = { playerId, authorUid: ownerUid(p, playerId), organizationId: clean(p.organizationId, 128), teamId: clean(p.teamId, 128), authorName: nameOf(p), schemaVersion: 1 };
+  const base = { playerId, authorUid: ownerUid(p, playerId), organizationId: clean(p.organizationId, 128), teamId: clean(p.teamId, 128), authorName: nameOf(p), schemaVersion: 2 };
   const audiences = [`player:${playerId}`, ...(base.organizationId ? [`org:${base.organizationId}`] : []), ...(base.teamId ? [`team:${base.teamId}`] : [])];
   for (const log of logs) {
     const ended = millis(log.endedAt);
@@ -61,6 +61,7 @@ function projectActivities(playerId, p, reps, logs, sessions, dataset = {}, now 
       repIds: [], drill: null, score: null, scoreGeneration: null, partial: log.endReason !== "completed", chart: [] });
   }
   for (const rep of reps) {
+    if (rep.resultStatus?.qualified !== true || rep.resultStatus?.duplicate === true) continue;
     const key = sessionKey(rep), date = millis(rep.createdAt || rep.createdAtMillis || rep.timestamp), drill = DRILLS[drillKey(rep)];
     if (!key || !date || date > now || !drill || !(positive(rep[drill.field]) || positive(rep[drill.fallback]))) continue;
     if (covered.has(key) || covered.has(`${drillKey(rep)}:session${rep.sessionNumber}`)) continue;

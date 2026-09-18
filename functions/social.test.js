@@ -8,13 +8,22 @@ test("bundled scoring reference matches the player app dataset", () => {
   assert.deepEqual(require("./social-benchmarks.json"), require("../app/src/pages/athlete-portal/player/D1Benchmarks.json"));
 });
 const NOW = Date.UTC(2026, 8, 13), date = new FakeTimestamp(NOW - 3600000);
-const rep = (id = "r1", extra = {}) => ({ id, repType: "side_kick", sessionNumber: 1, repNumber: 1, velocity: 20, createdAt: date, ...extra });
+const rep = (id = "r1", extra = {}) => ({ id, repType: "side_kick", sessionNumber: 1, repNumber: 1, velocity: 20, createdAt: date, resultStatus: { qualified: true, duplicate: false }, ...extra });
 const player = (uid, teamId = "t1", organizationId = "org") => ({ authenticationUID: uid, userUID: uid, organizationId, teamId, firstName: uid });
 function setup(extra = {}, bucket = { name: "bucket", getFiles: async () => [[]] }) {
+  bucket.file ||= name => ({ getMetadata: async () => {
+    const [files] = await bucket.getFiles({ prefix: name.slice(0, name.lastIndexOf("/") + 1) });
+    if (!files.some(f => f.name === name)) throw Object.assign(new Error("missing"), { code: 404 });
+    return [{ size: 100, generation: "1" }];
+  }, getSignedUrl: async options => {
+    const [files] = await bucket.getFiles({ prefix: name.slice(0, name.lastIndexOf("/") + 1) });
+    return files.find(f => f.name === name).getSignedUrl(options);
+  } });
   const db = new FakeFirestore({ "socialSettings/feed": { enabled: true, organizationIds: ["org"], historySince: NOW - 30 * 86400000 },
     "players/p1": player("u1"), "players/p2": player("u2"), "players/p3": player("u3", "t2"), "players/p4": player("u4", "outside", "other"),
+    ...Object.fromEntries(["u1", "u2", "u3", "u4", "outside-user"].map(uid => [`socialPreferences/${uid}`, { audience: "organization", automatic: true, videos: true }])),
     "organizations/org": { name: "Vacaville" }, "teams/t1": { organizationId: "org", name: "Team one" }, "players/p2/reps/r1": rep(), ...extra });
-  return { db, api: createSocial({ db, bucket, HttpsError, now: () => NOW }) };
+  return { db, api: createSocial({ db, bucket, HttpsError, now: () => NOW, readEvidence: async (playerId, r) => ({ metadata: { ...r, processingStatus: "complete", resultsValid: true }, context: { rep: { repId: r.id, playerDocId: playerId }, result: { resultsValid: true } } }) }) };
 }
 const auth = uid => ({ uid });
 test("projection groups reps, converts units, retains missing scores and emits one stable card", () => {

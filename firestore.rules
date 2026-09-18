@@ -596,7 +596,7 @@ match /drillCatalogMeta/{docId} {
     }
 
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
+      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','socialCommunityProfiles','socialInbox','socialModerationAudit','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';
