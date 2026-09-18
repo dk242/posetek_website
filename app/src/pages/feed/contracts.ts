@@ -56,6 +56,8 @@ export interface SocialActivity {
   drill: string | null;
   repCount: number;
   canViewVideo: boolean;
+  /** Explicit per-post consent; older video-only posts default to false. */
+  poseOverlay?: boolean;
   mine: boolean;
   audience: SocialAudience;
   hidden: boolean;
@@ -110,12 +112,12 @@ export interface SocialRequests {
   getSocialActivity: ActivityRequest;
   getSocialComments: ActivityRequest & { cursor?: TimeCursor | null };
   getSocialPeople: SocialViewer & { cursor?: string | null; playerId?: string };
-  getSocialMedia: ActivityRequest & { repId?: string };
+  getSocialMedia: ActivityRequest & { repId?: string; includeOverlay?: boolean };
   getSocialAdminDirectory: { organizationId?: string };
   setSocialKudos: ActivityRequest & { liked: boolean };
   saveSocialComment: ActivityRequest & { commentId: string } &
     ({ text: string; remove?: false } | { remove: true });
-  setSocialVisibility: ActivityRequest & { audience: SocialAudience; hidden: boolean; caption?: string; selectedRepId?: string | null; videos?: boolean; commentsEnabled?: boolean };
+  setSocialVisibility: ActivityRequest & { audience: SocialAudience; hidden: boolean; caption?: string; selectedRepId?: string | null; videos?: boolean; poseOverlay?: boolean; commentsEnabled?: boolean };
   socialConnection: SocialViewer & { playerId: string; action: ConnectionAction };
   saveSocialPreferences: SocialViewer & SocialPreferences;
   reportSocialActivity: ActivityRequest & { reason: string };
@@ -168,7 +170,7 @@ export interface SocialResponses {
   getSocialActivity: SocialActivity;
   getSocialComments: { items: SocialComment[]; cursor: TimeCursor | null };
   getSocialPeople: { people: SocialPerson[]; cursor: string | null };
-  getSocialMedia: { url: string | null; expiresAt: number | null };
+  getSocialMedia: { url: string | null; expiresAt: number | null; overlay?: SocialPoseOverlay | null };
   getSocialAdminDirectory: SocialAdminDirectory;
   getSocialCommunityProfile: CommunityProfile;
   saveSocialCommunityProfile: CommunityProfile;
@@ -185,6 +187,18 @@ export interface SocialResponses {
   saveSocialPreferences: MutationResult;
   reportSocialActivity: MutationResult;
   moderateSocialActivity: { reports: SocialReport[]; ok?: never } | { reports?: never; ok: true };
+}
+
+/** Sanitized display-only evidence, aligned to the authorized recording. */
+export interface SocialPoseOverlay {
+  version: 1;
+  coordinateSpace: 'normalized';
+  layout: 'coco17' | 'mediapipe33';
+  sourceWidth: number;
+  sourceHeight: number;
+  frames: { time: number; points: ([number, number] | null)[] }[];
+  markers: { label: string; time: number }[];
+  footJoints: { left: number; right: number };
 }
 
 export type SocialCallableName = keyof SocialRequests;

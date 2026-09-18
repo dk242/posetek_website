@@ -21,6 +21,7 @@ import {
 } from "../lib/metrics";
 import type { FrameMarker, MetricTile, PosePoint } from "../lib/metrics";
 import { PortalLoading } from "./shared";
+import { NativeIcon } from '../player/native-ui';
 
 interface SessionViewProps {
   drill: Drill;
@@ -44,8 +45,7 @@ export default function SessionView({ drill, folder, selectedId, reps, access, p
     <section className="session-view">
       <div className="session-toolbar">
         <button className="quiet-button back-to-dashboard" type="button" id="backToDashboard" onClick={onBack}>
-          <span className="material-symbols-outlined">arrow_back</span>
-          <span>{drill.label}</span>
+          {access === 'athlete' || access === 'preview' ? <><NativeIcon name="chevron.left" size={16} /><span>Back to {drill.label}</span></> : <><span className="material-symbols-outlined">arrow_back</span><span>{drill.label}</span></>}
         </button>
         <strong>Session {num(folder.match(/\d+/)?.[0]) || (selected ? sessionNumber(selected) : 1)}</strong>
       </div>
@@ -56,6 +56,7 @@ export default function SessionView({ drill, folder, selectedId, reps, access, p
             className={`rep-segment${rep === selected ? " active" : ""}`}
             type="button"
             data-session-rep={rep.id}
+            aria-current={rep === selected ? 'true' : undefined}
             onClick={() => onSelectRep(rep.id)}
           >
             {attemptLabel(rep, sessionReps)}
@@ -101,6 +102,10 @@ function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps)
 
   useEffect(() => {
     let cancelled = false;
+    if (access === 'preview') {
+      setData({ mediaUrl: null, frames: [], metadata: {}, metrics: repMetricSpecs(drill, rep, {}), markers: [] });
+      return;
+    }
     (async () => {
       const payload = access === "shared"
         ? await sharedArtifacts(drill, rep, shareToken)
@@ -145,7 +150,8 @@ function RepViewer({ drill, rep, access, playerId, shareToken }: RepViewerProps)
   return (
     <>
       {resultLabel(rep) ? <p role="status">{resultLabel(rep)}</p> : null}
-      <PosePlayback frames={data.frames} metadata={data.metadata} mediaUrl={data.mediaUrl} mediaSource={data.mediaSource} markers={data.markers} title={drill.label} />
+      {access === 'preview' && <p className="native-platform-note">Sample session · your signed-in sessions open their original saved video and pose data.</p>}
+      <PosePlayback frames={data.frames} metadata={data.metadata} mediaUrl={data.mediaUrl} mediaSource={data.mediaSource} markers={data.markers} title={drill.label} nativeControls={access === 'athlete' || access === 'preview'} />
       <div className="rep-metrics">
         {data.metrics.map(item => (
           <article key={item.label} className="rep-metric">

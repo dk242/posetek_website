@@ -19,6 +19,7 @@ import { listBodyScans, storageJson } from "../lib/loaders";
 import { PREVIEW_LIMB_LENGTHS, PREVIEW_LIMB_WEIGHTS, previewBodyPoints } from "../lib/preview";
 import { EmptyState, LockedPage, PageHero } from "./shared";
 import type { PortalContext } from "./shared";
+import { NativeIcon } from '../player/native-ui';
 
 interface ScanState {
   phase: "loading" | "none" | "error" | "ready";
@@ -30,14 +31,14 @@ interface ScanState {
   weights: Record<string, any>;
 }
 
-export default function BodyProfileView({ ctx }: { ctx: PortalContext }) {
+export default function BodyProfileView({ ctx, compact = false, onMore }: { ctx: PortalContext; compact?: boolean; onMore?: () => void }) {
   if (ctx.access === "shared") {
     return <LockedPage title="Body Profile" copy="Body-scan measurements are private health-adjacent data." />;
   }
-  return <BodyProfileContent ctx={ctx} />;
+  return <BodyProfileContent ctx={ctx} compact={compact} onMore={onMore} />;
 }
 
-function BodyProfileContent({ ctx }: { ctx: PortalContext }) {
+function BodyProfileContent({ ctx, compact, onMore }: { ctx: PortalContext; compact: boolean; onMore?: () => void }) {
   const [scan, setScan] = useState<ScanState>(() =>
     ctx.access === "preview"
       ? {
@@ -184,6 +185,15 @@ function BodyProfileContent({ ctx }: { ctx: PortalContext }) {
   const height = number(ctx.athlete?.height);
   const weightKg = number(ctx.athlete?.weight);
   const canvasReady = scan.phase === "ready" && scan.points.length > 0;
+
+  if (compact) return <div className="native-body-preview">
+    <div className="body-canvas-wrap native-body-canvas" ref={wrapRef}>
+      {canvasReady ? <canvas ref={canvasRef} aria-label="Latest saved body scan" /> : <div className="native-body-placeholder"><NativeIcon name={scan.phase === 'error' ? 'cloud.slash' : 'figure.stand'} size={58} /><span>{scan.phase === 'loading' ? 'Loading body scan…' : scan.phase === 'error' ? 'Scan unavailable' : 'No body scan yet'}</span></div>}
+      <span className="native-body-axis" aria-hidden="true">Y<span>X · Z</span></span>
+      <button className="native-body-action" onClick={onMore}><NativeIcon name={canvasReady ? 'person.crop.rectangle' : 'iphone'} size={14} />{canvasReady ? 'View body scan' : 'Body scan details'}</button>
+    </div>
+    <div className="native-body-measurements"><span><NativeIcon name="arrow.up.and.down" size={14} />{heightText(height)}</span><span><NativeIcon name="scalemass" size={14} />{weightText(weightKg)}</span></div>
+  </div>;
 
   return (
     <section className="mobile-page body-profile-page">

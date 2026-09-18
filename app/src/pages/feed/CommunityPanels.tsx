@@ -50,6 +50,7 @@ export function PublishActivity({ activity, viewer, preview, onClose, onSaved }:
   const [caption, setCaption] = useState(activity.caption || '');
   const [rep, setRep] = useState(activity.selectedRepId || '');
   const [videos, setVideos] = useState(false);
+  const [poseOverlay, setPoseOverlay] = useState(false);
   const [comments, setComments] = useState(activity.commentsEnabled !== false);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const captureViewer = useCurrentViewer();
@@ -72,7 +73,7 @@ export function PublishActivity({ activity, viewer, preview, onClose, onSaved }:
       if (busy || !detailReady || (audience === 'community' && !communityProfile?.displayNameConfigured)) return;
       setBusy(true); setError('');
       try {
-        await api('setSocialVisibility', { ...viewer, id: activity.id, audience, hidden: false, caption: caption.trim(), selectedRepId: rep || null, videos: videos && canVideo, commentsEnabled: comments });
+        await api('setSocialVisibility', { ...viewer, id: activity.id, audience, hidden: false, caption: caption.trim(), selectedRepId: rep || null, videos: videos && canVideo, poseOverlay: videos && canVideo && poseOverlay, commentsEnabled: comments });
         if (current()) { onSaved(); onClose(); }
       } catch (e) { if (current()) setError(messageOf(e)); }
       finally { if (current()) setBusy(false); }
@@ -96,8 +97,10 @@ export function PublishActivity({ activity, viewer, preview, onClose, onSaved }:
       <p className="community-muted">{audience === 'community' ? 'Signed-in PoseTek members can see this post. Sharing this activity does not publish your other sessions or private profile.' : 'Only the selected audience can open this post. A copied link does not change access.'}</p>
       {!detailReady && !error && <p role="status">Loading your available reps…</p>}
       {!detailReady && error && <button type="button" onClick={() => { setError(''); setRetry(value => value + 1); }}>Reload activity</button>}
-      {!!detail.availableReps?.length && <label>Featured rep<select value={rep} disabled={!detailReady} onChange={event => { setRep(event.target.value); setVideos(false); }}><option value="">Summary only</option>{detail.availableReps.map(item => <option key={item.id} value={item.id}>{item.label}{item.canViewVideo ? '' : ' · video unavailable'}</option>)}</select></label>}
-      <label className="community-check"><input type="checkbox" checked={videos && canVideo} disabled={!canVideo} onChange={event => setVideos(event.target.checked)} />Include the selected saved video</label>
+      {!!detail.availableReps?.length && <label>Featured rep<select value={rep} disabled={!detailReady} onChange={event => { setRep(event.target.value); setVideos(false); setPoseOverlay(false); }}><option value="">Summary only</option>{detail.availableReps.map(item => <option key={item.id} value={item.id}>{item.label}{item.canViewVideo ? '' : ' · video unavailable'}</option>)}</select></label>}
+      <label className="community-check"><input type="checkbox" checked={videos && canVideo} disabled={!canVideo} onChange={event => { setVideos(event.target.checked); if (!event.target.checked) setPoseOverlay(false); }} />Include the selected saved video</label>
+      <label className="community-check"><input type="checkbox" checked={videos && canVideo && poseOverlay} disabled={!videos || !canVideo} onChange={event => setPoseOverlay(event.target.checked)} />Include saved pose outline and movement trails</label>
+      <p className="community-muted">Pose effects are shown only when this recording has matching saved tracking data.</p>
       <label className="community-check"><input type="checkbox" checked={comments} onChange={event => setComments(event.target.checked)} />Allow comments from people who can see this post</label>
       <Notice error={error} notice={notice} />
       <button className="social-primary" disabled={busy || !detailReady || !!viewer.viewAsPlayerId || (audience === 'community' && !communityProfile?.displayNameConfigured)}>{busy ? 'Saving…' : audience === 'community' ? 'Share to community' : 'Save sharing'}</button>

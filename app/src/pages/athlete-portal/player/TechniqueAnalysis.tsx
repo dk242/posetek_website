@@ -8,6 +8,7 @@ import type { Row } from './execution';
 import TechniqueReplay from './TechniqueReplay';
 import { eligibleTechniqueEvidence, supportedComparison, techniqueEvidence } from './technique-evidence';
 import { usePublishedFeedback } from './use-published-feedback';
+import { NativeIcon } from './native-ui';
 
 export default function TechniqueAnalysis({ playerId, reps, preview, onReplay }: { playerId: string; reps: Row[]; preview: boolean; onReplay: (rep: Row) => void }) {
   const config = useCoachConfig(preview), [analyses, setAnalyses] = useState<Row[]>([]), [comparisons, setComparisons] = useState<Row[]>([]);
@@ -48,7 +49,7 @@ export default function TechniqueAnalysis({ playerId, reps, preview, onReplay }:
     } catch (e: any) { setError(e.message); }
     finally { submitting.current = false; setBusy(false); }
   };
-  return <section className="portal-card"><h2>Technique analysis</h2><p>Open an existing analysis, choose a recorded kick to analyze, or review a saved left/right comparison.</p>
+  return <section className="portal-card native-technique-card"><header><NativeIcon name="figure.soccer" size={28} /><div><h2>Technique analysis</h2><small>Review kicks and compare feet</small></div></header><p>Open an existing analysis, choose a recorded kick to analyze, or review a saved left/right comparison.</p>
     <label>Recorded kick<select value={selected} onChange={e => { setSelected(e.target.value); setCompare(''); setReviewing(''); }}><option value="">Choose a kick</option>{kicks.map(r => <option key={r.id} value={r.id}>Session {r.sessionNumber || '—'} · Rep {r.repNumber || '—'} · {r.strike_foot || 'Foot unknown'}{validAnalyses.some(a => a.repId === r.id) ? ' · Analysis saved' : ''}</option>)}</select></label>
     {selected && <div className="player-actions"><button disabled={busy || !ready || !!pending || !!report || !capabilityEnabled(config, 'kick_analysis')} onClick={() => void submit()}>{pending ? 'Analysis in progress…' : report ? 'Analysis saved' : 'Analyze kick'}</button><button onClick={() => { const rep = kicks.find(r => r.id === selected); if (rep) onReplay(rep); }}>Watch this kick</button></div>}
     {error && <p role="alert" className="player-error">{error}</p>}

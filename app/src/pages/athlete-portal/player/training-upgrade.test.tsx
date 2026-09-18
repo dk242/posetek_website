@@ -3,11 +3,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 vi.mock('../../../lib/firebase', () => ({ default: {}, auth: { currentUser: { uid: 'athlete-auth' } }, db: {}, cloud: {}, storage: {} }));
 import { canMutateWorkout, restoreRuntime, resumeIndex, runtimeKey, runtimeSnapshot } from './workout-runtime';
-import { elapsed, IDLE_MS, interactClock, newClock, pauseClock, reconcileClock, restSeconds, resumeClock, validClock } from './clock';
+import { elapsed, IDLE_MS, interactClock, newClock, pauseClock, reconcileClock, restSeconds, resumeClock, validClock, targetWork, workElapsed, startRest, stopRest } from './clock';
 import { savedWorkout, unfinishedWorkout } from './execution';
 import { weekProgress } from './progress';
 import { recordedSessionLink, SavedPlanDetails } from './training-details';
-import PlayerWorkout from './PlayerWorkout';
+import PlayerWorkout, { timedDose } from './PlayerWorkout';
+import { WeekProgress } from './PlayerTraining';
 
 const blocks = [{ blockId: 'a', drillId: 'DRB-001', name: 'Control', sets: 2, restSeconds: 60 }, { blockId: 'b', drillId: 'PAS-001', name: 'Passing', sets: 2 }];
 const owner = { uid: 'athlete-auth', playerId: 'player-doc', logId: 'old_slot', planId: 'old', workoutRevision: 3 };
@@ -90,6 +91,13 @@ describe('cross-plan training evidence', () => {
 });
 
 describe('player-facing details and control states', () => {
+  it('keeps unscheduled training credit visible without claiming a nonexistent target was met', () => {
+    const plan = { id: 'p', sessionsPerWeek: 2, minutesPerSession: 30 }, week = { weekNumber: 1, workouts: [{ workoutId: 'slot' }], targets: [{ domain: 'dribbling', exposures: 2 }] };
+    const logs = [{ id: 'p_slot', source: 'plan', planId: 'p', workoutId: 'slot', blocks: [{ blockId: 'b', drillId: 'shot', domain: 'shooting', status: 'done', estimatedMinutes: 12 }] }];
+    const html = renderToStaticMarkup(<WeekProgress plan={plan} week={week} logs={logs} reps={[]} sessions={[]} />);
+    expect(html).toContain('1 completed'); expect(html).toContain('No target set'); expect(html).not.toContain('1/0');
+    expect(html).toContain('12 min'); expect(html).toContain('0/2');
+  });
   it('shows only saved evidence and keeps confidence, gaps and equipment visible', () => {
     const html = renderToStaticMarkup(<SavedPlanDetails plan={{ horizonWeeks: 2, intake: { goals: [], equipment: ['ball'], setting: 'solo' }, assessment: { summary: 'Saved summary', findings: [{ domain: 'speed', statement: 'Saved finding', confidence: 'low' }], dataGaps: ['No complete sprint test'], methodologyVersion: 'evidence-objectives-v1', priorities: [{ id: 'p', label: 'Close control', reason: 'Reviewed recording', rank: 1, role: 'support', evidenceBasis: 'conditionalEstimate', confidence: 'low', progressCheck: 'Retest the complete course' }] } }} />);
     expect(html).toContain('low confidence'); expect(html).toContain('No complete sprint test');
@@ -111,12 +119,67 @@ describe('player-facing details and control states', () => {
     const store = { logFor: () => log(), saving: false } as any;
     const html = renderToStaticMarkup(<MemoryRouter><PlayerWorkout workout={workout} store={store} playerId="player-doc" preview={false} onExit={() => {}} /></MemoryRouter>);
     expect(html).toContain('Workout paused. Resume to continue.'); expect(html).toContain('Drill 2 of 2');
-    expect(html.match(/<button[^>]*>Complete set 1<\/button>/)?.[0]).toContain('disabled');
+    expect(html.match(/<button[^>]*>Complete set 1 of 2<\/button>/)?.[0]).toContain('disabled');
     expect(html.match(/<button[^>]*>Skip drill<\/button>/)?.[0]).toContain('disabled');
+  });
+  it('opens a start acknowledged after tab departure paused, without counting hidden training', () => {
+    vi.useFakeTimers(); vi.setSystemTime(90000);
+    const workout = { ...savedWorkout(log())!, pausedOnOpen: true };
+    const store = { logFor: () => log(), saving: false } as any;
+    const html = renderToStaticMarkup(<MemoryRouter><PlayerWorkout workout={workout} store={store} playerId="player-doc" preview onExit={() => {}} /></MemoryRouter>);
+    expect(html).toContain('Workout paused. Resume to continue.');
+    expect(html).toContain('Session 0:00');
+    expect(html.match(/<button[^>]*>Complete set 1 of 2<\/button>/)?.[0]).toContain('disabled');
   });
   it('offers sharing only from a saved workout and never publishes as part of rendering', () => {
     const finish = vi.fn(); const store = { logFor: () => ({ ...log(), endedAt: new Date() }), finish } as any;
     const html = renderToStaticMarkup(<MemoryRouter><PlayerWorkout workout={savedWorkout(log())!} store={store} playerId="player-doc" preview onExit={() => {}} /></MemoryRouter>);
     expect(html).toContain('Workout saved'); expect(html).toContain('/feed?scope=mine&amp;preview=1'); expect(finish).not.toHaveBeenCalled();
+  });
+});
+
+describe('native set, drill and rest clocks', () => {
+  it('excludes rest from set and drill time and starts the next set at the exact deadline', () => {
+    let c = targetWork(newClock(1000), 'a', 1, 1000);
+    expect(workElapsed(c, 11000)).toEqual({ set: 10, drill: 10 });
+    c = startRest(c, 30, 11000);
+    c = targetWork(c, 'a', 2, 11000);
+    expect(workElapsed(c, 31000)).toEqual({ set: 0, drill: 10 });
+    c = reconcileClock(c, 46000);
+    expect(workElapsed(c, 46000)).toEqual({ set: 5, drill: 15 });
+    expect(elapsed(c, 46000)).toBe(45);
+  });
+  it('freezes a fractional rest and work clock across pause, serialized reload and resume', () => {
+    let c = targetWork(newClock(1000), 'a', 1, 1000);
+    c = targetWork(startRest(c, 30, 11500), 'a', 2, 11500);
+    c = pauseClock(c, 20000);
+    const saved = runtimeSnapshot(owner, blocks, 0, c, true);
+    c = restoreRuntime(JSON.parse(JSON.stringify(saved)), owner, blocks, log(), 90000)!.clock;
+    expect(workElapsed(c, 90000)).toEqual({ set: 0, drill: 10.5 });
+    c = resumeClock(c, 90000);
+    c = reconcileClock(c, 115000);
+    expect(workElapsed(c, 115000)).toEqual({ set: 3.5, drill: 14 });
+  });
+  it('keeps drill totals when navigating and does not run completed sets after resume', () => {
+    let c = targetWork(newClock(1000), 'a', 1, 1000);
+    c = targetWork(stopRest(c, 6000), 'b', 1, 6000);
+    expect(workElapsed(c, 9000)).toEqual({ set: 3, drill: 3 });
+    c = targetWork(c, 'a', 1, 9000);
+    expect(workElapsed(c, 10000)).toEqual({ set: 6, drill: 6 });
+    c = targetWork(c, 'a', 1, 10000, false);
+    c = resumeClock(pauseClock(c, 11000), 20000);
+    expect(workElapsed(c, 30000)).toEqual({ set: 6, drill: 6 });
+  });
+  it('accounts for a missed rest deadline before pause, with no dependence on timer ticks', () => {
+    let c = targetWork(newClock(1000), 'a', 1, 1000);
+    c = targetWork(startRest(c, 10, 6000), 'a', 2, 6000);
+    c = pauseClock(c, 21500);
+    expect(workElapsed(c, 90000)).toEqual({ set: 5.5, drill: 10.5 });
+  });
+  it('treats only duration units as timed prescriptions and rejects corrupt work timing', () => {
+    expect(timedDose({ reps: 2, repUnit: 'minutes' })).toBe(120);
+    expect(timedDose({ reps: 45, repUnit: 'seconds' })).toBe(45);
+    for (const repUnit of ['reps', 'meters', 'contacts', 'passes']) expect(timedDose({ reps: 20, repUnit })).toBeNull();
+    expect(validClock({ ...newClock(1000), work: { blockId: 'a', setNumber: 1, active: true, sets: { a: -1 }, drills: {}, runningSince: 1000 } })).toBe(false);
   });
 });

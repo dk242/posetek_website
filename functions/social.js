@@ -8,6 +8,8 @@ const { duplicateIds } = require("./insights-v2-qualification");
 const { createProcessingEvidenceReader } = require("./processing-evidence");
 const { mapBounded } = require("./insights-v2-projection");
 const { createSocialCommunity } = require("./social-community");
+const { readSocialOverlay } = require("./social-media-overlay");
+const { isDeepStrictEqual } = require("node:util");
 
 const bundledBenchmarks = require("./social-benchmarks.json");
 const AUDIENCES = ["organization", "team", "friends", "private"];
@@ -28,6 +30,9 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
   // Owners can inspect their own exact saved recording before choosing whether
   // to share it. Audience authorization still runs before every media read.
   const mediaAllowed = (c, author) => author.uid === c.uid || videoAllowed(author);
+  const poseShared = (author, repId) => author.override.poseOverlay === true && author.override.poseOverlayOwnerUid === author.uid
+    && !!repId && author.override.poseOverlayRepId === repId && videoAllowed(author);
+  const overlayAllowed = (c, author, repId) => author.uid === c.uid || poseShared(author, repId);
   const effective = createEffectiveResults({ db, bucket, HttpsError, now, readEvidence });
   const evidenceReader = createProcessingEvidenceReader({ db, bucket, HttpsError, readEvidence });
   const community = createSocialCommunity({ db, now, fail, segment, context, activity, present, playerRef, prefsRef });
@@ -194,7 +199,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
       partial: a.partial, drill: a.drill, repCount: a.repIds.length, canViewVideo,
       mine: author.uid === c.uid, audience, hidden: author.override.hidden === true,
       kudos: count.data().count, liked: kudos.exists, comments: comments.data().count,
-      ...(v2 ? { caption: author.override.caption || "", selectedRepId, availableReps, commentsEnabled,
+      ...(v2 ? { caption: author.override.caption || "", selectedRepId, availableReps, commentsEnabled, poseOverlay: poseShared(author, selectedRepId),
         canComment: commentsEnabled && (!!c.player || audience !== "community" && (c.staff || c.admin)) && !c.previewPlayerId, communityPublished: Boolean(published) } : {}) };
   }
   async function adminDirectory(data, auth) {
@@ -291,7 +296,7 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
     const c = await context(auth, data.organizationId, data.viewAsPlayerId, data.contractVersion), { a, author } = await activity(c, data.id);
     if (author.uid !== c.uid) fail("permission-denied", "Only the athlete can change sharing.");
     if (![...AUDIENCES, ...(c.version === 2 ? ["community"] : [])].includes(data.audience) || typeof data.hidden !== "boolean") fail("invalid-argument", "Choose an audience.");
-    const setting = { audience: data.audience, hidden: data.hidden };
+    const setting = { audience: data.audience, hidden: data.hidden, poseOverlay: false, poseOverlayOwnerUid: null, poseOverlayRepId: null };
     if (data.audience === "community") {
       community.gate(c); await community.enabledActor(c);
       if (!author.profile.displayName) fail("failed-precondition", "Set up your community display name before publishing.");
@@ -303,15 +308,22 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
       if (data.caption !== undefined && (typeof data.caption !== "string" || data.caption.trim().length > 500)) fail("invalid-argument", "Captions can contain up to 500 characters.");
       if (data.selectedRepId !== undefined && data.selectedRepId !== null && !a.repIds.includes(data.selectedRepId)) fail("invalid-argument", "Choose a rep from this activity.");
       if (data.videos !== undefined && typeof data.videos !== "boolean" || data.commentsEnabled !== undefined && typeof data.commentsEnabled !== "boolean") fail("invalid-argument", "Choose valid post permissions.");
+      if (data.poseOverlay !== undefined && typeof data.poseOverlay !== "boolean") fail("invalid-argument", "Choose whether to share the pose overlay.");
       if (data.caption !== undefined) setting.caption = clean(data.caption, 500);
       if (data.selectedRepId !== undefined) setting.selectedRepId = data.selectedRepId;
       if (data.videos !== undefined) setting.videos = data.videos;
       if (data.commentsEnabled !== undefined) setting.commentsEnabled = data.commentsEnabled;
+      if (data.poseOverlay === true) { setting.poseOverlay = true; setting.poseOverlayOwnerUid = c.uid; }
     }
     await db.runTransaction(async tx => {
       const fresh = await authorizeMutation(tx, c, a.id, data.audience === "community" && !data.hidden ? "publish" : "visibility");
       if (fresh.author.uid !== c.uid) fail("permission-denied", "Only the athlete can change sharing.");
       if (setting.selectedRepId && !fresh.a.repIds.includes(setting.selectedRepId)) fail("failed-precondition", "This rep is no longer part of the activity.");
+      if (setting.poseOverlay && (!fresh.a.repIds.length || !videoAllowed({ ...fresh.author, override: { ...fresh.author.override, ...setting } }))) fail("invalid-argument", "Share a recorded video before including its pose overlay.");
+      if (setting.poseOverlay) {
+        const selected = Object.hasOwn(setting, "selectedRepId") ? setting.selectedRepId : fresh.author.override.selectedRepId;
+        setting.poseOverlayRepId = fresh.a.repIds.includes(selected) ? selected : fresh.a.repIds.at(-1);
+      }
       tx.set(db.collection("socialActivitySettings").doc(a.id), setting, { merge: true });
       tx.update(db.collection("socialActivities").doc(a.id), { communityPublished: data.audience === "community" && !data.hidden });
     }); return { ok: true };
@@ -471,18 +483,36 @@ function createSocial({ db, bucket, HttpsError, now = Date.now, readEvidence }) 
     const batch = db.batch(); reports.docs.forEach(d => batch.update(d.ref, { resolved: true })); await batch.commit(); return { ok: true };
   }
   async function media(data, auth) {
+    if (data.includeOverlay !== undefined && typeof data.includeOverlay !== "boolean") fail("invalid-argument", "Choose whether to include the pose overlay.");
+    const includeOverlay = data.includeOverlay === true;
+    const unavailable = () => ({ url: null, expiresAt: null, ...(includeOverlay ? { overlay: null } : {}) });
     const c = await context(auth, data.organizationId, data.viewAsPlayerId, data.contractVersion), { a, author } = await activity(c, data.id);
     const consent = mediaAllowed(c, author);
-    if (!consent || !a.repIds.length) return { url: null, expiresAt: null };
+    if (!consent || !a.repIds.length) return unavailable();
     const repId = data.repId ? segment(data.repId) : a.repIds.includes(author.override.selectedRepId) ? author.override.selectedRepId : a.repIds.at(-1);
     if (!a.repIds.includes(repId)) fail("permission-denied", "This rep is not part of the activity.");
     const rep = await playerRef(a.playerId).collection("reps").doc(repId).get();
-    if (!rep.exists || sessionKey(rep.data()) !== a.sourceId) return { url: null, expiresAt: null };
-    const result = await effective.mediaForPlayer(a.playerId, a.drill, repId, { ttlMs: 300000, includeArtifacts: false });
+    if (!rep.exists || sessionKey(rep.data()) !== a.sourceId) return unavailable();
+    let overlay = null, recording = null;
+    const result = await effective.mediaForPlayer(a.playerId, a.drill, repId, { ttlMs: 300000, includeArtifacts: false,
+      ...(includeOverlay && overlayAllowed(c, author, repId) ? { onRecording: async source => { recording = source; overlay = await readSocialOverlay(source, bucket); } } : {}) });
+    // Slow optional artifact reads must not return an overlay from a rep,
+    // revision, qualification, context or selected video that changed meanwhile.
+    if (includeOverlay && recording) {
+      let currentRecording = null;
+      try {
+        await effective.mediaForPlayer(a.playerId, a.drill, repId, { includeArtifacts: false, sign: false, onRecording: source => { currentRecording = source; } });
+      } catch (error) { if (error.code !== "not-found") throw error; }
+      if (!currentRecording || !isDeepStrictEqual(recording, currentRecording)) return unavailable();
+    }
     const fresh = await context(auth, data.organizationId, data.viewAsPlayerId, data.contractVersion);
-    const current = (await activity(fresh, data.id)).author;
-    const stillConsents = mediaAllowed(fresh, current);
-    return result.resultStatus.qualified && stillConsents && result.mediaUrl ? { url: result.mediaUrl, expiresAt: result.expiresAtMillis } : { url: null, expiresAt: null };
+    const { a: currentActivity, author: current } = await activity(fresh, data.id);
+    const currentRep = await playerRef(a.playerId).collection("reps").doc(repId).get();
+    const selectedNow = currentActivity.repIds.includes(current.override.selectedRepId) ? current.override.selectedRepId : currentActivity.repIds.at(-1);
+    const bindingCurrent = currentActivity.playerId === a.playerId && currentActivity.drill === a.drill && currentActivity.sourceId === a.sourceId
+      && currentActivity.repIds.includes(repId) && (data.repId || selectedNow === repId) && currentRep.exists && isDeepStrictEqual(rep.data(), currentRep.data());
+    return result.resultStatus.qualified && mediaAllowed(fresh, current) && bindingCurrent && result.mediaUrl && result.expiresAtMillis > now()
+      ? { url: result.mediaUrl, expiresAt: result.expiresAtMillis, ...(includeOverlay ? { overlay: overlayAllowed(fresh, current, repId) ? overlay : null } : {}) } : unavailable();
   }
   async function rebuild(playerId, dryRun = false, options = {}) {
     segment(playerId);

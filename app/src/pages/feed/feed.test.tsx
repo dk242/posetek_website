@@ -75,7 +75,9 @@ describe("feed offline rendering", () => {
     expect(html).toContain("benchmark rating");
     expect(html).toContain('disabled="" aria-pressed="false"');
     expect(html).toContain('<select disabled=""');
-    expect(html).toContain("Watch saved rep");
+    expect(html).toContain('aria-label="Play video"');
+    expect(html).toContain('aria-label="Video progress"');
+    expect(html.indexOf('class="feed-media"')).toBeLessThan(html.indexOf('social-chart-under-video'));
     expect(html).toContain("Hide activity from others");
   });
 });
@@ -147,7 +149,10 @@ describe("social callable transport", () => {
   it("documents every callable used by the recovered UI with no deployed runtime dependency", () => {
     const source = readFileSync(new URL("./FeedPage.jsx", import.meta.url), "utf8");
     const used = [...new Set([...source.matchAll(/callSocial\(`([^`]+)`/g)].map(match => match[1]))].sort();
-    expect(used).toEqual(socialCallableNames.filter(name => name !== 'reportSocialActivity').sort());
+    expect(used).toEqual(socialCallableNames.filter(name => name !== 'reportSocialActivity' && name !== 'getSocialMedia').sort());
+    const mediaSource = readFileSync(new URL('./FeedMedia.tsx', import.meta.url), 'utf8');
+    expect(mediaSource).toContain("callSocialV2('getSocialMedia'");
+    expect(mediaSource).toContain('includeOverlay: true');
     expect(source).toContain('communityEnabled ? `reportSocialContent` : `reportSocialActivity`');
     expect(source).not.toMatch(/from ["'](?:https?:|.*(?:index-|firebase-|rolldown-runtime-))/);
     const names: SocialCallableName[] = [...socialCallableNames];

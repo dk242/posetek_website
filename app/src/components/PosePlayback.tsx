@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { contentRect, frameAtTime, poseTimeline, type PosePoint } from "../lib/pose-playback";
 import { poseJointOptions, visiblePosePoint } from "../lib/pose-joints";
+import { NativeIcon } from '../pages/athlete-portal/player/native-ui';
 
 const edges17 = [[0,1],[0,2],[1,3],[2,4],[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
 const edges33 = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[29,31],[24,26],[26,28],[28,30],[30,32]];
@@ -19,9 +20,10 @@ export interface PosePlaybackProps {
   seekTarget?: { frame: number; key: number | string };
   highlightedJoints?: number[];
   inspectJoints?: boolean;
+  nativeControls?: boolean;
 }
 
-export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, markers = [], title, initialSpeed = 1, onSpeedChange, onFrameChange, overlay, seekTarget, highlightedJoints = [], inspectJoints = true }: PosePlaybackProps) {
+export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, markers = [], title, initialSpeed = 1, onSpeedChange, onFrameChange, overlay, seekTarget, highlightedJoints = [], inspectJoints = true, nativeControls = false }: PosePlaybackProps) {
   const stageRef = useRef<HTMLDivElement>(null), canvasRef = useRef<HTMLCanvasElement>(null), videoRef = useRef<HTMLVideoElement>(null);
   const [frame, setFrame] = useState(0), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(initialSpeed);
   const [videoError, setVideoError] = useState(false), [playError, setPlayError] = useState(false);
@@ -63,6 +65,14 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
     }
   }
   useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = speed; }, [speed, mediaUrl]);
+  useEffect(() => {
+    const pause = () => { videoRef.current?.pause(); setPlaying(false); };
+    const onVisibility = () => { if (document.hidden) pause(); };
+    window.addEventListener('posetek:player-route-leave', pause);
+    window.addEventListener('pagehide', pause);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => { pause(); window.removeEventListener('posetek:player-route-leave', pause); window.removeEventListener('pagehide', pause); document.removeEventListener('visibilitychange', onVisibility); };
+  }, []);
   useEffect(() => {
     if (!playing || hasVideo || !timed) return;
     const started = performance.now(), origin = timeline.times[frameRef.current];
@@ -142,7 +152,9 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
       {playError ? " Playback could not start. Use the video controls or reopen this recording." : ""}</p>
     {mediaUrl && !videoError && frames.length > 0 ? <button className="quiet-button" type="button" onClick={() => { videoRef.current?.pause(); setPlaying(false); setShowVideo(value => !value); }}>{showVideo ? "Show pose frames" : "Show video"}</button> : null}
     <div className="playback-bar">
-      <button className="play-button" type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} disabled={!hasVideo && (!timed || !frames.length)}><span className="material-symbols-outlined">{playing ? "pause" : "play_arrow"}</span></button>
+      {nativeControls && <button type="button" aria-label="Previous frame" disabled={!frames.length || frame === 0 || (hasVideo && !timed)} onClick={() => { videoRef.current?.pause(); setPlaying(false); seek(frame - 1); }}><NativeIcon name="backward.end.fill" size={16} /></button>}
+      <button className="play-button" type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} disabled={!hasVideo && (!timed || !frames.length)}>{nativeControls ? <NativeIcon name={playing ? 'pause.fill' : 'play.fill'} size={18} /> : <span className="material-symbols-outlined">{playing ? "pause" : "play_arrow"}</span>}</button>
+      {nativeControls && <button type="button" aria-label="Next frame" disabled={!frames.length || frame >= frames.length - 1 || (hasVideo && !timed)} onClick={() => { videoRef.current?.pause(); setPlaying(false); seek(frame + 1); }}><NativeIcon name="forward.end.fill" size={16} /></button>}
       <input type="range" min={0} max={Math.max(0, frames.length - 1)} value={frame} onChange={event => seek(Number(event.target.value))} aria-label="Frame" disabled={!frames.length || (hasVideo && !timed)} />
       <button className="speed-button" type="button" onClick={() => { const rates = [.25,.5,1,2], next = rates[(rates.indexOf(speed) + 1) % rates.length]; setSpeed(next); onSpeedChange?.(next); }}>{speed}×</button>
       <span>Frame {frames.length ? frame + 1 : 0} / {frames.length}</span>

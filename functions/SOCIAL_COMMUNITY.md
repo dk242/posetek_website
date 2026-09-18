@@ -47,7 +47,7 @@ this release. Do not change the shared planner gateway, capture processor,
 native app, benchmark/qualification definitions, archived videos, or reviewed
 cohort plans.
 
-The deployment archive must include `social-community.js`, `social.js`,
+The deployment archive must include `social-community.js`, `social.js`, `social-media-overlay.js`,
 `social-projection.js`, `social-benchmarks.json`, and their existing transitive
 modules: `effective-results.js`, `processing-evidence.js`,
 `insights-v2-qualification.js`, `insights-v2-projection.js`,
@@ -114,7 +114,8 @@ update, including if an old organization post has subsequently been published.
 
 V2 activity fields add `caption` (500 characters), `selectedRepId`,
 `availableReps: [{id,label,canViewVideo}]`, `commentsEnabled`, `canComment`, and
-`communityPublished`. Lists include only the selected/default rep choice;
+`communityPublished` and effective `poseOverlay:boolean` consent (default false).
+Lists include only the selected/default rep choice;
 detail includes up to 12 recent choices plus an older selected rep if needed.
 `authorUid` is absent from V2. The existing media callable supplies five-minute
 signed URLs only after exact capture resolution, canonical qualification,
@@ -124,6 +125,83 @@ sharing consent. Nonowners still require current audience access and video
 consent; owner permission is also rechecked after signing.
 No pose/artifact/private processing-context URL is exposed. Ambiguous or missing
 video returns unavailable. Links already issued expire within five minutes.
+
+### Optional feed pose overlay
+
+`getSocialMedia` accepts optional boolean `includeOverlay`. Omission/false retains
+the existing `{url,expiresAt}` response and performs no pose download. When true,
+the response adds `overlay`, either `null` or this drawing-only projection:
+
+```text
+{ version: 1, coordinateSpace: "normalized", layout: "coco17" | "mediapipe33",
+  sourceWidth: number, sourceHeight: number,
+  frames: [{time: number, points: ([number, number] | null)[]}],
+  markers: [{label: string, time: number}],
+  footJoints: {left: number, right: number} }
+```
+
+Times are recorded video seconds, including any explicit pose/video start offset.
+Points are bounded normalized 2D coordinates rounded to four decimals. Layout
+fixes the point ordering; low-confidence, missing and out-of-frame points become
+null. `footJoints` identifies ankle joints for the same time-bounded foot trails
+used by replay; it does not claim a ball path or professional comparison. Markers
+are a fixed label allowlist from canonical qualified rep fields, never arbitrary
+metadata text or stale values replaced by an accepted revision. The client should
+draw only within the supplied time range and hide gaps/unavailable points.
+
+The server samples across the complete source, preserving endpoints, to at most
+300 frames / 33 joints and 200 KiB of response JSON. Pose files have a separate
+16 MiB source limit, accommodating native high-frame-rate double-precision pose
+arrays; the canonical metadata/context JSON reader remains capped at 2 MiB.
+The pose reader first validates object size and generation, then streams that
+exact generation using an inclusive byte range of `0..16 MiB`. The extra byte is
+an overflow sentinel: receiving more than 16 MiB destroys the stream and returns
+unavailable. The final length must equal the inspected object size. Missing,
+interrupted, truncated or invalid JSON also returns unavailable. This range
+contract follows the installed Google Cloud Storage SDK; range checksum
+validation is disabled, while generation pinning and exact byte counts remain
+enforced. No unbounded fallback download is used.
+
+The projector also enforces a 12,000-frame, 10-minute clock limit and positive
+source dimensions no larger than 16,384 pixels. Each frame contains exactly 17
+or 33 points; canonical ankles are indices 15/16 or 27/28 respectively.
+Unsupported layouts/coordinates, absent dimensions,
+malformed clocks, conflicting recorded FPS, uncertain trim offsets, and absent
+exact sidecar-to-video identity return `overlay:null`; an otherwise authorized
+video remains playable. A unique legacy video alone is insufficient evidence to
+align a pose. The server does not guess FPS, dimensions, transforms or another
+rep's artifact folder. No private metadata, athlete measurements, processing
+context, artifact URLs, object paths or generation identifiers appear in output.
+
+`setSocialVisibility` V2 accepts `poseOverlay:boolean`. Missing/false clears pose
+sharing; true requires video sharing and a measured rep in the activity. Consent
+is stored against the current account owner and selected rep. Changing the
+selected rep through an older client does not carry consent forward. V2 activity
+DTOs expose only effective `poseOverlay:boolean`, never these private binding
+fields. Existing video-only posts default to false. The current owner may inspect
+their own overlay before opting in; nonowners require both current video consent
+and this explicit pose consent. Global video revocation also revokes shared pose
+access under the existing video rules; explicit later publication can regrant
+video sharing with a new pose choice.
+
+The media service's internal recording hook reuses canonical qualification,
+duplicate suppression, folder/capture resolution and video generation selection.
+After optional pose projection it re-resolves that binding and then rechecks the
+activity, account/audience, video and pose permissions, selected rep and expiry.
+Client code requests overlays only for the active visible media, retains no
+persistent artifact cache, and clears drawing data with the media lease at expiry,
+sign-out, account change or access revocation. Before drawing, the client validates
+the projection and its compatibility with the loaded video's aspect and duration.
+Missing points and gaps greater than 0.25 seconds break interpolation/trails;
+stale trails are hidden. Only one visible feed clip may autoplay, always muted;
+reduced-motion and data-saving preferences use manual playback. A declined or
+unavailable overlay does not prevent an otherwise authorized video from playing.
+This change adds no callable,
+Firestore/Storage rule, secret or dependency. Deploy the complete reviewed
+Functions source when updating `getSocialMedia`, `setSocialVisibility`,
+`getSocialFeed` and `getSocialActivity` together, or use the complete scoped target
+list above. The latter two return the additive activity consent field. Native
+private-media defaults are unchanged.
 
 `setSocialVisibility` accepts V2 caption, selected rep, `videos`, and
 `commentsEnabled` alongside its existing audience/hidden fields. Community
@@ -188,7 +266,8 @@ new projection observers using the reviewed release workflow; preserve the
 original four projectors, auth deletion handler and protected processor. A
 code rollback does not erase community records or moderation decisions.
 
-Local validation: the final integrated backend plus migration suite ran 284 tests
+Earlier community integration, before the optional overlay extension: the
+backend plus migration suite ran 284 tests
 (281 passed, three existing private historical-fixture tests skipped), with
 zero failures. Real isolated Firestore/Storage emulators passed 336 assertions.
 The rule fixture now correctly expects the pre-existing verified-admin upload
@@ -199,3 +278,18 @@ blocking, preview denial, racing membership/permission changes, idempotency,
 inbox account transfer, moderation restore and migration resumption. Production
 deployment, production migration and device validation were not performed by
 this backend workstream.
+
+The overlay follow-up's focused backend run passed **85 tests**, with no failures
+or skips: `social.test.js`, `social-community.test.js`, `effective-results.test.js`
+and `social-media-overlay.test.js`. It covers consent/defaults, exact rep/capture
+binding, access and source changes during reads, expiry, bounded projection,
+missing artifacts, a genuine-size 960-frame/33-joint/240-fps double-precision
+fixture larger than 2 MiB, generation-pinned streams, invalid sizes, overflow,
+interruption and truncated reads. The two frontend pure suites,
+`media-playback.test.ts` and `pose-overlay.test.ts`, passed **55 tests**, covering
+one playback winner, visibility/order/hysteresis, strict parsing, interpolation,
+dropouts, trails and direct backend-to-client 17/33-point compatibility.
+These are scoped regression results, not physical-device or deployed-media
+acceptance. Confirm real authorized footage, consent revocation, account changes,
+expiry, portrait/landscape alignment, scroll handoff and browser autoplay
+behavior before release.

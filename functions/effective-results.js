@@ -131,11 +131,12 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
     await authorize(data.playerId, auth);
     return { ...result, provisionalEstimates };
   }
-  async function signedFile(name, expires, sign = true) {
+  async function signedFile(name, expires, sign = true, onInspected) {
     let meta;
     try { [meta] = await bucket.file(name).getMetadata(); } catch (error) { if (Number(error.code) === 404) return null; throw error; }
     // Pin URLs to the inspected generation so a later overwrite cannot change
     // the video or JSON behind a response already authorized for this attempt.
+    onInspected?.(meta);
     if (!sign) return true;
     const [url] = await bucket.file(name, { generation: meta.generation }).getSignedUrl({ action: "read", expires });
     return url;
@@ -172,8 +173,15 @@ function createEffectiveResults({ db, bucket, HttpsError, now = () => Date.now()
       const movies = files.filter(file => /^[A-Za-z0-9_.-]+\.(mov|mp4)$/i.test(file.name.slice(folder.length + 1))).sort((a, b) => a.name.localeCompare(b.name));
       const claimedPath = evidence.context?.rep?.videoStoragePath;
       const movie = claimedPath ? movies.find(file => file.name === claimedPath) : movies.length === 1 ? movies[0] : null;
-      if (movie) response.mediaUrl = await signedFile(movie.name, expiresAtMillis, options.sign !== false);
+      let movieGeneration;
+      if (movie) response.mediaUrl = await signedFile(movie.name, expiresAtMillis, options.sign !== false, meta => { movieGeneration = String(meta.generation || ""); });
       if (response.mediaUrl) response.source = "recording";
+      // Server-only projection hook; no callable forwards caller options here.
+      // The social surface receives sanitized inline drawings, never these
+      // private binding/artifact details or the ordinary artifact URLs.
+      if (response.mediaUrl && status.qualified && typeof options.onRecording === "function") {
+        await options.onRecording({ playerId, rep, effectiveRep: effectiveRep(rep, evidence, duplicates.has(rep.id)), evidence, folder, movieName: movie.name, movieGeneration });
+      }
     }
     if (!response.mediaUrl && !duplicates.has(rep.id)) {
       // The report itself must independently match both owner and exact rep.

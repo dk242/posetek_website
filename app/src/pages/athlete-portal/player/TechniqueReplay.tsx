@@ -52,7 +52,7 @@ export default function TechniqueReplay({ playerId, rep, otherRep, report, compa
   return <section className="technique-guided-review" aria-label={comparison ? `${foot} foot comparison evidence` : 'Guided technique review'}>
     {comparison && <p className="eyebrow">{foot} foot</p>}
     <PosePlayback frames={clip.frames} metadata={clip.metadata} mediaUrl={clip.mediaUrl} mediaSource={clip.mediaSource} title={comparison ? `${foot === 'left' ? 'Left' : 'Right'} kick` : 'Technique evidence'}
-      seekTarget={step ? { frame: step.frame, key: requestKey } : undefined} highlightedJoints={step?.joints || []} />
+      seekTarget={step ? { frame: step.frame, key: requestKey } : undefined} highlightedJoints={step?.joints || []} nativeControls />
     {step ? <section aria-live="polite"><p className="eyebrow">Finding {stepIndex + 1} of {steps.length} · Frame {step.frame + 1}</p><h3>{step.title}</h3><p><strong>{step.cue}</strong></p><p>{step.detail}</p>{step.evidence && <p className="muted-copy">{step.evidence}</p>}
       <div className="player-actions"><button type="button" disabled={stepIndex === 0} onClick={() => go(stepIndex - 1)}>Previous finding</button><button type="button" onClick={() => go(stepIndex)}>Show marked frame</button><button type="button" disabled={stepIndex >= steps.length - 1} onClick={() => go(stepIndex + 1)}>Next finding</button></div>
       {steps.length > 1 && stepIndex === steps.length - 1 && <button type="button" onClick={() => go(0)}>Review from the first finding</button>}
@@ -61,7 +61,7 @@ export default function TechniqueReplay({ playerId, rep, otherRep, report, compa
       <p className="muted-copy">Each view uses its own recorded evidence frame. This compares the movement phase, not the speed of the two kicks.</p>
       {counterpart.error ? <div role="status"><p>{counterpart.error}</p><button type="button" onClick={() => setRetry(value => value + 1)}>Reload recordings</button></div> : !otherClip ? <p role="status">Opening the other recording…</p> : step?.counterpartFrame === undefined ? <p>No corresponding frame was recorded for this finding.</p> :
         <PosePlayback frames={otherClip.frames} metadata={otherClip.metadata} mediaUrl={otherClip.mediaUrl} mediaSource={otherClip.mediaSource} title={foot === 'left' ? 'Right kick' : 'Left kick'}
-          seekTarget={{ frame: step.counterpartFrame, key: requestKey }} />}
+          seekTarget={{ frame: step.counterpartFrame, key: requestKey }} nativeControls />}
     </details>}
   </section>;
 }

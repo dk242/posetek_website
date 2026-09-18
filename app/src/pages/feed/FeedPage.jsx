@@ -5,12 +5,14 @@ import { auth } from "../../lib/firebase";
 import { callSocialV2 as callSocial } from "./api";
 import { CommunityInbox, CommunityModeration, CommunitySettings, CommunitySheet, Discovery, PublishActivity, ReportContent, SocialProfile } from './CommunityPanels';
 import { formatMeasurement, mergeActivities, initials, formatDate } from "./model";
-import { socialMediaLease } from './media-lease';
 import { athleteTabUrl, PlayerNavigation } from '../athlete-portal/player/player-navigation';
+import { NativeIcon, NativePlayerTabs, PlayerBrand } from '../athlete-portal/player/native-ui';
+import FeedMedia from './FeedMedia';
 import "./feed.css";
 import "../../styles/pose-portal.css";
 import "./feed-cascade.css";
-import '../../styles/player-finish.css';
+import '../athlete-portal/player/native-tokens.css';
+import './native-feed.css';
 
 var sampleContext = {
   uid: `sample`,
@@ -47,6 +49,7 @@ var sampleActivities = [
   {
     ...sampleActivityDefaults,
     id: `sample-1`,
+    canViewVideo: true,
     authorName: `Jamie Rivera`,
     title: `Shooting session`,
     subtitle: `12 measured reps`,
@@ -120,6 +123,7 @@ var sampleActivities = [
   {
     ...sampleActivityDefaults,
     id: `sample-3`,
+    canViewVideo: true,
     authorName: `Taylor Brooks`,
     teamName: `Girls · Coach Niall`,
     title: `Vertical jump session`,
@@ -172,9 +176,7 @@ var audienceLabels = {
   community: `PoseTek community`
 };
 function Icon({ name }) {
-  return <span className={`material-symbols-outlined`} aria-hidden={`true`}>
-    {name}
-  </span>;
+  return <NativeIcon name={name} />;
 }
 function FeedPage() {
   const workspace = React.useContext(PlayerNavigation);
@@ -358,41 +360,10 @@ function FeedPage() {
       `dashboard`,
       context?.admin ? `Admin` : `Roster`
     ]
-  ] : [
-    [
-      feedUrl,
-      `home`,
-      `Feed`
-    ],
-    [
-      athleteUrl(`training`),
-      `fitness_center`,
-      `Training`
-    ],
-    [
-      athleteUrl(`drills`),
-      `sports_soccer`,
-      `Drills`
-    ],
-    [
-      athleteUrl(`aiCoach`),
-      `forum`,
-      `Coach`
-    ],
-    [
-      athleteUrl(`home`),
-      `person`,
-      `You`
-    ]
-  ];
+  ] : [];
   return <div className={`pt-pose social-app`}>
     <header className={`social-header`}>
-      <Link className={`social-brand`} to={feedUrl}>
-        {`POSETEK`}
-        <span>
-          {`●`}
-        </span>
-      </Link>
+      <Link className={`social-brand`} to={feedUrl} aria-label="PoseTek feed"><PlayerBrand /></Link>
       <span className={`social-header-label`}>
         {`THE WORK. TOGETHER.`}
       </span>
@@ -607,7 +578,7 @@ function FeedPage() {
         </div>
       </aside>
     </div>
-    <nav className={`social-bottom`} aria-label={staffOnly ? `Staff navigation` : `Player tabs`}>
+    {staffOnly ? <nav className={`social-bottom`} aria-label="Staff navigation">
       {tabs.map(([e, t, n]) => <Link to={e} aria-current={n === `Home` || n === 'Feed' ? `page` : void 0} onClick={event => {
         if (n === `Home` || n === 'Feed') {
           event.preventDefault();
@@ -619,7 +590,10 @@ function FeedPage() {
           {n}
         </span>
       </Link>)}
-    </nav>
+    </nav> : <NativePlayerTabs active="feed" onSelect={view => {
+      window.dispatchEvent(new Event('posetek:player-route-leave'));
+      if (view === 'feed') setPanel('feed'); else navigate(athleteUrl(view));
+    }} />}
   </div>;
 }
 function ActivityCard({ activity, organizationId, preview, onChange, onPerson, communityEnabled = false, onBlocked = () => {} }) {
@@ -627,48 +601,21 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson, c
   let [busy, setBusy] = React.useState(false);
   let [error, setError] = React.useState(``);
   let [commentsOpen, setCommentsOpen] = React.useState(false);
-  let [mediaLease, setMediaLease] = React.useState(null);
-  let [mediaBusy, setMediaBusy] = React.useState(false);
-  const videoUrl = activity.canViewVideo ? mediaLease?.url || '' : '';
-  const videoElement = React.useRef(null);
-  let [videoNotice, setVideoNotice] = React.useState(``);
   let [reportReason, setReportReason] = React.useState(``);
   let [notice, setNotice] = React.useState(``);
   let [publishing, setPublishing] = React.useState(false);
   let [commentDraft, setCommentDraft] = React.useState('');
   let pendingCommentId = React.useRef('');
-  let [selectedRep, setSelectedRep] = React.useState(activity.selectedRepId || '');
-  let mediaRequest = React.useRef(0);
+  let [selectedRep, setSelectedRep] = React.useState('');
+  React.useEffect(() => { setSelectedRep(''); }, [activity.id, activity.selectedRepId]);
+  React.useEffect(() => { if (selectedRep && !activity.availableReps?.some(rep => rep.id === selectedRep && rep.canViewVideo)) setSelectedRep(''); }, [selectedRep, activity.availableReps]);
   let mounted = React.useRef(true);
   let viewerUid = auth.currentUser?.uid;
   React.useEffect(() => { setBusy(false); }, []);
-  const clearMedia = React.useCallback(() => {
-    ++mediaRequest.current;
-    if (videoElement.current) { videoElement.current.pause(); videoElement.current.removeAttribute('src'); videoElement.current.load(); }
-    setMediaLease(null); setMediaBusy(false);
-  }, []);
-  React.useEffect(() => {
-    const hide = () => { if (document.hidden) clearMedia(); };
-    window.addEventListener('posetek:player-route-leave', clearMedia);
-    window.addEventListener('pagehide', clearMedia);
-    document.addEventListener('visibilitychange', hide);
-    return () => {
-      window.removeEventListener('posetek:player-route-leave', clearMedia);
-      window.removeEventListener('pagehide', clearMedia);
-      document.removeEventListener('visibilitychange', hide);
-      clearMedia();
-    };
-  }, [clearMedia, activity.id, activity.canViewVideo, activity.audience, activity.hidden, activity.selectedRepId, selectedRep]);
-  React.useEffect(() => {
-    if (!mediaLease) return;
-    const timer = setTimeout(() => { clearMedia(); setVideoNotice('Video link expired. Tap Watch saved rep to reload it.'); }, Math.max(0, mediaLease.expiresAt - Date.now()));
-    return () => clearTimeout(timer);
-  }, [mediaLease, clearMedia]);
   React.useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
-      ++mediaRequest.current;
     };
   }, []);
   let runAction = async (e) => {
@@ -754,10 +701,8 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson, c
         {` · 100 = reference median for this metric`}
       </span>
     </div>}
-    {videoUrl ? <video ref={videoElement} className={`social-video`} src={videoUrl} controls={true} playsInline={true} preload={`metadata`} onError={() => {
-      clearMedia();
-      setVideoNotice(`Video link expired or unavailable. Tap Watch saved rep to retry.`);
-    }} /> : activity.chart.length > 0 ? <div className={`social-chart`} role={`img`} aria-label={`Last ${activity.chart.length} rep results: ${activity.chart.map(e => e.toFixed(1)).join(`, `)}`}>
+    {activity.canViewVideo && <FeedMedia activity={activity} repId={selectedRep || undefined} viewer={{ organizationId, viewAsPlayerId }} preview={preview} />}
+    {activity.chart.length > 0 ? <div className={`social-chart ${activity.canViewVideo ? 'social-chart-under-video' : ''}`} role={`img`} aria-label={`Last ${activity.chart.length} rep results: ${activity.chart.map(e => e.toFixed(1)).join(`, `)}`}>
       <div className={`social-chart-heading`}>
         <span>
           {`EVERY REP COUNTS`}
@@ -778,7 +723,7 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson, c
           {` recorded results`}
         </span>
       </div>
-    </div> : <div className={`social-workout-art`}>
+    </div> : activity.kind === 'workout' ? <div className={`social-workout-art`}>
       <Icon name={`fitness_center`} />
       <span>
         {`WORK PUT IN.`}
@@ -786,34 +731,8 @@ function ActivityCard({ activity, organizationId, preview, onChange, onPerson, c
       <small>
         {`One session closer.`}
       </small>
-    </div>}
-    {activity.canViewVideo && activity.availableReps?.length > 1 && <label className="social-rep-choice">Saved rep<select value={selectedRep} onChange={event => { clearMedia(); setSelectedRep(event.target.value); setVideoNotice(''); }}><option value="">Featured rep</option>{activity.availableReps.filter(rep => rep.canViewVideo).map(rep => <option key={rep.id} value={rep.id}>{rep.label}</option>)}</select></label>}
-    {activity.canViewVideo && !videoUrl && <button className={`social-watch`} disabled={busy || mediaBusy} onClick={() => {
-      if (!preview) {
-        setMediaBusy(true);
-        setError(``);
-        const request = ++mediaRequest.current;
-        (async () => {
-          let n = await callSocial(`getSocialMedia`, {
-            id: activity.id,
-            organizationId: organizationId,
-            viewAsPlayerId: viewAsPlayerId,
-            ...(selectedRep ? { repId: selectedRep } : {})
-          });
-          if (mounted.current && auth.currentUser?.uid === viewerUid && request === mediaRequest.current) {
-            const lease = socialMediaLease(n);
-            setMediaLease(lease);
-            setVideoNotice(lease ? `` : `No current saved video is available for this rep.`);
-          }
-        })().catch(e => { if (mounted.current && request === mediaRequest.current) setError(e.message); }).finally(() => { if (mounted.current && request === mediaRequest.current) setMediaBusy(false); });
-      }
-    }}>
-      <Icon name={`play_circle`} />
-      {`Watch saved rep`}
-    </button>}
-    {videoNotice && <p role={`status`}>
-      {videoNotice}
-    </p>}
+    </div> : null}
+    {activity.canViewVideo && activity.availableReps?.length > 1 && <label className="social-rep-choice">Saved rep<select value={selectedRep} onChange={event => setSelectedRep(event.target.value)}><option value="">Featured rep</option>{activity.availableReps.filter(rep => rep.canViewVideo).map(rep => <option key={rep.id} value={rep.id}>{rep.label}</option>)}</select></label>}
     <div className={`social-engagement`}>
       <span className={`social-kudos-dot`}>
         {`↗`}

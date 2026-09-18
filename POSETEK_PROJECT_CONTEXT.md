@@ -9,17 +9,20 @@ business document is included.
 ### Player community candidate (not yet production)
 
 `codex/player-community-experience` implements the approved phone-web parity and
-community plan, starting from main `61ef7cc`. The user confirmed that existing
-layouts and containers must stay intact; the Refero-informed finish changes
-surface/color, borders, typography and feedback. Read
+community plan, starting from main `61ef7cc`. The approved second pass supersedes
+the original container lock and follows active native screen structures at
+`e2c3736`: Profile / AI Coach / Drills / Training / Feed, native colors/symbols,
+separate workout timers and scrolling feed video with optional consented pose.
+Read `docs/PLAYER_COMMUNITY_NATIVE_AUDIT.md`,
 `docs/PLAYER_COMMUNITY_IMPLEMENTATION.md` and `docs/PLAYER_COMMUNITY_DESIGN.md`
 for decisions, differences and rollout gates. This is a candidate: it does not
 supersede the production receipt below. Native source, active cohort plans,
 private contexts, gateway and marketing bytes remain outside its mutation scope.
 
-Draft deployment `6aacc04ea454c9210b8fd34c` contains runtime source `30952de`.
-Its `/athlete?preview=1` and `/feed?preview=1` routes use synthetic data. Read
-`deployment/PLAYER_COMMUNITY_CANDIDATE.json` for verification. No social backend,
+Draft deployment `6aacc04ea454c9210b8fd34c` / source `30952de` is the historical
+first pass. The second-pass preview is recorded separately in
+`deployment/PLAYER_NATIVE_PARITY_CANDIDATE.json`. The `/athlete?preview=1` and
+`/feed?preview=1` routes use synthetic data and labeled public demos. No social backend,
 rules or migration was deployed by this work; the migration preflight stopped
 because Google application-default credentials were unavailable. Production
 rollout still needs authenticated migration and signed-in phone/device acceptance.

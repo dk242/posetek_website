@@ -1,0 +1,166 @@
+/* Active native source: StatsView, AthleteStatsComponents and DrillDashboard.
+   All rules are player-scoped; staff and shared result layouts remain separate. */
+.pt-player .native-icon-disc { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; background: #7cff182e; color: #7cff18; }
+.pt-player .native-profile { display: grid; gap: 10px; }
+.pt-player .native-profile-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.pt-player .native-profile-identity-column { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-width: 0; }
+.pt-player .native-profile-hero .portal-card { padding: 12px; margin: 0; background: linear-gradient(135deg, #061a13f5, #082417); border: 1px solid #ffffff1a; border-radius: 22px; box-shadow: 0 8px 16px #00000035; }
+.pt-player .native-profile .player-club { min-height: 190px; gap: 10px; color: #7cff18; }
+.pt-player .native-profile .player-club h2 { font-size: 14px; line-height: 1.25; margin: 0; color: #f8fafc; }
+.pt-player .native-profile .player-club img { width: 100%; height: 110px; object-fit: contain; }
+.pt-player .native-profile .native-no-club > svg { color: #ffffff50; }
+.pt-player .native-profile .player-identity h1 { font-size: 20px; line-height: 1.15; margin: 4px 0 10px; letter-spacing: -.02em; }
+.pt-player .native-profile .player-identity .eyebrow { color: #ffffffa6; font-size: 10px; letter-spacing: .07em; margin: 0; }
+.pt-player .native-position { display: flex; gap: 7px; align-items: center; }
+.pt-player .native-position > svg { color: #4c8c6a; flex: 0 0 auto; }
+.pt-player .native-position strong { display: block; font-size: 12px; line-height: 1.25; }
+.pt-player .native-position small { display: block; font-size: 10px; margin-top: 2px; letter-spacing: .06em; }
+.pt-player .native-body-preview { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.pt-player .native-body-canvas { position: relative; width: 100%; height: 314px; overflow: hidden; border-radius: 18px; border: 1px solid #ffffff1a; background: linear-gradient(transparent 95%, #7cff1812 95%), linear-gradient(90deg, transparent 95%, #7cff1812 95%), radial-gradient(ellipse at center, #173c2855, #041610); background-size: 26px 26px, 26px 26px, auto; }
+.pt-player .native-body-canvas canvas { width: 100%; height: 100%; display: block; }
+.pt-player .native-body-placeholder { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #ffffff65; font-size: 11px; text-align: center; padding: 18px; }
+.pt-player .native-body-axis { position: absolute; top: 9px; left: 9px; color: #ffffff55; font-size: 9px; pointer-events: none; }
+.pt-player .native-body-axis span { display: block; }
+.pt-player .native-body-action { position: absolute; bottom: 10px; left: 7px; right: 7px; display: flex; gap: 5px; align-items: center; justify-content: center; padding: 6px; min-height: 38px; font-size: 11px; font-weight: 700; background: #061a13e6; border-color: #4c8c6a8c; border-radius: 14px; box-shadow: 0 6px 12px #00000040; }
+.pt-player .native-body-measurements { display: flex; justify-content: space-around; gap: 6px; padding: 12px 6px; border: 1px solid #ffffff1a; border-radius: 18px; background: linear-gradient(135deg,#061a13,#082417); }
+.pt-player .native-body-measurements span { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pt-player .native-body-measurements svg { color: #4c8c6a; }
+.pt-player .native-body-expanded { border: 1px solid #ffffff20; border-radius: 20px; padding: 12px; }
+.pt-player .native-skill-profile { display: grid; gap: 10px; }
+.pt-player .native-skill-profile .portal-card { margin: 0; background: #ffffff0e; border: 1px solid #ffffff1a; border-radius: 24px; }
+.pt-player .native-skill-profile .player-rating { padding: 4px 2px; align-items: center; }
+.pt-player .native-skill-profile .player-rating .eyebrow { font-size: 10px; color: #ffffffa6; letter-spacing: .1em; margin: 0; }
+.pt-player .native-score-line { display: flex; gap: 7px; align-items: center; }
+.pt-player .native-score-line > strong { font-size: 34px; line-height: 1.2; font-weight: 850; letter-spacing: -.02em; margin: 0; }
+.pt-player .native-skill-profile .player-rating > small { font-size: 10px; max-width: none; }
+.pt-player .native-band { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.pt-player .native-band-elite { color: #7cff18 !important; }
+.pt-player .native-band-approaching { color: #20c8dc !important; }
+.pt-player .native-band-developing { color: #ff8c33 !important; }
+.pt-player .native-band-early { color: #ffffff8c !important; }
+.pt-player .native-skill-card { padding: 12px; }
+.pt-player .native-radar-legend { display: flex; gap: 8px; align-items: center; }
+.pt-player .native-radar-legend h2 { text-transform: uppercase; font-size: 9px; letter-spacing: .06em; color: #ffffffa6; margin: 0; }
+.pt-player .native-radar-legend small, .pt-player .native-radar-legend span { display: flex; gap: 4px; align-items: center; font-size: 9px; white-space: nowrap; color: #ffffffa6; }
+.pt-player .native-radar-legend > span:first-of-type { margin-left: auto; }
+.pt-player .native-radar-legend i { width: 14px; border-top: 3px solid #7cff18; }
+.pt-player .native-radar-legend i.reference { border-top: 2px dashed #ffffff8c; }
+.pt-player .native-skill-card .player-radar { height: 264px; overflow: visible; }
+.pt-player .native-skill-card .player-radar g[role=button]:focus-visible { outline: none; }
+.pt-player .native-skill-card .player-radar g[role=button]:focus-visible > rect { stroke: white; stroke-width: 2; }
+.pt-player .native-axis-detail { padding: 13px 14px; }
+.pt-player .native-axis-detail > header { display: flex; align-items: center; gap: 10px; }
+.pt-player .native-axis-detail > header h2 { font-size: 15px; margin: 0; }
+.pt-player .native-axis-detail > header small { font-size: 10px; }
+.pt-player .native-axis-detail > header > strong { margin-left: auto; font-size: 24px; display: flex; align-items: baseline; gap: 4px; }
+.pt-player .native-axis-detail > header > strong small { font-size: 9px; color: #ffffff80; font-weight: 700; }
+.pt-player .native-axis-detail > .muted-copy { font-size: 10px; line-height: 1.4; margin: 7px 0; }
+.pt-player .native-axis-metric { padding: 8px 0; }
+.pt-player .native-axis-metric > div:first-child { font-size: 11px; }
+.pt-player .native-axis-metric > small { font-size: 9px; color: #ffffff80; }
+.pt-player .native-axis-metric .player-meter { height: 5px; overflow: visible; position: relative; margin: 7px 0 3px; }
+.pt-player .native-axis-metric .player-meter i { background: #7cff18; border-radius: 5px; }
+.pt-player .native-d1-tick { position: absolute; left: 76.923%; width: 1.5px; height: 11px; top: -3px; background: #ffffffd9; }
+.pt-player .native-skill-profile > .muted-copy { font-size: 10px; margin: 0; }
+.pt-player .native-session-stats { margin: 0; gap: 8px; text-align: left; }
+.pt-player .native-session-stats > div { min-width: 0; border: 1px solid color-mix(in srgb, var(--summary-accent) 28%, transparent); border-radius: 18px; padding: 11px 10px; background: linear-gradient(135deg,#061a13,#082417); box-shadow: 0 5px 10px #00000025; }
+.pt-player .native-session-stats header { display: flex; gap: 5px; align-items: center; font-size: 10px; font-weight: 700; color: #ffffffd1; }
+.pt-player .native-session-stats .native-icon-disc { color: var(--summary-accent); background: color-mix(in srgb, var(--summary-accent) 15%, transparent); width: 22px; height: 22px; }
+.pt-player .native-session-stats strong { font-size: 20px; line-height: 1.25; margin: 8px 0 5px; letter-spacing: -.02em; }
+.pt-player .native-session-stats strong small { color: #ffffffa6; margin-left: 3px; }
+.pt-player .native-session-stats small { font-size: 9px; color: var(--summary-accent); }
+.pt-player .native-summary-lime { --summary-accent: #7cff18; }
+.pt-player .native-summary-cyan { --summary-accent: #20c8dc; }
+.pt-player .native-summary-orange { --summary-accent: #ff8c33; }
+.pt-player .native-standings-link { display: flex; align-items: center; gap: 9px; border: 1px solid #7cff1838; background: #ffffff0e; border-radius: 15px; padding: 13px; color: #fff; text-decoration: none; font-size: 12px; font-weight: 650; }
+.pt-player .native-standings-link svg { color: #7cff18; }
+.pt-player .native-standings-link span { flex: 1; }
+.pt-player .native-drill-menu { display: grid; gap: 18px; }
+.pt-player .native-drill-intro { display: flex; align-items: center; gap: 16px; border: 1px solid #ffffff1f; border-radius: 24px; padding: 18px; background: #ffffff21; }
+.pt-player .native-drill-intro h1 { font-size: 28px; line-height: 1.17; margin: 0 0 8px; letter-spacing: -.025em; }
+.pt-player .native-drill-intro p { font-size: 13px; color: #ffffffad; margin: 0; }
+.pt-player .native-drill-intro .native-icon-disc { width: 54px; height: 54px; color: #38aa6a; background: #ffffff14; }
+.pt-player .native-drill-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.pt-player .native-drill-choice { padding: 12px; border: 1px solid #ffffff1f; border-radius: 22px; background: #ffffff14; min-height: 96px; text-align: left; }
+.pt-player .native-drill-choice-top { display: flex; align-items: center; gap: 8px; }
+.pt-player .native-drill-choice strong { font-size: 12px; line-height: 1.3; flex: 1; }
+.pt-player .native-drill-choice .native-icon-disc { color: #38aa6a; background: #38aa6a24; }
+.pt-player .native-drill-choice-top > svg { color: #ffffffad; flex-shrink: 0; }
+.pt-player .native-drill-choice-line { display: flex; gap: 5px; margin-top: 12px; }
+.pt-player .native-drill-choice-line i { height: 4px; border-radius: 10px; width: 22px; background: #38aa6a; }
+.pt-player .native-drill-choice-line i + i { flex: 1; background: #ffffff1f; }
+.pt-player .native-platform-note { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: #ffffffa6; line-height: 1.5; margin: 0; }
+.pt-player .native-platform-note svg { flex: 0 0 auto; margin-top: 1px; }
+.pt-player .native-drill-settings { width: min(420px,calc(100vw - 24px)); max-height: 85dvh; overflow-y: auto; border: 1px solid #ffffff30; border-radius: 24px; padding: 20px; background: #082417; color: white; }
+.pt-player .native-drill-settings::backdrop { background: #020d09c9; }
+.pt-player .native-drill-settings header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pt-player .native-drill-settings header h2 { font-size: 20px; margin: 0; }
+.pt-player .native-drill-settings > div { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-block-end: 1px solid #ffffff20; }
+.pt-player .native-drill-settings > div > svg { color: #38aa6a; flex: 0 0 auto; }
+.pt-player .native-drill-settings strong, .pt-player .native-drill-settings small { display: block; }
+.pt-player .native-dashboard { display: grid; gap: 12px; }
+.pt-player .native-dashboard .portal-card { margin: 0; background: #ffffff0e; border: 1px solid #ffffff1a; border-radius: 24px; }
+.pt-player .native-dashboard-title { display: flex; gap: 9px; align-items: center; padding: 0 2px; }
+.pt-player .native-dashboard-title > svg { color: #7cff18; }
+.pt-player .native-dashboard-title h1 { font-size: 23px; margin: 0; }
+.pt-player .native-dashboard-title small { margin-left: auto; font-size: 10px; }
+.pt-player .native-chart-card { padding: 18px 14px 12px; }
+.pt-player .native-chart-card > header, .pt-player .native-latest-sessions > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.pt-player .native-chart-card h2, .pt-player .native-latest-sessions h2 { font-size: 16px; line-height: 1.25; margin: 0; }
+.pt-player .native-chart-card .text-button { font-size: 11px; white-space: nowrap; padding: 5px; }
+.pt-player .native-range { display: flex; align-items: center; gap: 4px; margin: 0; border: 1px solid #ffffff29; border-radius: 20px; padding-inline: 8px; background: #ffffff14; }
+.pt-player .native-range select { min-height: 36px; width: 90px; font-size: 11px; padding: 4px 0; border: 0; background: transparent; }
+.pt-player .native-result-chart { position: relative; height: 220px; }
+.pt-player .native-chart-caption { font-size: 9px; color: #ffffff80; margin: 10px 0 0; }
+.pt-player .native-chart-empty { min-height: 160px; border-radius: 14px; background: #ffffff08; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ffffffa6; gap: 10px; padding: 18px; text-align: center; }
+.pt-player .native-chart-empty svg { color: #7cff18; }
+.pt-player .native-chart-empty p { font-size: 12px; margin: 0; }
+.pt-player .native-dashboard-metrics { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+.pt-player .native-dashboard-metrics article { flex: 0 0 116px; padding: 13px 10px; border: 1px solid #ffffff1a; border-radius: 18px; background: #ffffff0e; display: flex; flex-direction: column; gap: 7px; }
+.pt-player .native-dashboard-metrics svg { color: #7cff18; }
+.pt-player .native-dashboard-metrics strong { font-size: 21px; letter-spacing: -.02em; }
+.pt-player .native-dashboard-metrics small { font-size: 10px; }
+.pt-player .native-technique-entry { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; border-radius: 14px; padding: 12px; border-color: #7cff184d; background: #ffffff0f; }
+.pt-player .native-technique-entry > svg { color: #7cff18; flex: 0 0 auto; }
+.pt-player .native-technique-entry span { flex: 1; }
+.pt-player .native-technique-entry strong, .pt-player .native-technique-entry small { display: block; }
+.pt-player .native-technique-entry strong { font-size: 14px; }
+.pt-player .native-technique-entry small { font-size: 10px; }
+.pt-player .native-latest-sessions { padding: 16px 12px; }
+.pt-player .native-latest-sessions > article { display: flex; flex-wrap: wrap; margin-top: 8px; border: 1px solid #ffffff1a; border-radius: 16px; background: #ffffff0b; overflow: hidden; }
+.pt-player .native-latest-sessions > article.is-selected { border-color: #7cff1880; background: #7cff1812; }
+.pt-player .native-select-session { display: flex; align-items: center; gap: 10px; flex: 1; border: 0; background: transparent; border-radius: 0; text-align: left; padding: 12px; }
+.pt-player .native-select-session > svg { color: #7cff18; }
+.pt-player .native-select-session strong, .pt-player .native-select-session small { display: block; }
+.pt-player .native-select-session strong { font-size: 13px; }
+.pt-player .native-select-session small { font-size: 10px; }
+.pt-player .native-open-session { display: flex; gap: 7px; align-items: center; border: 0; border-left: 1px solid #ffffff12; border-radius: 0; background: transparent; color: #7cff18; }
+.pt-player .native-session-reps { flex-basis: 100%; border-top: 1px solid #ffffff1a; padding: 4px 10px; }
+.pt-player .native-session-reps button { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid #ffffff10; border-radius: 0; background: transparent; display: flex; align-items: center; gap: 7px; text-align: left; font-size: 11px; }
+.pt-player .native-session-reps strong { margin-left: auto; }
+.pt-player .native-session-reps small { font-size: 9px; }
+.pt-player .session-view .session-toolbar { align-items: center; font-size: 14px; }
+.pt-player .session-view .rep-segments { border-radius: 15px; padding: 5px; background: #ffffff0c; }
+.pt-player .session-view .rep-segment { border-radius: 10px; font-size: 12px; min-height: 40px; }
+.pt-player .session-view .rep-segment.active { background: #7cff182e; border-color: #7cff1870; color: #7cff18; }
+.pt-player .session-view .pose-card { border-radius: 22px; border-color: #ffffff1a; min-height: 0; }
+.pt-player .session-view .pose-card > p { font-size: 11px; margin: 12px; color: #ffffffa6; }
+.pt-player .session-view .playback-bar { flex-wrap: wrap; padding: 10px; gap: 8px; }
+.pt-player .session-view .playback-bar input[type=range] { min-width: 80px; width: auto; flex: 1; padding: 0; }
+.pt-player .session-view .playback-bar > span { font-size: 10px; }
+.pt-player .session-view .frame-markers { padding: 0 10px 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+.pt-player .session-view .frame-marker { border-radius: 12px; min-height: 38px; font-size: 11px; }
+.pt-player .session-view .rep-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.pt-player .session-view .rep-metric { padding: 14px; border-radius: 18px; background: #ffffff0e; border: 1px solid #ffffff1a; min-width: 0; }
+.pt-player .session-view .rep-metric strong { display: block; font-size: 21px; margin-top: 7px; }
+.pt-player .native-technique-card > header { display: flex; align-items: center; gap: 10px; }
+.pt-player .native-technique-card > header > svg { color: #7cff18; flex: 0 0 auto; }
+.pt-player .native-technique-card > header h2 { margin: 0; font-size: 17px; }
+.pt-player .native-technique-card > p { font-size: 12px; color: #ffffffa6; }
+.pt-player .native-leaderboards .player-podium { min-height: 205px; gap: 8px; }
+.pt-player .native-leaderboards .player-podium > article { min-height: 145px; padding: 12px 8px; background: linear-gradient(180deg,#ffffff10,#ffffff05); border-radius: 18px; }
+.pt-player .native-leaderboards .player-podium > article:first-child { order: 2; min-height: 195px; background: linear-gradient(180deg,#7cff1825,#7cff1808); border-color: #7cff185c; }
+.pt-player .native-leaderboards .player-podium > article:nth-child(2) { order: 1; }
+.pt-player .native-leaderboards .player-podium > article:nth-child(3) { order: 3; min-height: 130px; }
+.pt-player .native-leaderboards .player-podium svg { color: #7cff18; }
+@media (max-width: 360px) { .pt-player .native-drill-grid { gap: 10px; } .pt-player .native-drill-choice { padding: 10px; } .pt-player .native-drill-choice strong { font-size: 11px; } .pt-player .native-session-stats > div { padding: 10px 7px; } .pt-player .native-session-stats header { font-size: 9px; gap: 3px; } .pt-player .native-body-measurements span { font-size: 11px; } .pt-player .native-radar-legend { gap: 6px; } }

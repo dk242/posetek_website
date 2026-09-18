@@ -20,15 +20,23 @@ import {
   sessionsFor,
 } from "../lib/metrics";
 import type { SessionGroup } from "../lib/metrics";
+import NativeDrillDashboard from './NativeDrillDashboard';
 
 interface DrillDashboardProps {
   drill: Drill;
   reps: any[];
   athlete: any;
   onOpenRep: (folder: string, repId: any) => void;
+  playerMode?: boolean;
+  playerId?: string | null;
+  preview?: boolean;
 }
 
-export default function DrillDashboard({ drill, reps: rawReps, athlete, onOpenRep }: DrillDashboardProps) {
+export default function DrillDashboard(props: DrillDashboardProps) {
+  return props.playerMode ? <NativeDrillDashboard {...props} /> : <LegacyDrillDashboard {...props} />;
+}
+
+function LegacyDrillDashboard({ drill, reps: rawReps, athlete, onOpenRep }: DrillDashboardProps) {
   const reps = useMemo(
     () => [...rawReps].sort((a, b) => createdMillis(b) - createdMillis(a) || repNumber(b) - repNumber(a)),
     [rawReps],

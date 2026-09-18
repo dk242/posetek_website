@@ -4,11 +4,14 @@ import { dateText } from '../lib/mobile';
 import { MultilineText } from '../views/shared';
 import { capabilityEnabled, streamCoach, useCoachConfig, validHandoff } from './gateway';
 import type { Row } from './execution';
+import { NativeIcon } from './native-ui';
+import { TrainingSheet } from './training-details';
+import './native-training.css';
 
-type Props = { playerId: string; preview: boolean; capability?: string; context?: Row; initialText?: string;
+type Props = { playerId: string; playerName?: string | null; preview: boolean; capability?: string; context?: Row; initialText?: string;
   onDraft?: (draft: Row | null) => void; onHandoff?: (request: Row) => void };
 
-export default function CoachChat({ playerId, preview, capability = 'pose_chat', context, initialText = '', onDraft, onHandoff }: Props) {
+export default function CoachChat({ playerId, playerName = '', preview, capability = 'pose_chat', context, initialText = '', onDraft, onHandoff }: Props) {
   const config = useCoachConfig(preview);
   const [draft, setDraft] = useState(initialText), [messages, setMessages] = useState<Row[]>([]);
   const [answer, setAnswer] = useState(''), [sending, setSending] = useState(false), [error, setError] = useState('');
@@ -30,7 +33,12 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
     return base.onSnapshot(s => setHistory(s.docs.map(d => ({ ...d.data(), id: d.id })).sort((a: Row, b: Row) =>
       (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0))), e => setError(`History: ${e.message}`));
   }, [playerId, preview, capability]);
-  useEffect(() => () => { turn.current++; controller.current?.abort(); }, []);
+  useEffect(() => {
+    // Activity boundaries suspend effects on a hidden tab. A stopped request
+    // must not leave the re-opened composer permanently disabled.
+    controller.current = null; setSending(false); setStatus(''); setAnswer('');
+    return () => { turn.current++; controller.current?.abort(); controller.current = null; };
+  }, []);
   useEffect(() => { messageRoot.current?.scrollTo({ top: messageRoot.current.scrollHeight }); }, [messages, answer]);
 
   const reset = () => {
@@ -88,7 +96,7 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
         if (token !== turn.current) return;
         if (frame.event === 'start' && !memoryAction) conversation.current = frame.data.conversationId;
         if (frame.event === 'delta') { full += frame.data.text || ''; setAnswer(full); }
-        if (frame.event === 'tool') setStatus(`${frame.data.status === 'finished' ? 'Checked' : 'Checking'} ${String(frame.data.name || 'training').replaceAll('_', ' ')}…`);
+        if (frame.event === 'tool') setStatus(frame.data.status === 'finished' ? '' : coachToolPhrase(String(frame.data.name || '')));
         if (frame.event === 'draft') proposal = frame.data;
         if (frame.event === 'memory') memorySnapshot = frame.data;
         if (frame.event === 'workout_request' || frame.data.type === 'workout_request') handoff = frame.data;
@@ -110,33 +118,42 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
     }
   };
   const memoryCommand = (kind: string, extra: Row = {}) => void send('', { kind, ...(kind !== 'list' ? { expectedRevision: memory?.workspace.revision } : {}), ...extra });
-  return <section className="player-chat">
-    <div className="player-actions">
-      <button type="button" onClick={() => setShowHistory(v => !v)}>History</button>
-      <button type="button" onClick={reset}>New conversation</button>
-      {workspace && <button type="button" onClick={() => { setShowMemory(v => !v); memoryCommand('list'); }}>Coach memory</button>}
-    </div>
-    {showHistory && <section className="portal-card"><h2>Conversations</h2>{history.length ? history.map(item => <button className="player-list-button" key={item.id} onClick={() => void openHistory(item)}>{item.title || 'Conversation'}<small>{dateText(item.lastMessageAt)}</small></button>) : <p>No conversations yet.</p>}</section>}
-    {showMemory && <section className="portal-card"><h2>Coach memory</h2><p>Choose what your coach remembers across conversations.</p>
+  const globalCoach = capability === 'pose_chat';
+  const firstName = (playerName || '').trim().split(/\s+/)[0];
+  const suggestions = globalCoach ? ['What should I work on today?', 'How am I improving?', 'Help me with first touch'] : capability === 'workout_chat' ? ['Make this a lighter session', 'Help me choose my focus', 'Explain this workout'] : ['How do I set this up?', 'What should I focus on?', 'How can I make this easier?'];
+  const latest = messages.at(-1);
+  const handoff = onHandoff && !sending && !error && latest?.role === 'assistant' && validHandoff(latest.workoutRequest, playerId) ? latest.workoutRequest : null;
+  return <section className={`player-chat native-coach ${globalCoach ? 'native-coach-global' : 'native-coach-contextual'}`} aria-label={globalCoach ? 'AI Coach' : capability === 'workout_chat' ? 'Workout coach' : 'Drill coach'}>
+    <header className="native-coach-header"><div><h2>{globalCoach ? 'AI Coach' : capability === 'workout_chat' ? 'Workout coach' : 'Drill coach'}</h2><p>{globalCoach ? 'One useful step at a time' : capability === 'workout_chat' ? 'Review every change before saving' : 'Help with this drill'}</p></div><div className="native-coach-tools">
+      {workspace && <button type="button" aria-label="Coach memory" disabled={sending} onClick={() => { setShowMemory(true); setShowHistory(false); memoryCommand('list'); }}><NativeIcon name="bookmark" size={17} /></button>}
+      <button type="button" aria-label="Conversation history" onClick={() => { setShowHistory(true); setShowMemory(false); }}><NativeIcon name="history" size={17} /></button>
+      <button type="button" aria-label="New conversation" onClick={reset}><NativeIcon name="compose" size={17} /></button>
+    </div></header>
+    {handoff && <div className="native-coach-handoff"><p>{handoff.request}</p><button onClick={() => onHandoff!(handoff)}>{handoff.destination === 'program_intake' ? 'Set up my program' : 'Build this workout'} <NativeIcon name="arrow-up-right" size={14} /></button></div>}
+    {showHistory && <TrainingSheet title="Conversation history" onClose={() => setShowHistory(false)}>{history.length ? history.map(item => <button className="player-list-button" key={item.id} onClick={() => void openHistory(item)}>{item.title || 'Conversation'}<small>{dateText(item.lastMessageAt)}</small></button>) : <p>No conversations yet.</p>}</TrainingSheet>}
+    {showMemory && <TrainingSheet title="Coach memory" onClose={() => setShowMemory(false)}><p>Choose what your coach remembers across conversations.</p>
       {!memory ? <p>Loading memory…</p> : <>
         <label><input type="checkbox" checked={memory.workspace.enabled} disabled={sending} onChange={e => memoryCommand('setEnabled', { enabled: e.target.checked })} /> Use coach memory</label>
         {(memory.memories || []).filter((m: Row) => ['active', 'proposed'].includes(m.status) && (!m.expiresAt || new Date(m.expiresAt).getTime() > Date.now())).map((m: Row) => <article key={m.memoryId} className="player-memory"><small>{m.status === 'proposed' ? 'Suggestion' : 'Saved'} · {String(m.category).replaceAll('_', ' ')}</small><p>{m.text}</p>{m.sourceQuote && <blockquote>{m.sourceQuote}</blockquote>}<div className="player-actions">{m.status === 'proposed' && <button disabled={sending} onClick={() => memoryCommand('confirm', { memoryId: m.memoryId })}>Save</button>}<button disabled={sending} onClick={() => memoryCommand('forget', { memoryId: m.memoryId })}>Forget</button></div></article>)}
         <p>Forgetting stops older chats from recalling these details. Your chat and workout history stay available.</p>
         <button disabled={sending} onClick={() => { if (window.confirm('Forget all saved coach memories and suggestions?')) memoryCommand('forgetAll'); }}>Forget all memories</button>
       </>}
-    </section>}
+    </TrainingSheet>}
     <div className="player-chat-messages" ref={messageRoot} aria-live="polite">
-      {!messages.length && <div className="player-chat-welcome"><span className="material-symbols-outlined">auto_awesome</span><h2>{capability === 'workout_chat' ? 'What would you like to change?' : 'What do you want to work on?'}</h2><p>{capability === 'workout_chat' ? 'Talk through the session. Review your coach’s proposal before saving it.' : 'Ask about your progress, your next session, or a drill.'}</p><div className="player-suggestions">{['How am I progressing?', 'Help me plan 20 minutes of training', 'What should I focus on next?'].map(s => <button key={s} onClick={() => setDraft(s)}>{s}</button>)}</div></div>}
-      {messages.map((m, i) => <article key={m.id || i} className={`chat-message ${m.role === 'user' ? 'user' : 'assistant'}`}><MultilineText text={m.content || ''} />{onHandoff && !sending && !error && i === messages.length - 1 && m.role === 'assistant' && validHandoff(m.workoutRequest, playerId) && <button className="primary-cta" onClick={() => onHandoff(m.workoutRequest)}>Continue in Training</button>}</article>)}
+      {!messages.length && <div className="player-chat-welcome"><NativeIcon name={globalCoach ? 'soccer-player' : 'chat'} size={34} /><h2>{globalCoach ? firstName ? `Ready, ${firstName}?` : 'What are we working on?' : capability === 'workout_chat' ? 'What would you like to change?' : 'Let’s work through this drill'}</h2><p>{globalCoach ? "Tell me what you’re working on. We’ll find your next step." : capability === 'workout_chat' ? 'Talk through the session. Review your coach’s proposal before saving it.' : 'Ask about the setup, technique or a cue from this drill.'}</p><div className="player-suggestions">{suggestions.map(s => <button key={s} disabled={!canChat || sending} onClick={() => setDraft(s)}><NativeIcon name="sparkles" size={14} /><span>{s}</span><NativeIcon name="arrow-up-right" size={12} /></button>)}</div></div>}
+      {messages.map((m, i) => <article key={m.id || i} className={`chat-message ${m.role === 'user' ? 'user' : 'assistant'}`}><MultilineText text={m.content || ''} /></article>)}
       {answer && <article className="chat-message assistant"><MultilineText text={answer} /></article>}
-      {sending && <p role="status">{status || 'Your coach is thinking…'}</p>}
     </div>
+    {sending && <p className="native-coach-status" role="status">{status || 'Your coach is thinking…'}</p>}
     {error && <p className="player-error" role="alert">{error}</p>}
     {!canChat && <p>{config ? 'Your coach is temporarily unavailable. Your history is still here.' : 'Connecting to your coach…'}</p>}
     <form className="chat-composer" onSubmit={e => { e.preventDefault(); void send(draft.trim()); }}>
-      <textarea aria-label="Message your coach" value={draft} onChange={e => setDraft(e.target.value)} maxLength={capability === 'workout_chat' ? 500 : 2000} placeholder="Message your coach…" rows={2} disabled={sending} />
-      <button type="submit" disabled={!canChat || sending || !draft.trim()} aria-label="Send message"><span className="material-symbols-outlined">arrow_upward</span></button>
+      <textarea aria-label="Message your coach" value={draft} onChange={e => { setDraft(e.target.value); e.target.style.height = 'auto'; e.target.style.height = `${Math.min(e.target.scrollHeight, 124)}px`; }} maxLength={capability === 'workout_chat' ? 500 : 2000} placeholder="Ask your coach…" rows={1} disabled={sending} />
+      <button type={sending ? 'button' : 'submit'} className={sending ? 'is-stopping' : ''} disabled={!sending && (!canChat || !draft.trim())} aria-label={sending ? 'Stop reply' : 'Send message'} onClick={sending ? () => controller.current?.abort() : undefined}><NativeIcon name={sending ? 'stop' : 'arrow-up'} size={17} /></button>
     </form>
-    {sending && <button className="text-button" onClick={() => controller.current?.abort()}>Stop reply</button>}
   </section>;
+}
+
+function coachToolPhrase(name: string) {
+  return ({ fetch_rep_metrics: 'Reading your reps…', fetch_pose_artifact: 'Looking at your pose data…', fetch_benchmark: 'Checking the benchmark…', search_drill_catalog: 'Finding drills…', search_drills: 'Finding drills…', get_drill_history: 'Checking recent training…', search_athlete_history: 'Looking back at your training…', search_training_research: 'Checking training guidance…', search_knowledge: 'Checking training guidance…' } as Record<string, string>)[name] || 'Checking the details…';
 }
