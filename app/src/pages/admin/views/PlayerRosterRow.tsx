@@ -31,7 +31,7 @@ export default function PlayerRosterRow({ player, compact = false, children, con
             {children}
           </span>
         </Link>
-        <SignupStatus registered={player.registered} signupCode={player.signupCode} playerName={player.name} />
+        <SignupStatus playerId={player.id} registered={player.registered} playerName={player.name} reloadKey={player} />
       </div>
       <div className="admin-row-actions">
         <Link className="quiet-button small" to={accountPlayerPath(player.id, context, true)} aria-label={`Results for ${player.name}`}>

@@ -24,6 +24,10 @@
   .club-staff, .club-player { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 0; border-bottom: 1px solid #264137; }
   .club-player a { color: #f1f8f3; text-decoration: none; }
   .club-player a:hover strong { text-decoration: underline; }
+  .club-player-invitation { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+  .club-player-invitation code { overflow-wrap: anywhere; user-select: all; }
+  .club-player-invitation [role="status"] { flex-basis: 100%; font-size: 13px; }
+  .club-player-invitation .admin-copy-error { color: #ffded8; }
   .club-move { width: min(220px, 42%); }
   .club-team-checks { border: 1px solid #355246; border-radius: 10px; padding: 15px; margin: 20px 0; }
   .club-team-checks label { display: inline-flex; flex-direction: row; align-items: center; margin: 8px 20px 8px 0; }
@@ -38,5 +42,5 @@
   .club-signup label { margin: 16px 0; }
   .club-signup .primary-cta { margin-top: 10px; }
   .club-inline-link { color: #99e8ba; }
-  @media (max-width: 640px) { .club-shell { padding: 24px 14px 60px; } .club-card { padding: 18px; } .club-heading, .club-section-title { align-items: start; flex-direction: column; } .club-staff { align-items: start; flex-wrap: wrap; } }
+  @media (max-width: 640px) { .club-shell { padding: 24px 14px 60px; } .club-card { padding: 18px; } .club-heading, .club-section-title { align-items: start; flex-direction: column; } .club-staff, .club-player { align-items: start; flex-wrap: wrap; } }
 }

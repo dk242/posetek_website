@@ -10,6 +10,13 @@ const db = admin.firestore();
 Object.assign(exports, require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller));
 const { createPlayerInvitations } = require("./player-invitations");
 const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+const { createPlayerInvitationChecks } = require("./player-invitation-checks");
+const playerInvitationChecks = createPlayerInvitationChecks({ db, HttpsError: functions.https.HttpsError });
+exports.getPlayerSignupInvitation = functions.https.onCall((data, context) => playerInvitations.getInvitation(data?.playerId, requireCaller(context)));
+exports.validatePlayerSignupInvitation = functions.https.onCall(async (data, context) => {
+  await playerInvitationChecks(context.rawRequest);
+  return playerInvitations.validate(data?.code);
+});
 exports.ensurePlayerSignupInvitation = functions.https.onCall((data, context) => playerInvitations.ensure(data?.playerId, requireCaller(context), { rotate: data?.rotate === true }));
 exports.createCoachPlayer = functions.https.onCall((data, context) => playerInvitations.createCoachPlayer(data || {}, requireCaller(context)));
 exports.ensurePlayerInvitationOnWrite = functions.runWith({ failurePolicy: true }).firestore.document("players/{playerId}").onWrite((_, context) => playerInvitations.ensure(context.params.playerId));

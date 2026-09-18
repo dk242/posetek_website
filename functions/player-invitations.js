@@ -4,6 +4,8 @@ const { playerSegment } = require("./athlete-storage-paths");
 const { isClubAdmin, memberCanAccessPlayer } = require("./club-access");
 const unclaimed = p => p && p.registered !== true && !p.authenticationUID && !p.userUID;
 const digest = code => crypto.createHash("sha256").update(code.toUpperCase()).digest("hex");
+const validCode = code => typeof code === "string" && /^[A-Za-z0-9-]{6,64}$/.test(code);
+const invitationResult = (playerId, code) => ({ playerId, code, signupUrl: `https://posetek.net/signin#playerCode=${encodeURIComponent(code)}` });
 
 function createPlayerInvitations({ db, FieldValue, HttpsError }) {
   const fail = (code, message) => { throw new HttpsError(code, message); };
@@ -27,6 +29,74 @@ function createPlayerInvitations({ db, FieldValue, HttpsError }) {
     tx.set(db.doc(`playerSignupCodes/${digest(code)}`), { playerId: id });
     return { ...p, signupInvitationReady: true, signupCodeVersion: 3 };
   }
+  async function protectedCode(tx, playerId, invitation) {
+    if (!invitation.exists) return null;
+    const stored = invitation.data();
+    if (stored?.playerId !== playerId || !validCode(stored?.code)) {
+      fail("failed-precondition", "This invitation needs review before it can be shared.");
+    }
+    const index = await tx.get(db.doc(`playerSignupCodes/${digest(stored.code)}`));
+    if (!index.exists || index.data()?.playerId !== playerId) {
+      fail("failed-precondition", "This invitation needs review before it can be shared.");
+    }
+    return stored.code;
+  }
+  // Use bounded exact legacy lookups, but reject ambiguity across both fields
+  // rather than letting query order choose which athlete an invitation claims.
+  async function legacyCandidate(tx, code) {
+    const candidates = new Map();
+    for (const field of ["signupCode", "code"]) {
+      for (const value of [...new Set([code, code.toUpperCase()])]) {
+        const found = await tx.get(db.collection("players").where(field, "==", value).limit(2));
+        for (const doc of found.docs) candidates.set(doc.id, doc);
+        if (candidates.size > 1) return null;
+      }
+    }
+    return candidates.size === 1 ? [...candidates.values()][0] : null;
+  }
+  async function getInvitation(playerId, auth) {
+    if (!auth || !playerSegment(auth.uid) || auth.isAnonymous) fail("unauthenticated", "Sign in to manage invitations.");
+    if (!playerSegment(playerId)) fail("invalid-argument", "Choose a valid player.");
+    return db.runTransaction(async tx => {
+      const r = refs(playerId);
+      const [snapshot, invitation] = await Promise.all([tx.get(r.player), tx.get(r.invitation)]);
+      const p = snapshot.data();
+      if (!p || !await authority(tx, p, auth)) fail("permission-denied", "This player is not assigned to your access.");
+      if (!unclaimed(p)) return { status: "claimed", playerId };
+      const code = await protectedCode(tx, playerId, invitation);
+      if (code) return { status: "ready", ...invitationResult(playerId, code) };
+      // A still-redeemable version-2 code can be viewed without migrating it.
+      const legacy = p.signupCodeVersion === 2 && [p.signupCode, p.code].find(validCode);
+      if (legacy) {
+        const [candidate, index] = await Promise.all([legacyCandidate(tx, legacy), tx.get(db.doc(`playerSignupCodes/${digest(legacy)}`))]);
+        if (candidate?.id !== playerId || index.exists) fail("failed-precondition", "This invitation needs review before it can be shared.");
+        return { status: "ready", ...invitationResult(playerId, legacy) };
+      }
+      return { status: "missing", playerId };
+    });
+  }
+  // Public preflight exposes only availability. Redemption still rechecks all
+  // state atomically; a successful preflight never reserves or claims a code.
+  async function validate(rawCode) {
+    const code = typeof rawCode === "string" ? rawCode.trim() : "";
+    if (!validCode(code)) return { valid: false };
+    return db.runTransaction(async tx => {
+      const index = await tx.get(db.doc(`playerSignupCodes/${digest(code)}`));
+      if (index.exists) {
+        const playerId = index.data()?.playerId;
+        if (!playerSegment(playerId)) return { valid: false };
+        const r = refs(playerId);
+        const [player, invitation] = await Promise.all([tx.get(r.player), tx.get(r.invitation)]);
+        const stored = invitation.data();
+        return { valid: Boolean(unclaimed(player.data()) && stored?.playerId === playerId && validCode(stored?.code) && stored.code.toUpperCase() === code.toUpperCase()) };
+      }
+      const candidate = await legacyCandidate(tx, code);
+      const p = candidate?.data();
+      if (!candidate || !playerSegment(candidate.id) || !unclaimed(p) || p.signupCodeVersion !== 2) return { valid: false };
+      const invitation = await tx.get(refs(candidate.id).invitation);
+      return { valid: !invitation.exists && [p.signupCode, p.code].some(value => validCode(value) && value.toUpperCase() === code.toUpperCase()) };
+    });
+  }
   async function ensure(playerId, auth = null, { rotate = false, dryRun = false } = {}) {
     if (!playerSegment(playerId)) fail("invalid-argument", "Choose a valid player.");
     if (auth && (!playerSegment(auth.uid) || auth.isAnonymous)) fail("unauthenticated", "Sign in to manage invitations.");
@@ -42,20 +112,23 @@ function createPlayerInvitations({ db, FieldValue, HttpsError }) {
         if (auth) fail("failed-precondition", "This player already has a sign-in.");
         return { skipped: "Already claimed" };
       }
-      const old = invitation.data();
-      if (old?.code && !rotate) return { playerId, code: old.code, signupUrl: `https://posetek.net/signin?playerCode=${encodeURIComponent(old.code)}`, writes: 0 };
+      const oldCode = await protectedCode(tx, playerId, invitation);
+      if (oldCode && !rotate) return { ...invitationResult(playerId, oldCode), writes: 0 };
       // Preserve valid issued codes when moving them into protected storage.
-      const legacy = [p.signupCode, p.code].find(c => typeof c === "string" && /^[A-Za-z0-9-]{6,64}$/.test(c));
-      const code = !rotate && p.signupCodeVersion === 2 && legacy ? legacy.toUpperCase() : `PLR-${crypto.randomBytes(16).toString("hex").toUpperCase()}`;
+      const legacy = [p.signupCode, p.code].find(validCode);
+      if (!rotate && p.signupCodeVersion === 2 && legacy && (await legacyCandidate(tx, legacy))?.id !== playerId) {
+        fail("failed-precondition", "This invitation needs review before it can be shared.");
+      }
+      const code = !rotate && p.signupCodeVersion === 2 && legacy ? legacy : `PLR-${crypto.randomBytes(16).toString("hex").toUpperCase()}`;
       const index = await tx.get(db.doc(`playerSignupCodes/${digest(code)}`));
       if (index.exists && index.data().playerId !== playerId) fail("already-exists", "Invitation collision. Replace this invitation.");
       if (!dryRun) {
-        if (old?.code) tx.delete(db.doc(`playerSignupCodes/${digest(old.code)}`));
+        if (oldCode) tx.delete(db.doc(`playerSignupCodes/${digest(oldCode)}`));
         if (index.exists) tx.delete(index.ref);
         stage(tx, playerId, p, code);
         tx.update(r.player, { signupInvitationReady: true, signupCodeVersion: 3, signupCode: FieldValue.delete(), code: FieldValue.delete() });
       }
-      return { playerId, code, signupUrl: `https://posetek.net/signin?playerCode=${encodeURIComponent(code)}`, writes: 3 };
+      return { ...invitationResult(playerId, code), writes: 3 };
     });
   }
   async function redeem(code, uid, email) {
@@ -63,12 +136,13 @@ function createPlayerInvitations({ db, FieldValue, HttpsError }) {
     return db.runTransaction(async tx => {
       const index = await tx.get(indexRef);
       if (!index.exists) return null;
+      if (!playerSegment(index.data()?.playerId)) fail("not-found", "This signup invitation is no longer available.");
       const r = refs(index.data().playerId);
       const [p, invite, first, second, direct] = await Promise.all([tx.get(r.player), tx.get(r.invitation),
         tx.get(db.collection("players").where("authenticationUID", "==", uid).limit(1)),
         tx.get(db.collection("players").where("userUID", "==", uid).limit(1)), tx.get(db.doc(`players/${uid}`))]);
       if (!first.empty || !second.empty || direct.exists) fail("already-exists", "This account already has an athlete profile.");
-      if (!unclaimed(p.data()) || invite.data()?.code?.toUpperCase() !== code.toUpperCase()) fail("not-found", "This signup invitation is no longer available.");
+      if (!unclaimed(p.data()) || invite.data()?.playerId !== p.id || !validCode(invite.data()?.code) || invite.data().code.toUpperCase() !== code.toUpperCase()) fail("not-found", "This signup invitation is no longer available.");
       tx.update(r.player, { authenticationUID: uid, userUID: uid, registered: true,
         ...(email ? { email } : {}), signupCode: FieldValue.delete(), code: FieldValue.delete(), signupCodeVersion: FieldValue.delete(),
         signupInvitationReady: FieldValue.delete(), signupRedeemedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
@@ -101,6 +175,6 @@ function createPlayerInvitations({ db, FieldValue, HttpsError }) {
       return { playerId: ref.id, code };
     });
   }
-  return { ensure, redeem, stage, createCoachPlayer };
+  return { getInvitation, validate, ensure, redeem, stage, createCoachPlayer };
 }
 module.exports = { createPlayerInvitations, unclaimed };

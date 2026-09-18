@@ -133,7 +133,7 @@
     color: var(--admin-text); font: 600 14px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
     letter-spacing: 0.06em; padding: 4px 8px; border-radius: 6px;
     border: 1px solid var(--admin-line); background: rgba(0, 0, 0, 0.16);
-    user-select: all; max-width: 100%;
+    user-select: all; max-width: 100%; overflow-wrap: anywhere;
   }
   .admin-code-unavailable { color: var(--admin-dim); font-size: 13px; }
   .admin-copy-code { color: var(--admin-accent); }

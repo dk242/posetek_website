@@ -34,6 +34,13 @@ function seedContext() {
 beforeEach(() => { fake.documents.clear(); fake.failures.clear(); fake.context.mockReset(); });
 
 describe("admin roster reads", () => {
+  it("does not retain invitation secrets in the roster or raw planner inputs", () => {
+    const source = { firstName: "Example", signupCode: "SAMPLE-123", code: "LEGACY-123", organizationId: "club", teamId: "team", maxDrillDifficulty: 3 };
+    const row = playerRow("player", source);
+    expect(row.signupCode).toBeNull(); expect(row.raw).not.toHaveProperty("signupCode"); expect(row.raw).not.toHaveProperty("code");
+    expect(row.raw.maxDrillDifficulty).toBe(3); expect(row.organizationId).toBe("club");
+    expect(source.signupCode).toBe("SAMPLE-123");
+  });
   it("loads canonical players beyond the global 500-player index, ignoring stale projected IDs", async () => {
     for (let i = 0; i < 501; i++) fake.documents.set(`players/p${i}`, { organizationId: "club", teamId: "team", firstName: `Athlete ${i}` });
     fake.documents.set("players/wrong", { organizationId: "other", teamId: "team" });
