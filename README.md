@@ -16,8 +16,9 @@ Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
 Recovered homepage modules include provenance beside their source.
 
 **Player signup links live:** Admin account and organization rosters offer
-**Copy signup link**, **Copy code**, and **Generate code** only when an invitation
-is missing. Existing valid codes are preserved. Links open Player signup with the
+**Copy signup link** and **Copy code** for existing invitations. **Generate code**
+appears only when an invitation is missing. Existing valid codes are preserved.
+Links open Player signup with the
 code filled in and claim the existing profile after account creation. Read
 [the signup handoff](docs/PLAYER_INVITATION_LINKS.md). All 21 previously issued
 codes were verified unchanged; real athlete accounts were not claimed for testing.
@@ -148,7 +149,7 @@ node scripts/build-production.mjs
 
 This builds `production-dist/`, verifies the live application against
 `deployment/homepage-baseline.json`, and preserves all 612 application/public
-files from deployment `6aac7f6c315a6190c054fba7`. A fresh build downloads and
+files from deployment `6aac924a597bd46f15cf468a`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.
