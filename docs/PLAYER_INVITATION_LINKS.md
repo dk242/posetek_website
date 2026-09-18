@@ -3,6 +3,12 @@
 Player invitations claim an existing athlete profile. They do not create a new
 roster entry, change results, move teams, or create a training plan.
 
+Live release `6aac924a597bd46f15cf468a` was published September 17, 2026 at
+6:31:29 PM PDT. The [production receipt](../deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json)
+records the five scoped callables, preserved 21 issued codes, browser acceptance,
+and reconciled 612-file application baseline. Real recipient account creation,
+redemption and verification-email delivery were not performed during acceptance.
+
 ## Staff workflow
 
 In **Admin → Monitor accounts** or **Admin → Organizations → team**, each unclaimed

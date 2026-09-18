@@ -9,11 +9,18 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 5:35:06 PM PDT as
-`6aac7f6c315a6190c054fba7`.
+The latest release was published September 17, 2026 at 6:31:29 PM PDT as
+`6aac924a597bd46f15cf468a`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the website production receipt](deployment/EVIDENCE_PLANNER_PRODUCTION.json).
+[the website production receipt](deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
+
+**Player signup links live:** Admin account and organization rosters offer
+**Copy signup link**, **Copy code**, and **Generate code** only when an invitation
+is missing. Existing valid codes are preserved. Links open Player signup with the
+code filled in and claim the existing profile after account creation. Read
+[the signup handoff](docs/PLAYER_INVITATION_LINKS.md). All 21 previously issued
+codes were verified unchanged; real athlete accounts were not claimed for testing.
 
 **Evidence-linked planning live:** the admin planner and mobile-generated plans
 share the new evidence-to-priority-to-exercise methodology. Goals are optional;
@@ -140,7 +147,7 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 560 application/public
+`deployment/homepage-baseline.json`, and preserves all 612 application/public
 files from deployment `6aac7f6c315a6190c054fba7`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application

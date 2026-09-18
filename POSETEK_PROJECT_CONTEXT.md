@@ -6,6 +6,32 @@ business document is included.
 
 ## Readiness and source provenance
 
+### Current website release: protected player signup links
+
+Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
+September 17, 2026 at 6:31:29 PM PDT (`2026-09-18T01:31:29.567Z`). Feature source
+`c00b031c8a0011297f8357c1a6c028377b5c30e0` is on `codex/player-invitation-flow`.
+The branch also preserves the concurrent gateway source and September 16 cohort
+activation handoff. All 644 local files match production's 645-entry inventory;
+the reconciled baseline protects 612 application/public files. The approved
+Players and Coaches marketing bytes remain exact.
+
+Staff can copy an existing signup link or generate a code only when missing.
+The fragment link opens Player signup with its code filled in and removes the
+code from the address bar. Signup retains the existing canonical player ID,
+including the active training plan. Normal get/copy/issue actions preserve valid
+codes. Five scoped invitation callables are deployed; the public validity check
+uses private hashed-IP rate counters and returns no athlete identity.
+
+Final readback at `2026-09-18T01:34:28.400Z` verified all 21 previously issued
+codes unchanged and unclaimed. Production copy/prefill and signed-in account
+guard behavior were checked. No real recipient account was created or redeemed,
+and verification-email delivery was not exercised. Gateway, rules, video guards,
+results, estimates, active plans and native source remain unchanged by this
+release. Taiyo's Mac/iPhone/TestFlight acceptance remains outstanding. See
+[the signup handoff](docs/PLAYER_INVITATION_LINKS.md) and
+[production receipt](deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json).
+
 ### Vacaville measurement recovery
 
 The September 17 first pass repaired eleven failed September 16 attempts using
@@ -67,9 +93,9 @@ See [the follow-up receipt](deployment/PLANNER_INTENT_PRODUCTION.json) and
 [methodology handoff](docs/PERSONALIZED_PLANNER_METHODOLOGY.md). The website
 release and original pilot checkpoint below retain their historical facts.
 
-### Current website release: Evidence-linked personalized planner
+### Previous website release: Evidence-linked personalized planner
 
-Deployment `6aac7f6c315a6190c054fba7` is live at https://posetek.net, published
+Deployment `6aac7f6c315a6190c054fba7` was published to https://posetek.net on
 September 17, 2026 at 5:35:06 PM PDT (`2026-09-18T00:35:06.349Z`). Application
 source `8a1445708a46b37090dd658c8c631c16ae3fd69c`, gateway source
 `5a2d62b3c18f197ca69041fc6821e6d45c258d5e` and request-rules source
