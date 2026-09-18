@@ -70,6 +70,32 @@ try {
       for (const paramsOverride of [{...params,engineVersion:'future'},{...params,unexpected:'field'}]) {
         await denied(setDoc(doc(actors.admin,`llmJobs/bad-${player}-${capability}`),job('admin',player,capability,paramsOverride)));
       }
+      if (['generate_personalized_plan','assess_personalized_plan'].includes(capability)) {
+        // The original actor loop above covers omission for every actor. These
+        // explicit preferences must preserve precisely the same actor boundary.
+        for (const preference of [true,false]) {
+          for (const [uid,db] of Object.entries(actors)) {
+            const can = ['admin','athlete','coach'].includes(uid) || (player === 'club-player' && uid === 'manager');
+            await (can ? allowed : denied)(setDoc(doc(db,`llmJobs/estimate-${player}-${capability}-${uid}-${preference}`),
+              job(uid,player,capability,{...params,useProvisionalEstimates:preference})));
+          }
+          await denied(setDoc(doc(actors.admin,`llmJobs/estimate-unknown-${player}-${capability}-${preference}`),
+            job('admin',player,capability,{...params,useProvisionalEstimates:preference,unexpected:'field'})));
+        }
+        for (const [index,preference] of [null,'true','false',0,1,[],{},[true]].entries()) {
+          await denied(setDoc(doc(actors.admin,`llmJobs/estimate-malformed-${player}-${capability}-${index}`),
+            job('admin',player,capability,{...params,useProvisionalEstimates:preference})));
+        }
+        for (const [index,paramsOverride] of [params,{...params,useProvisionalEstimates:true},{...params,useProvisionalEstimates:false}].entries()) {
+          await denied(setDoc(doc(anon,`llmJobs/estimate-unauthenticated-${player}-${capability}-${index}`),
+            job('athlete',player,capability,paramsOverride)));
+        }
+      } else {
+        for (const preference of [true,false]) {
+          await denied(setDoc(doc(actors.admin,`llmJobs/estimate-wrong-capability-${player}-${capability}-${preference}`),
+            job('admin',player,capability,{...params,useProvisionalEstimates:preference})));
+        }
+      }
     }
   }
   for (const uid of ['athlete','coach','manager']) {

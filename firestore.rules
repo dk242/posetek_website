@@ -225,7 +225,8 @@ match /llmJobs/{jobId} {
       && (request.resource.data.capability in ['generate_personalized_plan','activate_personalized_plan','discard_personalized_plan','assess_personalized_plan']
         ? personalizedActor(request.resource.data.playerId) && request.resource.data.params.get('engineVersion', '') == 'personalized-v1'
           && (request.resource.data.capability in ['generate_personalized_plan','assess_personalized_plan']
-            ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow'])
+            ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow','useProvisionalEstimates'])
+              && request.resource.data.params.get('useProvisionalEstimates', false) is bool
               && request.resource.data.params.planVersion == 3
               && request.resource.data.params.intake is map
               && request.resource.data.params.timezone is string

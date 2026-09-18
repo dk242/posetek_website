@@ -56,9 +56,16 @@ change after a retest.
 
 The admin workflow remains: review evidence, set goals and time, generate and
 review a draft, then explicitly use the plan. The interface separates Speed and
-Agility goals and shows the evidence type, reason, weekly target and progress
+Agility goals. All goals can remain unchecked for evidence-led selection; up to
+two optional goals add coaching emphasis without asserting a measured weakness.
+The interface shows the evidence type, reason, weekly target and progress
 check for each priority. Related objectives can share one domain time budget;
 the UI marks that budget as shared rather than additive.
+
+Short schedules retain their primary objectives while reconciling complete sets
+with available domain slots. Combined age/level priority limits apply to both
+projected targets and actual exercise minutes. Revised targets and any unassigned
+minutes are disclosed rather than silently adding time or erasing an objective.
 
 Every generated exercise carries a structured rationale and the existing short
 `whyIncluded` explanation. Activated admin plans and mobile-generated plans use
@@ -91,9 +98,15 @@ promote the checked candidate after draining planner jobs. Publish the identical
 reviewed website preview while preserving approved marketing bytes and reconcile
 the protected application baseline.
 
-This change does not require Firestore rules, capability/quota settings, recording
-processors, historical repairs or archive-guard changes. Preserve their current
-before-images. Rollback restores the prior gateway revision and website deploy;
+The shared website Firestore rules allow the optional boolean
+`useProvisionalEstimates` only on personalized assessment and generation requests.
+Omission remains valid for existing callers; actor authorization and the separate
+activation/discard parameter lists remain unchanged. This narrowly scoped rules
+update is required for the website's estimate preference to reach the gateway.
+It does not change capability/quota settings, recording processors, historical
+repairs or archive guards. Preserve their current before-images and the prior
+rules release. Rollback restores the prior gateway revision, website deploy and,
+when reverting this request contract, the prior Firestore rules release;
 it must not delete athlete data, plans, drafts or workout logs. Plans already saved
 with additive rationale fields remain readable by the existing schema-3 clients.
 
