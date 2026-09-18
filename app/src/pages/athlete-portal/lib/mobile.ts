@@ -196,13 +196,15 @@ export interface RankedRow extends StandingRow {
   rank: number;
 }
 
-// renderBoard's sort + tied-rank assignment (ties within .0001 share a rank).
+// Native competition ranking: exact values tie; names/IDs make equal rows stable.
 export function rankRows(rows: StandingRow[], lower: boolean): RankedRow[] {
-  const sorted = [...rows].sort((a, b) => (lower ? a.value - b.value : b.value - a.value));
+  const compareText = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
+  const sorted = rows.filter(row => Number.isFinite(row.value)).sort((a, b) =>
+    (lower ? a.value - b.value : b.value - a.value) || compareText(a.name, b.name) || compareText(a.id, b.id));
   let prior: number | null = null;
   let rank = 0;
   return sorted.map((row, index) => {
-    if (prior === null || Math.abs(row.value - prior) > .0001) rank = index + 1;
+    if (prior === null || row.value !== prior) rank = index + 1;
     prior = row.value;
     return { ...row, rank };
   });
@@ -215,10 +217,10 @@ export function boardSummary(
   playerId: string | null,
 ): { athlete: RankedRow | null; percentile: number | null } {
   const athlete = ranked.find(row => row.id === playerId) || null;
-  const better = athlete
-    ? ranked.filter(row => (lower ? row.value > athlete.value : row.value < athlete.value)).length
-    : 0;
-  const percentile = ranked.length > 1 && athlete ? Math.round(better / (ranked.length - 1) * 100) : null;
+  const peers = ranked.filter(row => row.id !== playerId);
+  const worse = athlete ? peers.filter(row => lower ? row.value > athlete.value : row.value < athlete.value).length : 0;
+  const tied = athlete ? peers.filter(row => row.value === athlete.value).length : 0;
+  const percentile = peers.length && athlete ? Math.round((worse + tied * .5) / peers.length * 100) : null;
   return { athlete, percentile };
 }
 

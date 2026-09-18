@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { getClubContext } from '../../../lib/organization-data';
-import { db } from '../../../lib/firebase';
+import { auth, db } from '../../../lib/firebase';
 import { fullName } from '../lib/metrics';
 import { heightText, weightText } from '../lib/mobile';
 import BodyProfileView from '../views/BodyProfileView';
@@ -10,6 +11,7 @@ import type { Row } from './execution';
 import TechniqueAnalysis from './TechniqueAnalysis';
 import { activeProvisionalEstimates, provisionalScore, type ProvisionalEstimate } from '../../../lib/provisional-estimates';
 import ProvisionalEstimateNote from '../../../components/athlete-stats/ProvisionalEstimateNote';
+import { mergeProfileSessions, profileActivity, type ProfileSession } from './profile-activity';
 
 export function SkillProfile({ profile, estimate = null, estimates = estimate ? [estimate] : [] }: { profile: Profile; estimate?: ProvisionalEstimate | null; estimates?: ProvisionalEstimate[] }) {
   const [selection, setSelection] = useState(() => [...profile.axes].filter(a => a.score !== null).sort((a, b) => a.score! - b.score!)[0]?.key || 'striking');
@@ -50,28 +52,37 @@ function PersonalComparison({ label, value, detail }: { label: string; value: nu
 }
 
 export default function PlayerProfile({ ctx, profile, onDrills }: { ctx: PortalContext; profile: Profile; onDrills: (rep?: Row) => void }) {
+  const location = useLocation(), leaderboardParams = new URLSearchParams(location.search);
+  leaderboardParams.set('view', 'leaderboards'); ['drill', 'session', 'rep'].forEach(key => leaderboardParams.delete(key));
   const [club, setClub] = useState<Row | null>(ctx.access === 'preview' ? { name: 'PoseTek FC' } : null), [clubError, setClubError] = useState('');
-  const [body, setBody] = useState(false), [sessions, setSessions] = useState<Row[]>([]), [sessionError, setSessionError] = useState('');
+  const [body, setBody] = useState(false), [sessions, setSessions] = useState<ProfileSession[] | null>(null), [sessionError, setSessionError] = useState('');
   useEffect(() => {
     if (ctx.access === 'preview') return;
     let alive = true;
     if (ctx.athlete.organizationId) getClubContext(ctx.athlete.organizationId).then(c => { if (alive) setClub(c.organization); }).catch(() => { if (alive) setClubError('Club unavailable'); });
-    const stop = db.collection('players').doc(ctx.playerId!).collection('sessions').onSnapshot(s => setSessions(s.docs.map(d => ({ ...d.data(), id: d.id }))), e => setSessionError(e.message));
-    return () => { alive = false; stop(); };
+    const sources = new Map<string, Row[]>(), errors = new Set<string>();
+    // Query only this resolved player's canonical ID and signed-in owner identity.
+    const legacyIds = [...new Set([ctx.playerId!, auth.currentUser?.uid].filter((id): id is string => !!id))];
+    const emit = () => {
+      if (!alive) return;
+      if (sources.has('current') || errors.has('current')) setSessions(mergeProfileSessions(sources.get('current') || [], [...sources].filter(([key]) => key !== 'current').flatMap(([, rows]) => rows)));
+      setSessionError(errors.size ? 'Some session history could not refresh. Showing available sessions.' : '');
+    };
+    setSessions(null); setSessionError('');
+    const watch = (key: string, query: ReturnType<typeof db.collection> | ReturnType<ReturnType<typeof db.collection>['where']>) => query.onSnapshot(s => {
+      sources.set(key, s.docs.map(d => ({ ...d.data(), id: d.id }))); errors.delete(key); emit();
+    }, () => { errors.add(key); emit(); });
+    const stops = [watch('current', db.collection('players').doc(ctx.playerId!).collection('sessions')),
+      ...legacyIds.map(id => watch(`legacy:${id}`, db.collection('sessions').where('playerUID', '==', id)))];
+    return () => { alive = false; stops.forEach(stop => stop()); };
   }, [ctx.playerId, ctx.athlete.organizationId, ctx.access]);
-  const day = (v: any) => { const d = v?.toDate?.() || new Date(v); return Number.isFinite(d.getTime()) ? new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() : null; };
-  const days = new Set(sessions.map(s => day(s.date || s.createdAt || s.startedAt)).filter((n): n is number => n !== null));
-  const today = day(new Date())!; let cursor = new Date(today), streak = 0;
-  if (!days.has(today)) cursor.setDate(cursor.getDate() - 1);
-  while (days.has(cursor.getTime())) { streak++; cursor.setDate(cursor.getDate() - 1); }
-  const counts: Record<string, number> = {};
-  sessions.forEach(s => { const type = s.type || s.drillType || 'Drill'; counts[type] = (counts[type] || 0) + Math.max(s.repCount || 0, 1); });
-  const favorite = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+  const activity = profileActivity(sessions || []), loadingSessions = sessions === null && ctx.access !== 'preview';
   return <section className="player-profile"><div className="player-profile-hero"><section className="portal-card player-identity"><p className="eyebrow">Your profile</p><h1>{fullName(ctx.athlete)}</h1><p>{ctx.athlete.position || 'Position not set'}</p><div className="player-measurements"><span><small>Height</small>{heightText(Number(ctx.athlete.height) || null)}</span><span><small>Weight</small>{weightText(Number(ctx.athlete.weight) || null)}</span></div><button className="hub-secondary" onClick={() => setBody(v => !v)}>{body ? 'Close body scan' : 'View body scan'}</button></section><section className="portal-card player-club">{club?.logoUrl ? <img src={club.logoUrl} alt={`${club.name} crest`} /> : <span className="material-symbols-outlined">shield</span>}<h2>{club?.name || clubError || (ctx.athlete.organizationId ? 'Loading club…' : 'No club yet')}</h2></section></div>
     {body && <BodyProfileView ctx={ctx} />}
     <SkillProfile profile={profile} estimates={activeProvisionalEstimates(ctx.provisionalEstimates, ctx.allResultReps?.() || ctx.allStatsReps())} />
-    {sessionError && <p className="player-error" role="status">Session history could not refresh: {sessionError}</p>}
-    <section className="player-session-stats"><div><strong>{streak}</strong><small>Day streak</small></div><div><strong>{sessions.length || profile.totalSessions}</strong><small>Total sessions</small></div><div><strong>{favorite || '—'}</strong><small>Favorite drill</small></div></section>
+    {sessionError && <p className="player-error" role="status">{sessionError}</p>}
+    <section className="player-session-stats"><div><strong>{loadingSessions ? '…' : activity.streak}</strong><small>Day streak</small></div><div><strong>{loadingSessions ? '…' : ctx.access === 'preview' ? profile.totalSessions : activity.totalSessions}</strong><small>Total sessions</small></div><div><strong>{loadingSessions ? '…' : activity.favoriteName}</strong><small>Favorite drill</small></div></section>
+    <Link className="text-button" to={{ pathname: '/athlete', search: leaderboardParams.toString() }}>View your team standings</Link>
     <TechniqueAnalysis playerId={ctx.playerId!} reps={ctx.allStatsReps()} preview={ctx.access === 'preview'} onReplay={onDrills} />
   </section>;
 }

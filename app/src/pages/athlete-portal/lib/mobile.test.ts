@@ -132,14 +132,14 @@ describe("statsSnapshot", () => {
 });
 
 describe("rankRows / boardSummary", () => {
-  it("assigns tied ranks within the .0001 tolerance", () => {
+  it("keeps close distinct values separate, matching native exact ties", () => {
     const ranked = rankRows([
       { id: "a", name: "A", value: 10 },
       { id: "b", name: "B", value: 10.00005 },
       { id: "c", name: "C", value: 9 },
     ], false);
     expect(ranked.map(r => r.id)).toEqual(["b", "a", "c"]);
-    expect(ranked.map(r => r.rank)).toEqual([1, 1, 3]);
+    expect(ranked.map(r => r.rank)).toEqual([1, 2, 3]);
   });
   it("sorts ascending when lower is better", () => {
     const ranked = rankRows([

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { contentRect, frameAtTime, poseTimeline, type PosePoint } from "../lib/pose-playback";
+import { poseJointOptions, visiblePosePoint } from "../lib/pose-joints";
 
 const edges17 = [[0,1],[0,2],[1,3],[2,4],[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
 const edges33 = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[29,31],[24,26],[26,28],[28,30],[30,32]];
@@ -15,16 +16,22 @@ export interface PosePlaybackProps {
   onSpeedChange?: (speed: number) => void;
   onFrameChange?: (frame: number) => void;
   overlay?: (context: CanvasRenderingContext2D, width: number, height: number, frame: number) => void;
+  seekTarget?: { frame: number; key: number | string };
+  highlightedJoints?: number[];
+  inspectJoints?: boolean;
 }
 
-export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, markers = [], title, initialSpeed = 1, onSpeedChange, onFrameChange, overlay }: PosePlaybackProps) {
+export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, markers = [], title, initialSpeed = 1, onSpeedChange, onFrameChange, overlay, seekTarget, highlightedJoints = [], inspectJoints = true }: PosePlaybackProps) {
   const stageRef = useRef<HTMLDivElement>(null), canvasRef = useRef<HTMLCanvasElement>(null), videoRef = useRef<HTMLVideoElement>(null);
   const [frame, setFrame] = useState(0), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(initialSpeed);
   const [videoError, setVideoError] = useState(false), [playError, setPlayError] = useState(false);
   const [showVideo, setShowVideo] = useState(true);
+  const [selectedJoints, setSelectedJoints] = useState<number[]>([]);
   const timeline = useMemo(() => poseTimeline(metadata, frames.length), [metadata, frames.length]);
   const timed = timeline.times.length > 0, hasVideo = Boolean(mediaUrl) && !videoError && showVideo;
   const frameRef = useRef(0);
+  const pendingSeek = useRef<number | null>(null);
+  const jointOptions = poseJointOptions(frames[frame]?.length || 0);
   function updateFrame(next: number) {
     const safe = Math.max(0, Math.min(Math.max(0, frames.length - 1), Math.round(next)));
     frameRef.current = safe; setFrame(safe); onFrameChange?.(safe);
@@ -33,8 +40,18 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
     if (!hasVideo) setPlaying(false);
     updateFrame(next);
     const video = videoRef.current, time = timeline.times[frameRef.current];
+    pendingSeek.current = frameRef.current;
     if (video && timed && Number.isFinite(video.duration) && time <= video.duration) video.currentTime = time;
   }
+  useEffect(() => {
+    if (!seekTarget || !Number.isInteger(seekTarget.frame) || seekTarget.frame < 0 || seekTarget.frame >= frames.length) return;
+    videoRef.current?.pause(); setPlaying(false);
+    // A report's frame index is evidence, but its FPS is never invented video timing.
+    if (!timed) setShowVideo(false);
+    seek(seekTarget.frame);
+    // Repeating a guided step uses its request key, even when the frame is unchanged.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seekTarget?.key, seekTarget?.frame, frames, timed]);
   function toggle() {
     const video = videoRef.current;
     if (hasVideo && video) {
@@ -92,27 +109,31 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
       const rect = contentRect(width, height, video?.videoWidth || metadata.videoDisplayWidth || metadata.videoWidth || metadata.imageWidth || metadata.frameWidth, video?.videoHeight || metadata.videoDisplayHeight || metadata.videoHeight || metadata.imageHeight || metadata.frameHeight);
       ctx.save(); ctx.beginPath(); ctx.rect(rect.x, rect.y, rect.width, rect.height); ctx.clip(); ctx.translate(rect.x, rect.y);
       overlay?.(ctx, rect.width, rect.height, frame);
-      const points = frames[frame] || [], valid = (p?: PosePoint) => p && p.x !== null && p.y !== null && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1 && (p.visibility == null || p.visibility >= .1);
+      const points = frames[frame] || [], valid = visiblePosePoint;
+      const emphasized = new Set([...highlightedJoints, ...selectedJoints]);
       ctx.lineWidth = 2.5; ctx.strokeStyle = "#b7f34a";
-      for (const [a,b] of points.length <= 20 ? edges17 : edges33) {
+      for (const [a,b] of points.length === 17 ? edges17 : points.length === 33 ? edges33 : []) {
         const p = points[a], q = points[b]; if (!valid(p) || !valid(q)) continue;
+        const active = emphasized.has(a) && emphasized.has(b);
+        ctx.strokeStyle = active ? "#ffffff" : "#b7f34a"; ctx.lineWidth = active ? 4 : 2.5;
         ctx.beginPath(); ctx.moveTo(p.x! * rect.width, p.y! * rect.height); ctx.lineTo(q.x! * rect.width, q.y! * rect.height); ctx.stroke();
       }
       ctx.fillStyle = "#f7fbf9";
-      for (const p of points) if (valid(p)) { ctx.beginPath(); ctx.arc(p.x! * rect.width, p.y! * rect.height, 3, 0, Math.PI * 2); ctx.fill(); }
+      points.forEach((p, index) => { if (valid(p)) { ctx.fillStyle = emphasized.has(index) ? "#fff" : "#f7fbf9"; ctx.beginPath(); ctx.arc(p.x! * rect.width, p.y! * rect.height, emphasized.has(index) ? 6 : 3, 0, Math.PI * 2); ctx.fill(); } });
       ctx.restore();
     };
     draw(); const observer = new ResizeObserver(draw); observer.observe(stage);
     videoRef.current?.addEventListener("loadedmetadata", draw);
     const video = videoRef.current;
     return () => { observer.disconnect(); video?.removeEventListener("loadedmetadata", draw); };
-  }, [frame, frames, metadata, hasVideo, timed, overlay]);
+  }, [frame, frames, metadata, hasVideo, timed, overlay, highlightedJoints, selectedJoints]);
 
   return <section className="pose-card">
     <div ref={stageRef} className="pose-stage" style={{ position: "relative", width: "100%", minHeight: 280, aspectRatio: "16 / 9", background: "#03100b", overflow: "hidden" }}>
       <span className="viewer-badge">{title}</span>
       {hasVideo ? <video ref={videoRef} playsInline preload="metadata" src={mediaUrl!} controls={!frames.length || !timed}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+        onLoadedMetadata={() => { const requested = pendingSeek.current, video = videoRef.current; if (requested !== null && video && timed && timeline.times[requested] <= video.duration) video.currentTime = timeline.times[requested]; }}
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onError={() => { setVideoError(true); setPlaying(false); }} /> : null}
       <canvas ref={canvasRef} aria-label="Pose playback" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} />
     </div>
@@ -129,5 +150,6 @@ export default function PosePlayback({ frames, metadata, mediaUrl, mediaSource, 
     <div className="frame-markers">{markers.map(marker => <button key={marker.label} className="frame-marker" type="button"
       disabled={marker.frame === null || !Number.isInteger(marker.frame) || marker.frame < 0 || marker.frame >= frames.length || (hasVideo && !timed)}
       onClick={() => marker.frame !== null && seek(marker.frame)}>{marker.label}</button>)}</div>
+    {inspectJoints && jointOptions.length > 0 && <details className="pose-joint-inspector"><summary>Inspect joints</summary><p>Select the joints to highlight. Unavailable points are not drawn.</p><div className="player-actions">{jointOptions.map(joint => <button key={joint.index} type="button" aria-pressed={selectedJoints.includes(joint.index)} disabled={!visiblePosePoint(frames[frame]?.[joint.index]) || (hasVideo && !timed)} onClick={() => setSelectedJoints(old => old.includes(joint.index) ? old.filter(index => index !== joint.index) : [...old, joint.index])}>{joint.label}</button>)}</div><button type="button" onClick={() => setSelectedJoints([])} disabled={!selectedJoints.length}>Clear selection</button></details>}
   </section>;
 }
