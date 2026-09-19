@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 48 48" role="img" aria-label="PoseTek P app icon">
+  <title>PoseTek P app icon</title>
+  <desc>Existing public website header badge, with its Inter Black P, lime tile and lower-right notch, on an opaque evergreen canvas.</desc>
+  <rect width="48" height="48" fill="#04130e"/>
+  <rect x="7" y="7" width="34" height="34" rx="3" fill="#b7f34a"/>
+  <path d="M96 0L96 1490L738 1490Q904 1490 1028.5 1424.5Q1153 1359 1222.5 1240Q1292 1121 1292 962Q1292 802 1221 685.5Q1150 569 1022 505.5Q894 442 724 442L500 442L500 0ZM500 756L642 756Q714 756 765 781.5Q816 807 843 853Q870 899 870 962Q870 1027 843 1072.5Q816 1118 765 1142Q714 1166 642 1166L500 1166Z" fill="#082015" transform="translate(15.533125 32.36669921875) scale(0.01123046875 -0.01123046875)"/>
+  <rect x="36" y="36" width="8" height="8" fill="#04130e"/>
+</svg>

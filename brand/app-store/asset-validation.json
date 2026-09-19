@@ -1,0 +1,47 @@
+{
+  "metadata": [
+    {
+      "key": "name",
+      "count": 24,
+      "max": 30
+    },
+    {
+      "key": "subtitle",
+      "count": 28,
+      "max": 30
+    },
+    {
+      "key": "promotionalText",
+      "count": 120,
+      "max": 170
+    },
+    {
+      "key": "description",
+      "count": 1128,
+      "max": 4000
+    },
+    {
+      "key": "keywords",
+      "count": 88,
+      "max": 100
+    }
+  ],
+  "icon": {
+    "width": 1024,
+    "height": 1024,
+    "channels": 3,
+    "hasAlpha": false,
+    "sha256": "7067de6df37a74367d3d298cc6d0724eb3be0a6759e200ba658a9a56fc26d8fe"
+  },
+  "jpeg": {
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "nativeCatalogMatches": true,
+  "appIconConfigurations": 2,
+  "xcodeBuild": "not run - Windows host",
+  "appStoreConnect": "sign-in required",
+  "nativeDisplayName": "PoseTek",
+  "nativeCommit": "d09151a"
+}

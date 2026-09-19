@@ -6,6 +6,17 @@ business document is included.
 
 ## Readiness and source provenance
 
+### September 18 App Store presentation package
+
+The user chose the existing lime-green P badge as the official app icon and
+requested PoseTek-branded App Store screenshots and copy. The source package is
+in `brand/app-store/`, with icon masters in `images/brand/`. The native icon is
+prepared on `worktree-posetek-official-icon`; Mac build and TestFlight upload
+remain outstanding. Gallery exports use clearly labeled sample interfaces until
+real release-build captures replace them. App Store Connect currently requires
+user sign-in; no listing update or release is claimed. See the package README
+for verified links, metadata, capture requirements and handoff.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published

@@ -1,0 +1,18 @@
+{
+  "locale": "en-US",
+  "status": "draft_pending_app_store_connect_and_release_build_verification",
+  "name": "PoseTek: Soccer Training",
+  "subtitle": "Test. Review. Train. Repeat.",
+  "promotionalText": "Start with evidence. Explore six soccer performance tests, review your results, and follow a training plan with PoseTek.",
+  "keywords": "football,drills,performance,player,coach,sprint,dribbling,agility,jump,workout,technique",
+  "description": "Start with evidence. Train what’s next.\n\nPoseTek connects soccer performance testing, athlete results, and guided training. For players and coaches, it brings the next training decision closer to the evidence behind it.\n\nTEST YOUR GAME\nRecord six performance tests: shooting, sprint, vertical jump, broad jump, dribbling, and change of direction. Follow each test’s setup to build your performance history.\n\nREVIEW YOUR RESULTS\nExplore drill results, revisit recorded reps, and use movement playback to look more closely at a session. Bring your results together in an athlete profile across speed, power, agility, ball control, and striking.\n\nFIND YOUR FOCUS\nAsk AI Coach about your results and training. Build a plan around your goals and availability, with explanations for the exercises included.\n\nFOLLOW YOUR SESSION\nOpen a workout, review drill instructions, and work through sets and rest periods. Keep completed sessions connected to your training plan.\n\nRETEST AND REVIEW\nRepeat the tests and compare your recorded results over time. Use what you learn to choose your next training focus.\n\nPoseTek. Start with evidence.",
+  "marketingUrl": "https://posetek.net/",
+  "privacyPolicyUrl": "https://posetek.net/privacy",
+  "supportUrl": null,
+  "copyright": null,
+  "primaryCategoryProposal": "Sports",
+  "secondaryCategoryProposal": "Health & Fitness",
+  "ageRating": null,
+  "whatsNewDraftForIconRelease": "A fresh PoseTek app icon, matching the lime-green P used across our brand.",
+  "releaseNotesCondition": "Use only for a build containing the icon update; combine with the actual release branch's verified changes."
+}

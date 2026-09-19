@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "referenceLock": {
+    "primary": "Existing PoseTek public website: app/src/pages/home/home.scss, MarketingHeader.tsx and MobileAppPreview.tsx",
+    "preserve": ["Dark evergreen canvas", "Lime P badge and actions", "Barlow Condensed athletic headlines", "Inter interface copy", "One readable product moment per image"],
+    "secondary": "Native SwiftUI hierarchy from AthleteStatsView, DrillsView, SessionViewer and WorkoutNowCard; Refero typography and craft guidance",
+    "mediaStrategy": "Clearly labeled source-derived sample interfaces until complete sets of current-build device screenshots are supplied",
+    "rejected": ["Private player records", "Generated athlete photographs", "Fake native screenshots", "Guaranteed improvement claims", "Website mockups presented as native captures"]
+  },
+  "panels": [
+    {
+      "id": "01-evidence",
+      "eyebrow": "TEST / UNDERSTAND / TRAIN",
+      "headline": ["START WITH", "EVIDENCE."],
+      "description": "Six performance tests. One athlete profile. Your next training focus.",
+      "screenTitle": "Athlete profile",
+      "screen": "profile",
+      "sourceReferences": ["KickAI/CoachView/CoachPlayerView/StatsView.swift", "KickAI/Stats/AthleteStatsView.swift"],
+      "captureInstruction": "Current native athlete Profile tab with a consented demo profile and populated skill map; no private identifiers."
+    },
+    {
+      "id": "02-tests",
+      "eyebrow": "A MORE COMPLETE PICTURE",
+      "headline": ["SIX TESTS.", "ONE PICTURE."],
+      "description": "Shooting, sprint, vertical jump, broad jump, dribbling, and change of direction.",
+      "screenTitle": "Choose a test",
+      "screen": "tests",
+      "sourceReferences": ["KickAI/CoachView/CoachPlayerView/DrillsView.swift"],
+      "captureInstruction": "Current native Drills tab showing the six performance-test paths."
+    },
+    {
+      "id": "03-replay",
+      "eyebrow": "THE MOVEMENT BEHIND THE NUMBER",
+      "headline": ["SEE THE DETAIL", "IN EVERY REP."],
+      "description": "Replay a session and explore the movement behind your results.",
+      "screenTitle": "Session replay",
+      "screen": "replay",
+      "sourceReferences": ["KickAI/SessionViewer/SessionAnalysisView.swift", "KickAI/SessionViewer/", "KickAI/DrillDashboard/SprintDashboardView.swift"],
+      "captureInstruction": "Current native portrait session replay with consented demo pose data. Use a populated supported replay; do not imply video exists for every recording."
+    },
+    {
+      "id": "04-focus",
+      "eyebrow": "FROM RESULTS TO YOUR NEXT STEP",
+      "headline": ["KNOW YOUR NEXT", "TRAINING FOCUS."],
+      "description": "Bring speed, power, agility, ball control, and striking into one profile.",
+      "screenTitle": "Your skill map",
+      "screen": "focus",
+      "sourceReferences": ["KickAI/Stats/AthleteStatsView.swift", "KickAI/Stats/AthleteStatsComponents.swift"],
+      "captureInstruction": "Current native Profile skill map with its selected category and measured-result details, using demo data."
+    },
+    {
+      "id": "05-session",
+      "eyebrow": "ONE SET AT A TIME",
+      "headline": ["FOLLOW YOUR", "SESSION."],
+      "description": "Work through your workout with drill instructions, sets, and rest periods.",
+      "screenTitle": "Workout",
+      "screen": "workout",
+      "sourceReferences": ["KickAI/TrainingHub/WorkoutPlayerView.swift", "KickAI/TrainingHub/WorkoutNowCard.swift", "app/src/pages/home/MobileAppPreview.tsx"],
+      "captureInstruction": "Current native workout player with approved drill media, set progress and the working/resting state visible."
+    },
+    {
+      "id": "06-retest",
+      "eyebrow": "BUILD A RECORD OF YOUR WORK",
+      "headline": ["RETEST.", "SEE WHAT CHANGES."],
+      "description": "Compare recorded results over time and ask AI Coach about your next training step.",
+      "screenTitle": "Sprint progress",
+      "screen": "progress",
+      "sourceReferences": ["KickAI/DrillDashboard/DrillDashboardView.swift", "KickAI/DrillDashboard/PoseTekDashboardComponents.swift", "KickAI/LLM/"],
+      "captureInstruction": "Current native drill dashboard with consented demo history. Claim comparison, not guaranteed improvement; verify AI Coach availability in the release."
+    }
+  ]
+}

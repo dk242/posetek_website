@@ -1,0 +1,22 @@
+{
+  "buildNumber": "REPLACE_WITH_CURRENT_BUILD",
+  "currentBuildConfirmed": false,
+  "privacyReviewed": false,
+  "captureProvenance": "Describe device/simulator, release branch, capture date, and demo-data source.",
+  "iphone": {
+    "01-evidence": "screenshot-input/iphone/01-evidence.png",
+    "02-tests": "screenshot-input/iphone/02-tests.png",
+    "03-replay": "screenshot-input/iphone/03-replay.png",
+    "04-focus": "screenshot-input/iphone/04-focus.png",
+    "05-session": "screenshot-input/iphone/05-session.png",
+    "06-retest": "screenshot-input/iphone/06-retest.png"
+  },
+  "ipad": {
+    "01-evidence": "screenshot-input/ipad/01-evidence.png",
+    "02-tests": "screenshot-input/ipad/02-tests.png",
+    "03-replay": "screenshot-input/ipad/03-replay.png",
+    "04-focus": "screenshot-input/ipad/04-focus.png",
+    "05-session": "screenshot-input/ipad/05-session.png",
+    "06-retest": "screenshot-input/ipad/06-retest.png"
+  }
+}
