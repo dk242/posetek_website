@@ -1,0 +1,2 @@
+# Pinned upstream SVG hashes use LF; verification also handles existing CRLF clones.
+emoji/*.svg text eol=lf

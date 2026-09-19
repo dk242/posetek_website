@@ -122,3 +122,11 @@ fallbacks preserve all three manual selections if WebGL cannot load.
 ## Skeleton-only cleanup — September 16, 2026
 
 The current homepage renders only recorded skeletons. No body geometry or PNG body snapshot is imported into the viewer. The existing projected landmarks supply the SVG fallback. MHR files and the mesh-rendering generator remain historical reference and are not required by this release. Manual orbit and pose selection resume after 1.5 seconds; visible layer, pause/play and camera preset controls are removed. Keyboard Home reset, reduced motion and visibility suspension remain. Fine nose/ear-to-shoulder connections make the skeleton readable without the former body surface.
+
+## Gallery package hash portability
+
+The gallery snapshot retains `sourceFileSha256` and `projectionSha256` as raw
+hashes of the captured source files. `sourceFileSha256LF` and
+`projectionSha256LF` verify UTF-8 text after CRLF-to-LF normalization, allowing
+Git checkouts on Windows and macOS to validate the same source. Binary image
+and recording hashes are not normalized. Pose coordinates are unchanged.

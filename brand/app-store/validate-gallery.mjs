@@ -2,13 +2,19 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
 import sharp from 'sharp';
-import { recordedPoses, POSE_EDGES, validatePose, fitPose, poseSVG } from './pose.mjs';
+import { recordedPoses, POSE_EDGES, validatePose, fitPose, poseSVG, textSha256LF } from './pose.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(root,'../..');
-const hash=buffer=>createHash('sha256').update(buffer).digest('hex');
+let portabilityCases=0;
+function verifyPortableText(buffer, expected) {
+  const lf=buffer.toString('utf8').replace(/\r\n/g,'\n');
+  const crlf=lf.replace(/\n/g,'\r\n');
+  assert.equal(textSha256LF(Buffer.from(lf,'utf8')),expected);
+  assert.equal(textSha256LF(Buffer.from(crlf,'utf8')),expected);
+  portabilityCases+=2;
+}
 const viewport={x:20,y:30,width:300,height:460,padding:12};
 assert.equal(POSE_EDGES.length,35);
 assert.equal(new Set(POSE_EDGES.flat()).size,33);
@@ -34,13 +40,13 @@ for(const [id,pose] of Object.entries(recordedPoses.poses)) {
   assert.equal([...svg.matchAll(/data-landmark="(\d+)"/g)].length,33);
   assert.equal([...svg.matchAll(/data-edge="/g)].length,35);
   const originalFile=path.join(repo,pose.sourceFile);
-  if(fs.existsSync(originalFile))assert.equal(hash(fs.readFileSync(originalFile)),pose.sourceFileSha256);
-  reports.push({id,frameIndex:pose.frameIndex,landmarks:33,edges:35,uniformFit:true,sourceFileSha256:pose.sourceFileSha256});
+  if(fs.existsSync(originalFile))verifyPortableText(fs.readFileSync(originalFile),pose.sourceFileSha256LF);
+  reports.push({id,frameIndex:pose.frameIndex,landmarks:33,edges:35,uniformFit:true,sourceFileSha256:pose.sourceFileSha256,sourceFileSha256LF:pose.sourceFileSha256LF});
 }
 const sourceProjection=path.join(repo,recordedPoses.projectionFile);
 if(fs.existsSync(sourceProjection)) {
   const buffer=fs.readFileSync(sourceProjection);
-  assert.equal(hash(buffer),recordedPoses.projectionSha256);
+  verifyPortableText(buffer,recordedPoses.projectionSha256LF);
   const original=JSON.parse(buffer);
   for(const [id,pose] of Object.entries(recordedPoses.poses))assert.deepEqual(pose.points,original.poses[id].points);
   const sourceModel=fs.readFileSync(path.join(repo,'app/src/pages/home/latest-hero/pose-model.ts'),'utf8');
@@ -60,7 +66,7 @@ const content=JSON.parse(fs.readFileSync(path.join(root,'gallery-content.json'),
 const emoji=JSON.parse(fs.readFileSync(path.join(root,'emoji/manifest.json'),'utf8'));
 assert.equal(content.panels.length,6);
 assert.equal(new Set(content.panels.map(panel=>panel.emoji)).size,6);
-for(const asset of emoji.assets)assert.equal(hash(fs.readFileSync(path.join(root,'emoji',asset.file))),asset.sha256);
+for(const asset of emoji.assets)verifyPortableText(fs.readFileSync(path.join(root,'emoji',asset.file)),asset.sha256);
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'output/gallery-manifest.json'),'utf8'));
 assert.equal(manifest.images.length,12);
 assert.equal(manifest.submissionReady,false);
@@ -81,6 +87,6 @@ for(const record of manifest.images) {
   if(['01-evidence','02-tests','04-focus','06-retest'].includes(record.id))assert(source.includes('aria-label="Leaderboards"'));
   exports.push({file:record.file,width:w,height:h,opaque:true});
 }
-const report={schemaVersion:1,passed:true,poseValidation:reports,negativePoseCases:7,canonicalWebsiteMapCompared:fs.existsSync(sourceProjection),emojiAssetsVerified:6,exports};
+const report={schemaVersion:1,passed:true,poseValidation:reports,negativePoseCases:7,canonicalWebsiteMapCompared:fs.existsSync(sourceProjection),emojiAssetsVerified:6,textLineEndingPortabilityCases:portabilityCases,exports};
 fs.writeFileSync(path.join(root,'output/gallery-validation.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report,null,2));

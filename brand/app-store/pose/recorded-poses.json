@@ -333,7 +333,8 @@
         "maxLandmarkAdjustmentMeters": 0.03571,
         "uniformDisplayScale": 1.4451,
         "ballPlacement": "tracked-image-ray-intersected-with-estimated-support-foot-ground"
-      }
+      },
+      "sourceFileSha256LF": "e1a7642cb72b42dfe380b5555af5fc79a438cb08ebb3f424e2970cb52b94b3bb"
     },
     "sprint": {
       "points": [
@@ -659,7 +660,8 @@
         "groundClearance": 0.12,
         "groundPlacement": "illustrative-flight-clearance-verified-from-source-frame",
         "meanImageLandmarkDifferencePixels": 3.177
-      }
+      },
+      "sourceFileSha256LF": "31b556e12d6b1c1d1d12407dccfcc01596c0fc4ee35632e6fc45ea12987cd913"
     },
     "jump": {
       "points": [
@@ -985,7 +987,10 @@
         "groundClearance": 0.545254,
         "groundPlacement": "recorded-calibrated-feet-to-ground-gap",
         "meanImageLandmarkDifferencePixels": 7.223
-      }
+      },
+      "sourceFileSha256LF": "67f005537cbe6c3001c8784b523fec85466cea5dcfac8ac5d4fcdd643d96c5f1"
     }
-  }
+  },
+  "projectionSha256LF": "a5558a02b12328ee90b04b54af1d60f60a979511bcc06e01435003a00ed1070f",
+  "textHashNormalization": "UTF-8 text with CRLF converted to LF; raw sourceFileSha256 and projectionSha256 retain original capture provenance."
 }

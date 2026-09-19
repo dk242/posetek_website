@@ -1,5 +1,13 @@
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+
+// Text-only source verification tolerates Git's platform-specific line endings.
+// Capture images and other binary files must continue to use their raw hashes.
+export function textSha256LF(source) {
+  const text=typeof source==='string'?source:source.toString('utf8');
+  return createHash('sha256').update(text.replace(/\r\n/g,'\n'),'utf8').digest('hex');
+}
 
 export const POSE_EDGES = Object.freeze([
   [0,1],[1,2],[2,3],[3,7],[0,4],[4,5],[5,6],[6,8],[9,10],

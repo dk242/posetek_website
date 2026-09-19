@@ -46,5 +46,6 @@
       "name": "Chart increasing",
       "file": "chart_increasing.svg"
     }
-  ]
+  ],
+  "textHashNormalization": "UTF-8 SVG text with CRLF converted to LF; sha256 values match pinned upstream LF files."
 }

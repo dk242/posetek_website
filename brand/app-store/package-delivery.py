@@ -80,7 +80,7 @@ def main():
     for file in ROOT.iterdir():
         if file.is_file() and file.suffix in {".mjs", ".py"}:
             full[PREFIX + file.name] = file.read_bytes()
-    for name in ["package.json", "package-lock.json"]:
+    for name in ["package.json", "package-lock.json", ".gitignore", ".gitattributes"]:
         full[PREFIX + name] = (ROOT / name).read_bytes()
     for folder in ["pose", "emoji", "source"]:
         for file in sorted((ROOT / folder).rglob("*")):
