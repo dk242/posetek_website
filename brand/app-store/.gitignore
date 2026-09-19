@@ -1,5 +1,8 @@
 /output/
 /source/
 /screenshot-input/
+/review-inputs/
+/__pycache__/
 /gallery-input.local.json
+/gallery-review.local.json
 /node_modules/

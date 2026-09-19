@@ -6,6 +6,20 @@ business document is included.
 
 ## Readiness and source provenance
 
+### September 19 supplied screenshot gallery revision
+
+The user's five JPEG screenshots now replace iPhone gallery panels 01–05:
+skill map, Drills, landscape left/right shooting comparison, AI Coach and
+Training plan. Captions match these screens and original image bytes/proportions
+are preserved. iPhone panel 06 and all six iPad panels remain labeled previews.
+The screenshots have reduced resolution and unknown build provenance; a visible
+player identity remains in the private review and requires release review.
+`brand/app-store/SCREENSHOT_UPDATE.md` documents the replacements, sparse
+`--review-input` workflow and revision 3 packaging. Original images, local input
+and generated exports stay outside Git. The local v3 packages supersede the
+artwork in the previously emailed v2 handoff; v3 has not been emailed or uploaded
+to Apple. The icon, native patch and listing-copy draft are unchanged.
+
 ### September 18 App Store presentation package
 
 The user chose the existing lime-green P badge as the official app icon and

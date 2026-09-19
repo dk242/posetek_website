@@ -21,10 +21,19 @@ const C = { bg:'#04130e', lime:'#b7f34a', ink:'#f0f5ed', muted:'#a9bdb1', line:'
 const content = JSON.parse(fs.readFileSync(path.join(ROOT, 'gallery-content.json'), 'utf8'));
 const officialIconPath=path.resolve(ROOT,'../../images/brand/posetek-app-icon.svg');
 const officialIconInner=fs.readFileSync(officialIconPath,'utf8').replace(/^[\s\S]*?<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'');
-const inputIndex = process.argv.indexOf('--input');
-const inputPath = inputIndex >= 0 ? path.resolve(process.argv[inputIndex + 1] || '') : null;
-const supplied = inputPath ? JSON.parse(fs.readFileSync(inputPath, 'utf8')) : null;
-if(supplied&&(!supplied.iphone||!supplied.ipad))throw new Error('Provide complete iPhone and iPad capture sets together; all 12 captures are required.');
+const inputIndex=process.argv.indexOf('--input'),reviewIndex=process.argv.indexOf('--review-input');
+if(inputIndex>=0&&reviewIndex>=0)throw new Error('--input and --review-input are mutually exclusive.');
+const reviewMode=reviewIndex>=0,inputFlagIndex=reviewMode?reviewIndex:inputIndex;
+const inputArgument=inputFlagIndex>=0?process.argv[inputFlagIndex+1]:null;
+if(inputFlagIndex>=0&&(!inputArgument||inputArgument.startsWith('--')))throw new Error('The input flag requires a JSON file path.');
+const inputPath=inputArgument?path.resolve(inputArgument):null;
+const supplied=inputPath?JSON.parse(fs.readFileSync(inputPath,'utf8')):null;
+if(supplied)validateInputManifest(supplied);
+const captures={iphone:await readCaptures('iphone'),ipad:await readCaptures('ipad')};
+if(process.argv.includes('--validate-input-only')) {
+  console.log(JSON.stringify({mode:reviewMode?'review':supplied?'release':'preview',captures:Object.values(captures).reduce((sum,items)=>sum+Object.keys(items||{}).length,0),currentBuildConfirmed:Boolean(supplied&&!reviewMode),warnings:Object.values(captures).flatMap(items=>Object.values(items||{}).flatMap(capture=>capture.warnings))}));
+  process.exit(0);
+}
 const fonts = {};
 const copiedLicenses = new Set();
 const emojiManifest=JSON.parse(fs.readFileSync(path.join(ROOT,'emoji/manifest.json'),'utf8'));
@@ -259,8 +268,11 @@ function brandHeader(width,idx,tablet=false) {
   return logo(margin,y,size)+text('POSETEK',margin+size+24,y+size*.76,tablet?52:42,C.ink,'black','start',tablet?4:3)+text(`${String(idx+1).padStart(2,'0')} / 06`,width-margin,y+size*.7,tablet?30:24,C.muted,'mono','end');
 }
 function captureDevice(data,x,y,w,h,radius) {
-  // Full screenshot is embedded unchanged; contain semantics prevent any crop.
-  return rect(x-10,y-10,w+20,h+20,'#010805',radius+10,'#4a6655',3)+`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="0 0 ${data.width} ${data.height}" preserveAspectRatio="xMidYMid meet"><image href="data:image/png;base64,${data.buffer.toString('base64')}" width="${data.width}" height="${data.height}"/></svg>`;
+  // Embed the exact original PNG/JPEG bytes. Only the complete screenshot is
+  // proportionally scaled; no cropping, retouching, or synthesized UI overlays.
+  const scale=Math.min(w/data.width,h/data.height),sw=data.width*scale,sh=data.height*scale;
+  const sx=x+(w-sw)/2,sy=y+(h-sh)/2;
+  return rect(sx-10,sy-10,sw+20,sh+20,'#010805',radius+10,'#4a6655',3)+`<svg data-capture="true" data-source-sha256="${data.sha256}" x="${sx}" y="${sy}" width="${sw}" height="${sh}" viewBox="0 0 ${data.width} ${data.height}" preserveAspectRatio="xMidYMid meet"><image href="data:${data.mimeType};base64,${data.buffer.toString('base64')}" width="${data.width}" height="${data.height}"/></svg>`;
 }
 function compose(panel,idx,platform,capture=null) {
   const tablet=platform==='ipad',width=tablet?2064:1320,height=tablet?2752:2868;
@@ -274,7 +286,11 @@ function compose(panel,idx,platform,capture=null) {
   const body=wrap(panel.description,margin+accentSize+22,captionY,width-margin*2-accentSize-22,tablet?39:34,C.muted,'body',tablet?56:48);
   s+=body.svg;
   if(body.bottom>(tablet?873:764))throw new Error(`${panel.id}: body copy overlaps device`);
-  if(panel.screen==='replay') {
+  if(panel.screen==='replay'&&capture) {
+    // A supplied comparison is the sole product visual; do not pair it with
+    // the unrelated recorded sprint used by the earlier illustrative layout.
+    s+=captureDevice(capture,48,tablet?910:810,width-96,tablet?1650:1790,tablet?40:32);
+  } else if(panel.screen==='replay') {
     // Analysis really is landscape-only in SessionAnalysisView; preserve that orientation.
     // The enlarged recorded pose is marketing art outside the device, with explicit provenance.
     const stageY=tablet?956:824,stageH=tablet?820:970;
@@ -300,45 +316,85 @@ function compose(panel,idx,platform,capture=null) {
   }
   const footerY=tablet?2638:2730;
   s+=line(margin,footerY-26,width-margin,footerY-26,C.line,2);
-  s+=text(capture?'Current-build screenshot composition':'Layout preview • sample interface',margin,footerY+19,tablet?30:27,capture?C.ink:C.lime,'medium');
-  s+=text(capture?'For final release review':'Source-grounded illustration · not a native screenshot',margin,footerY+65,tablet?24:22,C.muted,'body');
+  s+=text(capture?.review?'User-supplied screenshot • review':capture?'Current-build screenshot composition':'Layout preview • sample interface',margin,footerY+19,tablet?30:27,capture?C.ink:C.lime,'medium');
+  s+=text(capture?.review?'Build and privacy review pending · original image preserved':capture?'For final release review':'Source-grounded illustration · not a native screenshot',margin,footerY+65,tablet?24:22,C.muted,'body');
   const title=`PoseTek — ${panel.headline.join(' ')} — ${capture?'screenshot composition':'layout preview'}`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><desc>${esc(panel.description)} ${capture?'Uses supplied current-build capture.':'Illustrative review concept. No authentic app screenshot is claimed. All values are fictional sample data.'}</desc>${s}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><desc>${esc(panel.description)} ${capture?.review?'Uses an unmodified user-supplied screenshot for review. Build identity and privacy review are not verified.':capture?'Uses supplied current-build capture.':'Illustrative review concept. No authentic app screenshot is claimed. All values are fictional sample data.'}</desc>${s}</svg>`;
+}
+function validateInputManifest(input) {
+  if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('Input must be a JSON object.');
+  const allowed=new Set(['buildNumber','currentBuildConfirmed','privacyReviewed','captureProvenance','iphone','ipad']);
+  for(const key of Object.keys(input))if(!allowed.has(key))throw new Error(`Unknown input field: ${key}`);
+  if(!reviewMode&&(!input.iphone||!input.ipad))throw new Error('Provide complete iPhone and iPad capture sets together; all 12 captures are required.');
+  const ids=new Set(content.panels.map(panel=>panel.id));
+  let count=0;
+  for(const platform of ['iphone','ipad']) {
+    const entries=input[platform];
+    if(entries===undefined)continue;
+    if(!entries||typeof entries!=='object'||Array.isArray(entries))throw new Error(`${platform} must map panel IDs to screenshots.`);
+    for(const [id,entry] of Object.entries(entries)) {
+      if(!ids.has(id))throw new Error(`Unknown panel ID: ${platform}/${id}`);
+      normalizeCaptureEntry(entry,`${platform}/${id}`);
+      count++;
+    }
+  }
+  if(reviewMode&&count===0)throw new Error('Review input must include at least one screenshot.');
+}
+function normalizeCaptureEntry(entry,label) {
+  if(typeof entry==='string')entry={file:entry};
+  if(!entry||typeof entry!=='object'||Array.isArray(entry))throw new Error(`${label}: screenshot entry must be a filename or object.`);
+  const allowed=new Set(['file','headline','description','eyebrow','screenTitle']);
+  for(const key of Object.keys(entry))if(!allowed.has(key))throw new Error(`${label}: unsupported screenshot field ${key}.`);
+  if(typeof entry.file!=='string'||!entry.file.trim())throw new Error(`${label}: a screenshot filename is required.`);
+  if(entry.headline!==undefined&&(!Array.isArray(entry.headline)||entry.headline.length!==2||entry.headline.some(line=>typeof line!=='string'||!line.trim())))throw new Error(`${label}: headline must contain exactly two nonempty text lines.`);
+  for(const key of ['description','eyebrow','screenTitle'])if(entry[key]!==undefined&&(typeof entry[key]!=='string'||!entry[key].trim()))throw new Error(`${label}: ${key} must be nonempty text.`);
+  const {file,...overrides}=entry;
+  return {file,overrides};
 }
 async function readCaptures(platform) {
   if(!supplied?.[platform])return null;
-  if(!supplied.currentBuildConfirmed||!supplied.privacyReviewed||!supplied.buildNumber||supplied.buildNumber.startsWith('REPLACE')||!supplied.captureProvenance)throw new Error('Current-build identity, explicit confirmation, privacy review, and capture provenance are required.');
+  if(!reviewMode&&(supplied.currentBuildConfirmed!==true||supplied.privacyReviewed!==true||typeof supplied.buildNumber!=='string'||!supplied.buildNumber||supplied.buildNumber.startsWith('REPLACE')||!supplied.captureProvenance))throw new Error('Current-build identity, explicit confirmation, privacy review, and capture provenance are required.');
   const result={};
   for(const panel of content.panels) {
     const input=supplied[platform][panel.id];
-    if(!input)throw new Error(`${platform}: provide all six captures; missing ${panel.id}`);
-    const full=path.resolve(path.dirname(inputPath),input);
-    const meta=await sharp(full).metadata();
+    if(input===undefined) {
+      if(reviewMode)continue;
+      throw new Error(`${platform}: provide all six captures; missing ${panel.id}`);
+    }
+    const entry=normalizeCaptureEntry(input,`${platform}/${panel.id}`);
+    const full=path.resolve(path.dirname(inputPath),entry.file);
+    const buffer=fs.readFileSync(full),meta=await sharp(buffer).metadata();
     if(!['png','jpeg'].includes(meta.format))throw new Error(`${full}: PNG or JPEG required`);
+    if(meta.orientation&&meta.orientation!==1)throw new Error(`${full}: provide an upright screenshot without EXIF rotation.`);
     const landscape=panel.captureOrientation==='landscape';
     const shortSide=Math.min(meta.width,meta.height),longSide=Math.max(meta.width,meta.height),ratio=shortSide/longSide;
     if(landscape?meta.width<=meta.height:meta.width>=meta.height)throw new Error(`${full}: ${panel.id} requires a complete ${panel.captureOrientation} ${platform} capture.`);
     if(ratio<(platform==='iphone'?.4:.6)||ratio>(platform==='iphone'?.55:.9))throw new Error(`${full}: expected a complete ${platform} screen capture, without a device frame.`);
-    if(shortSide<(platform==='iphone'?1170:1640))throw new Error(`${full}: insufficient capture resolution`);
-    const buffer=await sharp(full).flatten({background:C.bg}).removeAlpha().png().toBuffer();
-    result[panel.id]={buffer,width:meta.width,height:meta.height,filename:path.basename(full),sha256:createHash('sha256').update(fs.readFileSync(full)).digest('hex')};
+    const warnings=[];
+    if(shortSide<(platform==='iphone'?1170:1640)) {
+      if(!reviewMode)throw new Error(`${full}: insufficient capture resolution`);
+      warnings.push(`Original ${meta.width} x ${meta.height} screenshot is below the release capture resolution; export does not add detail.`);
+    }
+    if(reviewMode)warnings.push('Build identity and privacy review are unverified; use for design review only.');
+    result[panel.id]={buffer,width:meta.width,height:meta.height,format:meta.format,mimeType:meta.format==='jpeg'?'image/jpeg':'image/png',filename:path.basename(full),sha256:createHash('sha256').update(buffer).digest('hex'),overrides:entry.overrides,review:reviewMode,warnings,source:reviewMode?'user-provided':'current-build-capture',currentBuildConfirmed:!reviewMode,privacyReviewed:!reviewMode};
   }
   return result;
 }
 
-const captures={iphone:await readCaptures('iphone'),ipad:await readCaptures('ipad')};
 const records=[];
 for(const platform of ['iphone','ipad']) {
-  for(const [idx,panel] of content.panels.entries()) {
-    const capture=captures[platform]?.[panel.id]||null;
+  for(const [idx,defaultPanel] of content.panels.entries()) {
+    const capture=captures[platform]?.[defaultPanel.id]||null;
+    const panel={...defaultPanel,...capture?.overrides};
     const svg=compose(panel,idx,platform,capture);
     const stem=`${platform}-${panel.id}`,file=`${stem}.png`;
-    // Source SVGs intentionally remain review concepts even during a capture run.
-    fs.writeFileSync(path.join(SOURCE,`${stem}.svg`),compose(panel,idx,platform));
+    // The editable SVG faithfully reproduces this composition, including raw captures.
+    // Both generated directories are ignored; supplied screenshots must stay private.
+    fs.writeFileSync(path.join(SOURCE,`${stem}.svg`),svg);
     await sharp(Buffer.from(svg)).flatten({background:C.bg}).removeAlpha().png({compressionLevel:9}).toFile(path.join(OUT,file));
     const meta=await sharp(path.join(OUT,file)).metadata();
     if(meta.hasAlpha)throw new Error(`${file}: unexpected alpha channel`);
-    records.push({platform,id:panel.id,file,width:meta.width,height:meta.height,channels:meta.channels,kind:capture?'current-build-screenshot-composition':'sample-interface-layout-preview',nativeScreenshotSupplied:Boolean(capture),capture:capture?{filename:capture.filename,sha256:capture.sha256}:null,sourceReferences:panel.sourceReferences,captureInstruction:panel.captureInstruction,captureOrientation:panel.captureOrientation,emoji:panel.emoji,pose:panel.pose?{id:panel.pose,frameIndex:recordedPoses.poses[panel.pose].frameIndex,landmarkCount:33,connectionCount:POSE_EDGES.length,sourceSha256:recordedPoses.poses[panel.pose].sourceSha256,projectionSha256:recordedPoses.projectionSha256,projectionSha256LF:recordedPoses.projectionSha256LF}:null});
+    records.push({platform,id:panel.id,file,width:meta.width,height:meta.height,channels:meta.channels,headline:panel.headline,description:panel.description,eyebrow:panel.eyebrow,screenTitle:panel.screenTitle,kind:capture?.review?'user-supplied-screenshot-review':capture?'current-build-screenshot-composition':'sample-interface-layout-preview',nativeScreenshotSupplied:Boolean(capture),currentBuildConfirmed:Boolean(capture&&!capture.review),privacyReviewed:Boolean(capture&&!capture.review),capture:capture?{filename:capture.filename,sha256:capture.sha256,width:capture.width,height:capture.height,format:capture.format,source:capture.source,warnings:capture.warnings}:null,sourceSvgSha256:createHash('sha256').update(svg).digest('hex'),sourceReferences:panel.sourceReferences,captureInstruction:panel.captureInstruction,captureOrientation:panel.captureOrientation,emoji:panel.emoji,pose:panel.pose&&!capture?{id:panel.pose,frameIndex:recordedPoses.poses[panel.pose].frameIndex,landmarkCount:33,connectionCount:POSE_EDGES.length,sourceSha256:recordedPoses.poses[panel.pose].sourceSha256,projectionSha256:recordedPoses.projectionSha256,projectionSha256LF:recordedPoses.projectionSha256LF}:null});
   }
 }
 const thumbs=[];
@@ -348,7 +404,13 @@ for(let i=0;i<6;i++){
   thumbs.push({input:await sharp(filename).resize(thumbWidth,thumbHeight).png().toBuffer(),left:padding+(i%3)*(thumbWidth+gap),top:titleHeight+Math.floor(i/3)*(thumbHeight+gap)});
 }
 const sheetHeight=titleHeight+2*thumbHeight+gap+padding;
-const sheetTitle=`<svg xmlns="http://www.w3.org/2000/svg" width="${sheetWidth}" height="${sheetHeight}">${rect(0,0,sheetWidth,sheetHeight,C.bg)}${text('POSETEK / APP STORE GALLERY',54,61,31,C.ink,'bold')}${text('Six review layouts · sample interfaces · native screenshots still required',54,106,23,C.lime)}</svg>`;
+const reviewCaptureCount=records.filter(record=>record.kind==='user-supplied-screenshot-review').length;
+const providedCaptureCount=Object.values(captures).reduce((sum,entries)=>sum+Object.keys(entries||{}).length,0);
+if(records.filter(record=>record.nativeScreenshotSupplied).length!==providedCaptureCount)throw new Error('Not every provided screenshot was composed.');
+const phoneCaptureCount=records.filter(record=>record.platform==='iphone'&&record.nativeScreenshotSupplied).length;
+const tabletCaptureCount=records.filter(record=>record.platform==='ipad'&&record.nativeScreenshotSupplied).length;
+const sheetSummary=`This sheet: ${phoneCaptureCount} iPhone screenshots + ${6-phoneCaptureCount} preview${phoneCaptureCount===5?'':'s'} | Separate iPad set: ${tabletCaptureCount} screenshots + ${6-tabletCaptureCount} previews`;
+const sheetTitle=`<svg xmlns="http://www.w3.org/2000/svg" width="${sheetWidth}" height="${sheetHeight}">${rect(0,0,sheetWidth,sheetHeight,C.bg)}${text('POSETEK / APP STORE GALLERY',54,61,31,C.ink,'bold')}${text(sheetSummary,54,106,23,C.lime)}</svg>`;
 await sharp(Buffer.from(sheetTitle)).composite(thumbs).flatten({background:C.bg}).removeAlpha().png().toFile(path.join(OUT,'contact-sheet.png'));
 
 // A supplementary source sheet lets the release owner inspect all three
@@ -366,8 +428,12 @@ const referenceSvg=`<svg xmlns="http://www.w3.org/2000/svg" width="1800" height=
 fs.writeFileSync(path.join(SOURCE,'pose-reference-sheet.svg'),referenceSvg);
 await sharp(Buffer.from(referenceSvg)).flatten({background:C.bg}).removeAlpha().png().toFile(path.join(OUT,'pose-reference-sheet.png'));
 
-const manifest={schemaVersion:2,product:'PoseTek',submissionReady:false,reviewStatus:'Requires current-build native captures, copy review, and App Store Connect final verification.',galleryCompositionComplete:true,requiredPlatforms:['iphone','ipad'],targetedDeviceFamily:[1,2],currentBuild:supplied?.buildNumber||null,captureProvenance:supplied?.captureProvenance||null,platformCandidate:{iphone:Boolean(captures.iphone),ipad:Boolean(captures.ipad)},allNativeScreenshotsSupplied:Boolean(captures.iphone&&captures.ipad),important:'Preview concepts are not valid native screenshots. iPad captures are required because TARGETED_DEVICE_FAMILY is 1,2. Candidate composition does not grant submission approval.',referenceLock:content.referenceLock,emojiSource:{repository:emojiManifest.repository,commit:emojiManifest.commit,style:emojiManifest.style,license:emojiManifest.license},poseSource:{schema:recordedPoses.schema,landmarkCount:33,connectionCount:POSE_EDGES.length,projectionSha256:recordedPoses.projectionSha256,projectionSha256LF:recordedPoses.projectionSha256LF},images:records};
+const manifest={schemaVersion:3,product:'PoseTek',mode:reviewMode?'user-supplied-review':supplied?'release-capture-composition':'illustrative-preview',submissionReady:false,reviewStatus:reviewMode?'User-provided screenshots are review material. Build identity and privacy review are unverified; low-resolution sources need release recapture.':'Requires current-build native captures, copy review, and App Store Connect final verification.',galleryCompositionComplete:true,requiredPlatforms:['iphone','ipad'],targetedDeviceFamily:[1,2],currentBuild:!reviewMode?supplied?.buildNumber||null:null,currentBuildConfirmed:Boolean(supplied&&!reviewMode),privacyReviewed:Boolean(supplied&&!reviewMode),captureProvenance:reviewMode?'User-provided screenshots; no release-build provenance is inferred.':supplied?.captureProvenance||null,providedCaptureCount,reviewCaptureCount,platformSupplied:{iphone:Object.keys(captures.iphone||{}).length,ipad:Object.keys(captures.ipad||{}).length},platformCandidate:{iphone:!reviewMode&&Object.keys(captures.iphone||{}).length===6,ipad:!reviewMode&&Object.keys(captures.ipad||{}).length===6},allNativeScreenshotsSupplied:providedCaptureCount===12,important:'Review images are not submission approval. Unmatched cards remain sample interfaces. iPad captures are required because TARGETED_DEVICE_FAMILY is 1,2.',referenceLock:content.referenceLock,emojiSource:{repository:emojiManifest.repository,commit:emojiManifest.commit,style:emojiManifest.style,license:emojiManifest.license},poseSource:{schema:recordedPoses.schema,landmarkCount:33,connectionCount:POSE_EDGES.length,projectionSha256:recordedPoses.projectionSha256,projectionSha256LF:recordedPoses.projectionSha256LF},images:records};
 fs.writeFileSync(path.join(OUT,'gallery-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
-const cards=records.map(record=>{const p=content.panels.find(p=>p.id===record.id);return `<article data-platform="${record.platform}"><a href="${record.file}" target="_blank" rel="noopener"><img src="${record.file}" alt="${esc(p.headline.join(' '))}: ${record.kind}" loading="lazy" width="${record.width}" height="${record.height}"></a><h2>${esc(p.headline.join(' '))}</h2><p>${esc(p.description)}</p><p class="capture"><b>Capture needed:</b> ${esc(p.captureInstruction)}</p><a href="${record.file}" download>Download ${record.width} × ${record.height} PNG</a></article>`;}).join('');
-fs.writeFileSync(path.join(OUT,'gallery-review.html'),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PoseTek · App Store gallery review</title><style>@font-face{font-family:Inter;src:url('../fonts/inter-latin-400-normal.woff')}@font-face{font-family:Inter;font-weight:700;src:url('../fonts/inter-latin-700-normal.woff')}*{box-sizing:border-box}body{margin:0;background:${C.bg};color:${C.ink};font:16px/1.6 Inter,sans-serif}header,main{max-width:1560px;margin:auto;padding:40px 32px}header{padding-bottom:16px}h1{font-size:clamp(30px,5vw,52px);line-height:1.1;margin:10px 0 22px}header p{max-width:890px;color:${C.muted}}.status{color:${C.lime};font-weight:700}nav{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}button,a{font:inherit}button{border:1px solid ${C.line};border-radius:8px;padding:12px 22px;background:transparent;color:${C.ink};cursor:pointer}button[aria-pressed=true]{background:${C.lime};color:${C.bg}}a{color:${C.lime};text-underline-offset:4px}a:focus-visible,button:focus-visible{outline:3px solid ${C.lime};outline-offset:6px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 28px}article img{display:block;width:100%;height:auto;border:1px solid ${C.line}}article h2{font-size:22px;line-height:1.2}article p{color:${C.muted};font-size:14px}.capture{border-top:1px solid ${C.line};padding-top:15px;font-size:13px}[hidden]{display:none!important}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.grid{grid-template-columns:1fr}header,main{padding:28px 20px}}</style></head><body><header><div class="status">REVIEW PACKAGE · NOT READY FOR SUBMISSION</div><h1>Start with evidence.<br>Build a gallery around the product.</h1><p>Six PoseTek story moments, composed for iPhone and iPad. The sample interfaces are source-grounded illustrations. Replace them with complete current-build native screenshot sets before final release review.</p><p><a href="contact-sheet.png">View iPhone contact sheet</a> · <a href="gallery-manifest.json">View provenance manifest</a></p><nav aria-label="Device family"><button aria-pressed="true" data-filter="iphone">iPhone · 1320 × 2868</button><button aria-pressed="false" data-filter="ipad">iPad · 2064 × 2752</button></nav></header><main><div class="grid">${cards}</div></main><script>const buttons=[...document.querySelectorAll('[data-filter]')],cards=[...document.querySelectorAll('[data-platform]')];function select(platform){buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===platform)));cards.forEach(c=>c.hidden=c.dataset.platform!==platform)}buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.filter)));select('iphone');</script></body></html>`.replace('color:undefined','color:'+C.muted));
+const cards=records.map(record=>{
+  const status=record.kind==='user-supplied-screenshot-review'?`<b>User-supplied screenshot:</b> ${record.capture.width} x ${record.capture.height} ${esc(record.capture.format.toUpperCase())}. ${record.capture.warnings.map(esc).join(' ')}`:record.nativeScreenshotSupplied?'<b>Current-build capture supplied:</b> Final release review remains required.':`<b>Capture needed:</b> ${esc(record.captureInstruction)}`;
+  return `<article data-platform="${record.platform}"><a href="${record.file}" target="_blank" rel="noopener"><img src="${record.file}" alt="${esc(record.headline.join(' '))}: ${record.kind}" loading="lazy" width="${record.width}" height="${record.height}"></a><h2>${esc(record.headline.join(' '))}</h2><p>${esc(record.description)}</p><p class="capture">${status}</p><a href="${record.file}" download>Download ${record.width} × ${record.height} PNG</a></article>`;
+}).join('');
+const reviewIntro=reviewMode?`${reviewCaptureCount} user-supplied screenshots appear unchanged inside PoseTek artwork. ${12-reviewCaptureCount} cards still use labeled sample interfaces. These materials support design review; build identity, privacy review, and App Store release suitability are unverified.`:'Six PoseTek story moments, composed for iPhone and iPad. Sample interfaces are source-grounded illustrations. Complete current-build native screenshot sets are required before final release review.';
+fs.writeFileSync(path.join(OUT,'gallery-review.html'),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PoseTek · App Store gallery review</title><style>@font-face{font-family:Inter;src:url('../fonts/inter-latin-400-normal.woff')}@font-face{font-family:Inter;font-weight:700;src:url('../fonts/inter-latin-700-normal.woff')}*{box-sizing:border-box}body{margin:0;background:${C.bg};color:${C.ink};font:16px/1.6 Inter,sans-serif}header,main{max-width:1560px;margin:auto;padding:40px 32px}header{padding-bottom:16px}h1{font-size:clamp(30px,5vw,52px);line-height:1.1;margin:10px 0 22px}header p{max-width:890px;color:${C.muted}}.status{color:${C.lime};font-weight:700}nav{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}button,a{font:inherit}button{border:1px solid ${C.line};border-radius:8px;padding:12px 22px;background:transparent;color:${C.ink};cursor:pointer}button[aria-pressed=true]{background:${C.lime};color:${C.bg}}a{color:${C.lime};text-underline-offset:4px}a:focus-visible,button:focus-visible{outline:3px solid ${C.lime};outline-offset:6px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 28px}article img{display:block;width:100%;height:auto;border:1px solid ${C.line}}article h2{font-size:22px;line-height:1.2}article p{color:${C.muted};font-size:14px}.capture{border-top:1px solid ${C.line};padding-top:15px;font-size:13px}[hidden]{display:none!important}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.grid{grid-template-columns:1fr}header,main{padding:28px 20px}}</style></head><body><header><div class="status">REVIEW PACKAGE · NOT READY FOR SUBMISSION</div><h1>Start with evidence.<br>Build a gallery around the product.</h1><p>${esc(reviewIntro)}</p><p><a href="contact-sheet.png">View iPhone contact sheet</a> · <a href="gallery-manifest.json">View provenance manifest</a></p><nav aria-label="Device family"><button aria-pressed="true" data-filter="iphone">iPhone · 1320 × 2868</button><button aria-pressed="false" data-filter="ipad">iPad · 2064 × 2752</button></nav></header><main><div class="grid">${cards}</div></main><script>const buttons=[...document.querySelectorAll('[data-filter]')],cards=[...document.querySelectorAll('[data-platform]')];function select(platform){buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===platform)));cards.forEach(c=>c.hidden=c.dataset.platform!==platform)}buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.filter)));select('iphone');</script></body></html>`.replace('color:undefined','color:'+C.muted));
 console.log(JSON.stringify({output:OUT,images:records.length,contactSheet:path.join(OUT,'contact-sheet.png'),reviewPage:path.join(OUT,'gallery-review.html'),submissionReady:false,platformCandidate:manifest.platformCandidate},null,2));

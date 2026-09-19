@@ -1,9 +1,19 @@
 # Release-build screenshot capture brief
 
-The gallery is a source-derived review preview. Replace every device screen
-with a genuine capture of the intended release before App Store upload. The
-inspected app targets iPhone and iPad (`TARGETED_DEVICE_FAMILY = 1,2`), so
+Revision 3 combines five user-supplied iPhone screenshots with source-derived
+previews for iPhone panel 06 and all iPad panels. The supplied files are useful
+for local review, but they are reduced-resolution JPEGs and their build is
+unknown. Obtain full-resolution, verified intended-release captures before App
+Store upload. See [the screenshot update](SCREENSHOT_UPDATE.md) for the mapping.
+The inspected app targets iPhone and iPad (`TARGETED_DEVICE_FAMILY = 1,2`), so
 provide six captures from each family. Do not stretch a phone UI into a tablet.
+
+The supplied landscape image shows left/right shooting-pose comparison with a
+guided walkthrough; do not call it a sprint measurement or a live recording.
+The revised iPhone AI Coach and Training panels have captions describing those
+actual screens. The visible player name in the AI Coach capture needs a release
+privacy check; do not repeat it in public documentation. Original supplied
+files stay out of public Git.
 
 ## Prepare the build and demo account
 
@@ -20,7 +30,15 @@ identifiers, exact locations, coaching notes and unapproved media. Do not write
 fabricated records to a real athlete. Let data finish loading and dismiss
 keyboards, debug overlays, errors and permission prompts.
 
-## Capture sequence
+## Full-release capture sequence
+
+The table describes the default source gallery. Revision 3's review input
+overrides iPhone panel 03 with shooting comparison, panel 04 with AI Coach and
+panel 05 with the Training plan overview. For final release, capture those
+revised views and retain their matching captions; do not pair an AI Coach screen
+with a skill-map description or a plan overview with workout-execution claims.
+The iPad sequence still uses the default source previews until actual tablet
+captures and matching copy are supplied.
 
 Native source establishes **Profile / AI Coach / Drills / Training /
 Leaderboards**. Older architecture notes have stale tab names.
@@ -45,7 +63,7 @@ not establish 33 detected joints. Preserve native missing-data treatment and
 source aspect ratio. Do not paint extra joints onto app captures or imply video
 is available for every recording.
 
-The authored preview uses sanitized recorded homepage poses with all 33 points
+The remaining authored pose preview uses sanitized recorded homepage poses with all 33 points
 and canonical 35 connections. It is a documented illustration, not an app
 capture or new cloud analysis. Final captures must show what the shipping
 native renderer actually displays.
@@ -64,7 +82,7 @@ proportionally. These final dimensions are listed in
 [Apple's screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications).
 Confirm the exact device slots in Connect.
 
-Input validation accepts PNG or JPEG but retains PNG as the recommended original.
+Strict release input validation accepts PNG or JPEG but retains PNG as the recommended original.
 It requires a short side of at least 1170 pixels for iPhone and 1640 pixels for
 iPad, and checks orientation and screen aspect ratio. Supply the full actual
 screen, not a crop or a device-frame composite. Image checks cannot establish
@@ -75,6 +93,9 @@ resolve relative to that JSON. Supply every panel under both `iphone` and
 `ipad`; enter the real `buildNumber`. Record release commit, marketing version,
 device/OS, capture date and demo-data source in `captureProvenance`. Set
 `currentBuildConfirmed` and `privacyReviewed` true only after those checks.
+Entries may be file strings or objects containing `file` and caption overrides.
+For the revised iPhone set, retain the approved AI Coach and training-plan copy
+using the object form; a file string alone uses the default panel's copy.
 
 From `brand/app-store`:
 
@@ -87,6 +108,13 @@ node validate-gallery.mjs
 The current input example is the schema of record. Inspect the generated
 manifest and every image at full size and thumbnail size. Composition is a
 candidate for final review; it does not grant submission approval.
+
+For local review only, `npm run render -- --review-input /path/to/private/review-input.json`
+accepts sparse panel replacements and the supplied 588 × 1280 portrait /
+1280 × 588 landscape JPEGs. It preserves their pixels and orientation inside
+the gallery, labels the unknown build and keeps the other panels as previews.
+This mode does not relax the full-release capture requirements or establish
+submission readiness.
 
 ## Acceptance
 

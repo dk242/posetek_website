@@ -1,11 +1,16 @@
 # Taiyo — PoseTek App Store handoff
 
-Prepared September 18, 2026 for **taiyow@posetek.net**.
+Updated September 19, 2026 for **taiyow@posetek.net**.
 
 The official lime-green P icon, revised six-image gallery and English (US)
-listing copy are prepared for integration. **The gallery currently contains
-source-derived previews, not upload-ready native screenshots.** The signed iOS
+listing copy are prepared for integration. **Revision 3 combines five supplied
+iPhone app screenshots with seven source-derived previews; it is not ready for
+App Store upload.** Supplied JPEGs are reduced resolution and their build is
+unknown. The signed iOS
 build and final App Store Connect application remain your release steps.
+
+Revision 2 was emailed previously. Revision 3 is a local review update, with no
+new email delivery implied. See [SCREENSHOT_UPDATE.md](SCREENSHOT_UPDATE.md).
 
 ## Open the package
 
@@ -21,17 +26,24 @@ integration arrive in separate attachments, extract both into that directory.
 | iPhone gallery | `brand/app-store/output/iphone-01-evidence.png` through `iphone-06-retest.png` | Six 1320 × 2868 review layouts |
 | iPad gallery | `brand/app-store/output/ipad-01-evidence.png` through `ipad-06-retest.png` | Six 2064 × 2752 review layouts |
 | Listing copy | `brand/app-store/metadata.json` | Copy from fields or review-page buttons |
-| Capture requirements | `brand/app-store/capture-brief.md` | Twelve genuine captures needed |
+| Capture requirements | `brand/app-store/capture-brief.md` | Twelve full-resolution, verified release captures needed |
 | Native integration patch | `native/0001-Brand-adopt-the-official-PoseTek-P-app-icon-and-disp.patch` | Reviewed Git patch, including the binary icon |
 | Native asset notes | `native/README.md` | Scope and Xcode/device verification |
 | Provenance/references | `brand/app-store/output/gallery-manifest.json`, `brand/app-store/DESIGN_REFERENCES.md` | Asset/capture status and sources |
 
-The email handoff uses two complementary archives:
+The historical revision 2 email handoff uses two complementary archives:
 `posetek-app-store-handoff-v2.zip` contains artwork and documentation;
 `posetek-app-store-integration-v2.zip` contains the editable generator and native
 patch. The combined `posetek-app-store-full-source-v2.zip` also includes
 outlined SVG exports and the contact sheet. Use the archive manifest/checksums
 to verify the received package before integration.
+
+The local revision 3 packages use the same names with `v3` in place of `v2`.
+Extract matching versions together. Revision 3 integration/full packages include
+the five privately supplied screenshots and a relative review-input index.
+The AI Coach screenshot contains a visible player name; confirm its approved
+release use or replace it before external distribution. The supplied images
+are not in public Git, and the name is not repeated in these documents.
 
 Full editable source is on
 [the website brand branch](https://github.com/dk242/posetek_website/tree/codex/official-brand-icon/brand/app-store).
@@ -87,13 +99,23 @@ existing app record. Confirm the processed build's icon in TestFlight.
 Xcode; changing a published icon requires a new app version and review.
 [Apple icon workflow](https://developer.apple.com/help/app-store-connect/manage-app-information/add-an-app-icon).
 
-## 2. Replace gallery previews with genuine captures
+## 2. Complete the mixed gallery with release captures
 
-The revised previews follow native navigation and styling, use small Fluent
-emoji caption accents, and replace the previous 14-point pose with recorded
-33-landmark poses and all 35 canonical connections. They remain illustrations.
+The remaining source previews follow native navigation and styling and use
+recorded 33-landmark poses with 35 canonical connections. Small Fluent emoji
+remain marketing-caption accents. The five new iPhone panels contain the user's
+actual supplied screenshots, preserving their UI and pose rendering; these
+images are not verified current-build captures.
 
-Follow [capture-brief.md](capture-brief.md) to capture the intended build:
+The revised iPhone story is Profile skill map, Drills, landscape left/right
+shooting comparison, AI Coach, Training plan overview, then the existing
+source-derived retest preview. Panel 04's copy now describes AI Coach and panel
+05's copy describes the training plan. Their reduced-resolution files support
+local review, not final upload. The iPad gallery remains source-derived.
+
+Follow [capture-brief.md](capture-brief.md) to capture the intended build. The
+default gallery sequence below remains the baseline for iPad; keep the revised
+iPhone screen/caption pairings above when preparing its final capture set:
 
 1. Profile overview.
 2. Drills chooser.
@@ -120,9 +142,19 @@ node validate-gallery.mjs
 Prepare `gallery-input.local.json` from the example, with all twelve file paths,
 actual build identity, capture provenance and completed checks. The `--input`
 path checks the supplied capture set; there is no separate `--strict` flag.
+It accepts file strings or objects with `file` and caption overrides. Preserve
+the revised iPhone AI Coach/Training copy with those objects when replacing its
+images with final-resolution captures; string-only entries use baseline copy.
 Review every export and the manifest. Its `submissionReady: false` is
 intentional: image generation cannot establish Apple eligibility or replace
 final release review. Do not simply remove preview labels from illustrations.
+
+To reproduce revision 3 for local review, use
+`npm run render -- --review-input /path/to/private/review-input.json` instead.
+That mode supports sparse replacements and per-panel captions; it does not
+declare the supplied images to be the release build. The integration/full
+archive includes a relative review-input index with the original five files.
+Do not set release-confirmation fields merely to bypass the strict path.
 
 ## 3. Apply the English (US) listing copy
 

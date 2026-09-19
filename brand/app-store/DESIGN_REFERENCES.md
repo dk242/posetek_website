@@ -1,7 +1,7 @@
 # Gallery design references and pose provenance
 
-Reviewed September 18, 2026. PoseTek's existing brand and native source are the
-primary references. The user approved recorded homepage poses and small emoji
+Updated September 19, 2026. PoseTek's existing brand, native source and five
+supplied app screenshots are the primary references. The user approved recorded homepage poses and small emoji
 accents. External references guide presentation; they do not supply PoseTek
 features, metrics, photographs, copied screens or endorsements.
 
@@ -11,6 +11,7 @@ features, metrics, photographs, copied screens or endorsements.
 | --- | --- | --- |
 | [PoseTek website](https://posetek.net/) and `MarketingHeader.tsx` / `home.scss` | Official lime P, evergreen canvas, condensed athletic headings and test → review → train → retest narrative | Preserve actual identity and documented claims |
 | Native `posetek-mobile-app` at `944177b` | Actual tabs, two-column drill chooser, profile/skill-map structure, landscape analysis, workout and history screens | Source-derived preview is not a release-build capture |
+| Five user-supplied screenshots, revision 3 | Exact app pixels for iPhone profile, Drills, left/right shooting comparison, AI Coach and Training overview | Reduced-resolution JPEGs; build unknown; no public source inclusion |
 | [Runna features](https://www.runna.com/features) | One clear workout action at a time; readable plan/instruction hierarchy and device presentation | Do not import Runna features, pricing, results or graphics |
 | [Nike Training Club](https://www.nike.com/ntc-app) | Athletic editorial rhythm and decisive, short headings around the product | No Nike photography, branding or copied layouts/assets |
 | [Strava Training Log](https://support.strava.com/en-us/articles/15402077-training-log) | Legible chronological results and progress context | No copied charts/data or implied integrations |
@@ -49,6 +50,23 @@ layout. `TrainingHub/WorkoutPlayerView.swift` and `WorkoutNowCard.swift`
 establish the guided session. The user's request changes gallery presentation,
 not native feature behavior.
 
+## Supplied screenshot revision
+
+Revision 3 replaces iPhone panels 01–05 with supplied screenshots; panel 06 and
+all iPad images remain source-derived previews. Photo 1 is a 1280 × 588
+landscape left/right shooting-pose comparison with an actual guided walkthrough.
+Photos 2–5 are 588 × 1280 portrait views. The AI Coach and Training captions
+describe the supplied screens rather than the previous skill-map/workout
+illustrations. See [SCREENSHOT_UPDATE.md](SCREENSHOT_UPDATE.md) for the mapping.
+
+Do not repaint, recreate or add landmarks inside these native screenshots. Their
+visible UI is stronger evidence for this revision than the authored reconstructions,
+but the supplied images do not establish a release version or full-resolution
+capture provenance. Keep a visible walkthrough label; it must not become a
+claim that a depicted result is a live measured rep. The AI Coach image includes
+a visible player name requiring a release privacy check. Neither that name nor
+the private image is placed in public source documentation.
+
 ## All 33 landmarks
 
 The source index is MediaPipe Pose's 33-landmark order, also represented in
@@ -75,7 +93,7 @@ documents the model.
 | 29–30 | Left and right heel |
 | 31–32 | Left and right foot index |
 
-The renderer must retain all 33 valid points and the canonical 35 edges. Do not
+For generated pose illustrations, the renderer must retain all 33 valid points and the canonical 35 edges. Do not
 omit face/hands/feet, substitute a stick figure, independently stretch axes or
 invent missing points. A 33-slot array can be padded COCO-17 data in native
 `SessionViewer/PoseSkeleton.swift`; source schema and validity matter.
@@ -97,7 +115,9 @@ projection hashes, landmark/connection counts, emoji source and capture status.
 
 These public files are prepared from authorized source recordings. Their depth
 is estimated, not a calibrated scan. The gallery uses sanitized derived
-coordinates, not private athlete names, raw videos or cloud account data.
+coordinates, not private athlete names, raw videos or cloud account data. This
+statement describes the sanitized pose source; a supplied screenshot may
+contain visible account text and is handled separately as private review input.
 Uniform fitting preserves the recorded geometry; no new analysis is performed.
 
 Root `index.html` loads the marketing application. It is not the bucket
@@ -116,8 +136,10 @@ connection map must not be painted onto a capture to misrepresent native UI.
 
 ## Release honesty and licenses
 
-Preserve preview labeling until actual captures replace the illustrated device
-screens. A pose sourced from a real recording does not make the surrounding
+Preserve distinct labels for supplied screenshots of unknown build and
+source-derived previews. The first five revised iPhone images are supplied
+screenshots, not generated UI, and the remaining seven images are previews.
+Neither status grants submission readiness. A pose sourced from a real recording does not make the surrounding
 authored UI a screenshot. Current dimensions and provenance are in
 `output/gallery-manifest.json`; capture instructions are in
 [capture-brief.md](capture-brief.md).

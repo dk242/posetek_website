@@ -1,6 +1,8 @@
 # PoseTek App Store presentation
 
-Prepared September 18, 2026 from PoseTek Project 2.0 and `posetek-mobile-app`.
+Updated September 19, 2026 from PoseTek Project 2.0, `posetek-mobile-app` and
+five user-supplied app screenshots. Revision 3 is a local review update; the
+previously emailed revision 2 remains a historical delivery.
 Start with [Taiyo's implementation handoff](TAIYO_HANDOFF.md): it identifies
 the assets to integrate and the remaining release checks.
 
@@ -11,11 +13,12 @@ the assets to integrate and the remaining release checks.
 | Official app icon | `../../images/brand/posetek-app-icon-1024.png` | Opaque RGB 1024 × 1024 PNG for the native AppIcon catalog |
 | Reusable app photo | `../../images/brand/posetek-app-photo-1024.jpg` | JPEG for general brand use; not a standalone TestFlight icon update |
 | Editable icon | `../../images/brand/posetek-app-icon.svg` | Outlined vector master; accompanying Inter license |
-| Six-slide gallery | `output/iphone-*.png`, `output/ipad-*.png` | Source-derived review previews; genuine release-build captures still required |
+| Six-slide gallery | `output/iphone-*.png`, `output/ipad-*.png` | Mixed review: five supplied iPhone screenshots; remaining iPhone panel and all iPad panels are source-derived previews |
 | Editable gallery | `gallery.mjs`, `gallery-content.json`, generated `source/` | Repeatable compositor and outlined SVG exports |
 | Listing copy | `metadata.json` | English (US) draft to check against the intended binary and account |
 | Review | `index.html`, `output/gallery-review.html`, `output/contact-sheet.png` | Main review, standalone gallery and visual overview |
 | Evidence | `output/gallery-manifest.json`, [design references](DESIGN_REFERENCES.md) | Capture/pose provenance and external design references |
+| Screenshot revision | [SCREENSHOT_UPDATE.md](SCREENSHOT_UPDATE.md) | Photo mapping, resolution/build limitations and local reproduction |
 
 This is the screenshot sequence beneath an app listing, not a PowerPoint or
 app-preview video. Generated files and private capture inputs are ignored by
@@ -33,8 +36,12 @@ Older documentation mentioning Stats/Sessions is superseded by
 [Runna, Nike and Strava](DESIGN_REFERENCES.md) inform presentation hierarchy,
 athletic headlines and readable results. Microsoft Fluent Flat emoji are small
 marketing-caption accents outside the native interface. Sanitized homepage
-poses supply all 33 landmarks and the 35 canonical connections, including face,
-hands and feet. Exports contain no live storage URLs or private recordings.
+poses supply all 33 landmarks and the 35 canonical connections in the generated
+pose illustrations. Supplied screenshots preserve the app's actual rendering;
+no extra joints are painted onto them. Exports contain no live storage URLs or
+raw source recordings. The supplied AI Coach image contains a visible player
+name that needs review before external release; it is not copied into public
+source or documentation.
 
 Website reference: `61ef7cc`; native reference: `944177b`. Source demonstrates
 code, not what a currently installed build contains. Keep all claims tied to the
@@ -62,7 +69,22 @@ Serve the repository root with `python -m http.server 4186 --bind 127.0.0.1`,
 then open `http://127.0.0.1:4186/brand/app-store/`. The exported
 `output/gallery-review.html` also opens directly as a local file.
 
-For genuine captures, copy `gallery-input.example.json` to the ignored
+The command above reproduces the all-illustration baseline. To reproduce the
+mixed revision 3 review, use its private sparse input:
+
+```sh
+npm run render -- --review-input /path/to/private/review-input.json
+node validate-gallery.mjs
+```
+
+Review mode accepts the supplied lower-resolution JPEGs and leaves missing
+panels as labeled source-derived previews. It records unknown build provenance
+without treating the images as current-release captures. See
+[SCREENSHOT_UPDATE.md](SCREENSHOT_UPDATE.md) for the five replacements and
+caption changes. The low resolution does not block local visual review; obtain
+full-resolution originals and verify the build before Apple submission.
+
+For verified release captures, copy `gallery-input.example.json` to the ignored
 `gallery-input.local.json`, supply all six files for both families, and record
 the actual build, capture provenance and completed checks:
 
@@ -84,9 +106,14 @@ and native asset README:
 python package-delivery.py --native-patch /path/to/native-icon.patch --native-readme /path/to/native/README.md --output-dir /path/to/delivery
 ```
 
-The script creates artwork/handoff and editable-integration archives for email,
-plus a combined full-source archive, with package manifests and checksum checks.
-Extract both email archives into the same directory before using the handoff.
+The default preserves version 2 packaging. To package the local screenshot
+revision, add `--version v3 --review-input /path/to/private/review-input.json`.
+The script creates artwork/handoff, editable-integration and combined full-source
+archives with manifests and checksum checks. Revision 3 is prepared locally;
+this update does not resend it to Taiyo. Its integration/full packages include
+the five supplied files and a relative input index, so keep those packages
+private until the visible-name review is complete. Extract matching artwork
+and integration archives into the same directory; do not mix versions.
 
 ## Native icon and publication
 

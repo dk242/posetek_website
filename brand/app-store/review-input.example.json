@@ -1,0 +1,13 @@
+{
+  "captureProvenance": "User-supplied screenshots for local design review; build and privacy status unverified.",
+  "iphone": {
+    "01-evidence": "screenshot-input/review/profile.jpg",
+    "03-replay": {
+      "file": "screenshot-input/review/comparison-landscape.jpg",
+      "headline": ["COMPARE", "BOTH SIDES."],
+      "description": "See the movement and metrics behind a left-and-right shooting comparison.",
+      "eyebrow": "LOOK AT THE MOVEMENT TOGETHER",
+      "screenTitle": "Shooting comparison"
+    }
+  }
+}
