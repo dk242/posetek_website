@@ -17,6 +17,14 @@ real release-build captures replace them. App Store Connect currently requires
 user sign-in; no listing update or release is claimed. See the package README
 for verified links, metadata, capture requirements and handoff.
 
+The follow-up gallery revision uses all 33 recorded MediaPipe landmarks and the
+canonical connection map, native bottom-tab navigation and landscape session
+analysis. Runna, Nike Training Club and Strava provide bounded presentation
+references; locally vendored Microsoft Fluent Flat emoji are caption accents.
+`brand/app-store/TAIYO_HANDOFF.md` documents the icon patch, release captures and
+App Store Connect steps for Taiyo. This remains an artwork/source handoff, not
+a published app release or a claim that illustrated previews are native captures.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published

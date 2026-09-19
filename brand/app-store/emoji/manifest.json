@@ -1,0 +1,50 @@
+{
+  "style": "Flat",
+  "repository": "https://github.com/microsoft/fluentui-emoji",
+  "commit": "1ffb34c752ecf5d402f04cfb4b392c77f57c54bc",
+  "license": "MIT",
+  "assets": [
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Soccer%20ball/Flat/soccer_ball_flat.svg",
+      "sha256": "ca792d91995ac20dc37be0c1bd1f9f46d2f7ea4aea3bd4d0c69df1083bd641c9",
+      "id": "soccer_ball",
+      "name": "Soccer ball",
+      "file": "soccer_ball.svg"
+    },
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Stopwatch/Flat/stopwatch_flat.svg",
+      "sha256": "03b819a4446c972580f540caea53a540e05db5d730d44d7dbad30af2c4bbeec8",
+      "id": "stopwatch",
+      "name": "Stopwatch",
+      "file": "stopwatch.svg"
+    },
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Magnifying%20glass%20tilted%20left/Flat/magnifying_glass_tilted_left_flat.svg",
+      "sha256": "cf4a65dfcb94629dba30c3df32077fe35c500b2d5609b08d9fc1532e016952bb",
+      "id": "magnifying_glass_tilted_left",
+      "name": "Magnifying glass tilted left",
+      "file": "magnifying_glass_tilted_left.svg"
+    },
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Bullseye/Flat/bullseye_flat.svg",
+      "sha256": "900e8499bc4fb16ecd606d60f6cee4907aeccc0503d2679c5d22735a351b0d4e",
+      "id": "bullseye",
+      "name": "Bullseye",
+      "file": "bullseye.svg"
+    },
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Calendar/Flat/calendar_flat.svg",
+      "sha256": "a3840f324bdf1ddcb7001d2f238f438760934d24ce368129184f1f1e7ff915c9",
+      "id": "calendar",
+      "name": "Calendar",
+      "file": "calendar.svg"
+    },
+    {
+      "sourceUrl": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Chart%20increasing/Flat/chart_increasing_flat.svg",
+      "sha256": "a306f410105d146d616d5c8e86032c2abe25195ab3e0734746ca05d88855e9d8",
+      "id": "chart_increasing",
+      "name": "Chart increasing",
+      "file": "chart_increasing.svg"
+    }
+  ]
+}

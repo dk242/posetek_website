@@ -1,128 +1,110 @@
 # PoseTek App Store presentation
 
-Prepared September 18, 2026 from the PoseTek Project 2.0 website and native app.
-This package contains the new official P icon, an editable six-panel gallery,
-and App Store copy. It is not a claim that the App Store or TestFlight has been
-updated.
+Prepared September 18, 2026 from PoseTek Project 2.0 and `posetek-mobile-app`.
+Start with [Taiyo's implementation handoff](TAIYO_HANDOFF.md): it identifies
+the assets to integrate and the remaining release checks.
 
-## Deliverables and status
+## Package contents
 
-- **Icon:** `../../images/brand/posetek-app-icon-1024.png` is the opaque RGB
-  1024 × 1024 native icon; the adjacent SVG is the outlined master and JPG is
-  the requested reusable app photo. The isolated native branch has the PNG in
-  its existing AppIcon catalog.
-  The same native commit sets the installed app's display label to PoseTek.
-- **Gallery:** six branded review layouts with source-grounded sample interfaces.
-  Exports are visibly labeled previews. Fresh native captures are required
-  before App Store upload; see `capture-brief.md` and the export manifest.
-- **Copy:** `metadata.json` contains the name, subtitle, promotional text,
-  description, keyword list, links and conditional release note. Null fields
-  remain unresolved account facts, not blank values to overwrite in Connect.
-- **Publication:** App Store Connect opened to the Apple sign-in screen in Edge.
-  No account record, version, permissions or existing metadata could yet be
-  inspected. No metadata was saved, screenshots uploaded, review submitted or
-  iOS build archived/uploaded by this task.
-
-## Editorial and visual direction
-
-The user chose PoseTek's existing identity. The dominant source is the public
-website: evergreen #04130E, lime #B7F34A, offwhite #F0F5ED, Inter body text and
-Barlow Condensed headings. The story moves from testing to evidence, a training
-focus, a guided session and retesting. The native repository supplies the feature
-definitions. Keep the product's exact spelling **PoseTek** in customer copy;
-KickAI remains the existing internal Xcode project and bundle identity.
-
-| Decision | Source | Purpose |
+| Item | Location | Status and use |
 | --- | --- | --- |
-| P badge and three exact colors | `MarketingHeader.tsx`, `home.scss` | Honor the user's selected existing logo |
-| Test → review → train → retest | `HomePage.tsx`, live `https://posetek.net/` | Explain the whole player-development journey |
-| Six drill names and movement playback | Native `docs/ARCHITECTURE.md` | Describe implemented functionality accurately |
-| Workout instructions, sets and rest | Native `WorkoutPlayerView.swift` | Show a practical training action |
-| No promised gains or invented real athletes | User's project context and Apple accurate-metadata rules | Keep the promotional claims grounded |
-| Preview labels until captures exist | Native-capture audit and `MOBILE_APP_SHOWCASE.md` | Distinguish authored layouts from release screenshots |
+| Official app icon | `../../images/brand/posetek-app-icon-1024.png` | Opaque RGB 1024 × 1024 PNG for the native AppIcon catalog |
+| Reusable app photo | `../../images/brand/posetek-app-photo-1024.jpg` | JPEG for general brand use; not a standalone TestFlight icon update |
+| Editable icon | `../../images/brand/posetek-app-icon.svg` | Outlined vector master; accompanying Inter license |
+| Six-slide gallery | `output/iphone-*.png`, `output/ipad-*.png` | Source-derived review previews; genuine release-build captures still required |
+| Editable gallery | `gallery.mjs`, `gallery-content.json`, generated `source/` | Repeatable compositor and outlined SVG exports |
+| Listing copy | `metadata.json` | English (US) draft to check against the intended binary and account |
+| Review | `index.html`, `output/gallery-review.html`, `output/contact-sheet.png` | Main review, standalone gallery and visual overview |
+| Evidence | `output/gallery-manifest.json`, [design references](DESIGN_REFERENCES.md) | Capture/pose provenance and external design references |
 
-Website reference: `61ef7cc`; native reference: `944177b`. Source confirms code,
-not the currently installed App Store/TestFlight build. Do not add unreleased
-testing remediation, expanded Insights, provisional estimates, medical claims,
-free/unlimited claims, or paid-plan terms without checking the actual release.
+This is the screenshot sequence beneath an app listing, not a PowerPoint or
+app-preview video. Generated files and private capture inputs are ignored by
+Git. Authored source, licensed assets and documentation belong in the shared
+[website source branch](https://github.com/dk242/posetek_website/tree/codex/official-brand-icon/brand/app-store).
 
-## Review and reproduce
+## Visual and product sources
 
-From `brand/app-store`, run `npm ci` then `npm run render`. This writes six
-1320 × 2868 iPhone PNGs, six 2064 × 2752 iPad PNGs, a contact sheet, standalone
-gallery review HTML, a manifest and outlined SVG exports. Generated `output/`
-and `source/` files stay outside Git. Font assets and their licenses are included.
-`node export-icon.mjs` regenerates both raster icon formats from the SVG master.
+The exterior follows PoseTek's existing evergreen `#04130E`, lime `#B7F34A`,
+off-white `#F0F5ED`, Inter and Barlow Condensed identity. Native source determines
+the device UI, including **Profile, AI Coach, Drills, Training, Leaderboards**.
+Older documentation mentioning Stats/Sessions is superseded by
+`CoachPlayerView.swift`. Confirm real iPad adaptation on the release build.
 
-The full review page is `brand/app-store/index.html`. Serve the repository root
-locally, for example with `python -m http.server 4186 --bind 127.0.0.1`, then open
-`http://127.0.0.1:4186/brand/app-store/`. It displays the icon, device-specific
-gallery and copy buttons for every prepared text field. The standalone exported
-gallery page at `output/gallery-review.html` also opens directly as a local file.
+[Runna, Nike and Strava](DESIGN_REFERENCES.md) inform presentation hierarchy,
+athletic headlines and readable results. Microsoft Fluent Flat emoji are small
+marketing-caption accents outside the native interface. Sanitized homepage
+poses supply all 33 landmarks and the 35 canonical connections, including face,
+hands and feet. Exports contain no live storage URLs or private recordings.
 
-For native screenshots, copy `gallery-input.example.json` to the ignored
-`gallery-input.local.json`, point its fields at the twelve genuine device
-captures, record the actual build/provenance and completed capture checks, then
-run `npm run render -- --input gallery-input.local.json`. Incomplete capture sets
-are rejected. The manifest distinguishes supplied device captures from preview
-illustrations and always requires final release review; supplying files does
-not by itself establish App Store eligibility.
+Website reference: `61ef7cc`; native reference: `944177b`. Source demonstrates
+code, not what a currently installed build contains. Keep all claims tied to the
+chosen release; no promised gains, medical claims, free/unlimited terms or
+unverified recent features. See the [capture brief](capture-brief.md).
 
-## Applying the package in App Store Connect
+## Reproduce and review
 
-After sign-in, identify the existing KickAI/PoseTek record by its app ID and
-bundle identifier (`Nolan-Jetter.KickAI` in the inspected source). Preserve its
-existing record, SKU, bundle ID and live commercial settings. Capture the
-current editable metadata for rollback, then apply the prepared copy only to
-the intended editable locale/version. Name availability and field editability
-must be checked in the account. Preserve other locales.
+From `brand/app-store`, using Node.js 22.18 or later:
 
-The name/subtitle, description, keywords and promotional text were prepared for
-English (US). The suggested categories are proposals, not saved selections.
-The icon appears in TestFlight after a new signed build is uploaded and processed;
-it is not independently replaced by uploading the JPEG.
+```sh
+npm ci
+npm run render
+node validate-gallery.mjs
+```
 
-The existing public privacy page was rendered and verified at
-`https://posetek.net/privacy`; its contact section lists `support@posetek.app`.
-`https://posetek.net/coaches` exposes `dylank@posetek.net`. A dedicated technical
-support URL was not verified, and the ownership/monitoring of those inboxes was
-not tested. Retain the existing valid Support URL if present, or establish an
-appropriate public support page before saving a replacement.
+This creates six 1320 × 2868 iPhone images, six 2064 × 2752 iPad images,
+outlined SVG exports, contact sheet, review HTML and manifest. The validator
+writes `output/gallery-validation.json`; `output/pose-reference-sheet.png`
+shows all three recorded poses for visual QA. Review the images after rendering.
+`node export-icon.mjs` regenerates the raster icon
+formats from the SVG master.
 
-## Remaining record-specific requirements
+Serve the repository root with `python -m http.server 4186 --bind 127.0.0.1`,
+then open `http://127.0.0.1:4186/brand/app-store/`. The exported
+`output/gallery-review.html` also opens directly as a local file.
 
-Inspect and preserve or deliberately update these once the account is available:
+For genuine captures, copy `gallery-input.example.json` to the ignored
+`gallery-input.local.json`, supply all six files for both families, and record
+the actual build, capture provenance and completed checks:
 
-- Legal copyright holder, app name availability and exact version/locale.
-- Existing support URL, pricing, availability, categories and purchase terms.
-- App Privacy and age-rating answers based on actual collection, third-party
-  practices and app content. Marketing copy cannot establish these answers.
-- Review contact, any required reviewer sign-in account, and accurate setup
-  instructions for recording tests; do not put credentials in this repository.
-- Current release build, device support, icon, screenshots and applicable
-  export-compliance/content-rights declarations.
+```sh
+npm run render -- --input gallery-input.local.json
+```
 
-No optional app-preview video was fabricated: a real preview should be captured
-from the release app if desired. A video is not required to use this screenshot
-gallery. A new agreement or unsupported declaration must not be guessed.
+This is the strict capture-input path; there is no separate `--strict` switch.
+Follow the current example and [capture brief](capture-brief.md).
+**03-replay requires landscape analysis captures**; the other screens use
+portrait captures. The final store canvases remain portrait. A supplied file
+does not prove a genuine release screenshot. The manifest keeps final
+submission readiness false pending review.
 
-## Native release
+After rendering, reproduce the delivery archives with the supplied native patch
+and native asset README:
 
-The mobile worktree is on `worktree-posetek-official-icon`, commit `d09151a`,
-based on main `944177b`, under the PoseTek Project 2.0 project's ignored
-asset-worktree folder.
-Integrate its icon commit into the chosen native release, keeping the independent
-testing-audit and privacy changes. Follow `docs/brand/README.md` there for the
-Mac `scripts/validate.sh compile-device`, iPhone/iPad checks and signed upload.
-Windows cannot run the Xcode release workflow. Asset validation is not a native
-build or installed-device test.
+```sh
+python package-delivery.py --native-patch /path/to/native-icon.patch --native-readme /path/to/native/README.md --output-dir /path/to/delivery
+```
 
-## Apple references
+The script creates artwork/handoff and editable-integration archives for email,
+plus a combined full-source archive, with package manifests and checksum checks.
+Extract both email archives into the same directory before using the handoff.
 
-- [App icon workflow](https://developer.apple.com/help/app-store-connect/manage-app-information/add-an-app-icon)
-- [Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)
-- [App information fields](https://developer.apple.com/help/app-store-connect/reference/app-information/app-information)
-- [Platform metadata limits and support URL](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information)
-- [Accurate metadata](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata)
-- [App Privacy](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy)
-- [Age rating questionnaire](https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating)
+## Native icon and publication
+
+Local native commit `d09151ae4f1146b8dfa76327b068c5907d22c8b0`, on
+`worktree-posetek-official-icon`, is based on `944177b` and is not pushed to the
+native remote. The delivery includes a patch for Taiyo to review and integrate
+into the selected Mac release branch. It updates the AppIcon PNG and installed
+display name to PoseTek while preserving bundle identity. Separate testing-audit
+and privacy/security work retain their own integration and verification process.
+
+Apple gets the icon from the signed build. Updating an already published icon
+requires a new version and review; a standalone JPEG cannot replace it.
+See [Apple's icon workflow](https://developer.apple.com/help/app-store-connect/manage-app-information/add-an-app-icon)
+and [Taiyo's handoff](TAIYO_HANDOFF.md).
+
+Account-specific facts remain to be checked: app record/version, name
+availability, Support URL, copyright, categories, privacy, age rating, review
+contact and release configuration. Null fields in `metadata.json` mean unknown
+facts, not instructions to clear existing fields. The earlier account attempt
+reached Apple sign-in; no listing edits, screenshots, build or review submission
+were made by that attempt.

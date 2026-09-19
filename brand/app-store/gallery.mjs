@@ -11,20 +11,28 @@ import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import * as fontkit from 'fontkit';
 import sharp from 'sharp';
+import { recordedPoses, POSE_EDGES, poseSVG } from './pose.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const OUT = path.join(ROOT, 'output');
 const SOURCE = path.join(ROOT, 'source');
-const C = { bg:'#04130e', lime:'#b7f34a', ink:'#f0f5ed', muted:'#a9bdb1', line:'#254036', panel:'#102b20', deep:'#082015', nativeLime:'#7cff18' };
+const C = { bg:'#04130e', lime:'#b7f34a', ink:'#f0f5ed', muted:'#a9bdb1', line:'#254036', panel:'#122e23', deep:'#041610', nativeLime:'#7cff18', nativeTab:'#081816', nativeAccent:'#38aa6a' };
 const content = JSON.parse(fs.readFileSync(path.join(ROOT, 'gallery-content.json'), 'utf8'));
 const officialIconPath=path.resolve(ROOT,'../../images/brand/posetek-app-icon.svg');
 const officialIconInner=fs.readFileSync(officialIconPath,'utf8').replace(/^[\s\S]*?<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'');
 const inputIndex = process.argv.indexOf('--input');
 const inputPath = inputIndex >= 0 ? path.resolve(process.argv[inputIndex + 1] || '') : null;
 const supplied = inputPath ? JSON.parse(fs.readFileSync(inputPath, 'utf8')) : null;
+if(supplied&&(!supplied.iphone||!supplied.ipad))throw new Error('Provide complete iPhone and iPad capture sets together; all 12 captures are required.');
 const fonts = {};
 const copiedLicenses = new Set();
+const emojiManifest=JSON.parse(fs.readFileSync(path.join(ROOT,'emoji/manifest.json'),'utf8'));
+const emojiAssets=Object.fromEntries(emojiManifest.assets.map(asset=>{
+  const buffer=fs.readFileSync(path.join(ROOT,'emoji',asset.file));
+  if(createHash('sha256').update(buffer).digest('hex')!==asset.sha256)throw new Error(`Emoji checksum mismatch: ${asset.file}`);
+  return [asset.id,buffer.toString('base64')];
+}));
 
 for (const [name, family, weight] of [['body','inter',400],['medium','inter',600],['bold','inter',700],['black','inter',900],['display','barlow-condensed',700],['mono','ibm-plex-mono',500]]) {
   const packageRoot = path.dirname(require.resolve(`@fontsource/${family}/package.json`));
@@ -53,6 +61,7 @@ const textWidth=(value,size=16,font='body',tracking=0)=>{
 };
 function text(value,x,y,size=16,color=C.ink,font='body',anchor='start',tracking=0) {
   const face=fonts[font],run=face.layout(String(value)),scale=size/face.unitsPerEm;
+  if(run.glyphs.some(glyph=>glyph.id===0))throw new Error(`Unsupported glyph in ${font}: ${value}`);
   const width=textWidth(value,size,font,tracking);
   let cursor=anchor==='middle'?-width/2:anchor==='end'?-width:0;
   let result=`<g aria-label="${esc(value)}" fill="${color}">`;
@@ -85,6 +94,18 @@ function icon(kind,x,y,size=26,color=C.nativeLime) {
     cone:'M5 22L12 3l7 19ZM8 14h8M6 20h12',
     chart:'M3 3v19h20M7 17l5-6 4 2 5-8',
     check:'M5 13l5 5L22 5',
+    sparkle:'M13 2l3 8 8 3-8 3-3 8-3-8-8-3 8-3ZM22 2v5M19.5 4.5h5',
+    previous:'M4 5v17M21 5L7 13l14 9Z',
+    play:'M6 3l17 10L6 23Z',
+    next:'M22 5v17M5 5l14 8-14 9Z',
+    replay:'M7 7a9 9 0 1 1-2 11M3 3v8h8',
+    video:'M3 6h13v15H3ZM16 11l7-4v15l-7-4',
+    settings:'M12 7a6 6 0 1 0 .01 0M12 2v3M12 22v3M2 13h3M22 13h3M4 5l2 2M20 21l2 2M4 21l2-2M20 5l2-2',
+    person:'M13 4a4 4 0 1 0 .01 0M4 25v-3a9 9 0 0 1 18 0v3',
+    brain:'M13 4C2 0-2 22 10 22M13 4c11-4 15 18 3 18M13 4v20M5 9l5 3-2 5M21 9l-5 3 2 5',
+    list:'M8 6h16M8 13h16M8 20h16M2 6h1M2 13h1M2 20h1',
+    calendar:'M3 5h21v19H3ZM8 2v6M19 2v6M3 11h21M8 16h4M8 21h4',
+    trophy:'M7 3h12v11a6 6 0 0 1-12 0ZM7 6H2v5l5 3M19 6h5v5l-5 3M13 20v4M8 24h10',
   };
   return group(x,y,size/26,`<path d="${paths[kind]||paths.chart}" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`);
 }
@@ -107,12 +128,7 @@ function pitch(x,y,w,h,figure8=false) {
     s+=`<path d="M${x+w*.5} ${y+h*.5}C${x+w*.1} ${y+h*.02} ${x+w*.1} ${y+h*.98} ${x+w*.5} ${y+h*.5}C${x+w*.9} ${y+h*.02} ${x+w*.9} ${y+h*.98} ${x+w*.5} ${y+h*.5}" fill="none" stroke="${C.nativeLime}" stroke-width="3" stroke-dasharray="6 5"/>`;
     s+=icon('cone',x+w*.25-12,y+h*.5-14,25,'#efc575')+icon('cone',x+w*.75-12,y+h*.5-14,25,'#efc575')+circle(x+w*.52,y+h*.42,8,C.ink);
   } else {
-    const points=[[.46,.20],[.45,.31],[.41,.34],[.57,.35],[.33,.44],[.65,.44],[.26,.41],[.73,.39],[.46,.54],[.57,.53],[.40,.69],[.65,.66],[.33,.85],[.75,.77]];
-    const edges=[[0,1],[1,2],[1,3],[2,4],[4,6],[3,5],[5,7],[2,8],[3,9],[8,9],[8,10],[10,12],[9,11],[11,13]];
-    const p=points.map(([a,b])=>[x+w*a,y+h*b]);
-    edges.forEach(([a,b])=>s+=line(...p[a],...p[b],C.ink,3));
-    p.forEach(([a,b],i)=>s+=circle(a,b,i===0?9:3.8,i===0?'none':C.nativeLime,C.nativeLime,i===0?3:0));
-    s+=line(x+w*.45,y+24,x+w*.45,y+h-24,C.nativeLime+'65',1,'4 5');
+    s+=poseSVG('sprint',{x:x+25,y:y+40,width:w-50,height:h-65,padding:9});
   }
   return s;
 }
@@ -120,25 +136,26 @@ function pitch(x,y,w,h,figure8=false) {
 function screenBody(kind) {
   let s='';
   if(kind==='profile') {
-    s+=rect(24,177,342,112,C.panel,22)+circle(67,231,25,C.nativeLime+'18')+text('P',67,241,28,C.nativeLime,'black','middle');
-    s+=text('SAMPLE ATHLETE',109,210,10,C.muted,'mono', 'start',.5)+text('Your next step',109,239,21,C.ink,'bold')+text('starts with your results.',109,260,12,C.muted);
-    s+=text('SKILL MAP',27,322,10,C.muted,'mono','start',.8)+tag('SAMPLE DATA',259,305,106);
-    s+=radar(195,457,98)+line(27,594,363,594);
-    s+=text('Bring your results together',27,627,17,C.ink,'bold');
-    s+=wrap('Explore five skill areas and choose where to focus next.',27,650,330,12).svg;
-    s+=action('Explore your profile',706);
+    s+=text('OVERALL VS D1',27,190,10,C.muted,'bold','start',1)+text('72',27,228,34,C.ink,'black');
+    s+=tag('DEVELOPING',92,206,113)+text('18 reps · 6 sessions',362,218,10,C.muted,'body','end');
+    s+=rect(24,252,342,304,C.panel,24,'#ffffff1a')+text('SKILL MAP',40,277,10,C.muted,'mono');
+    s+=tag('SAMPLE DATA',242,263,108)+radar(195,404,91);
+    s+=rect(24,574,342,171,C.panel,24,'#ffffff1a')+text('Speed',42,607,23,C.ink,'bold')+tag('SELECTED',265,587,84);
+    s+=text('Sprint',42,646,12,C.muted)+text('4.82 s',347,646,17,C.ink,'bold','end');
+    s+=line(42,663,348,663)+text('Illustrative values · scrolled profile',42,694,10,C.muted);
+    s+=text('Review the result behind this skill.',42,720,12,C.ink);
   } else if(kind==='tests') {
-    s+=wrap('Choose a test to record a session or review your results.',27,190,324,14,C.muted).svg;
-    const tests=[['Shooting','ball'],['Sprint','run'],['Vertical jump','jump'],['Broad jump','jump'],['Dribbling','cone'],['Change of','arrow']];
-    tests.forEach(([label,key],i)=>{const x=25+(i%2)*174,y=241+Math.floor(i/2)*149;s+=rect(x,y,165,137,C.panel,19,'#2b4736');s+=icon(key,x+16,y+17,28);s+=text(label,x+16,y+77,14,C.ink,'bold');if(i===5)s+=text('direction',x+16,y+96,14,C.ink,'bold');s+=text('Record / review',x+16,y+119,10,C.muted);});
-    s+=text('SIX PERFORMANCE TESTS',195,727,10,C.nativeLime,'mono','middle',.6);
-  } else if(kind==='replay') {
-    s+=text('Sprint · sample session',27,192,14,C.ink,'bold')+tag('REP 02',286,175,77);
-    s+=pitch(25,220,340,340)+text('SCHEMATIC SAMPLE FRAME',195,249,9,C.muted,'mono','middle',.4);
-    s+=line(43,591,347,591,'#45634b',3)+line(43,591,175,591,C.nativeLime,3)+circle(175,591,6,C.nativeLime);
-    s+=text('00:01.6',28,620,12,C.ink,'mono')+text('Frame by frame',361,620,11,C.muted,'body','end');
-    s+=row('Replay speed','0.5×',662)+row('View','Pose',702);
-    s+=text('Example movement illustration',195,744,10,C.muted,'body','middle');
+    s+=rect(20,178,350,140,'#ffffff21',24,'#ffffff1f');
+    s+=wrap('what would you like to work on?',38,213,260,23,C.ink,'bold',27).svg;
+    s+=wrap('Choose a drill path to start a recording or review progress.',38,278,286,12,C.muted).svg;
+    const tests=[['Shooting','ball'],['Sprint','run'],['Jump','jump'],['Broad Jump','jump'],['Dribbling','cone'],['Change of Direction','arrow'],['Free record','video'],['Drill Settings','settings']];
+    tests.forEach(([label,key],i)=>{
+      const x=20+(i%2)*182,y=336+Math.floor(i/2)*99;
+      s+=rect(x,y,168,85,'#ffffff14',22,'#ffffff1f');
+      s+=circle(x+28,y+29,17,C.nativeAccent+'24')+icon(key,x+17,y+18,22,C.nativeAccent);
+      s+=wrap(label,x+52,y+29,100,12,C.ink,'medium',16).svg;
+      s+=rect(x+13,y+65,22,4,C.nativeAccent,2)+rect(x+41,y+65,112,4,'#ffffff1f',2);
+    });
   } else if(kind==='focus') {
     s+=radar(195,291,87,[.75,.7,.63,.48,.67]);
     s+=rect(24,433,342,278,C.panel,22,'#2b4736')+tag('SELECTED SKILL',42,451,130);
@@ -173,35 +190,69 @@ function screenBody(kind) {
   }
   return s;
 }
+function nativeDefinitions() {
+  return `<defs><linearGradient id="native-bg" x2="1" y2="1"><stop stop-color="#041610"/><stop offset=".5" stop-color="#062016"/><stop offset="1" stop-color="#082417"/></linearGradient><linearGradient id="drills-bg" x2="1" y2="1"><stop stop-color="#091c18"/><stop offset=".5" stop-color="#125638"/><stop offset="1" stop-color="#061012"/></linearGradient><linearGradient id="native-badge"><stop stop-color="#7cff18" stop-opacity=".9"/><stop offset="1" stop-color="#7cff18" stop-opacity=".5"/></linearGradient></defs>`;
+}
+function nativeHeader(width) {
+  return rect(0,50,width,58,C.nativeTab)+rect(14,61,32,32,'url(#native-badge)',8)+text('P',30,83,18,C.deep,'black','middle')+text('POSETEK',57,83,17,C.ink,'black','start',2)+rect(width-139,64,72,26,'#ffffff0d',9,'#ffffff14')+text('Sign Out',width-103,81,10,C.ink,'bold','middle')+rect(width-59,64,45,26,'#ffffff0d',9,'#ffffff14')+text('Home',width-36,81,10,C.ink,'bold','middle')+line(0,107,width,107,'#ffffff1f');
+}
+function nativeTabs(panel,width,y) {
+  const labels=['Profile','AI Coach','Drills','Training','Leaderboards'],keys=['person','brain','list','calendar','trophy'];
+  const selected=panel.screen==='tests'?2:panel.screen==='workout'?3:0;
+  const available=width-28,slot=available/5;
+  let s=rect(0,y,width,87,C.nativeTab)+line(0,y,width,y,'#ffffff1f');
+  labels.forEach((label,i)=>{const x=14+(i+.5)*slot,color=i===selected?C.nativeAccent:'#a0a8a7';
+    if(i===selected)s+=rect(x-slot/2+4,y+10,slot-8,56,C.nativeAccent+'29',16);
+    s+=icon(keys[i],x-10,y+17,20,color)+text(label,x,y+54,Math.min(11,(slot-8)/textWidth(label,1,'medium')),color,'medium','middle');
+  });return s;
+}
 function phoneInterface(panel) {
-  let s=rect(0,0,390,844,'#061b12',40);
+  const workout=panel.screen==='workout';
+  let s=nativeDefinitions()+rect(0,0,390,844,panel.screen==='tests'?'url(#drills-bg)':'url(#native-bg)',40);
   s+=text('9:41',28,33,13,C.ink,'bold')+rect(148,13,94,24,'#020a06',14);
   s+=line(327,26,327,32,C.ink,2)+line(332,23,332,32,C.ink,2)+line(337,20,337,32,C.ink,2)+rect(347,21,20,10,'none',2,C.ink)+rect(349,23,15,6,C.ink,1);
-  s+=logo(24,64,28)+text('PoseTek',63,85,21,C.ink,'bold')+line(24,104,366,104);
+  if(workout)s+=text('‹',20,87,27,C.nativeLime,'bold')+text('Workout',195,84,18,C.ink,'bold','middle')+text('Pause',293,84,12,C.nativeLime,'bold')+text('End',346,84,12,C.ink,'bold');
+  else s+=nativeHeader(390);
   s+=text('SOURCE-DERIVED SAMPLE INTERFACE',25,126,8,C.muted,'mono','start',.3)+text(panel.screenTitle,25,157,21,C.ink,'bold');
   s+=screenBody(panel.screen);
-  const items=['Profile','AI Coach','Drills','Training','Ranks'];
-  s+=line(20,777,370,777);
-  items.forEach((label,i)=>{const active=(panel.screen==='tests'&&i===2)||(panel.screen==='workout'&&i===3)||(['profile','focus','progress','replay'].includes(panel.screen)&&i===0);const x=40+i*77;s+=circle(x,797,3,active?C.nativeLime:C.muted)+text(label,x,814,8,active?C.nativeLime:C.muted,'medium','middle');});
+  // The fullscreen workout has its own controls rather than the Profile tab bar.
+  if(workout)s+=line(20,777,370,777)+text('Previous',27,807,12,C.ink,'bold')+text('Next drill',363,807,12,C.nativeLime,'bold','end');
+  else s+=nativeTabs(panel,390,766);
   s+=rect(137,831,116,4,C.ink,2);
-  return s;
+  return `<defs><clipPath id="phone-screen"><rect width="390" height="844" rx="40"/></clipPath></defs><g clip-path="url(#phone-screen)">${s}</g>`;
 }
 function tabletInterface(panel) {
-  let s=rect(0,0,1200,1044,'#061b12',28)+text('9:41',32,35,13,C.ink,'bold');
-  s+=logo(29,76,36)+text('PoseTek',82,103,27,C.ink,'bold')+line(26,129,1174,129);
-  s+=rect(0,147,240,897,'#071910')+text('WORKSPACE',30,181,10,C.muted,'mono','start',1);
-  ['Profile','AI Coach','Drills','Training','Leaderboards'].forEach((label,i)=>{const y=233+i*68,active=(panel.screen==='tests'&&i===2)||(panel.screen==='workout'&&i===3)||(['profile','focus','progress','replay'].includes(panel.screen)&&i===0);if(active)s+=rect(16,y-29,184,49,C.nativeLime+'15',12);s+=text(label,32,y,15,active?C.nativeLime:C.muted,active?'bold':'medium');});
-  s+=wrap('Source-derived tablet layout. Native iPad capture still required.',30,896,175,12,C.muted).svg;
-  s+=text(panel.screenTitle,286,191,29,C.ink,'bold')+text('SAMPLE INTERFACE · ILLUSTRATIVE DATA',286,219,11,C.muted,'mono');
-  // A wide native-style workspace with an explicit navigation rail, never a stretched phone.
-  s+=group(266,62,1.12,screenBody(panel.screen));
-  s+=line(754,262,754,913,C.line);
-  s+=text('THE NEXT STEP',792,295,12,C.nativeLime,'mono','start',.7);
-  s+=wrap(panel.headline.join(' '),792,347,328,35,C.ink,'display',38).svg;
-  s+=wrap(panel.description,792,486,305,18,C.muted,'body',28).svg;
-  s+=rect(793,717,301,136,C.panel,20)+text('Preview context',813,753,17,C.ink,'bold')+wrap('Illustrative data only. Capture the current native iPad app before submission.',813,785,257,13,C.muted).svg;
-  s+=rect(536,1028,128,4,C.ink,2);
+  const width=768,height=1024,workout=panel.screen==='workout';
+  let s=nativeDefinitions()+rect(0,0,width,height,panel.screen==='tests'?'url(#drills-bg)':'url(#native-bg)',24)+text('9:41',24,30,13,C.ink,'bold');
+  if(workout)s+=text('‹',24,85,28,C.nativeLime,'bold')+text('Workout',width/2,83,18,C.ink,'bold','middle')+text('Pause',644,83,12,C.nativeLime,'bold')+text('End',725,83,12,C.ink,'bold');
+  else s+=nativeHeader(width);
+  s+=text('SOURCE-DERIVED SAMPLE INTERFACE',48,145,11,C.muted,'mono','start',.3)+text(panel.screenTitle,48,188,28,C.ink,'bold');
+  // Preserve the native vertical hierarchy with a centered readable content column.
+  // Responsive iPad sizing remains illustrative until an authentic capture is supplied.
+  s+=group(150,20,1.20,screenBody(panel.screen));
+  if(workout)s+=rect(0,937,width,87,C.nativeTab)+text('Previous',34,975,14,C.ink,'bold')+text('Next drill',734,975,14,C.nativeLime,'bold','end');
+  else s+=nativeTabs(panel,width,937);
+  s+=rect(320,1009,128,4,C.ink,2);
+  return `<defs><clipPath id="tablet-screen"><rect width="768" height="1024" rx="24"/></clipPath></defs><g clip-path="url(#tablet-screen)">${s}</g>`;
+}
+function landscapeAnalysis() {
+  let s=nativeDefinitions()+rect(0,0,844,390,'url(#native-bg)',28);
+  s+=rect(32,12,504,318,'#010b08',22,'#ffffff1f');
+  s+=poseSVG('sprint',{x:56,y:35,width:456,height:267,padding:8},{strokeWidth:1.35,dotRadius:1.6});
+  s+=circle(55,35,12,'#ffffff14')+text('×',55,40,18,C.ink,'medium','middle');
+  s+=rect(548,12,284,366,'#00000033',22,'#ffffff1f')+circle(575,43,14,C.nativeLime)+icon('sparkle',566,34,18,C.deep);
+  s+=text('PoseTek Coach',598,39,14,C.ink,'bold')+text('Technique assistant',598,55,10,C.muted);
+  s+=tag('PREVIEW · AI FEEDBACK COMING SOON',560,70,257);
+  s+=wrap('Source-derived interface preview',565,129,245,13,C.ink,'medium',19).svg;
+  s+=wrap('The recorded sprint pose is shown with all 33 source landmarks. Add a current-build capture for release.',565,181,240,11,C.muted,'body',17).svg;
+  s+=rect(560,325,260,38,'#ffffff0d',14,'#ffffff1f')+text('Ask about this rep…',572,349,12,C.muted);
+  s+=icon('previous',39,345,18,C.ink)+circle(82,354,15,C.nativeLime)+icon('play',73,345,18,C.deep)+icon('next',107,345,18,C.ink)+icon('replay',140,343,22,C.ink);
+  s+=line(175,352,399,352,'#ffffff33',3)+line(175,352,286,352,C.nativeLime,3)+circle(286,352,5,C.nativeLime)+text('Frame 313',288,376,8,C.muted,'mono','middle')+text('0.5×',480,358,12,C.muted,'bold','middle');
   return s;
+}
+function emojiAccent(id,x,y,size) {
+  if(!emojiAssets[id])throw new Error(`Missing pinned emoji ${id}`);
+  return `<image data-emoji="${id}" x="${x}" y="${y}" width="${size}" height="${size}" href="data:image/svg+xml;base64,${emojiAssets[id]}"/>`;
 }
 function brandHeader(width,idx,tablet=false) {
   const margin=tablet?112:94,y=tablet?99:88,size=tablet?69:62;
@@ -218,20 +269,30 @@ function compose(panel,idx,platform,capture=null) {
   s+=text(panel.eyebrow,margin,tablet?271:251,tablet?26:22,C.lime,'mono','start',1.6);
   const headlineSize=tablet?178:143,firstY=tablet?469:423,leading=tablet?172:145;
   panel.headline.forEach((v,i)=>{const fitted=Math.min(headlineSize,(width-margin*2)/textWidth(v,1,'display'));s+=text(v,margin,firstY+i*leading,fitted,C.ink,'display');});
-  const body=wrap(panel.description,margin,tablet?746:643,width-margin*2,tablet?39:34,C.muted,'body',tablet?56:48);
+  const accentSize=tablet?56:48,captionY=tablet?746:643;
+  s+=emojiAccent(panel.emoji,margin,captionY-accentSize*.77,accentSize);
+  const body=wrap(panel.description,margin+accentSize+22,captionY,width-margin*2-accentSize-22,tablet?39:34,C.muted,'body',tablet?56:48);
   s+=body.svg;
   if(body.bottom>(tablet?873:764))throw new Error(`${panel.id}: body copy overlaps device`);
-  if(tablet) {
-    const x=111,y=915,w=1842,h=1603;
+  if(panel.screen==='replay') {
+    // Analysis really is landscape-only in SessionAnalysisView; preserve that orientation.
+    // The enlarged recorded pose is marketing art outside the device, with explicit provenance.
+    const stageY=tablet?956:824,stageH=tablet?820:970;
+    s+=rect(margin,stageY,width-margin*2,stageH,'#0a241a',32,C.line,2);
+    s+=text('RECORDED SPRINT / 33 LANDMARKS',margin+36,stageY+57,tablet?27:23,C.lime,'mono');
+    s+=poseSVG('sprint',{x:margin+60,y:stageY+87,width:width-margin*2-120,height:stageH-170,padding:12},{strokeWidth:tablet?3.1:2.7,dotRadius:tablet?3.8:3.4});
+    s+=text('Original positions · complete face, hand and foot detail',width/2,stageY+stageH-31,tablet?24:19,C.muted,'body','middle');
+    const y=tablet?1900:1920,maxH=tablet?650:660,ratio=capture?capture.width/capture.height:844/390;
+    const w=Math.min(width-margin*2,maxH*ratio),h=w/ratio,x=(width-w)/2;
+    if(capture)s+=captureDevice(capture,x,y,w,h,tablet?40:32);
+    else s+=rect(x-8,y-8,w+16,h+16,'#010805',40,'#4a6655',3)+group(x,y,w/844,landscapeAnalysis());
+    s+=text('LANDSCAPE ANALYSIS WORKSPACE',margin,tablet?1856:1878,tablet?26:21,C.muted,'mono');
+  } else if(tablet) {
+    const y=900,h=1635,w=h*768/1024,x=(width-w)/2;
     if(capture) {
-      const portraitWidth=h*capture.width/capture.height;
-      s+=captureDevice(capture,(width-portraitWidth)/2,y,portraitWidth,h,45);
-    }
-    else {
-      // Portrait gallery art holds an intentionally wide tablet composition.
-      s+=rect(x-9,y-9,w+18,h+18,'#010805',48,'#4a6655',3);
-      s+=`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="0 0 1200 1044" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="tablet-clip"><rect width="1200" height="1044" rx="28"/></clipPath></defs><g clip-path="url(#tablet-clip)">${tabletInterface(panel)}</g></svg>`;
-    }
+      const captureWidth=h*capture.width/capture.height;
+      s+=captureDevice(capture,(width-captureWidth)/2,y,captureWidth,h,45);
+    } else s+=rect(x-9,y-9,w+18,h+18,'#010805',48,'#4a6655',3)+group(x,y,w/768,tabletInterface(panel));
   } else {
     const x=245,y=816,w=830,h=1796;
     if(capture)s+=captureDevice(capture,x,y,w,h,83);
@@ -254,8 +315,11 @@ async function readCaptures(platform) {
     const full=path.resolve(path.dirname(inputPath),input);
     const meta=await sharp(full).metadata();
     if(!['png','jpeg'].includes(meta.format))throw new Error(`${full}: PNG or JPEG required`);
-    if(meta.width<meta.height*(platform==='iphone'?.4:.6)||meta.width>meta.height*(platform==='iphone'?.55:.9))throw new Error(`${full}: expected a complete portrait ${platform} screen capture, without a device frame.`);
-    if(meta.width<(platform==='iphone'?1170:1640))throw new Error(`${full}: insufficient capture resolution`);
+    const landscape=panel.captureOrientation==='landscape';
+    const shortSide=Math.min(meta.width,meta.height),longSide=Math.max(meta.width,meta.height),ratio=shortSide/longSide;
+    if(landscape?meta.width<=meta.height:meta.width>=meta.height)throw new Error(`${full}: ${panel.id} requires a complete ${panel.captureOrientation} ${platform} capture.`);
+    if(ratio<(platform==='iphone'?.4:.6)||ratio>(platform==='iphone'?.55:.9))throw new Error(`${full}: expected a complete ${platform} screen capture, without a device frame.`);
+    if(shortSide<(platform==='iphone'?1170:1640))throw new Error(`${full}: insufficient capture resolution`);
     const buffer=await sharp(full).flatten({background:C.bg}).removeAlpha().png().toBuffer();
     result[panel.id]={buffer,width:meta.width,height:meta.height,filename:path.basename(full),sha256:createHash('sha256').update(fs.readFileSync(full)).digest('hex')};
   }
@@ -274,7 +338,7 @@ for(const platform of ['iphone','ipad']) {
     await sharp(Buffer.from(svg)).flatten({background:C.bg}).removeAlpha().png({compressionLevel:9}).toFile(path.join(OUT,file));
     const meta=await sharp(path.join(OUT,file)).metadata();
     if(meta.hasAlpha)throw new Error(`${file}: unexpected alpha channel`);
-    records.push({platform,id:panel.id,file,width:meta.width,height:meta.height,channels:meta.channels,kind:capture?'current-build-screenshot-composition':'sample-interface-layout-preview',nativeScreenshotSupplied:Boolean(capture),capture:capture?{filename:capture.filename,sha256:capture.sha256}:null,sourceReferences:panel.sourceReferences,captureInstruction:panel.captureInstruction});
+    records.push({platform,id:panel.id,file,width:meta.width,height:meta.height,channels:meta.channels,kind:capture?'current-build-screenshot-composition':'sample-interface-layout-preview',nativeScreenshotSupplied:Boolean(capture),capture:capture?{filename:capture.filename,sha256:capture.sha256}:null,sourceReferences:panel.sourceReferences,captureInstruction:panel.captureInstruction,captureOrientation:panel.captureOrientation,emoji:panel.emoji,pose:panel.pose?{id:panel.pose,frameIndex:recordedPoses.poses[panel.pose].frameIndex,landmarkCount:33,connectionCount:POSE_EDGES.length,sourceSha256:recordedPoses.poses[panel.pose].sourceSha256,projectionSha256:recordedPoses.projectionSha256}:null});
   }
 }
 const thumbs=[];
@@ -287,7 +351,22 @@ const sheetHeight=titleHeight+2*thumbHeight+gap+padding;
 const sheetTitle=`<svg xmlns="http://www.w3.org/2000/svg" width="${sheetWidth}" height="${sheetHeight}">${rect(0,0,sheetWidth,sheetHeight,C.bg)}${text('POSETEK / APP STORE GALLERY',54,61,31,C.ink,'bold')}${text('Six review layouts · sample interfaces · native screenshots still required',54,106,23,C.lime)}</svg>`;
 await sharp(Buffer.from(sheetTitle)).composite(thumbs).flatten({background:C.bg}).removeAlpha().png().toFile(path.join(OUT,'contact-sheet.png'));
 
-const manifest={schemaVersion:1,product:'PoseTek',submissionReady:false,reviewStatus:'Requires current-build native captures, copy review, and App Store Connect final verification.',galleryCompositionComplete:true,requiredPlatforms:['iphone','ipad'],targetedDeviceFamily:[1,2],currentBuild:supplied?.buildNumber||null,captureProvenance:supplied?.captureProvenance||null,platformCandidate:{iphone:Boolean(captures.iphone),ipad:Boolean(captures.ipad)},allNativeScreenshotsSupplied:Boolean(captures.iphone&&captures.ipad),important:'Preview concepts are not valid native screenshots. iPad captures are required because TARGETED_DEVICE_FAMILY is 1,2. Candidate composition does not grant submission approval.',referenceLock:content.referenceLock,images:records};
+// A supplementary source sheet lets the release owner inspect all three
+// sanitized recorded poses without presenting them as captured app screens.
+let referenceArt=rect(0,0,1800,1080,C.bg)+text('POSETEK / RECORDED POSE REFERENCES',58,78,40,C.ink,'bold')+text('33 source landmarks · 35 canonical connections · uniform scale, no substituted joints',58,130,25,C.muted);
+['shooting','sprint','jump'].forEach((id,index)=>{
+  const x=58+index*570,pose=recordedPoses.poses[id];
+  referenceArt+=rect(x,174,544,774,'#0a241a',24,C.line,2)+text(id==='jump'?'VERTICAL JUMP':id.toUpperCase(),x+28,222,28,C.lime,'bold');
+  referenceArt+=poseSVG(id,{x:x+34,y:252,width:476,height:588,padding:14},{strokeWidth:2.3,dotRadius:2.8});
+  referenceArt+=text(`SOURCE FRAME ${pose.frameIndex} (ZERO-BASED)`,x+28,889,18,C.muted,'mono');
+  referenceArt+=text(pose.phase,x+28,921,20,C.ink,'medium');
+});
+referenceArt+=text('Derived homepage coordinates. Estimated reconstruction; not a calibrated body scan.',58,1000,24,C.muted);
+const referenceSvg=`<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1080" viewBox="0 0 1800 1080">${referenceArt}</svg>`;
+fs.writeFileSync(path.join(SOURCE,'pose-reference-sheet.svg'),referenceSvg);
+await sharp(Buffer.from(referenceSvg)).flatten({background:C.bg}).removeAlpha().png().toFile(path.join(OUT,'pose-reference-sheet.png'));
+
+const manifest={schemaVersion:2,product:'PoseTek',submissionReady:false,reviewStatus:'Requires current-build native captures, copy review, and App Store Connect final verification.',galleryCompositionComplete:true,requiredPlatforms:['iphone','ipad'],targetedDeviceFamily:[1,2],currentBuild:supplied?.buildNumber||null,captureProvenance:supplied?.captureProvenance||null,platformCandidate:{iphone:Boolean(captures.iphone),ipad:Boolean(captures.ipad)},allNativeScreenshotsSupplied:Boolean(captures.iphone&&captures.ipad),important:'Preview concepts are not valid native screenshots. iPad captures are required because TARGETED_DEVICE_FAMILY is 1,2. Candidate composition does not grant submission approval.',referenceLock:content.referenceLock,emojiSource:{repository:emojiManifest.repository,commit:emojiManifest.commit,style:emojiManifest.style,license:emojiManifest.license},poseSource:{schema:recordedPoses.schema,landmarkCount:33,connectionCount:POSE_EDGES.length,projectionSha256:recordedPoses.projectionSha256},images:records};
 fs.writeFileSync(path.join(OUT,'gallery-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 const cards=records.map(record=>{const p=content.panels.find(p=>p.id===record.id);return `<article data-platform="${record.platform}"><a href="${record.file}" target="_blank" rel="noopener"><img src="${record.file}" alt="${esc(p.headline.join(' '))}: ${record.kind}" loading="lazy" width="${record.width}" height="${record.height}"></a><h2>${esc(p.headline.join(' '))}</h2><p>${esc(p.description)}</p><p class="capture"><b>Capture needed:</b> ${esc(p.captureInstruction)}</p><a href="${record.file}" download>Download ${record.width} × ${record.height} PNG</a></article>`;}).join('');
 fs.writeFileSync(path.join(OUT,'gallery-review.html'),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PoseTek · App Store gallery review</title><style>@font-face{font-family:Inter;src:url('../fonts/inter-latin-400-normal.woff')}@font-face{font-family:Inter;font-weight:700;src:url('../fonts/inter-latin-700-normal.woff')}*{box-sizing:border-box}body{margin:0;background:${C.bg};color:${C.ink};font:16px/1.6 Inter,sans-serif}header,main{max-width:1560px;margin:auto;padding:40px 32px}header{padding-bottom:16px}h1{font-size:clamp(30px,5vw,52px);line-height:1.1;margin:10px 0 22px}header p{max-width:890px;color:${C.muted}}.status{color:${C.lime};font-weight:700}nav{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}button,a{font:inherit}button{border:1px solid ${C.line};border-radius:8px;padding:12px 22px;background:transparent;color:${C.ink};cursor:pointer}button[aria-pressed=true]{background:${C.lime};color:${C.bg}}a{color:${C.lime};text-underline-offset:4px}a:focus-visible,button:focus-visible{outline:3px solid ${C.lime};outline-offset:6px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 28px}article img{display:block;width:100%;height:auto;border:1px solid ${C.line}}article h2{font-size:22px;line-height:1.2}article p{color:${C.muted};font-size:14px}.capture{border-top:1px solid ${C.line};padding-top:15px;font-size:13px}[hidden]{display:none!important}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.grid{grid-template-columns:1fr}header,main{padding:28px 20px}}</style></head><body><header><div class="status">REVIEW PACKAGE · NOT READY FOR SUBMISSION</div><h1>Start with evidence.<br>Build a gallery around the product.</h1><p>Six PoseTek story moments, composed for iPhone and iPad. The sample interfaces are source-grounded illustrations. Replace them with complete current-build native screenshot sets before final release review.</p><p><a href="contact-sheet.png">View iPhone contact sheet</a> · <a href="gallery-manifest.json">View provenance manifest</a></p><nav aria-label="Device family"><button aria-pressed="true" data-filter="iphone">iPhone · 1320 × 2868</button><button aria-pressed="false" data-filter="ipad">iPad · 2064 × 2752</button></nav></header><main><div class="grid">${cards}</div></main><script>const buttons=[...document.querySelectorAll('[data-filter]')],cards=[...document.querySelectorAll('[data-platform]')];function select(platform){buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===platform)));cards.forEach(c=>c.hidden=c.dataset.platform!==platform)}buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.filter)));select('iphone');</script></body></html>`.replace('color:undefined','color:'+C.muted));
