@@ -234,7 +234,7 @@ export default function PrivacyPage() {
       </main>
 
       <footer>
-        <p>© 2026 PoseTek · <Link to="/">Home</Link> · <Link to="/privacy" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link></p>
+        <p>© 2026 PoseTek · <Link to="/">Home</Link> · <Link to="/support">Support</Link> · <Link to="/privacy" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link></p>
       </footer>
     </div>
   );

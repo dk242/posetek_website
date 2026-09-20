@@ -15,6 +15,7 @@ const InsightsPage = lazy(() => import("./pages/insights/InsightsPage"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 const ProgramsPage = lazy(() => import("./pages/programs/ProgramsPage"));
 const PrivacyPage = lazy(() => import("./pages/privacy/PrivacyPage"));
+const SupportPage = lazy(() => import("./pages/support/SupportPage"));
 const NotFoundPage = lazy(() => import("./pages/not-found/NotFoundPage"));
 
 function Fallback() {
@@ -70,6 +71,8 @@ export default function App() {
 
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/privacy.html" element={<PrivacyPage />} />
+
+          <Route path="/support" element={<SupportPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
