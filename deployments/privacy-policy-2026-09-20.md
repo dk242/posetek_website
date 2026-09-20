@@ -1,7 +1,8 @@
 # Privacy policy rewrite — 2026-09-20
 
-Branch `worktree-privacy-policy-2026-09`, commit `fe6348b`, based on `origin/main`
-`61ef7cc`. **Source only: not merged, not pushed, not deployed.** The live
+Branch `worktree-privacy-policy-2026-09`, implementation commit `fe6348b`, based on
+`origin/main` `61ef7cc`. Merged into local `main` with `--no-ff` on 2026-09-20 at
+Nolan's request. **Source only: not pushed, not deployed.** The live
 `posetek.net/privacy` still serves the September 17 policy.
 
 ## What changed
@@ -54,14 +55,28 @@ Passed, scoped to the privacy folder: vitest 6/6; `tsc --noEmit` (privacy folder
 install predates svelte, tailwind, three, threlte and clsx, which this branch's
 `vite.config.ts` loads, and no `npm ci` was done because of the storage constraint.
 
+## Primary integration
+
+Nolan authorized ending the other session and merging. That session (an idle VS Code
+tab, no uncommitted changes, stashes or worktrees) was ended with SIGTERM and released
+its own claim; this session then acquired the primary through the guard hook. Local
+`main` was 51 commits behind and was fast-forwarded to `origin/main` `61ef7cc`; the
+worktree was detached and the branch checked out in the primary.
+
+Re-run in the primary, all passed: vitest privacy folder 6/6; scoped `tsc --noEmit`;
+oxlint on the privacy folder; `node --test scripts/home-navigation.test.mjs` 6/6.
+
+`npm --prefix app test` was attempted and stopped at configuration load with
+`ERR_MODULE_NOT_FOUND: Cannot find package '@sveltejs/vite-plugin-svelte'`. This is a
+missing dependency on this machine, not a test failure, and it affects `origin/main`
+itself: the install predates the 51 fast-forwarded commits. A dry run reports 144
+packages to add. Nothing was installed because of the storage constraint, so the
+merge rests on the scoped checks above.
+
 ## Pending
 
-Queue registration through `repo-claim.sh queue` was refused by the worktree
-isolation guard, so this entry is **unregistered**; this file is the record.
-
-1. Local primary `main` (`56cc905`) is 51 commits behind `origin/main`; fast-forward
-   it before integrating.
-2. With a lockfile-matching install, from the repository root:
+1. Full gate, once Nolan approves syncing dependencies
+   (`npm --prefix app install --ignore-scripts --no-audit --no-fund`, 144 packages):
    ```sh
    npm --prefix app test
    node app/node_modules/typescript/bin/tsc -b app
@@ -69,7 +84,8 @@ isolation guard, so this entry is **unregistered**; this file is the record.
    npm --prefix app run check:svelte
    npm --prefix app run build
    ```
-   then `git merge --no-ff worktree-privacy-policy-2026-09`.
+2. Local `main` is ahead of `origin/main` by this branch and its merge commit only;
+   it has not been pushed.
 3. Going live needs a deliberate application release with explicit approval.
    Production preserves the `privacypage-*` bundles byte-for-byte from
    `deployment/homepage-baseline.json`, so neither a merge nor a push changes the
