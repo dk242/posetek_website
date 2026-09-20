@@ -110,9 +110,13 @@
   .last-updated {
     color: var(--text-muted);
     font-size: 0.875rem;
+    line-height: 1.7;
   }
 
-  section {
+  .last-updated strong { color: var(--text-light); font-weight: 600; }
+
+  section,
+  .toc {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 16px;
@@ -120,6 +124,24 @@
     margin-bottom: 1.25rem;
     backdrop-filter: blur(10px);
   }
+
+  /* Anchored sections must clear the sticky header when deep-linked. */
+  section { scroll-margin-top: 5.5rem; }
+
+  .toc ol {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+    columns: 2;
+    column-gap: 2.5rem;
+  }
+
+  .toc li {
+    margin-bottom: 0.35rem;
+    break-inside: avoid;
+  }
+
+  .toc li::marker { color: var(--accent); font-weight: 600; }
 
   h2 {
     font-family: 'Poppins', sans-serif;
@@ -155,6 +177,16 @@
 
   p:last-child { margin-bottom: 0; }
 
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin: 1.75rem 0 0.5rem;
+  }
+
+  h2 + h3 { margin-top: 0; }
+
   ul {
     color: var(--text-muted);
     font-size: 0.95rem;
@@ -162,7 +194,13 @@
     margin-top: 0.5rem;
   }
 
+  ul + p { margin-top: 0.75rem; }
+
   ul li { margin-bottom: 0.4rem; }
+
+  ul ul { margin-bottom: 0.5rem; }
+
+  li strong { color: var(--text-light); font-weight: 600; }
 
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -172,8 +210,8 @@
     border: 1px solid rgba(76,140,106,0.3);
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
-    margin-top: 1rem;
     font-size: 0.95rem;
+    font-style: normal; /* rendered as <address> */
     color: var(--text-muted);
   }
 
@@ -191,6 +229,7 @@
 
   @media (max-width: 600px) {
     h1 { font-size: 1.75rem; }
-    section { padding: 1.5rem; }
+    section, .toc { padding: 1.5rem; }
+    .toc ol { columns: 1; }
   }
 }
