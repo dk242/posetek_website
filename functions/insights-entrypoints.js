@@ -10,6 +10,10 @@ function storageOwner(object) {
   const match = /^([A-Za-z0-9_-]+)\/(deadballShot|sprint|jump|broadJump|changeOfDirection|dribbling|freeRecord)\/session[1-9]\d*\/(?:kick[1-9]\d*\/)?(metadata|reprocess_context)\.json$/.exec(object.name);
   return match && playerSegment(match[1]) ? match[1] : null;
 }
+function storageTestingEventId(object) {
+  const value = object?.metadata?.posetekTestingEventId;
+  return playerSegment(value) ? value : null;
+}
 function createInsightsEntrypoints(functions, admin, caller) {
   const db = admin.firestore();
   const insights = createInsightsV2({ db, bucket: admin.storage().bucket(BUCKET), HttpsError: functions.https.HttpsError });
@@ -19,19 +23,44 @@ function createInsightsEntrypoints(functions, admin, caller) {
     await insights.invalidateInsightPlayer(playerId);
     await insights.rebuildInsightPlayer(playerId);
   }
+  async function projectRecord(change, context) {
+    if (!RECORD_COLLECTIONS.has(context.params.collectionId)) return null;
+    const before = change.before?.data?.() || {};
+    const after = change.after?.data?.() || {};
+    if (context.params.collectionId === "reps" && (playerSegment(after.testingEventId) || playerSegment(before.testingEventId))) return null;
+    return rebuild(context.params.playerId);
+  }
+  async function projectArtifact(object) {
+    const playerId = storageOwner(object);
+    const eventId = storageTestingEventId(object);
+    if (playerId && eventId) {
+      await db.collection("testingEvents").doc(eventId).collection("projectionDirty").doc(playerId).set({
+        playerId,
+        insightArtifactDirty: true,
+        revision: admin.firestore.FieldValue.increment(1),
+        pending: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAtMillis: Date.now(),
+      }, { merge: true });
+      return;
+    }
+    return rebuild(playerId);
+  }
   const events = functions.runWith({ timeoutSeconds: 540, memory: "512MB", maxInstances: 10, failurePolicy: true });
-  return {
+  const result = {
     getClubInsightsV2: functions.runWith({ timeoutSeconds: 540, memory: "1GB", maxInstances: 10 }).https.onCall((data, context) => insights.getClubInsightsV2(data || {}, caller(context))),
     recordInsightUsage: functions.runWith({ timeoutSeconds: 60, maxInstances: 10 }).https.onCall((data, context) => usage.recordInsightUsage(data, caller(context))),
     projectInsightPlayer: events.firestore.document("players/{playerId}").onWrite((_, context) => rebuild(context.params.playerId)),
-    projectInsightRecords: events.firestore.document("players/{playerId}/{collectionId}/{recordId}").onWrite((_, context) => RECORD_COLLECTIONS.has(context.params.collectionId) ? rebuild(context.params.playerId) : null),
+    projectInsightRecords: events.firestore.document("players/{playerId}/{collectionId}/{recordId}").onWrite(projectRecord),
     projectInsightRevisions: events.firestore.document("players/{playerId}/reps/{repId}/revisions/{revisionId}").onWrite((_, context) => rebuild(context.params.playerId)),
     projectInsightFailures: events.firestore.document("failureCases/{failureId}").onWrite(async change => {
       const ids = [...new Set([change.before?.data()?.playerDocumentID, change.after?.data()?.playerDocumentID].filter(playerSegment))];
       for (const id of ids) await rebuild(id);
     }),
-    projectInsightArtifacts: events.storage.bucket(BUCKET).object().onFinalize(object => rebuild(storageOwner(object))),
-    projectInsightArtifactDeletes: events.storage.bucket(BUCKET).object().onDelete(object => rebuild(storageOwner(object))),
+    projectInsightArtifacts: events.storage.bucket(BUCKET).object().onFinalize(projectArtifact),
+    projectInsightArtifactDeletes: events.storage.bucket(BUCKET).object().onDelete(projectArtifact),
   };
+  Object.defineProperty(result, "rebuildInsightPlayer", { value: rebuild, enumerable: false });
+  return result;
 }
-module.exports = { createInsightsEntrypoints, storageOwner, BUCKET, RECORD_COLLECTIONS };
+module.exports = { createInsightsEntrypoints, storageOwner, storageTestingEventId, BUCKET, RECORD_COLLECTIONS };

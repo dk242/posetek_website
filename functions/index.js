@@ -7,7 +7,8 @@ const { playerSegment, storageFolderCandidates } = require("./athlete-storage-pa
 admin.initializeApp();
 const db = admin.firestore();
 // Additive reporting and engagement endpoints; existing callables stay intact.
-Object.assign(exports, require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller));
+const insightEntrypoints = require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller);
+Object.assign(exports, insightEntrypoints);
 const { createPlayerInvitations } = require("./player-invitations");
 const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 exports.ensurePlayerSignupInvitation = functions.https.onCall((data, context) => playerInvitations.ensure(data?.playerId, requireCaller(context), { rotate: data?.rotate === true }));
@@ -24,7 +25,11 @@ for (const [endpoint, handler] of Object.entries({
 })) exports[endpoint] = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => social[handler](data || {}, requireCaller(context)));
 // Re-read authoritative inputs in a transaction: duplicate and out-of-order
 // mobile/web writes cannot publish an older projection over a newer result.
-exports.projectSocialReps = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/reps/{repId}").onWrite((_, context) => social.rebuild(context.params.playerId));
+exports.projectSocialReps = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/reps/{repId}").onWrite((change, context) => {
+  const before = change.before?.data?.() || {};
+  const after = change.after?.data?.() || {};
+  return after.testingEventId || before.testingEventId ? null : social.rebuild(context.params.playerId);
+});
 exports.projectSocialWorkouts = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/workoutLogs/{logId}").onWrite((_, context) => social.rebuild(context.params.playerId));
 exports.projectSocialSessions = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/trainingSessions/{sessionId}").onWrite((_, context) => social.rebuild(context.params.playerId));
 exports.projectSocialPlayer = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}").onWrite((_, context) => social.rebuild(context.params.playerId));
@@ -41,9 +46,32 @@ const { createClubs } = require("./clubs");
 const { createClubBranding } = require("./club-branding");
 const { createRepRevisions } = require("./rep-revisions");
 const { createAnalysisReviews } = require("./analysis-reviews");
+const { createTestingEvents } = require("./testing-events");
 const analysisReviews = createAnalysisReviews({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubBranding = createClubBranding({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const clubs = createClubs({ invitations: playerInvitations, db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+const testingEvents = createTestingEvents({
+  db,
+  FieldValue: admin.firestore.FieldValue,
+  Timestamp: admin.firestore.Timestamp,
+  HttpsError: functions.https.HttpsError,
+  finalizePlayer: async (playerId) => {
+    await insightEntrypoints.rebuildInsightPlayer(playerId);
+    await social.rebuild(playerId);
+  },
+  storageSessionFloors: async (playerId) => {
+    const prefix = `${playerId}/`;
+    const [files] = await admin.storage().bucket("kickai-69dd0.firebasestorage.app").getFiles({ prefix });
+    return files.reduce((floors, file) => {
+      const segments = file.name.split("/");
+      const drillType = segments[1] || "";
+      const sessionFolder = segments[2] || "";
+      const match = /^session(\d+)$/.exec(sessionFolder);
+      if (drillType && match) floors[drillType] = Math.max(floors[drillType] || 0, Number(match[1]));
+      return floors;
+    }, {});
+  },
+});
 // Admin rep tools (see rep-revisions.js): the only writer of athlete reps
 // outside the phone, gated on the same verified @posetek.net predicate the rules use.
 const repRevisions = createRepRevisions({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
@@ -381,6 +409,18 @@ exports.revokeClubStaffInvitation = functions.https.onCall((data, context) => cl
 exports.setClubPlayerTeam = functions.https.onCall((data, context) => clubs.setClubPlayerTeam(data, requireCaller(context)));
 exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => clubs.issueClubPlayerInvitation(data, requireCaller(context)));
 exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
+exports.createTestingEvent = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => testingEvents.createTestingEvent(data || {}, requireCaller(context)));
+exports.startTestingEvent = functions.runWith({ timeoutSeconds: 540 }).https.onCall((data, context) => testingEvents.startTestingEvent(data || {}, requireCaller(context)));
+exports.createTestingEventInvite = functions.https.onCall((data, context) => testingEvents.createTestingEventInvite(data || {}, requireCaller(context)));
+exports.joinTestingEvent = functions.https.onCall((data, context) => testingEvents.joinTestingEvent(data || {}, requireCaller(context)));
+exports.claimTestingStation = functions.https.onCall((data, context) => testingEvents.claimTestingStation(data || {}, requireCaller(context)));
+exports.renewTestingStationLease = functions.https.onCall((data, context) => testingEvents.renewTestingStationLease(data || {}, requireCaller(context)));
+exports.takeOverTestingStation = functions.https.onCall((data, context) => testingEvents.takeOverTestingStation(data || {}, requireCaller(context)));
+exports.resetTestingStationCalibration = functions.https.onCall((data, context) => testingEvents.resetTestingStationCalibration(data || {}, requireCaller(context)));
+exports.closeTestingEvent = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => testingEvents.closeTestingEvent(data || {}, requireCaller(context)));
+exports.reconcileTestingRepProgress = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("players/{playerId}/reps/{repId}").onWrite((change, context) => testingEvents.onRepWrite(change, context));
+exports.reconcileTestingStationProgress = functions.runWith({ timeoutSeconds: 120, failurePolicy: true }).firestore.document("testingEvents/{eventId}/progress/{progressId}").onWrite((change, context) => testingEvents.onProgressWrite(change, context));
+exports.sweepTestingEventFinalizations = functions.runWith({ timeoutSeconds: 540 }).pubsub.schedule("every 15 minutes").onRun(() => testingEvents.sweepTestingFinalizations());
 exports.getClubInsights = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => clubInsights.getClubInsights(data, requireCaller(context)));
 exports.adminReviseRep = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.reviseRep(data, requireCaller(context)));
 exports.adminRestoreRepRevision = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => repRevisions.restoreRepRevision(data, requireCaller(context)));

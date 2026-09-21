@@ -79,6 +79,31 @@ test("finalize handler skips guarded source and destination archives without Sto
   assert.deepEqual(calls.errors, []);
 });
 
+test("on-device processed MOV skips legacy signing and processing", async () => {
+  const { handle, calls } = loadHandler();
+  await handle({ data: {
+    ...data,
+    name: "players/example/jump/session1/kick1/video.mov",
+    metadata: { posetekLocalProcessed: "true" },
+    generation: "1234",
+  } });
+  assert.deepEqual(calls.storage, []);
+  assert.deepEqual(calls.posts, []);
+  assert.deepEqual(calls.errors, []);
+});
+
+test("only the explicit true metadata value skips legacy processing", async () => {
+  for (const value of [undefined, "false", "1", true]) {
+    const { handle, calls } = loadHandler();
+    await handle({ data: {
+      ...data,
+      name: "players/example/jump/session1/kick1/video.mov",
+      metadata: value === undefined ? {} : { posetekLocalProcessed: value },
+    } });
+    assert.equal(calls.posts.length, 1);
+  }
+});
+
 test("ordinary MOV and changed bytes at an archived path still invoke the legacy processor once", async () => {
   for (const object of [
     { ...data, name: "players/unrelated/session1/kick1/video.mov" },
