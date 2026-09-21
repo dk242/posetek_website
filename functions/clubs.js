@@ -38,7 +38,8 @@ function createClubs({ invitations, db, FieldValue, HttpsError, now = () => Date
     return result;
   }
   function publicPlayer(player) {
-    return { id: player.id, firstName: String(player.firstName || ""), lastName: String(player.lastName || ""), organizationId: player.organizationId, teamId: player.teamId || "", canIssueSignupCode: canIssuePlayerCode(player) };
+    const weightKg = typeof player.weight === "number" && Number.isFinite(player.weight) && player.weight > 0 ? player.weight : null;
+    return { id: player.id, firstName: String(player.firstName || ""), lastName: String(player.lastName || ""), organizationId: player.organizationId, teamId: player.teamId || "", weightKg, canIssueSignupCode: canIssuePlayerCode(player) };
   }
   function canIssuePlayerCode(player) {
     return player.registered !== true && !["authenticationUID", "userUID"].some((field) => Object.hasOwn(player, field));

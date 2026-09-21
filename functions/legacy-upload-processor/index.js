@@ -11,8 +11,21 @@ const bodyScanURL = "https://kickai-bodyscan-839600313930.us-west1.run.app";
 const locallyProcessedDrills = new Set(["deadballShot", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling"]);
 // const processorURL = "https://kickai-processor-keycy7dkua-uc.a.run.app"
 
+function isLocallyProcessed(object) {
+  const value = object?.metadata?.posetekLocalProcessed;
+  return typeof value === "string" && value.toLowerCase() === "true";
+}
+
 exports.onVideoUpload = onObjectFinalized({ region: "us-west1" }, async (event) => {
   try {
+    if (isLocallyProcessed(event.data)) {
+      logger.log("On-device processed video skipped; no legacy processing requested.", {
+        bucket: event.data.bucket,
+        name: event.data.name,
+        generation: event.data.generation,
+      });
+      return;
+    }
     if (isRepairArchive(event.data)) {
       logger.log("Archived repair object skipped; no processing requested.", {
         bucket: event.data.bucket,
