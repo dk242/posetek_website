@@ -64,6 +64,41 @@ service cloud.firestore {
         : legacyCoachOf(pid);
     }
     function visiblePlayer(pid) { return selfPlayer(pid) || coachOf(pid) || isPosetekAdmin(); }
+    function testingSignedIn() {
+      return signedIn()
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
+    }
+    function testingEventData(eventId) {
+      return get(/databases/$(database)/documents/testingEvents/$(eventId)).data;
+    }
+    function testingEventOperator(eventId) {
+      let event = testingEventData(eventId);
+      return testingSignedIn() && event.get('operatorUids', []) is list
+        && event.get('operatorUids', []).hasAny([request.auth.uid])
+        && (isPosetekAdmin() || activeClubMember(event.get('organizationId', '')));
+    }
+    function testingStationOwned(eventId, stationId, deviceId) {
+      let station = get(/databases/$(database)/documents/testingEvents/$(eventId)/stations/$(stationId)).data;
+      return testingEventOperator(eventId)
+        && station.get('claimedByUid', '') == request.auth.uid
+        && station.get('claimedDeviceId', '') == deviceId
+        && station.get('leaseExpiresAt', request.time) is timestamp
+        && station.get('leaseExpiresAt', request.time) > request.time;
+    }
+    function testingShortText(value, maximum) {
+      return value is string && value.size() > 0 && value.size() <= maximum;
+    }
+    function validTestingProgressStatus(value) {
+      return value in ['waiting', 'inProgress', 'completedPendingSync', 'completed', 'needsAttention'];
+    }
+    function validTestingProgressTransition(before, after) {
+      return before == after
+        || (before == 'waiting' && after in ['inProgress', 'needsAttention'])
+        || (before == 'inProgress' && after in ['completedPendingSync', 'needsAttention'])
+        || (before == 'completedPendingSync' && after in ['completed', 'needsAttention'])
+        || (before == 'completed' && after == 'needsAttention')
+        || (before == 'needsAttention' && after in ['inProgress', 'completedPendingSync']);
+    }
     // Reviewed web plans use current authority, independently of legacy/native
     // recording fallbacks. Private originals and contexts remain admin-only.
     function personalizedCapability(capability) {
@@ -594,8 +629,76 @@ match /drillCatalogMeta/{docId} {
       allow read, write: if false;
     }
 
+    // Shared testing-session configuration is server-owned. Claimed station
+    // devices may append check-ins and advance only their own progress rows.
+    match /testingEvents/{eventId} {
+      allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+      allow write: if false;
+
+      match /participants/{playerId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow write: if false;
+      }
+      match /stations/{stationId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow write: if false;
+      }
+      match /sessionReservations/{reservationId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow write: if false;
+      }
+      match /devices/{deviceId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow write: if false;
+      }
+      match /checkIns/{playerId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow create: if testingStationOwned(eventId, 'station-1', request.resource.data.deviceId)
+          && request.resource.data.keys().hasOnly(['playerDocId', 'ordinal', 'checkedInAt', 'checkedInByUid', 'deviceId'])
+          && request.resource.data.playerDocId == playerId
+          && exists(/databases/$(database)/documents/testingEvents/$(eventId)/participants/$(playerId))
+          && request.resource.data.ordinal is int && request.resource.data.ordinal > 0
+          && request.resource.data.checkedInAt == request.time
+          && request.resource.data.checkedInByUid == request.auth.uid
+          && testingShortText(request.resource.data.deviceId, 128);
+        allow update, delete: if false;
+      }
+      match /progress/{progressId} {
+        allow read: if isPosetekAdmin() || testingEventOperator(eventId);
+        allow create: if testingStationOwned(eventId, request.resource.data.stationId, request.resource.data.deviceId)
+          && progressId == request.resource.data.stationId + '_' + request.resource.data.playerDocId
+          && request.resource.data.keys().hasOnly(['stationId', 'playerDocId', 'status', 'currentDrillIndex',
+            'completedByDrill', 'completedByProtocolSide', 'repIds', 'pendingUploadCount', 'revision', 'updatedAt', 'deviceId'])
+          && request.resource.data.stationId in ['station-1', 'station-2', 'station-3']
+          && exists(/databases/$(database)/documents/testingEvents/$(eventId)/participants/$(request.resource.data.playerDocId))
+          && request.resource.data.status in ['waiting', 'inProgress']
+          && request.resource.data.currentDrillIndex is int && request.resource.data.currentDrillIndex >= 0 && request.resource.data.currentDrillIndex <= 3
+          && request.resource.data.completedByDrill is map && request.resource.data.completedByProtocolSide is map
+          && request.resource.data.repIds is list && request.resource.data.repIds.size() <= 10
+          && request.resource.data.pendingUploadCount is int && request.resource.data.pendingUploadCount >= 0 && request.resource.data.pendingUploadCount <= 10
+          && request.resource.data.revision == 1 && request.resource.data.updatedAt == request.time;
+        allow update: if testingStationOwned(eventId, resource.data.stationId, request.resource.data.deviceId)
+          && request.resource.data.keys().hasOnly(['stationId', 'playerDocId', 'status', 'currentDrillIndex',
+            'completedByDrill', 'completedByProtocolSide', 'repIds', 'pendingUploadCount', 'revision', 'updatedAt', 'deviceId'])
+          && request.resource.data.stationId == resource.data.stationId
+          && request.resource.data.playerDocId == resource.data.playerDocId
+          && validTestingProgressStatus(request.resource.data.status)
+          && validTestingProgressTransition(resource.data.status, request.resource.data.status)
+          && request.resource.data.currentDrillIndex is int && request.resource.data.currentDrillIndex >= 0 && request.resource.data.currentDrillIndex <= 3
+          && request.resource.data.completedByDrill is map && request.resource.data.completedByProtocolSide is map
+          && request.resource.data.repIds is list && request.resource.data.repIds.size() <= 10
+          && request.resource.data.pendingUploadCount is int && request.resource.data.pendingUploadCount >= 0 && request.resource.data.pendingUploadCount <= 10
+          && request.resource.data.revision == resource.data.revision + 1
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if false;
+      }
+    }
+    match /testingEventInvites/{inviteId} {
+      allow read, write: if false;
+    }
+
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
+      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','testingEvents','testingEventInvites','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';
@@ -603,11 +706,30 @@ match /drillCatalogMeta/{docId} {
     match /coaches/{cid}/{sub}/{doc=**} {
       allow read, write: if !('organizationId' in get(/databases/$(database)/documents/coaches/$(cid)).data);
     }
+    match /players/{pid}/sessions/{sessionId} {
+      allow read: if visiblePlayer(pid);
+      allow create, update: if recordingWriter(pid);
+      allow delete: if false;
+
+      match /repLinks/{repId} {
+        allow read: if visiblePlayer(pid);
+        allow create: if recordingWriter(pid)
+          && request.resource.data.keys().hasOnly(['repId', 'eventId', 'createdAt'])
+          && request.resource.data.repId == repId
+          && request.resource.data.eventId is string
+          && request.resource.data.eventId.size() > 0
+          && testingEventOperator(request.resource.data.eventId)
+          && exists(/databases/$(database)/documents/players/$(pid)/reps/$(repId))
+          && get(/databases/$(database)/documents/players/$(pid)/reps/$(repId)).data.get('testingEventId', '') == request.resource.data.eventId
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
     match /players/{pid}/{sub}/{doc=**} {
       allow read: if (!clubPlayer(pid) || visiblePlayer(pid)) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
       allow write: if !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
     }
 
     // Kick evidence and expert-review projections (2026-09-08).
