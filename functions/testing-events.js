@@ -290,8 +290,8 @@ function createTestingEvents({
       validatedAt: stamp(),
     }, { merge: true }));
     await participantBatch.commit();
-    const missingWeight = refreshedParticipants.filter((participant) => participant.weightStatus !== "ready" || !(participant.weightKg > 0));
-    if (missingWeight.length) fail("failed-precondition", `${missingWeight.length} participant${missingWeight.length === 1 ? " is" : "s are"} missing weight.`);
+    // Weight is optional (product decision 2026-09-21): participants without one keep
+    // weightStatus "missing" and the jump processor falls back to its default mass.
     const storageFloorsByPlayer = new Map(await Promise.all(refreshedParticipants.map(async (participant) => [
       participant.playerDocId,
       await storageSessionFloors(participant.playerDocId),

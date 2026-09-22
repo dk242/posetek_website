@@ -67,8 +67,15 @@ service cloud.firestore {
     // Who may create/update an athlete's recording sessions. Same predicate the
     // generic players/{pid}/{sub} block applied to sessions before they got their
     // own match block, so no existing recorder gains or loses access.
+    // A verified PoseTek admin may record into an existing athlete's recording
+    // spine exactly like that athlete's coach (sessions, repLinks); the top-level
+    // staff-test-recording block already covers reps/sessions/trainingSessions.
+    function adminRecorder(pid) {
+      return isPosetekAdmin() && exists(/databases/$(database)/documents/players/$(pid));
+    }
     function recordingWriter(pid) {
-      return !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid))));
+      return adminRecorder(pid)
+        || (!isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))));
     }
     function testingSignedIn() {
       return signedIn()
