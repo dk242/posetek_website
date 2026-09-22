@@ -4,6 +4,14 @@ Reviewed on September 17, 2026. This guide summarizes the available repository a
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
+## Station recovery and ending follow-up (2026-09-22, not deployed)
+
+End session now supports authorized early closure with lease revocation, transactional live-status
+checks and preserved late uploads. Station recovery/calibration changes are mobile-only apart from
+the end-session functions and live-status rule. Backend51 tests and website25/mobile9 rules checks
+pass; mobile59 focused tests pass. See [the release command and verification handoff](docs/STATION_RECOVERY_AND_ENDING.md).
+This supersedes earlier readiness-only closure, not the recorded production baseline.
+
 ## Testing station follow-up (2026-09-22, not deployed)
 
 The mobile station follow-up adds live athlete enrollment at Station 1 and voice-guided rep/drill

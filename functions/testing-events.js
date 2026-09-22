@@ -488,6 +488,8 @@ function createTestingEvents({
     if (!['starting', 'live'].includes(event.event.status)) fail("failed-precondition", "Start the testing session before claiming a station.");
     const stationRef = event.ref.collection("stations").doc(stationId);
     return db.runTransaction(async (tx) => {
+      const liveEvent = await tx.get(event.ref);
+      if (!liveEvent.exists || liveEvent.data().status !== "live") fail("failed-precondition", "This testing session has ended or is not live.");
       const station = await tx.get(stationRef);
       if (!station.exists) fail("not-found", "That station could not be found.");
       const current = station.data();
@@ -529,6 +531,8 @@ function createTestingEvents({
     if (event.event.status !== "live") fail("failed-precondition", "The testing session is not live.");
     const stationRef = event.ref.collection("stations").doc(stationId);
     return db.runTransaction(async (tx) => {
+      const liveEvent = await tx.get(event.ref);
+      if (!liveEvent.exists || liveEvent.data().status !== "live") fail("failed-precondition", "This testing session has ended or is not live.");
       const station = await tx.get(stationRef);
       if (!station.exists) fail("not-found", "That station could not be found.");
       const current = station.data();
@@ -542,14 +546,17 @@ function createTestingEvents({
   }
 
   async function closeTestingEvent(data, auth) {
+    if (data?.force !== undefined && typeof data.force !== "boolean") fail("invalid-argument", "force must be a boolean.");
     const access = await requireEventOperator(data?.eventId, auth);
     if (access.event.ownerUid !== auth.uid && !isClubAdmin(auth) && access.member?.role !== "manager") fail("permission-denied", "Only the owner or a club manager can close this testing session.");
-    // Read the roster and progress in the same transaction as closing. Admission
-    // updates the event doc, forcing a retry instead of closing over a new player.
-    return db.runTransaction(async (tx) => {
+    const result = await db.runTransaction(async (tx) => {
       const eventDoc = await tx.get(access.ref);
       const event = eventDoc.data();
       if (!eventDoc.exists || !["live", "closed"].includes(event.status)) fail("failed-precondition", "This testing session cannot close yet.");
+      if (event.status === "closed") return { ...event.syncSummary, eventId: access.ref.id, status: "closed" };
+      const member = await tx.get(db.collection("organizations").doc(event.organizationId).collection("members").doc(auth.uid));
+      if (!operatorCanAccessEvent(event, auth, member.data()) ||
+          (event.ownerUid !== auth.uid && !isClubAdmin(auth) && member.data()?.role !== "manager")) fail("permission-denied", "You can no longer end this testing session.");
       const progress = await tx.get(access.ref.collection("progress").limit(MAX_PARTICIPANTS * STATIONS.length + 1));
       const expected = event.participantCount * STATIONS.length;
       const rows = progress.docs.map((doc) => doc.data());
@@ -558,11 +565,22 @@ function createTestingEvents({
       const attention = rows.filter((row) => row.status === "needsAttention").length;
       const missing = Math.max(0, expected - rows.length);
       const ready = completed === expected && pending === 0 && attention === 0 && missing === 0;
-      const result = { eventId: access.ref.id, ready, expected, completed, pending, attention, missing };
-      if (!ready) return result;
-      tx.update(access.ref, { status: "closed", closedAt: stamp(), closedAtMillis: now(), updatedAt: stamp(), syncSummary: result });
-      return { ...result, status: "closed" };
+      const summary = { eventId: access.ref.id, ready, expected, completed, pending, attention, missing };
+      if (!ready && data?.force !== true) return summary;
+      tx.update(access.ref, { status: "closed", closedAt: stamp(), closedAtMillis: now(), updatedAt: stamp(),
+        closedByUid: auth.uid, endedEarly: !ready, syncSummary: summary });
+      for (const station of STATIONS) tx.update(access.ref.collection("stations").doc(station.id), {
+        claimedByUid: null, claimedDeviceId: null, leaseExpiresAt: timestamp(0), leaseExpiresAtMillis: 0,
+      });
+      return { ...summary, status: "closed" };
     });
+    if (result.status === "closed") {
+      // Existing results remain usable even if the organizer ended an incomplete event.
+      // Dirty markers survive a projection failure and are retried by the normal sweeper.
+      const participants = await access.ref.collection("participants").limit(MAX_PARTICIPANTS).get();
+      await Promise.allSettled(participants.docs.map((doc) => maybeFinalizePlayer(access.ref.id, doc.id)));
+    }
+    return result;
   }
 
   async function markProjectionDirty(eventId, playerId, source) {
@@ -579,7 +597,8 @@ function createTestingEvents({
   async function maybeFinalizePlayer(eventId, playerId) {
     const ref = eventRef(eventId);
     const rows = await Promise.all(STATIONS.map((station) => ref.collection("progress").doc(`${station.id}_${playerId}`).get()));
-    if (rows.some((row) => !row.exists || row.data().status !== "completed")) return false;
+    const event = await ref.get();
+    if (event.data()?.status !== "closed" && rows.some((row) => !row.exists || row.data().status !== "completed")) return false;
     const dirtyRef = ref.collection("projectionDirty").doc(playerId);
     const finalizationRef = ref.collection("projectionFinalizations").doc(playerId);
     const claimedRevision = await db.runTransaction(async (tx) => {

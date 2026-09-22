@@ -93,6 +93,7 @@ service cloud.firestore {
     function testingStationOwned(eventId, stationId, deviceId) {
       let station = get(/databases/$(database)/documents/testingEvents/$(eventId)/stations/$(stationId)).data;
       return testingEventOperator(eventId)
+        && testingEventData(eventId).get('status', '') == 'live'
         && station.get('claimedByUid', '') == request.auth.uid
         && station.get('claimedDeviceId', '') == deviceId
         && station.get('leaseExpiresAt', request.time) is timestamp
