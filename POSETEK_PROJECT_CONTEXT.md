@@ -4,6 +4,15 @@ Reviewed on September 17, 2026. This guide summarizes the available repository a
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
+## Testing station follow-up (2026-09-22, not deployed)
+
+The mobile station follow-up adds live athlete enrollment at Station 1 and voice-guided rep/drill
+progression. The server companion is code complete on `station-live-enrollment`: retry-safe
+`addTestingParticipant`, pending-admission check-in protection, and start/close roster consistency.
+47 focused server tests, 22 website rule assertions and 8 canonical station-rule tests pass;
+mobile physical-device verification remains outstanding. See [the exact contract, validation and release handoff](docs/STATION_LIVE_ENROLLMENT.md).
+This source change does not update the recorded production baseline below.
+
 ## Readiness and source provenance
 
 ### Current website release: protected player signup links

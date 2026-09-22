@@ -85,7 +85,19 @@ try {
   await allowed(updateDoc(doc(admin, `players/${playerId}/sessions/admin-jump`), { repCount: 1 }));
   await denied(deleteDoc(doc(admin, `players/${playerId}/reps/rep-2`)));
   await denied(setDoc(doc(admin, 'players/nobody/sessions/admin-jump'), { repCount: 0, sessionType: 'jump' }));
-  assert.equal(checks, 18);
+  // Pending admissions must not race ahead of their session reservations.
+  const checkInPayload = { playerDocId: 'pending', ordinal: 2, checkedInAt: serverTimestamp(), checkedInByUid: 'manager', deviceId: 'phone-a' };
+  await env.withSecurityRulesDisabled(async context => {
+    await setDoc(doc(context.firestore(), `testingEvents/${eventId}/participants/pending`), { playerDocId: 'pending', enrollmentStatus: 'pending' });
+  });
+  await denied(setDoc(doc(manager, `testingEvents/${eventId}/checkIns/pending`), checkInPayload));
+  await env.withSecurityRulesDisabled(async context => {
+    await updateDoc(doc(context.firestore(), `testingEvents/${eventId}/participants/pending`), { enrollmentStatus: 'ready' });
+  });
+  await allowed(setDoc(doc(manager, `testingEvents/${eventId}/checkIns/pending`), checkInPayload));
+  await allowed(setDoc(doc(manager, `testingEvents/${eventId}/checkIns/${playerId}`), { ...checkInPayload, playerDocId: playerId, ordinal: 1 }));
+  await denied(updateDoc(doc(manager, `testingEvents/${eventId}/participants/pending`), { enrollmentStatus: 'ready' }));
+  assert.equal(checks, 22);
   console.log(`${checks} testing-event rule assertions passed.`);
 } finally {
   await env.cleanup();
