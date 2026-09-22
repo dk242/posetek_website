@@ -40,11 +40,15 @@ Validation completed:
 
 Still pending:
 
-- Mobile current-source device compile, focused XCTest, signed UI verification and physical-iPhone
-  station/audio/processing/landscape checks. Prior September 21 build receipts do not validate this
-  September 22 source. The normal compile was blocked before compiling; the mobile plan records
-  the exact error and the standing restriction that requires a task-specific build exception.
-- Once validated, deploy only `addTestingParticipant`, updated `startTestingEvent`, updated
+- Physical-iPhone station/audio/processing checks and the three-device pilot remain pending.
+  Mobile implementation `0a543dd` passed current-source device compile, test build, signed simulator
+  build and 33 focused tests under Nolan’s scoped existing-cache verification authorization. Three
+  30-player station layouts were rendered and inspected; Start stays visible. Actual signed-app
+  navigation reaches the existing live Team Testing event. No live station lease or athlete data
+  was changed during this UI check.
+- Automatic approval review rejected production deployment because the scoped verification
+  approval did not explicitly authorize persistent production changes. Separate approval for the
+  exact release was requested; nothing deployed. After explicit approval, deploy only `addTestingParticipant`, updated `startTestingEvent`, updated
   `closeTestingEvent`, and the narrow website Firestore rules change. Confirm any existing station
   service deployment prerequisite independently. Do not deploy hosting, mobile lockdown rules, or
   the legacy video trigger as part of this follow-up. No real athlete records were mutated in tests.
