@@ -1,8 +1,8 @@
 # Station recovery and ending — 2026-09-22
 
 Status: code complete; 51 backend tests, 25 website rules assertions and 9 canonical mobile
-rules tests passed. Mobile focused suites pass (59 tests); final signed-app UI verification
-is in progress. Physical-iPhone acceptance and deployment remain outstanding.
+rules tests passed. Mobile focused suites pass (59 tests); signed-app UI verification passed.
+Physical-iPhone acceptance and deployment remain outstanding.
 
 `closeTestingEvent({eventId, force:true})` now lets the event owner, a club manager or a verified
 admin end an incomplete live event. It preserves results/reservations/progress, records
@@ -30,7 +30,12 @@ Validation:
 - Website rules: 25 assertions; canonical mobile rules: 9 tests passed.
 - Mobile StationCoordinator15, BroadJumpProcessingMath7, CalibrationGeometry21,
   DrillRepUploadQueue13 and ScheduledVideoControllerCommit3: 59 passed.
-- Device compile/test build passed. Final signed simulator layout/navigation checks pending.
+- Device compile, test build and signed simulator build passed against mobile `2da3856`.
+- Inspected the four shared station layout renders, including landscape setup and Start controls
+  with 30-player queues. Real signed-app navigation reached End session confirmation; Keep testing
+  dismissed it and preserved the live event. No production event was ended or station claimed.
+- Backend source `5898529` passed the tests above. Existing caches and canonical simulator only;
+  disk stayed at least 11 GiB free. Test emulators stopped. Scoped verification exception closed.
 - Physical camera/audio/calibration, three-device ending and late-upload acceptance remain pending
   in the mobile `docs/plans/STATION_TESTING_MODE_PLAN.md`.
 
