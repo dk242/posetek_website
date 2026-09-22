@@ -64,6 +64,12 @@ service cloud.firestore {
         : legacyCoachOf(pid);
     }
     function visiblePlayer(pid) { return selfPlayer(pid) || coachOf(pid) || isPosetekAdmin(); }
+    // Who may create/update an athlete's recording sessions. Same predicate the
+    // generic players/{pid}/{sub} block applied to sessions before they got their
+    // own match block, so no existing recorder gains or loses access.
+    function recordingWriter(pid) {
+      return !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid))));
+    }
     function testingSignedIn() {
       return signedIn()
         && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
