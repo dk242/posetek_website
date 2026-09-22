@@ -64,6 +64,10 @@ These links live only in private `drillCatalogAuthoring.demoReferences`; they do
 not populate athlete media, change the reviewed evidence, dose or eligibility, or
 approve publication. The portable guide is
 [`DEMO_REFERENCES.md`](../content/training-expansion/DEMO_REFERENCES.md).
+The September 22 follow-up is live with 81 links across all 80 drafts; see
+[`DRILL_DEMO_REFERENCES_PRODUCTION.json`](../deployment/DRILL_DEMO_REFERENCES_PRODUCTION.json).
+Catalog version remains `1.0.91`. The transactional private-field update preserved
+all 208 catalog documents, uploaded media, content reviews and configuration.
 
 An administrator explicitly designates qualified training reviewers by verified
 account ID and records their qualification. Ordinary staff and athletes cannot

@@ -1,10 +1,26 @@
 # PoseTek website project context
 
-Reviewed on September 21, 2026. This guide summarizes the available repository and
+Reviewed on September 22, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
 ## Readiness and source provenance
+
+### September 22 filming demo references
+
+All 80 whole-body drafts now have external filming references: 81 links grouped
+into the same four weeks. Admin drill details display **Watch before filming**
+above the three original-video slots. Links carry source attribution, matching
+notes, component adaptations and accurate verification limits. Most checks use
+publisher pages/descriptions/transcripts; they do not claim a full technique review.
+The portable guide is `content/training-expansion/DEMO_REFERENCES.md`.
+
+Website deployment `6ab25ae36de88d184cc9b2e1` was published September 22 at
+3:48:45 AM PDT. The references were added only to private authoring metadata with
+revision checks; all 208 catalog records, media and review states were preserved.
+Catalog version remains `1.0.91`; every new exercise remains a draft. Gateway,
+functions, access rules and the false mobile acceptance gate were not changed.
+Read `deployment/DRILL_DEMO_REFERENCES_PRODUCTION.json` for the verified receipt.
 
 ### September 21 whole-body training expansion
 
