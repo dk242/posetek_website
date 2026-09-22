@@ -17,6 +17,7 @@ const allowed = async value => { await assertSucceeds(value); checks += 1; };
 const denied = async value => { await assertFails(value); checks += 1; };
 
 try {
+  await env.clearFirestore();
   await env.withSecurityRulesDisabled(async context => {
     const db = context.firestore();
     const fixtures = {
@@ -98,6 +99,19 @@ try {
   await allowed(setDoc(doc(manager, `testingEvents/${eventId}/checkIns/${playerId}`), { ...checkInPayload, playerDocId: playerId, ordinal: 1 }));
   await denied(updateDoc(doc(manager, `testingEvents/${eventId}/participants/pending`), { enrollmentStatus: 'ready' }));
   assert.equal(checks, 22);
+  // Closing blocks station writes even if an older client still holds an unexpired lease.
+  await env.withSecurityRulesDisabled(async context => {
+    await updateDoc(doc(context.firestore(), `testingEvents/${eventId}`), { status: 'closed' });
+    await setDoc(doc(context.firestore(), `testingEvents/${eventId}/participants/late-player`), { playerDocId: 'late-player', enrollmentStatus: 'ready' });
+  });
+  await denied(updateDoc(doc(manager, progressPath), { status: 'inProgress', revision: 2, updatedAt: serverTimestamp() }));
+  await denied(setDoc(doc(manager, `testingEvents/${eventId}/checkIns/late-player`), {
+    playerDocId: 'late-player', ordinal: 3, checkedInAt: serverTimestamp(), checkedInByUid: 'manager', deviceId: 'phone-a',
+  }));
+  // An already recorded rep can still finish its upload after the event ends.
+  await allowed(setDoc(doc(manager, `players/${playerId}/reps/late-rep`), {
+    repType: 'jump', testingEventId: eventId, processingStatus: 'failed', resultsValid: false,
+  }));
   console.log(`${checks} testing-event rule assertions passed.`);
 } finally {
   await env.cleanup();

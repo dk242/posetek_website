@@ -433,3 +433,83 @@ test("unfinished enrollment prevents event close even when the original roster i
   assert.equal(result.missing, 3);
   assert.equal(db.snapshot(`testingEvents/${request.eventId}`).status, "live");
 });
+
+test("force close ends incomplete event, releases leases and preserves pending results", async () => {
+  const { db, testing, clock } = harness();
+  const { eventId } = await draft(testing, ["player-a"]);
+  await testing.startTestingEvent({ eventId }, auth("manager"));
+  await testing.claimTestingStation({ eventId, stationId: "station-1", deviceId: "phone" }, auth("manager"));
+  const path = `testingEvents/${eventId}/progress/station-1_player-a`;
+  const row = { stationId: "station-1", playerDocId: "player-a", status: "inProgress", repIds: ["rep-a"], pendingUploadCount: 1 };
+  db.write(path, row, { merge: false });
+  const result = await testing.closeTestingEvent({ eventId, force: true }, auth("manager"));
+  assert.equal(result.status, "closed");
+  assert.equal(result.ready, false);
+  assert.equal(db.snapshot(`testingEvents/${eventId}`).endedEarly, true);
+  assert.deepEqual(db.snapshot(path), row);
+  for (const station of STATIONS) {
+    const lease = db.snapshot(`testingEvents/${eventId}/stations/${station.id}`);
+    assert.equal(lease.claimedDeviceId, null);
+    assert.equal(lease.leaseExpiresAtMillis, 0);
+  }
+  const first = db.snapshot(`testingEvents/${eventId}`);
+  clock.value += 10000;
+  await testing.closeTestingEvent({ eventId, force: true }, auth("manager"));
+  assert.deepEqual(db.snapshot(`testingEvents/${eventId}`), first);
+  await assert.rejects(testing.startTestingEvent({ eventId }, auth("manager")), { code: "failed-precondition" });
+  for (const action of ["claimTestingStation", "renewTestingStationLease", "takeOverTestingStation"]) {
+    await assert.rejects(testing[action]({ eventId, stationId: "station-1", deviceId: "phone" }, auth("manager")), { code: "failed-precondition" });
+  }
+  await assert.rejects(testing.resetTestingStationCalibration({ eventId, stationId: "station-2", deviceId: "phone" }, auth("manager")), { code: "failed-precondition" });
+  const next = await draft(testing, ["player-a"]);
+  await testing.startTestingEvent({ eventId: next.eventId }, auth("manager"));
+  assert.equal(db.snapshot(`testingEvents/${next.eventId}`).status, "live");
+});
+
+test("force close validates input and rejects non-owner coach without ending session", async () => {
+  const { db, testing } = harness();
+  const { eventId } = await draft(testing, ["player-a"]);
+  await testing.startTestingEvent({ eventId }, auth("manager"));
+  db.write(`testingEvents/${eventId}`, { operatorUids: ["manager", "coach-a"] }, { merge: true });
+  await assert.rejects(testing.closeTestingEvent({ eventId, force: "true" }, auth("manager")), { code: "invalid-argument" });
+  await assert.rejects(testing.closeTestingEvent({ eventId, force: true }, auth("coach-a")), { code: "permission-denied" });
+  await assert.rejects(testing.closeTestingEvent({ eventId, force: true }, auth("coach-b")), { code: "permission-denied" });
+  assert.equal(db.snapshot(`testingEvents/${eventId}`).status, "live");
+  const owned = await draft(testing, ["player-a"], auth("coach-a"));
+  await testing.startTestingEvent({ eventId: owned.eventId }, auth("coach-a"));
+  assert.equal((await testing.closeTestingEvent({ eventId: owned.eventId, force: true }, auth("coach-a"))).status, "closed");
+});
+
+test("lease transaction rechecks event closed after authorization", async () => {
+  const { db, testing } = harness();
+  const { eventId } = await draft(testing, ["player-a"]);
+  await testing.startTestingEvent({ eventId }, auth("manager"));
+  const transact = db.runTransaction.bind(db);
+  db.runTransaction = async callback => {
+    db.write(`testingEvents/${eventId}`, { status: "closed" }, { merge: true });
+    return transact(callback);
+  };
+  await assert.rejects(testing.claimTestingStation({ eventId, stationId: "station-1", deviceId: "late-phone" }, auth("manager")), { code: "failed-precondition" });
+  assert.equal(db.snapshot(`testingEvents/${eventId}/stations/station-1`).claimedDeviceId, null);
+});
+
+test("ending incomplete event finalizes existing results and sweeps late uploads", async () => {
+  const { db, testing, finalized } = harness();
+  const { eventId } = await draft(testing, ["player-a"]);
+  await testing.startTestingEvent({ eventId }, auth("manager"));
+  db.write(`testingEvents/${eventId}/projectionDirty/player-a`, { pending: true, revision: 1 }, { merge: false });
+  await testing.closeTestingEvent({ eventId, force: true }, auth("manager"));
+  assert.deepEqual(finalized, ["player-a"]);
+  db.write(`testingEvents/${eventId}/projectionDirty/player-a`, { pending: true, revision: 2 }, { merge: true });
+  // This fake supports collection queries; adapt the collection-group seam for this event.
+  db.collectionGroup = name => ({ where: (field, op, value) => ({ limit: count => ({ get: async () => {
+    assert.equal(name, "projectionDirty");
+    const event = db.collection("testingEvents").doc(eventId);
+    const result = await event.collection(name).where(field, op, value).limit(count).get();
+    for (const row of result.docs) row.ref.parent = { parent: event };
+    return result;
+  } }) }) });
+  await testing.sweepTestingFinalizations();
+  assert.deepEqual(finalized, ["player-a", "player-a"]);
+  assert.equal(db.snapshot(`testingEvents/${eventId}`).status, "closed");
+});
