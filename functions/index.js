@@ -66,6 +66,12 @@ const testingEvents = createTestingEvents({
     await insightEntrypoints.rebuildInsightPlayer(playerId);
     await social.rebuild(playerId);
   },
+  operatorIdentity: async (uid) => {
+    try {
+      const user = await admin.auth().getUser(uid);
+      return user.disabled ? { uid } : { uid, email: user.email, emailVerified: user.emailVerified, isAnonymous: false };
+    } catch { return { uid }; }
+  },
   storageSessionFloors: async (playerId) => {
     const prefix = `${playerId}/`;
     const [files] = await admin.storage().bucket("kickai-69dd0.firebasestorage.app").getFiles({ prefix });
@@ -416,6 +422,7 @@ exports.setClubPlayerTeam = functions.https.onCall((data, context) => clubs.setC
 exports.issueClubPlayerInvitation = functions.https.onCall((data, context) => clubs.issueClubPlayerInvitation(data, requireCaller(context)));
 exports.createClubPlayer = functions.https.onCall((data, context) => clubs.createClubPlayer(data, requireCaller(context)));
 exports.createTestingEvent = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => testingEvents.createTestingEvent(data || {}, requireCaller(context)));
+exports.addTestingParticipant = functions.runWith({ timeoutSeconds: 120 }).https.onCall((data, context) => testingEvents.addTestingParticipant(data || {}, requireCaller(context)));
 exports.startTestingEvent = functions.runWith({ timeoutSeconds: 540 }).https.onCall((data, context) => testingEvents.startTestingEvent(data || {}, requireCaller(context)));
 exports.createTestingEventInvite = functions.https.onCall((data, context) => testingEvents.createTestingEventInvite(data || {}, requireCaller(context)));
 exports.joinTestingEvent = functions.https.onCall((data, context) => testingEvents.joinTestingEvent(data || {}, requireCaller(context)));

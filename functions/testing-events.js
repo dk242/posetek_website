@@ -56,6 +56,7 @@ function createTestingEvents({
   randomBytes = crypto.randomBytes,
   finalizePlayer = async () => {},
   storageSessionFloors = async () => ({}),
+  operatorIdentity = async (uid) => ({ uid }),
 }) {
   const stamp = () => FieldValue.serverTimestamp();
   const timestamp = (millis) => Timestamp.fromMillis(millis);
@@ -183,6 +184,100 @@ function createTestingEvents({
     return { eventId: ref.id, status: "draft", participantCount: players.length, protocolId: PROTOCOL_ID };
   }
 
+  // Admission is retryable by canonical player ID. Pending entries count against
+  // the pilot cap but cannot check in until all six reservations are durable.
+  async function addTestingParticipant(data, auth) {
+    authRequired(auth);
+    const eventId = cleanId(data?.eventId, "testing event");
+    const playerId = cleanId(data?.playerId, "player");
+    const deviceId = cleanId(data?.deviceId, "device");
+    const access = await requireEventOperator(eventId, auth);
+    const ref = access.ref;
+    const participantRef = ref.collection("participants").doc(playerId);
+    const identities = new Map(await Promise.all((access.event.operatorUids || []).map(async (uid) => [
+      uid, uid === auth.uid ? auth : await operatorIdentity(uid),
+    ])));
+
+    async function readAdmission(tx) {
+      const [eventDoc, playerDoc, stationDoc, participantDoc, memberDoc] = await Promise.all([
+        tx.get(ref), tx.get(db.collection("players").doc(playerId)),
+        tx.get(ref.collection("stations").doc("station-1")), tx.get(participantRef),
+        tx.get(db.collection("organizations").doc(access.event.organizationId).collection("members").doc(auth.uid)),
+      ]);
+      const event = eventDoc.data();
+      const player = playerDoc.data();
+      const lease = stationDoc.data();
+      if (!eventDoc.exists || event.status !== "live") fail("failed-precondition", "The testing session must be live.");
+      if (!operatorCanAccessEvent(event, auth, memberDoc.data())) fail("permission-denied", "Your event access changed.");
+      if (!lease || lease.claimedByUid !== auth.uid || lease.claimedDeviceId !== deviceId || lease.leaseExpiresAtMillis <= now()) {
+        fail("failed-precondition", "This device must own Station 1 to add players.");
+      }
+      if (!playerDoc.exists) fail("not-found", "That player could not be found.");
+      if (player.organizationId !== event.organizationId || !playerSegment(player.teamId)
+          || (!isClubAdmin(auth) && !memberCanAccessPlayer(memberDoc.data(), auth.uid, player))) {
+        fail("permission-denied", "Choose a player from your authorized organization and team.");
+      }
+      // Expanding the roster must never expose another team's athletes to an
+      // existing coach operator. Managers/admins may admit any authorized team.
+      if (!event.teamIds.includes(player.teamId)) {
+        for (const uid of event.operatorUids) {
+          const member = await tx.get(db.collection("organizations").doc(event.organizationId).collection("members").doc(uid));
+          if (!isClubAdmin(identities.get(uid)) && !memberCanAccessPlayer(member.data(), uid, player)) {
+            fail("permission-denied", "Every station operator must have access to this player's team. Ask a club manager to update staff team assignments first.");
+          }
+        }
+      }
+      if (participantDoc.exists && participantDoc.data().teamId !== player.teamId) {
+        fail("failed-precondition", "This player's team changed after enrollment. Review the event before continuing.");
+      }
+      if (!participantDoc.exists && event.participantCount >= MAX_PARTICIPANTS) fail("resource-exhausted", "This testing session already has 30 players.");
+      return { event, player, participant: participantDoc.data() };
+    }
+
+    const participant = await db.runTransaction(async (tx) => {
+      const state = await readAdmission(tx);
+      if (state.participant) return state.participant;
+      const snapshot = {
+        playerDocId: playerId, displayName: displayName(state.player),
+        photoUrl: typeof state.player.photoUrl === "string" ? state.player.photoUrl : "",
+        teamId: state.player.teamId, weightKg: weight(state.player),
+        weightStatus: weight(state.player) === null ? "missing" : "ready",
+        rosterOrder: state.event.participantCount, enrollmentStatus: "pending", createdAt: stamp(),
+      };
+      tx.create(participantRef, snapshot);
+      tx.update(ref, {
+        participantCount: state.event.participantCount + 1,
+        teamIds: [...new Set([...state.event.teamIds, state.player.teamId])].sort(), updatedAt: stamp(),
+      });
+      return snapshot;
+    });
+    if (participant.enrollmentStatus === "pending") {
+      const floors = await storageSessionFloors(playerId);
+      for (const station of STATIONS) {
+        for (const drill of station.drills) await reserveSession(eventId, participant, station, drill, floors);
+      }
+    }
+    return db.runTransaction(async (tx) => {
+      const state = await readAdmission(tx);
+      const checkInRef = ref.collection("checkIns").doc(playerId);
+      const [checkIn, checkIns, ...reservations] = await Promise.all([
+        tx.get(checkInRef), tx.get(ref.collection("checkIns").orderBy("ordinal", "desc").limit(1)),
+        ...STATIONS.flatMap((station) => station.drills.map((drill) =>
+          tx.get(ref.collection("sessionReservations").doc(`${station.id}_${playerId}_${drill.drillType}`)))),
+      ]);
+      if (reservations.some((doc) => !doc.exists)) fail("failed-precondition", "Session reservations are incomplete. Retry check-in.");
+      const ordinal = checkIn.exists ? checkIn.data().ordinal : (checkIns.docs[0]?.data().ordinal || 0) + 1;
+      if (state.participant.enrollmentStatus === "pending") {
+        tx.update(participantRef, { enrollmentStatus: "ready", enrolledAt: stamp() });
+        tx.update(ref, { reservationCount: (state.event.reservationCount || 0) + RESERVATIONS_PER_PARTICIPANT, updatedAt: stamp() });
+      }
+      if (!checkIn.exists) tx.create(checkInRef, {
+        playerDocId: playerId, ordinal, checkedInAt: stamp(), checkedInByUid: auth.uid, deviceId,
+      });
+      return { eventId, playerId, ordinal, status: "ready" };
+    });
+  }
+
   async function maximaForPlayerDrill(tx, playerId, drill) {
     const playerRef = db.collection("players").doc(playerId);
     const [sessions, reps] = await Promise.all([
@@ -260,6 +355,9 @@ function createTestingEvents({
     if (access.event.ownerUid !== auth.uid && !isClubAdmin(auth) && access.member?.role !== "manager") {
       fail("permission-denied", "Only the owner or a club manager can start this testing session.");
     }
+    if (access.event.status === "live") return {
+      eventId, status: "live", participantCount: access.event.participantCount, reservationCount: access.event.reservationCount,
+    };
     await db.runTransaction(async (tx) => {
       const doc = await tx.get(access.ref);
       if (!doc.exists) fail("not-found", "That testing session could not be found.");
@@ -321,6 +419,9 @@ function createTestingEvents({
     await db.runTransaction(async (tx) => {
       const doc = await tx.get(access.ref);
       if (!doc.exists || !["starting", "live"].includes(doc.data().status)) fail("failed-precondition", "The testing session changed while starting.");
+      // A concurrent start may already have gone live and admitted more players.
+      // Never overwrite that newer reservation count with our startup snapshot.
+      if (doc.data().status === "live") return;
       tx.update(access.ref, {
         status: "live",
         reservationCount: expectedReservations,
@@ -443,18 +544,25 @@ function createTestingEvents({
   async function closeTestingEvent(data, auth) {
     const access = await requireEventOperator(data?.eventId, auth);
     if (access.event.ownerUid !== auth.uid && !isClubAdmin(auth) && access.member?.role !== "manager") fail("permission-denied", "Only the owner or a club manager can close this testing session.");
-    const progress = await access.ref.collection("progress").limit(MAX_PARTICIPANTS * STATIONS.length + 1).get();
-    const expected = access.event.participantCount * STATIONS.length;
-    const rows = progress.docs.map((doc) => doc.data());
-    const completed = rows.filter((row) => row.status === "completed").length;
-    const pending = rows.filter((row) => row.status === "completedPendingSync").length;
-    const attention = rows.filter((row) => row.status === "needsAttention").length;
-    const missing = Math.max(0, expected - rows.length);
-    const ready = completed === expected && pending === 0 && attention === 0 && missing === 0;
-    const result = { eventId: access.ref.id, ready, expected, completed, pending, attention, missing };
-    if (!ready) return result;
-    await access.ref.update({ status: "closed", closedAt: stamp(), closedAtMillis: now(), updatedAt: stamp(), syncSummary: result });
-    return { ...result, status: "closed" };
+    // Read the roster and progress in the same transaction as closing. Admission
+    // updates the event doc, forcing a retry instead of closing over a new player.
+    return db.runTransaction(async (tx) => {
+      const eventDoc = await tx.get(access.ref);
+      const event = eventDoc.data();
+      if (!eventDoc.exists || !["live", "closed"].includes(event.status)) fail("failed-precondition", "This testing session cannot close yet.");
+      const progress = await tx.get(access.ref.collection("progress").limit(MAX_PARTICIPANTS * STATIONS.length + 1));
+      const expected = event.participantCount * STATIONS.length;
+      const rows = progress.docs.map((doc) => doc.data());
+      const completed = rows.filter((row) => row.status === "completed").length;
+      const pending = rows.filter((row) => row.status === "completedPendingSync").length;
+      const attention = rows.filter((row) => row.status === "needsAttention").length;
+      const missing = Math.max(0, expected - rows.length);
+      const ready = completed === expected && pending === 0 && attention === 0 && missing === 0;
+      const result = { eventId: access.ref.id, ready, expected, completed, pending, attention, missing };
+      if (!ready) return result;
+      tx.update(access.ref, { status: "closed", closedAt: stamp(), closedAtMillis: now(), updatedAt: stamp(), syncSummary: result });
+      return { ...result, status: "closed" };
+    });
   }
 
   async function markProjectionDirty(eventId, playerId, source) {
@@ -606,6 +714,7 @@ function createTestingEvents({
 
   return {
     createTestingEvent,
+    addTestingParticipant,
     startTestingEvent,
     createTestingEventInvite,
     joinTestingEvent,

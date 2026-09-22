@@ -671,6 +671,7 @@ match /drillCatalogMeta/{docId} {
           && request.resource.data.keys().hasOnly(['playerDocId', 'ordinal', 'checkedInAt', 'checkedInByUid', 'deviceId'])
           && request.resource.data.playerDocId == playerId
           && exists(/databases/$(database)/documents/testingEvents/$(eventId)/participants/$(playerId))
+          && get(/databases/$(database)/documents/testingEvents/$(eventId)/participants/$(playerId)).data.get('enrollmentStatus', 'ready') == 'ready'
           && request.resource.data.ordinal is int && request.resource.data.ordinal > 0
           && request.resource.data.checkedInAt == request.time
           && request.resource.data.checkedInByUid == request.auth.uid

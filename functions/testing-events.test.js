@@ -293,3 +293,143 @@ test("a committed rep repairs station progress after the app dies before its com
   assert.equal(progress.pendingUploadCount, 0);
   assert.equal(progress.status, "inProgress");
 });
+
+async function liveStation(testing, playerIds = ["player-a"], actor = auth("manager")) {
+  const event = await draft(testing, playerIds, actor);
+  await testing.startTestingEvent({ eventId: event.eventId }, actor);
+  await testing.claimTestingStation({ eventId: event.eventId, stationId: "station-1", deviceId: "phone" }, actor);
+  return { eventId: event.eventId, playerId: "player-b", deviceId: "phone" };
+}
+
+test("live admission reserves all drills and checks in exactly once", async () => {
+  const { db, testing } = harness();
+  const request = await liveStation(testing);
+  const first = await testing.addTestingParticipant(request, auth("manager"));
+  const counter = db.snapshot("players/player-b/recordingCounters/jump");
+  const second = await testing.addTestingParticipant(request, auth("manager"));
+  assert.deepEqual(second, first);
+  assert.equal(first.ordinal, 1);
+  assert.deepEqual(db.snapshot("players/player-b/recordingCounters/jump"), counter);
+  const event = db.snapshot(`testingEvents/${request.eventId}`);
+  assert.equal(event.participantCount, 2);
+  assert.equal(event.reservationCount, 12);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/participants/player-b`).enrollmentStatus, "ready");
+  for (const station of STATIONS) for (const drill of station.drills) {
+    assert.ok(db.snapshot(`testingEvents/${request.eventId}/sessionReservations/${station.id}_player-b_${drill.drillType}`));
+  }
+  const initial = await testing.addTestingParticipant({ ...request, playerId: "player-a" }, auth("manager"));
+  assert.equal(initial.ordinal, 2);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).reservationCount, 12);
+  const restarted = await testing.startTestingEvent({ eventId: request.eventId }, auth("manager"));
+  assert.equal(restarted.participantCount, 2);
+  assert.equal(restarted.reservationCount, 12);
+});
+
+test("pending enrollment recovers after reservation failure without duplicate players", async () => {
+  let failScan = false;
+  const { db, testing } = harness({}, { value: 1000 }, {
+    storageSessionFloors: async () => { if (failScan) throw new Error("storage unavailable"); return { jump: 20 }; },
+  });
+  const request = await liveStation(testing);
+  failScan = true;
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), /storage unavailable/);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/participants/player-b`).enrollmentStatus, "pending");
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/checkIns/player-b`), undefined);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).participantCount, 2);
+  failScan = false;
+  await testing.addTestingParticipant(request, auth("manager"));
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).participantCount, 2);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).reservationCount, 12);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/sessionReservations/station-1_player-b_jump`).sessionNumber, 21);
+});
+
+test("admission requires the live Station 1 lease and canonical organization", async () => {
+  const { db, testing, clock } = harness({ "players/foreign": { organizationId: "other", teamId: "team-a" } });
+  const request = await liveStation(testing);
+  await assert.rejects(testing.addTestingParticipant({ ...request, deviceId: "wrong" }, auth("manager")), { code: "failed-precondition" });
+  await assert.rejects(testing.addTestingParticipant({ ...request, playerId: "foreign" }, auth("manager")), { code: "permission-denied" });
+  await assert.rejects(testing.addTestingParticipant(request, auth("coach-a")), { code: "permission-denied" });
+  clock.value += 100000;
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), { code: "failed-precondition" });
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).participantCount, 1);
+});
+
+test("manager can add another organization team only when all operators can access it", async () => {
+  const { db, testing } = harness();
+  const request = await liveStation(testing);
+  db.write(`testingEvents/${request.eventId}`, { operatorUids: ["manager", "coach-a"] }, { merge: true });
+  await assert.rejects(testing.addTestingParticipant({ ...request, playerId: "player-c" }, auth("manager")), { code: "permission-denied" });
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).participantCount, 1);
+  db.write("organizations/club/members/coach-a", { teamIds: ["team-a", "team-b"] }, { merge: true });
+  await testing.addTestingParticipant({ ...request, playerId: "player-c" }, auth("manager"));
+  assert.deepEqual(db.snapshot(`testingEvents/${request.eventId}`).teamIds, ["team-a", "team-b"]);
+});
+
+test("admin station operator remains authorized when admitting a new team", async () => {
+  const { db, testing } = harness({}, { value: 1000 }, { operatorIdentity: async uid => uid === "admin" ? admin : auth(uid) });
+  const request = await liveStation(testing);
+  db.write(`testingEvents/${request.eventId}`, { operatorUids: ["manager", "admin"] }, { merge: true });
+  await testing.addTestingParticipant({ ...request, playerId: "player-c" }, auth("manager"));
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).participantCount, 2);
+});
+
+test("pilot cap, revoked membership and closed sessions reject admission", async () => {
+  const { db, testing } = harness();
+  const request = await liveStation(testing);
+  db.write(`testingEvents/${request.eventId}`, { participantCount: 30 }, { merge: true });
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), { code: "resource-exhausted" });
+  db.write(`testingEvents/${request.eventId}`, { participantCount: 1, status: "closed" }, { merge: true });
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), { code: "failed-precondition" });
+  db.write(`testingEvents/${request.eventId}`, { status: "live" }, { merge: true });
+  db.write("organizations/club/members/manager", { status: "revoked" }, { merge: true });
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), { code: "permission-denied" });
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/participants/player-b`), undefined);
+});
+
+test("new canonical team player can enroll without weight or an auth account", async () => {
+  const { db, testing } = harness({ "players/new-player": { organizationId: "club", teamId: "team-a", firstName: "New", lastName: "Athlete", registered: false } });
+  const request = await liveStation(testing);
+  await testing.addTestingParticipant({ ...request, playerId: "new-player" }, auth("manager"));
+  const participant = db.snapshot(`testingEvents/${request.eventId}/participants/new-player`);
+  assert.equal(participant.displayName, "New Athlete");
+  assert.equal(participant.teamId, "team-a");
+  assert.equal(participant.weightKg, null);
+  assert.equal(participant.enrollmentStatus, "ready");
+  assert.ok(db.snapshot(`players/new-player/sessions/testing_${request.eventId}_station-1_jump`));
+});
+
+test("lease loss during reservations preserves a retryable pending enrollment", async () => {
+  let moveLease = false;
+  const { db, testing } = harness({}, { value: 1000 }, {
+    storageSessionFloors: async () => {
+      if (moveLease) db.write(`testingEvents/${request.eventId}/stations/station-1`, { claimedDeviceId: "other" }, { merge: true });
+      return {};
+    },
+  });
+  const request = await liveStation(testing);
+  moveLease = true;
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), { code: "failed-precondition" });
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/checkIns/player-b`), undefined);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}/participants/player-b`).enrollmentStatus, "pending");
+  moveLease = false;
+  db.write(`testingEvents/${request.eventId}/stations/station-1`, { claimedDeviceId: "phone" }, { merge: true });
+  await testing.addTestingParticipant(request, auth("manager"));
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).reservationCount, 12);
+});
+
+
+test("unfinished enrollment prevents event close even when the original roster is complete", async () => {
+  let failScan = false;
+  const { db, testing } = harness({}, { value: 1000 }, {
+    storageSessionFloors: async () => { if (failScan) throw new Error("offline"); return {}; },
+  });
+  const request = await liveStation(testing);
+  for (const station of STATIONS) db.write(`testingEvents/${request.eventId}/progress/${station.id}_player-a`, { status: "completed" }, {});
+  failScan = true;
+  await assert.rejects(testing.addTestingParticipant(request, auth("manager")), /offline/);
+  const result = await testing.closeTestingEvent({ eventId: request.eventId }, auth("manager"));
+  assert.equal(result.ready, false);
+  assert.equal(result.expected, 6);
+  assert.equal(result.missing, 3);
+  assert.equal(db.snapshot(`testingEvents/${request.eventId}`).status, "live");
+});
