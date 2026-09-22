@@ -23,7 +23,7 @@ MAX_TOOL_RESULT_BYTES = 32 * 1024
 MAX_WORKOUT_BLOCKS = 12
 HIGH_QUALITY_DOMAINS = frozenset({"speed", "plyometrics", "agility"})
 DOSE_ARGS = frozenset({"sets", "reps", "restSeconds", "restScope", "restBetweenSetsSeconds", "familiarizationReps"})
-BLOCK_FIELDS = TIME_FIELDS | {"blockId", "order", "kind", "drillId", "name", "domain", "estimatedMinutes", "whyIncluded"}
+BLOCK_FIELDS = TIME_FIELDS | {"blockId", "order", "kind", "drillId", "name", "domain", "estimatedMinutes", "whyIncluded", "trainingPolicyVersion", "loadingInstructions"}
 WORKOUT_FIELDS = frozenset({"workoutId", "order", "title", "intent", "focusDomains", "budgetMinutes", "estimatedMinutes", "blocks", "nextBlockSequence", "revision", "editedBy", "editedAt", "editorUid", "check"})
 FORBIDDEN_RETEST_FIELDS = frozenset({"retest", "isRetest", "isMeasuredDrill", "measuredDrillType"})
 
@@ -143,6 +143,14 @@ def validate_workout(workout: dict, catalog: dict, profile: dict, frequency: dic
         if row is None:
             violations.append(_violation("unknown_drill", "Every block must reference a known executable catalog drill", block))
             continue
+        if row.get('trainingPolicy'):
+            expected = {'blocks': [deepcopy(block)]}
+            from gateway.whole_body import annotate_load_instructions
+            annotate_load_instructions(expected, catalog, profile)
+            if any(block.get(key) != expected['blocks'][0].get(key) for key in ('trainingPolicyVersion', 'loadingInstructions')):
+                violations.append(_violation('loading_instructions', 'Loading instructions must match the current reviewed prescription.', block))
+        elif 'trainingPolicyVersion' in block or 'loadingInstructions' in block:
+            violations.append(_violation('loading_instructions', 'Legacy exercises cannot acquire unreviewed loading instructions.', block))
         if 'trainingRationale' in block:
             from gateway.personalized_objectives import valid_rationale
             if not valid_rationale(block['trainingRationale'], block, plan, catalog):
@@ -180,6 +188,10 @@ def validate_workout(workout: dict, catalog: dict, profile: dict, frequency: dic
     if type(sequence) is not int or not max_sequence < sequence <= 1000000:
         violations.append(_violation("block_sequence", "nextBlockSequence must exceed every allocated surviving ID"))
     reserved = reserved_adjustment_drills(plan, target, frequency, retained_drill_ids=retained_drill_ids)
+    from gateway.whole_body import load_violations
+    for reason in load_violations(workout, catalog, profile, plan=plan,
+                                 week=(target or {}).get('weekNumber', 1), order=workout.get('order', 1)):
+        violations.append(_violation(reason, 'Whole-body load policy: ' + reason))
     for drill_id in sorted(drills):
         if drill_id in reserved:
             violations.append(_violation("scheduled_elsewhere", f"Drill '{drill_id}' is already scheduled or completed in another workout this week; choose a different drill", {"drillId": drill_id}))
@@ -236,6 +248,8 @@ def _reserved_ids(context):
 
 def _check(inv, workout, *, include_request=True):
     context = _context(inv)
+    from gateway.whole_body import annotate_load_instructions
+    annotate_load_instructions(workout, context.get('catalog', {}), _profile(inv))
     check = validate_workout(workout, context.get("catalog", {}), _profile(inv), context.get("frequency", {}),
                             context.get("plan"), context.get("target"), allow_partner=context.get("allowPartner"),
                             retained_drill_ids=_retained_ids(context))

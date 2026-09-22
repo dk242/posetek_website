@@ -78,6 +78,15 @@ def compute_personalized_focus(profile, eligible_domains, parsed, capacity, *, c
         if domain in available and domain not in selected_domains and after[domain] < 35:
             _transfer(after, domain, min(3, 35-after[domain]), allowed=available, anchor=base,
                       max_delta=5, total_delta=20, protected=selected_domains, ceilings=caps)
+    # Opt-in whole-body support uses the existing bounded nudge machinery.
+    # It neither changes measured priorities nor counts strength minutes twice.
+    if profile.get('wholeBody') and 'strength' in available and 'strength' not in selected_domains:
+        from gateway.whole_body import support_links
+        linked = any(row.get('domain') == 'strength' and any(support_links(row, p['objectiveId'])
+                     for p in priorities if p['role'] in ('primary', 'support')) for row in (catalog or {}).values())
+        if linked:
+            _transfer(after, 'strength', min(5, max(0, 15-after['strength'])), allowed=available, anchor=base,
+                      max_delta=5, total_delta=20, protected=selected_domains, ceilings=caps)
     coached = dict(after); unapplied = []
     for item in sorted(parsed or [], key=lambda p: (p.get('direction') != 'less', p.get('domain', ''))):
         domain = item.get('domain'); direction = item.get('direction'); strength = item.get('strength', 1)

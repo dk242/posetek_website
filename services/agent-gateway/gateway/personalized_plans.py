@@ -51,6 +51,12 @@ def state(inv, read=_read, *, methodology=True):
     profile.update(age=age, ageSource=source,
         technicalEligibility=resolve_technical_eligibility(inv.db, inv.player_id, player, read=read),
         coachFeedback=_data(read(inv.player_ref().collection('privateProfile').document('coachFeedback'))))
+    if (inv.params.get('intake') or {}).get('trainingContext'):
+        readiness = _data(read(inv.player_ref().collection('privateProfile').document('trainingReadiness')))
+        profile['trainingReadiness'] = readiness
+        reviewer = readiness.get('reviewedBy')
+        if isinstance(reviewer, str) and reviewer and '/' not in reviewer:
+            profile['trainingReviewer'] = _data(read(inv.db.collection('trainingReviewers').document(reviewer)))
     active = _snapshots(inv.player_ref().collection('trainingPlans').where('status', '==', 'active'), read)
     logs = _snapshots(inv.player_ref().collection('workoutLogs'), read)
     reservations = _snapshots(inv.player_ref().collection('plannedWorkouts'), read)
@@ -173,7 +179,8 @@ def activate_draft(inv):
         if draft['status'] != 'ready' or draft['expiresAt'] <= _now(inv):
             raise GatewayError('validation_failed', 'Draft is no longer ready; generate a fresh comparison')
         plan = deepcopy(draft['plan'])
-        if plan['startDate'] != _now(inv).astimezone(ZoneInfo(plan['timezone'])).date().isoformat():
+        today = _now(inv).astimezone(ZoneInfo(plan['timezone'])).date().isoformat()
+        if (plan['startDate'] < today if plan.get('trainingPolicyVersion') == 'whole-body-v1' else plan['startDate'] != today):
             raise GatewayError('validation_failed', 'The draft start date has passed; generate a fresh draft for today')
         inv.params['intake'] = plan['intake']
         inv.params['useProvisionalEstimates'] = bool((plan.get('assessment', {}).get('estimatePolicy') or {}).get('enabled', False))
@@ -190,6 +197,9 @@ def activate_draft(inv):
             raise GatewayError('validation_failed', 'Plan identity already exists; no plan was overwritten')
         ids = {b['drillId'] for week in plan['weeks'] for w in week['workouts'] for b in w['blocks']}
         _, rows = _fresh_profile_catalog(inv, plan, ids, read)
+        from gateway.whole_body import assert_activation_allowed, mark_plan_authorization
+        assert_activation_allowed(inv, rows, read)
+        mark_plan_authorization(plan, rows)
         if digest(rows) != draft['catalogHash']:
             raise GatewayError('validation_failed', 'The curriculum changed. Generate a fresh draft before activating it.')
         for week in plan['weeks']:

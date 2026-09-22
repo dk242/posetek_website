@@ -11,7 +11,8 @@ from gateway.errors import GatewayError, invalid_request, context_unavailable
 
 POSITIONS = ('GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST')
 DOMAINS = ('ballMastery', 'dribbling', 'passing', 'receiving', 'shooting', 'speed', 'agility', 'plyometrics', 'strength', 'games')
-EQUIPMENT = ('ball','cones','markers','wall','goal','hurdles','box','sledOrBand','timer','bench','mat','kneePad','tapeMeasure','cueDevice')
+from gateway.whole_body import GYM_EQUIPMENT
+EQUIPMENT = ('ball','cones','markers','wall','goal','hurdles','box','sledOrBand','timer','bench','mat','kneePad','tapeMeasure','cueDevice') + GYM_EQUIPMENT
 CATEGORY_DOMAIN = {'striking':'shooting','power':'plyometrics','speed':'speed','ballControl':'dribbling','agility':'agility'}
 
 # Use the client's current benchmark scores, which accompany its best results.
@@ -158,6 +159,9 @@ def validate_program_intake(inv):
               'equipment':list(dict.fromkeys(equipment)),'level':level,'goals':goals,'freeTextGoals':free,'painFlag':False}
     for key in ('age','position'):
         if raw.get(key) is not None: result[key]=raw[key]
+    if 'trainingContext' in raw:
+        from gateway.whole_body import validate_context
+        result['trainingContext'] = validate_context(raw['trainingContext'], s)
     inv.context['programIntake']=result
     return result
 
@@ -346,4 +350,6 @@ def assemble_program_profile(inv):
     # Private inputs live outside renderable context and public plan/result projections.
     inv.context['_programPrivate']={'coachFeedback':feedback,'peerEvidence':peer_private,'rawStatsProfile':stats_input}
     inv.context['programProfile']=result
+    from gateway.whole_body import bind_profile
+    bind_profile(inv, result)
     return result

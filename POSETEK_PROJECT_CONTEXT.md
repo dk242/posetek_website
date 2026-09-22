@@ -6,6 +6,25 @@ business document is included.
 
 ## Readiness and source provenance
 
+### September 21 whole-body training expansion
+
+The approved implementation adds 80 entirely new exercise drafts for ages 10–18:
+28 strength, 12 isometric, 16 plyometric, 12 speed/change-of-direction and 12 ball
+packages, filmed as 20 three-clip packages per week from September 21 to October 18.
+Read [the whole-body handoff](docs/WHOLE_BODY_TRAINING.md) and
+[`content/training-expansion/README.md`](content/training-expansion/README.md).
+The six measured tests guide performance priorities; they do not diagnose muscle
+weakness or determine an external weight. Current qualified review, actual equipment,
+experience, supervision and the full outside schedule constrain expanded training.
+No exercise, video, reviewer qualification or player readiness is auto-approved.
+The mobile compatibility gate stays false pending Taiyo's device acceptance.
+
+The source implementation is validated and prepared for release. The final live
+status belongs in `deployment/WHOLE_BODY_TRAINING_PRODUCTION.json` once verified.
+Deploy only the composed `deployment/whole-body-firestore.rules`; the root rules
+file also includes separate, unreleased native testing work. Preserve existing
+plans, logs, all prior catalog content and approved marketing bytes.
+
 ### September 21 Draft B video planning
 
 Local `main` was fast-forwarded to GitHub `main` at

@@ -245,6 +245,25 @@ match /players/{playerId}/workoutSchedule/current {
   allow create, delete: if false;
 }
 match /llmJobs/{jobId} {
+  function trainingEditCapability(capability) {
+    return capability in ['save_workout_edit', 'validate_workout_start'];
+  }
+  function validTrainingRequest() {
+    let job = request.resource.data;
+    let p = job.params;
+    return !trainingEditCapability(job.capability) || (personalizedActor(job.playerId)
+      && p.planId is string && p.planId.size() > 0
+      && p.workoutId is string && p.workoutId.size() > 0
+      && p.expectedPlanRevision is int && p.expectedPlanRevision >= 0
+      && p.expectedWorkoutRevision is int && p.expectedWorkoutRevision >= 0
+      && p.expectedScheduleRevision is int && p.expectedScheduleRevision >= 0
+      && (job.capability == 'save_workout_edit'
+        ? p.keys().hasOnly(['planId','workoutId','expectedPlanRevision','expectedWorkoutRevision','expectedScheduleRevision','workout','rationale'])
+          && p.workout is map && p.rationale is string && p.rationale.size() > 0 && p.rationale.size() <= 2000
+        : p.keys().hasOnly(['planId','workoutId','expectedPlanRevision','expectedWorkoutRevision','expectedScheduleRevision','equipmentConfirmed','supervision','painFlag'])
+          && p.equipmentConfirmed is bool && p.painFlag is bool
+          && p.supervision in ['qualifiedCoach','unavailable']));
+  }
   function serverOwnedFields() {
     return ['result', 'resultRef', 'traceRef', 'usage', 'error', 'startedAt', 'completedAt', 'progress', 'engineVersion', 'personalizedExecution'];
   }
@@ -273,12 +292,13 @@ match /llmJobs/{jobId} {
                   && request.resource.data.params.expectedActivePlans is list
                 : request.resource.data.params.keys().hasOnly(['engineVersion','draftId'])))
         : true)
+      && validTrainingRequest()
       && !request.resource.data.keys().hasAny(serverOwnedFields());
   }
   allow create: if request.auth != null && isWellFormedPendingJob();
   allow read: if request.auth != null
     && resource.data.requestedByUid == request.auth.uid
-    && (!personalizedCapability(resource.data.capability) || personalizedActor(resource.data.playerId));
+    && (!(personalizedCapability(resource.data.capability) || trainingEditCapability(resource.data.capability)) || personalizedActor(resource.data.playerId));
   allow update, delete: if false;
 }
 match /players/{playerId}/personalizedPlanDraftViews/{draftId} {
@@ -364,8 +384,40 @@ match /players/{playerId}/workoutLogs/{workoutId} {
       && (d.source == 'plan' ? workoutId == d.planId + '_' + d.workoutId
                             : workoutId == d.workoutId));
   }
+  function trainingStartIsCurrent() {
+    let d = request.resource.data;
+    let plan = get(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(d.planId)).data;
+    return !exists(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(d.planId))
+      || !plan.get('requiresTrainingStartAuthorization', false) || currentTrainingGrant(d, plan);
+  }
+  function currentTrainingGrant(d, plan) {
+    let grant = get(/databases/$(database)/documents/players/$(playerId)/workoutStartAuthorizations/$(workoutId)).data;
+    let readiness = get(/databases/$(database)/documents/players/$(playerId)/privateProfile/trainingReadiness).data;
+    let reviewer = get(/databases/$(database)/documents/trainingReviewers/$(grant.reviewedBy)).data;
+    return d.schemaVersion == 2 && d.source == 'plan'
+      && grant.authUID == request.auth.uid && grant.planId == d.planId && grant.workoutId == d.workoutId
+      && grant.expiresAt is timestamp && grant.expiresAt > request.time
+      && grant.planRevision == plan.planRevision && grant.workoutRevision == d.workoutRevision
+      && grant.scheduleRevision == get(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision
+      && grant.readinessRevision == readiness.revision && readiness.status == 'cleared'
+      && reviewer.enabled == true && currentTrainingReviewer(grant.reviewedBy, reviewer)
+      && get(/databases/$(database)/documents/config/llm).data.get('wholeBodyTraining', {}).get('mobileVerified', false) == true;
+  }
+  function currentTrainingReviewer(uid, reviewer) {
+    let p = playerData(playerId);
+    return reviewer.get('scopeType', '') == 'posetek'
+      || (reviewer.get('scopeType', '') == 'assignedPlayers'
+        && (p.get('organizationId', '') != '' ? currentTrainingClubReviewer(uid, p)
+          : get(/databases/$(database)/documents/coaches/$(uid)).data.get('userUID', '') == uid
+            && (p.get('coachUID', '') == uid || get(/databases/$(database)/documents/coaches/$(uid)).data.get('members', []).hasAny([playerId]))));
+  }
+  function currentTrainingClubReviewer(uid, p) {
+    let m = get(/databases/$(database)/documents/organizations/$(p.organizationId)/members/$(uid)).data;
+    return m.get('userUID', '') == uid && m.get('status', '') == 'active'
+      && (m.get('role', '') == 'manager' || (m.get('role', '') == 'coach' && m.get('teamIds', []).hasAny([p.get('teamId', '')])));
+  }
   allow create: if request.auth != null && !isPosetekAdmin() && (isSelf() || isCoachOfPlayer())
-    && isWellFormedLog() && validV2Identity() && advancesSchedule()
+    && isWellFormedLog() && validV2Identity() && advancesSchedule() && trainingStartIsCurrent()
     && (request.resource.data.schemaVersion == 1 || isSelf());
   allow update: if request.auth != null && !isPosetekAdmin() && (isSelf() || isCoachOfPlayer())
     && isWellFormedLog() && validV2Identity() && advancesSchedule()
@@ -378,22 +430,12 @@ match /players/{playerId}/workoutLogs/{workoutId} {
   allow delete: if false;
 }
 match /players/{playerId}/trainingPlans/{planId} {
-  allow update: if isPosetekAdmin()
-    && resource.data.schemaVersion == 3
-    && resource.data.status == 'active'
-    && request.resource.data.schemaVersion == 3
-    && request.resource.data.diff(resource.data).affectedKeys()
-         .hasOnly(['weeks', 'planRevision', 'lastEdit', 'updatedAt'])
-    && request.resource.data.planRevision == resource.data.planRevision + 1
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision
-        == get(/databases/$(database)/documents/players/$(playerId)/workoutSchedule/current).data.revision + 1
-    && request.resource.data.updatedAt == request.time
-    && request.resource.data.lastEdit.adjustmentId is string
-    && !exists(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId))
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.planId == planId
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.basePlanRevision == resource.data.planRevision
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.newPlanRevision == request.resource.data.planRevision
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/planAdjustments/$(request.resource.data.lastEdit.adjustmentId)).data.editor.uid == request.auth.uid;
+  // Exercise IDs nested inside arbitrary weeks cannot be safely policy-checked
+  // in rules. All edits now use the deterministic gateway save_workout_edit.
+  allow update: if false;
+}
+match /players/{playerId}/workoutStartAuthorizations/{authorizationId} {
+  allow read, write: if false;
 }
 match /players/{playerId}/planAdjustments/{adjustmentId} {
   function isWellFormedAdjustment() {
@@ -410,13 +452,7 @@ match /players/{playerId}/planAdjustments/{adjustmentId} {
       && request.resource.data.createdAt == request.time;
   }
   allow read: if isPosetekAdmin();
-  allow create: if isPosetekAdmin() && isWellFormedAdjustment()
-    && get(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.planRevision == request.resource.data.basePlanRevision
-    && request.resource.data.newPlanRevision == request.resource.data.basePlanRevision + 1
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.planRevision == request.resource.data.newPlanRevision
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.lastEdit.adjustmentId == adjustmentId
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.lastEdit.workoutId == request.resource.data.workoutId
-    && getAfter(/databases/$(database)/documents/players/$(playerId)/trainingPlans/$(request.resource.data.planId)).data.updatedAt == request.time;
+  allow create: if false;
   allow update, delete: if false;
 }
 match /players/{playerId}/workoutDrafts/{draftId} {
@@ -447,6 +483,10 @@ match /players/{playerId}/coachMemories/{memoryId} {
   allow write: if false;
 }
 match /drillCatalog/{drillId} {
+  function managedTrainingDrill(data) {
+    return data.get('productionBatchId', '') == 'whole-body-2026-09'
+      || data.get('trainingPolicy', {}).get('version', '') == 'whole-body-v1';
+  }
   function isWellFormedV2Drill() {
     return request.resource.data.schemaVersion == 2
       && request.resource.data.drillId == drillId
@@ -482,6 +522,8 @@ match /drillCatalog/{drillId} {
   }
   allow read: if request.auth != null;
   allow create: if isPosetekAdmin() && isWellFormedV2Drill()
+    && !managedTrainingDrill(request.resource.data)
+    && !request.resource.data.equipment.hasAny(['dumbbells','kettlebell','barbell','squatRack','trapBar','weightPlates','cableMachine','resistanceBand','medicineBall','pullUpBar','legCurlMachine','legPressMachine','jumpRope','sliders'])
     && request.resource.data.createdAt == request.time;
   // Every document the workbook ingestion wrote — the whole live catalog,
   // 101 documents on 2026-09-07 — predates v2 and has no `createdAt`.
@@ -498,6 +540,14 @@ match /drillCatalog/{drillId} {
         || request.resource.data.createdAt == request.time);
   }
   allow update: if isPosetekAdmin() && isWellFormedV2Drill()
+    && request.resource.data.get('productionBatchId', null) == resource.data.get('productionBatchId', null)
+    && request.resource.data.get('trainingPolicy', null) == resource.data.get('trainingPolicy', null)
+    && (!managedTrainingDrill(resource.data)
+      || (request.resource.data.status in ['draft', 'archived']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['media','mediaSchemaVersion','mediaPublishedAt','updatedAt','updatedBy','catalogVersion','status'])
+        && (resource.data.status != 'published' || request.resource.data.status == 'archived')))
+    && (managedTrainingDrill(resource.data) || request.resource.data.equipment == resource.data.equipment
+      || !request.resource.data.equipment.hasAny(['dumbbells','kettlebell','barbell','squatRack','trapBar','weightPlates','cableMachine','resistanceBand','medicineBall','pullUpBar','legCurlMachine','legPressMachine','jumpRope','sliders']))
     && createdAtIsPreserved();
   allow delete: if false;
 }
@@ -505,17 +555,26 @@ match /drillCatalogMeta/{docId} {
   allow read: if request.auth != null;
   allow write: if isPosetekAdmin();
 }
+match /drillCatalogAuthoring/{drillId} {
+  allow read: if isPosetekAdmin();
+  allow write: if false;
+}
+match /trainingReviewers/{uid} {
+  allow read: if isPosetekAdmin() || (signedIn() && request.auth.uid == uid);
+  allow write: if false;
+}
+match /trainingImports/{document=**} {
+  allow read, write: if false;
+}
+match /players/{playerId}/privateProfile/trainingReadiness {
+  allow read: if isPosetekAdmin();
+  allow write: if false;
+}
 
-    // The released website's legacy coach editor changes only these three
-    // fields. v3 remains subject to the atomic plan/audit/counter contract.
+    // Legacy plans stay readable. Old clients cannot inject newly restricted
+    // content through their legacy weeks editor; use the reviewed web workflow.
     match /players/{pid}/trainingPlans/{planId} {
-      allow update: if coachOf(pid) && !isPosetekAdmin()
-        && resource.data.get('schemaVersion', 1) in [1, 2]
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['weeks', 'coachAdjustedAt', 'coachAdjustedByUid'])
-        && request.resource.data.weeks is list
-        && request.resource.data.coachAdjustedAt == request.time
-        && request.resource.data.coachAdjustedByUid == request.auth.uid;
+      allow update: if false;
     }
     match /players/{pid} {
       // Legacy discovery stays compatible; club athlete discovery is scoped.
@@ -699,7 +758,7 @@ match /drillCatalogMeta/{docId} {
     }
 
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','testingEvents','testingEventInvites','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
+      allow read, write: if !(root in ['drillCatalogAuthoring','trainingReviewers','trainingImports','playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','testingEvents','testingEventInvites','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';
@@ -728,9 +787,9 @@ match /drillCatalogMeta/{docId} {
     }
     match /players/{pid}/{sub}/{doc=**} {
       allow read: if (!clubPlayer(pid) || visiblePlayer(pid)) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','workoutStartAuthorizations','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
       allow write: if !isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))) && !(sub in ['privateProfile','trainingPlanContexts','coachWorkspace','coachMemories',
-        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
+        'aiConversations','aiAnalyses','trainingPlans','plannedWorkouts','workoutLogs','planAdjustments','workoutDrafts','personalizedPlanDrafts','personalizedPlanDraftContexts','personalizedPlanDraftViews','personalizedPlanOperations','workoutSchedule','workoutStartAuthorizations','aiKickComparisons','aiAnalysisCorrections','aiAnalysisRuns','aiAnalysisReviews','aiAnalysisReviewHeads','insightMetadata','insightSummaries','insightSummaryDays','recordingCounters','sessionRepLinks','sessions']);
     }
 
     // Kick evidence and expert-review projections (2026-09-08).

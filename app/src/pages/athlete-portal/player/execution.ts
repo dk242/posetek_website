@@ -7,6 +7,8 @@ export type Row = Record<string, any>;
 export function executable(plan: Row, workout: Row, weekNumber: number, source = 'plan'): Row {
   const workoutId = String(workout.workoutId || workout.id);
   return { ...workout, id: source === 'plan' ? planLogId(plan.id, workoutId) : workoutId,
+    ...(plan.trainingPolicyVersion ? { trainingPolicyVersion: plan.trainingPolicyVersion } : {}),
+    ...(plan.requiresTrainingStartAuthorization === true ? { requiresTrainingStartAuthorization: true } : {}),
     schemaVersion: 2, planId: plan.id, weekNumber, source, workoutId,
     workoutRevision: Number(workout.revision || 1),
     workoutSnapshot: { ...workout, workoutId }, intro: workout.intent || workout.intro || '' };

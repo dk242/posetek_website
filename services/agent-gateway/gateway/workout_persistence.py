@@ -111,7 +111,7 @@ def _safe_workout(workout):
     """Allowlist keeps private model/evaluation data out of SSE and public documents."""
     fields = ('workoutId', 'order', 'title', 'intent', 'focusDomains', 'budgetMinutes',
               'estimatedMinutes', 'blocks', 'revision', 'editedBy', 'editedAt', 'editorUid',
-              'previousRevision', 'check', 'nextBlockSequence')
+              'previousRevision', 'check', 'nextBlockSequence', 'scheduledDate')
     return {k: deepcopy(workout[k]) for k in fields if k in workout}
 
 
@@ -127,8 +127,10 @@ def _fresh_profile_catalog(inv, plan, drill_ids, read=None):
     age_result = resolve_age(player, plan.get('intake') or {}, _now(inv))
     age = age_result[0] if isinstance(age_result, tuple) else age_result.get('age') if isinstance(age_result, dict) else age_result
     profile = deepcopy(inv.context.get('programProfile') or {})
-    profile.update(age=age or 10, intake=deepcopy(plan.get('intake') or {}),
+    profile.update(age=age or 10, ageSource=age_result[1] if isinstance(age_result, tuple) else 'absent', intake=deepcopy(plan.get('intake') or {}),
                    technicalEligibility=resolve_technical_eligibility(inv.db, inv.player_id, player, read=load))
+    from gateway.whole_body import bind_profile
+    bind_profile(inv, profile, read=load)
     catalog = {}
     for drill_id in sorted(set(drill_ids)):
         snap = load(inv.db.collection('drillCatalog').document(_id(drill_id, 'drillId')))
@@ -143,6 +145,11 @@ def _validate(inv, workout, plan, target, logs, reservations, *, read=None, requ
     from gateway.workout_tools import validate_workout
     drill_ids = [b.get('drillId') for b in workout.get('blocks', [])]
     profile, catalog = _fresh_profile_catalog(inv, plan, drill_ids, read)
+    from gateway.whole_body import assert_activation_allowed, annotate_load_instructions
+    assert_activation_allowed(inv, catalog, read)
+    if target.get('kind') not in ('plan', 'generation') and any(row.get('trainingPolicy') for row in catalog.values()):
+        raise GatewayError('validation_failed', 'Expanded training needs a reviewed dated plan; it cannot be inserted into an unscheduled extra workout')
+    annotate_load_instructions(workout, catalog, profile)
     fold_target = deepcopy(target)
     retained_ids = None
     if target.get('kind') == 'adhoc':
@@ -156,9 +163,45 @@ def _validate(inv, workout, plan, target, logs, reservations, *, read=None, requ
     # used (program_generator.run_program). `False` here is not "derive it from
     # the setting": eligible_drill treats an explicit False as a hard deny, so a
     # `setting: "partner"` plan built from partner drills was rejected at commit.
-    check = validate_workout(workout, catalog, profile, frequency=frequency['counts'], plan=plan, target=target,
+    validation_target = {**target, 'weekNumber': fold_target.get('weekNumber') or _find_workout(plan, workout.get('workoutId'))[0]['weekNumber']}
+    check = validate_workout(workout, catalog, profile, frequency=frequency['counts'], plan=plan, target=validation_target,
                             allow_partner=(plan.get('intake') or {}).get('setting') in ('partner', 'halfAndHalf'),
                             retained_drill_ids=retained_ids)
+    if any(row.get('trainingPolicy') for row in catalog.values()):
+        from gateway.whole_body import load_violations
+        from gateway.workout_history import evidence_blocks, timestamp
+        from datetime import date as calendar_date
+        # Fold actual immutable snapshots and pending reservations once. A log
+        # supersedes its own scheduled slot, never double-charges it.
+        load_plan = deepcopy(plan)
+        logged_ids = set()
+        prior = []
+        for log in logs:
+            blocks = evidence_blocks(log)
+            if not blocks: continue
+            wid = log.get('workoutId')
+            if log.get('planId') == plan.get('planId'):
+                logged_ids.add(wid)
+                if wid == workout.get('workoutId'): continue
+            at = timestamp(log.get('startedAt'))
+            prior.append((at.date() if at else None, {'blocks': blocks}))
+        for w in load_plan.get('weeks', []):
+            w['workouts'] = [entry for entry in w.get('workouts', []) if entry.get('workoutId') not in logged_ids]
+        adhoc_logged = {log.get('id') or log.get('workoutId') for log in logs if log.get('source') == 'adhoc'}
+        for reservation in reservations:
+            if reservation.get('status') != 'ready' or (reservation.get('id') or reservation.get('workoutId')) in adhoc_logged: continue
+            try: day = calendar_date.fromisoformat(reservation.get('scheduledDate', ''))
+            except (TypeError, ValueError): day = None
+            prior.append((day, reservation))
+        all_ids = {b.get('drillId') for w in load_plan.get('weeks', []) for x in w.get('workouts', []) for b in x.get('blocks', [])}
+        all_ids.update(b.get('drillId') for _, w in prior for b in w.get('blocks', []))
+        _, load_catalog = _fresh_profile_catalog(inv, plan, all_ids | set(catalog), read)
+        week_number = fold_target.get('weekNumber') or _find_workout(plan, workout.get('workoutId'))[0]['weekNumber']
+        load_errors = load_violations(workout, load_catalog, profile, plan=load_plan, week=week_number,
+                                     order=workout.get('order', 1), prior_workouts=prior)
+        if load_errors:
+            check['ok'] = False
+            check.setdefault('violations', []).extend({'code': e, 'message': e} for e in load_errors)
     from gateway.workout_requirements import with_requirements
     check = with_requirements(check, workout, requirements)
     if not check.get('ok'):
@@ -250,6 +293,8 @@ def persist_program(inv, plan, private_context):
     ids = {b['drillId'] for week in plan['weeks'] for w in week['workouts'] for b in w['blocks']}
     cached = (inv.context.get('workoutContext') or {}).get('catalog') or inv.context.get('catalogV2') or {}
     _, fresh_rows = _fresh_profile_catalog(inv, plan, ids)
+    from gateway.whole_body import mark_plan_authorization
+    mark_plan_authorization(plan, fresh_rows)
     private_context['catalogRows'] = {did: deepcopy(cached.get(did, fresh_rows[did])) for did in ids}
     record = _context_record(inv, plan, private_context)
     enforce_document_size(record, 'generation context')
@@ -631,6 +676,8 @@ def apply_workout_draft(inv):
             if target['kind'] == 'plan':
                 # week is from the fresh transaction snapshot, preserving every sibling edit.
                 week['workouts'] = [workout if w['workoutId'] == workout['workoutId'] else w for w in week['workouts']]
+                if any(row.get('trainingPolicy') for row in catalog.values()):
+                    current_plan['requiresTrainingStartAuthorization'] = True
                 _week_derived(week)
                 current_plan.update(planRevision=new_plan_revision, updatedAt=_now(inv), lastEdit={
                     'workoutId': workout['workoutId'], 'revision': new_revision, 'editedBy': role,

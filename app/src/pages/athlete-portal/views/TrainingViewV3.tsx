@@ -13,6 +13,7 @@
 
 import { useMemo, useState } from "react";
 import { blockDoseLine } from "../../../lib/contracts/drillV2";
+import TrainingLoadInstructions from "../../../components/TrainingLoadInstructions";
 import {
   currentWeekNumber,
   nextWorkout,
@@ -129,6 +130,7 @@ export default function TrainingViewV3({ plan, logs }: { plan: any; logs: any[] 
                     {domainLabel(String(block.domain || ""))} · {blockDoseLine(block)}
                   </span>
                   {block.whyIncluded && <span className="muted-copy">{block.whyIncluded}</span>}
+                  <TrainingLoadInstructions block={block} />
                 </div>
               ))}
             </div>

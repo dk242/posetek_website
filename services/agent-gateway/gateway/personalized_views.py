@@ -26,8 +26,13 @@ def evidence_policy(value):
 
 
 def intake_view(value):
-    return pick(value, 'horizonWeeks sessionsPerWeek minutesPerSession setting equipment level goals '
-                'freeTextGoals painFlag age position')
+    result = pick(value, 'horizonWeeks sessionsPerWeek minutesPerSession setting equipment level goals '
+                  'freeTextGoals painFlag age position')
+    if isinstance(value, dict) and isinstance(value.get('trainingContext'), dict):
+        context = value['trainingContext']
+        result['trainingContext'] = pick(context, 'schemaVersion equipmentConfirmed resistanceExperience sessionDays supervision startDate scheduleConfirmed')
+        result['trainingContext']['externalSchedule'] = rows(context.get('externalSchedule'), lambda r: pick(r, 'day activity durationMinutes effort'))
+    return result
 
 
 def priority_view(value):
@@ -41,7 +46,7 @@ def rationale_view(value):
 
 def block_view(block):
     result = pick(block, 'blockId order drillId drillName name kind domain sets reps repUnit perSide restSeconds restScope '
-                        'restBetweenSetsSeconds familiarizationReps estimatedMinutes whyIncluded')
+                        'restBetweenSetsSeconds familiarizationReps estimatedMinutes whyIncluded trainingPolicyVersion loadingInstructions')
     if isinstance(block, dict) and 'trainingRationale' in block:
         result['trainingRationale'] = rationale_view(block['trainingRationale'])
     return result
@@ -86,7 +91,7 @@ def assessment_view(value):
 
 def workout_view(value):
     result = pick(value, 'workoutId revision order title intent theme estimatedMinutes budgetMinutes focusDomains '
-        'nextBlockSequence editedBy editorUid editedAt previousRevision')
+        'nextBlockSequence editedBy editorUid editedAt previousRevision scheduledDate')
     result['blocks'] = rows(value.get('blocks'), block_view)
     result['check'] = pick(value.get('check'), 'timeStatus deltaMinutes intentStatus checkedAt notes adversarialPassed')
     return result
@@ -115,7 +120,7 @@ def week_view(value):
 def public_plan(plan):
     result = pick(plan, 'schemaVersion planId playerId jobId engineVersion generatedAt status startDate timezone '
         'horizonWeeks sessionsPerWeek minutesPerSession weeklyBudgetMinutes planRevision disclaimers '
-        'updatedAt lastEdit catalogVersion activatedAt activatedByUid sourceDraftId generationContextRef')
+        'updatedAt lastEdit catalogVersion activatedAt activatedByUid sourceDraftId generationContextRef trainingPolicyVersion requiresTrainingStartAuthorization')
     result['intake'] = intake_view(plan.get('intake'))
     result['assessment'] = assessment_view(plan.get('assessment') or {})
     result['weeks'] = rows(plan.get('weeks'), week_view)

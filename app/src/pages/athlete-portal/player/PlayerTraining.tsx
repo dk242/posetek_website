@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { db } from '../../../lib/firebase';
 import { currentWeekNumber, nextWorkout, orderedWeeks, orderedWorkouts, stateOf, workoutStates, findWorkout } from '../../../lib/contracts/planV3';
 import { blockDoseLine } from '../../../lib/contracts/drillV2';
+import TrainingLoadInstructions from '../../../components/TrainingLoadInstructions';
 import { domainLabel } from '../../../lib/contracts/types';
 import { submitLlmJob, waitForJob } from '../lib/loaders';
 import { dateText } from '../lib/mobile';
@@ -17,6 +18,8 @@ import PlayerWorkout from './PlayerWorkout';
 import DrillMedia from './DrillMedia';
 import CoachChat from './CoachChat';
 import { weekProgress } from './progress';
+import { needsTrainingStartCheck } from './workout-repository';
+import TrainingStartConfirmation from './TrainingStartConfirmation';
 
 export function previewProgram(): Row {
   const today = new Date();
@@ -86,7 +89,7 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
       }
       if (!mounted.current) return;
       setChatTarget(null); setProposal(null); setReview(ready);
-      if (andStart) await start(ready);
+      if (andStart && !needsTrainingStartCheck(ready)) await start(ready);
     } catch (e: any) { setError(e.message); }
     finally { setApplying(false); stops.forEach(s => s()); }
   };
@@ -114,7 +117,7 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
   if (review) {
     const log = store.logFor(review.id), snapshot = log?.workoutSnapshot || review;
     return <>{back}<p className="eyebrow">{log?.endedAt ? log.endReason === 'completed' ? 'Completed' : 'Ended early' : log ? 'In progress' : 'Your workout'}</p><h2>{snapshot.title || 'Workout'}</h2><p>{snapshot.intent}</p><p>{snapshot.estimatedMinutes} minutes · {snapshot.blocks?.length || 0} drills</p>{message}<WorkoutBlocks workout={snapshot} onDrill={setDrillId} />
-      {log?.endedAt ? <p>Saved {dateText(log.endedAt)}. Completed sets remain in your history.</p> : <button className="primary-cta" disabled={store.saving || !store.logsLoaded || plan.status !== 'active'} onClick={() => void start(review)}>{store.saving ? 'Starting…' : log ? 'Resume workout' : 'Start workout'}</button>}
+      {log?.endedAt ? <p>Saved {dateText(log.endedAt)}. Completed sets remain in your history.</p> : needsTrainingStartCheck(review) ? <TrainingStartConfirmation key={review.id} disabled={store.saving || !store.logsLoaded || plan.status !== 'active'} resuming={Boolean(log)} onStart={confirmation => void start({ ...review, startConfirmation: confirmation })} /> : <button className="primary-cta" disabled={store.saving || !store.logsLoaded || plan.status !== 'active'} onClick={() => void start(review)}>{store.saving ? 'Starting…' : log ? 'Resume workout' : 'Start workout'}</button>}
       {!log && <button className="hub-secondary" disabled={!capabilityEnabled(config, 'workout_chat')} onClick={() => { setSeed(''); setChatTarget(review.source === 'plan' ? { kind: 'plan', planId: plan.id, workoutId: review.workoutId } : { kind: 'adhoc', plannedWorkoutId: review.workoutId }); setReview(null); }}>Adjust with your coach</button>}
     </>;
   }
@@ -137,7 +140,7 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
 }
 
 function WorkoutBlocks({ workout, onDrill }: { workout: Row; onDrill: (id: string) => void }) {
-  return <section className="portal-card">{(workout?.blocks || []).map((b: Row) => <button className="player-list-button" key={b.blockId} onClick={() => onDrill(b.drillId)}><strong>{b.name}</strong><small>{blockDoseLine({ ...b, sets: b.sets, reps: b.reps, repUnit: b.repUnit })}</small>{b.whyIncluded && <span>{b.whyIncluded}</span>}</button>)}</section>;
+  return <section className="portal-card">{(workout?.blocks || []).map((b: Row) => <button className="player-list-button" key={b.blockId} onClick={() => onDrill(b.drillId)}><strong>{b.name}</strong><small>{blockDoseLine({ ...b, sets: b.sets, reps: b.reps, repUnit: b.repUnit })}</small>{b.whyIncluded && <span>{b.whyIncluded}</span>}<TrainingLoadInstructions block={b} /></button>)}</section>;
 }
 
 function WeekProgress({ plan, week, logs, reps, sessions }: { plan: Row; week: any; logs: Row[]; reps: Row[]; sessions: Row[] }) {

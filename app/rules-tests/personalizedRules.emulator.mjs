@@ -5,7 +5,7 @@ import {doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where,
 setLogLevel('silent'); // Expected denial cases remain assertions, not noisy SDK logs.
 
 const env = await initializeTestEnvironment({projectId:'demo-personalized-planner',
-  firestore:{rules:fs.readFileSync('firestore.rules','utf8'), host:'127.0.0.1', port:8189}});
+  firestore:{rules:fs.readFileSync(process.env.RULES_PATH || 'firestore.rules','utf8'), host:'127.0.0.1', port:8189}});
 const actors = Object.fromEntries(['admin','athlete','coach','manager','wrong','inactive','malformed','mismatch','outsider','unverified','anonymous'].map(uid => {
   const claims = {email:`${uid}@example.test`, email_verified:true};
   if (uid === 'admin' || uid === 'unverified') claims.email = `${uid}@posetek.net`;

@@ -117,6 +117,8 @@ def _progression_options(row, original, profile):
     fields = ('sets', 'reps', 'repUnit', 'perSide', 'restSeconds', 'restScope',
               'restBetweenSetsSeconds', 'familiarizationReps')
     base = {k: original[k] for k in fields if k in original}
+    if row.get('trainingPolicy', {}).get('progression') == 'coachReviewed':
+        return [{**base, 'estimatedMinutes': estimate_block(base)['estimatedMinutes']}]
     horizon = max(5, profile['intake'].get('horizonWeeks', 2) - 1)
     step = min(max(1, (row['dose']['repsMax'] - row['dose']['repsMin']) // horizon), max(1, base['reps'] // 10))
     choices = []
@@ -161,6 +163,9 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
     for slot in range(1, sessions + 1):
         for did in ranking:
             row = catalog[did]
+            from gateway.whole_body import session_allowed
+            if not session_allowed(row, profile, week_number, slot):
+                continue
             if row['domain'] not in domains or frequency.get(did, 0) >= row['maxFrequencyPerWeek']:
                 continue
             old = prior.get(slot, {}).get(did)
@@ -187,6 +192,34 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
         constraint({i: 1 for i in indices}, hi=1)
     for did, indices in by_drill.items():
         constraint({i: 1 for i in indices}, hi=catalog[did]['maxFrequencyPerWeek'] - frequency.get(did, 0))
+
+    if any(row.get('trainingPolicy') for row in catalog.values()):
+        from gateway.whole_body import families_for, quantities, session_date, recovery_days
+        limits = profile.get('wholeBody', {}).get('readiness', {}).get('limits') or {}
+        families = set().union(*(families_for(row) for row in catalog.values()))
+        family_flags = {}
+        for family in families:
+            entries = [i for i, (_, did, _) in choices.items() if family in families_for(catalog[did])]
+            for unit in ('sets', 'contacts', 'holdSeconds'):
+                if limits.get(unit+'PerWeek'):
+                    constraint({i: quantities(choices[i][2], catalog[choices[i][1]])[unit] for i in entries}, hi=limits[unit+'PerWeek'])
+            for slot in range(1, sessions+1):
+                slots = [i for i in entries if choices[i][0] == slot]
+                flag = variable(); family_flags[(family, slot)] = flag
+                constraint({**{i: 1 for i in slots}, flag: -12}, hi=0)
+                constraint({**{i: 1 for i in slots}, flag: -1}, lo=0)
+                for unit in ('sets', 'contacts', 'holdSeconds'):
+                    if limits.get(unit+'PerSession'):
+                        constraint({i: quantities(choices[i][2], catalog[choices[i][1]])[unit] for i in slots}, hi=limits[unit+'PerSession'])
+            policies = [r['trainingPolicy'] for r in catalog.values() if r.get('trainingPolicy') and family in families_for(r)]
+            if policies:
+                gap = max(recovery_days(p, profile) for p in policies)
+                context = profile['intake'].get('trainingContext') or {}
+                for a in range(1, sessions+1):
+                    for b in range(a+1, sessions+1):
+                        day_a, day_b = session_date(context, week_number, a), session_date(context, week_number, b)
+                        if day_a and day_b and abs((day_b-day_a).days) < gap:
+                            constraint({family_flags[(family,a)]:1, family_flags[(family,b)]:1}, hi=1)
 
     weekly_clock = {}
     for slot in range(1, sessions + 1):

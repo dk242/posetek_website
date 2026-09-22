@@ -32,10 +32,19 @@ def content_hash(row):
 
 
 def reviewed_drills(objective, catalog):
-    return [entry['drillId'] for entry in objective['drills'] if entry['drillId'] in catalog
+    existing = [entry['drillId'] for entry in objective['drills'] if entry['drillId'] in catalog
             and catalog[entry['drillId']]['domain'] == objective['domain']
             and catalog[entry['drillId']]['status'] == 'published'
             and content_hash(catalog[entry['drillId']]) == entry['contentSha256']]
+    # New human-reviewed direct task links can extend the curriculum. Capacity
+    # support remains outside the required direct-primary set, even at weight .5.
+    additions = [did for did, row in catalog.items() if row.get('domain') == objective['domain']
+                 and row.get('status') == 'published'
+                 and row.get('trainingPolicy', {}).get('reviewStatus') == 'approved'
+                 and any(link.get('objectiveId') == objective['id'] and link.get('relationship') == 'direct'
+                         and link.get('weight') == 1 and link.get('sourceIds')
+                         for link in row.get('trainingPolicy', {}).get('evidenceLinks', []))]
+    return list(dict.fromkeys(existing + sorted(additions)))
 
 
 def goal_domains(profile):
@@ -107,6 +116,10 @@ def rank_drills(catalog, profile, prior_core=()):
     priorities = profile.get('trainingPriorities', [])
     def relevance(did):
         matches = [(p['rank'], p['eligibleDrillIds'].index(did)) for p in priorities if did in p.get('eligibleDrillIds', [])]
+        if profile.get('wholeBody'):
+            from gateway.whole_body import support_links
+            matches += [(p['rank'] + .5, 0) for p in priorities
+                        if support_links(catalog[did], p['objectiveId'])]
         return min(matches) if matches else (999, 999)
     # Retention remains a hard weekly constraint. Reviewed task relevance comes
     # before a historical ID preference; difficulty never overrides eligibility.
@@ -118,11 +131,20 @@ def block_rationale(row, priorities, catalog):
     specs = {s['id']: s for s in methodology()['objectives']}
     matches = [p for p in priorities if p['domain'] == row['domain']]
     direct = [p for p in matches if p['objectiveId'] in specs and row['drillId'] in reviewed_drills(specs[p['objectiveId']], catalog)]
+    from gateway.whole_body import support_links
+    support = [p for p in priorities if support_links(row, p['objectiveId'])]
     priority = min(direct or matches, key=lambda p: p['rank']) if matches else None
     if direct:
         basis = priority['evidenceBasis']; reason = priority['reason']; progress = priority['progressCheck']
         label = {'measured': 'Measured-test practice', 'conditionalEstimate': 'Conditional support', 'goal': 'Stated goal', 'baseline': 'General practice'}[basis]
         summary = f'{label}: {priority["label"]}. {row["name"]} provides reviewed relevant practice.'
+    elif support:
+        priority = min(support, key=lambda p: p['rank'])
+        basis = priority['evidenceBasis']
+        reason = (f'Reviewed capacity support for {priority["label"].lower()}. '
+                  'The test does not identify a muscle weakness or establish that this exercise caused improvement.')
+        progress = 'Review exercise control and completion separately from the standardized performance retest.'
+        summary = f'Research-supported capacity practice: {row["name"]} supports {priority["label"].lower()}; no specific muscle weakness is inferred.'
     else:
         basis = 'goal' if priority and priority['evidenceBasis'] == 'goal' else 'baseline'
         reason = f'General {row["domain"]} practice fits this allocation. There is no reviewed metric-specific link for this exercise; no technical deficit is inferred.'

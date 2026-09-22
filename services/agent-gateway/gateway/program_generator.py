@@ -205,6 +205,8 @@ def build_workout(inv,work_order,catalog,frequency,plan):
         _workout_progress(inv,'build',week,order,finished=True)
         _workout_progress(inv,'time_check',week,order)
         envelope=inv.context.get('workoutDraft') or {};workout=deepcopy(envelope.get('workout') or {})
+        from gateway.whole_body import annotate_load_instructions
+        annotate_load_instructions(workout, catalog, inv.context['programProfile'])
         if (plan.get('assessment') or {}).get('methodologyVersion') == 'evidence-objectives-v1':
             from gateway.personalized_objectives import annotate_workout
             annotate_workout(workout,plan['assessment']['priorities'],catalog)
@@ -340,7 +342,7 @@ def run_program(inv,*,persist=True,personalized=False):
     data_gaps+= [f'{row["category"]} scores {row["score"]}/100 but has no primary best result in the supplied stats snapshot, '
                  f'so it did not raise the {row["domain"]} allocation.' for row in unevidenced]
     data_gaps += [f'{d.capitalize()} allocation is limited by available doses and weekly frequency.' for d,c in cap.items() if c<40 and split['tableRow']['percentages'].get(d,0)>c]
-    inputs={k:deepcopy(v) for k,v in profile.items() if k not in ('intake','dataGaps','measuredMetricIds')}
+    inputs={k:deepcopy(v) for k,v in profile.items() if k not in ('intake','dataGaps','measuredMetricIds','wholeBody')}
     assessment={'summary':(f'{profile["age"]}-year-old ' if profile['age'] is not None else 'Age unavailable; ')+f'{profile["position"] or "position-neutral"} player. Build repeatable soccer skills with controlled physical support.',
                 'findings':split.pop('findings'),'dataGaps':data_gaps[:30],'inputs':inputs,'focusSplit':split}
     assessment.update(methodologyVersion=VERSION,priorities=deepcopy(split.pop('priorities')),estimatePolicy=deepcopy(profile['estimatePolicy']))
@@ -353,6 +355,9 @@ def run_program(inv,*,persist=True,personalized=False):
           'weeks':[],'disclaimers':['D1 standards and the focus table are provisional product references.','Stop for pain and seek qualified guidance.']}
     if personalized:
         plan.update(engineVersion=ENGINE_VERSION,status='draft')
+    if intake.get('trainingContext'):
+        plan['startDate'] = intake['trainingContext']['startDate']
+        plan['trainingPolicyVersion'] = 'whole-body-v1'
     assessment['curriculum']=curriculum_report(catalog,profile,options)
     evidence=load_history_evidence(inv)
     previous_core=[]
@@ -393,6 +398,9 @@ def run_program(inv,*,persist=True,personalized=False):
             _digest_record(inv,'shape',stage_start,work_order,iteration=f'w{wn}s{order}')
             _workout_progress(inv,'shape',wn,order,finished=True)
             workout=build_workout(inv,work_order,catalog,freq,plan)
+            if intake.get('trainingContext'):
+                from gateway.whole_body import session_date
+                workout['scheduledDate'] = session_date(intake['trainingContext'], wn, order).isoformat()
             week['workouts'].append(workout)
             _progress(inv,'adversarial',completed_workouts=(wn-1)*S+order,detail=f'Checked workout {(wn-1)*S+order} of {total_workouts}')
             for b in workout['blocks']:remaining[b['domain']]=remaining.get(b['domain'],0)-b['estimatedMinutes']
@@ -411,6 +419,8 @@ def run_program(inv,*,persist=True,personalized=False):
             week['check']['coreRetention']=retention
             if retention<.6:raise GatewayError('validation_failed',f'Week {wn} does not retain 60% of the prior core')
         previous_core=sorted(core)
+    from gateway.whole_body import mark_plan_authorization
+    mark_plan_authorization(plan, catalog)
     records=getattr(inv,'_provider_usage_records',[]);usage=aggregate_usage(records)
     usage['wallClockMs']=round((time.monotonic()-started)*1000)
     usage['stages']=deepcopy(inv.context['_stageDigest'])

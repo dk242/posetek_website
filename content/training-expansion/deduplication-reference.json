@@ -1,0 +1,991 @@
+{
+  "observedAt": "2026-09-22T01:59:01.636Z",
+  "catalogVersion": "1.0.90",
+  "note": "Names/IDs only. Private raw catalog and local source captures remain outside Git. Undefined legacy status is preserved as null and was not treated as absent.",
+  "liveSnapshotSha256": "6d838f4149d5af4e6f4a973b947f2f70760869a578f4a732f66c2e15adeeee45",
+  "matrixSnapshotSha256": "bf2ffa921cf8243683098ddf6921bd5220b9156d98c4c14aa4ea1d080308ff50",
+  "live": [
+    {
+      "id": "BM-001",
+      "name": "Alternating Toe Taps",
+      "status": null
+    },
+    {
+      "id": "BM-002",
+      "name": "Inside-Inside Foundations",
+      "status": null
+    },
+    {
+      "id": "BM-003",
+      "name": "Sole Rolls Across Body",
+      "status": null
+    },
+    {
+      "id": "BM-004",
+      "name": "Outside Circles",
+      "status": null
+    },
+    {
+      "id": "BM-005",
+      "name": "Inside-Outside Same Foot",
+      "status": null
+    },
+    {
+      "id": "BM-006",
+      "name": "Pull-Push Forward",
+      "status": null
+    },
+    {
+      "id": "BM-007",
+      "name": "V-Pull Open",
+      "status": null
+    },
+    {
+      "id": "BM-008",
+      "name": "L-Drag Turn",
+      "status": null
+    },
+    {
+      "id": "BM-009",
+      "name": "Inside Cut and Exit",
+      "status": null
+    },
+    {
+      "id": "BM-014",
+      "name": "Four-Cone Slalom",
+      "status": null
+    },
+    {
+      "id": "BM-017",
+      "name": "Step-Over Exit",
+      "status": null
+    },
+    {
+      "id": "BM-018",
+      "name": "Scissors Exit",
+      "status": null
+    },
+    {
+      "id": "BM-019",
+      "name": "Double Touch Exit",
+      "status": null
+    },
+    {
+      "id": "BM-025",
+      "name": "Wall Two-Touch Inside",
+      "status": null
+    },
+    {
+      "id": "BM-026",
+      "name": "Wall One-Touch Alternating",
+      "status": null
+    },
+    {
+      "id": "BM-027",
+      "name": "Wall Receive Across Body",
+      "status": null
+    },
+    {
+      "id": "BMA-501",
+      "name": "Standing on the ball",
+      "status": "published"
+    },
+    {
+      "id": "BMA-502",
+      "name": "Settling under pressure",
+      "status": "published"
+    },
+    {
+      "id": "BMA-503",
+      "name": "Essential 180 turn",
+      "status": "published"
+    },
+    {
+      "id": "COD-001",
+      "name": "Cone square movement game",
+      "status": null
+    },
+    {
+      "id": "COD-002",
+      "name": "Deceleration gate",
+      "status": null
+    },
+    {
+      "id": "COD-003",
+      "name": "45-degree cut progression",
+      "status": null
+    },
+    {
+      "id": "COD-004",
+      "name": "90-degree cut progression",
+      "status": null
+    },
+    {
+      "id": "COD-005",
+      "name": "5-0-5 technique reps",
+      "status": null
+    },
+    {
+      "id": "COD-006",
+      "name": "Mirror tag",
+      "status": "draft"
+    },
+    {
+      "id": "COD-007",
+      "name": "Color-call cut",
+      "status": "draft"
+    },
+    {
+      "id": "COD-008",
+      "name": "Ball-release reaction",
+      "status": "draft"
+    },
+    {
+      "id": "COD-009",
+      "name": "Defend the gate",
+      "status": "draft"
+    },
+    {
+      "id": "COD-010",
+      "name": "Ball COD shuttle",
+      "status": "published"
+    },
+    {
+      "id": "COD-011",
+      "name": "Press-and-recover",
+      "status": "draft"
+    },
+    {
+      "id": "COD-012",
+      "name": "Small-space escape",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-001",
+      "name": "Free ball-exploration box",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-002",
+      "name": "Toe-tap and foundation rhythm",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-003",
+      "name": "Inside-outside travel",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-004",
+      "name": "Red-light green-light dribble",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-005",
+      "name": "Cone maze",
+      "status": "published"
+    },
+    {
+      "id": "DRB-006",
+      "name": "Figure-8 dribble",
+      "status": "published"
+    },
+    {
+      "id": "DRB-007",
+      "name": "Gates dribbling",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-008",
+      "name": "Timed slalom with penalties",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-009",
+      "name": "Weak-foot gate circuit",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-010",
+      "name": "Speed dribble with stop zone",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-011",
+      "name": "Color-scan dribble",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-012",
+      "name": "1v1 escape dribble",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-013",
+      "name": "Transition dribble to finish",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-014",
+      "name": "Pressure retention box",
+      "status": "draft"
+    },
+    {
+      "id": "DRB-501",
+      "name": "One Touch exit",
+      "status": "published"
+    },
+    {
+      "id": "DRB-502",
+      "name": "Breaking pressure via touch in",
+      "status": "published"
+    },
+    {
+      "id": "DRB-503",
+      "name": "Breaking pressure via touch out",
+      "status": "published"
+    },
+    {
+      "id": "DRB-504",
+      "name": "Creative outside the box finishing",
+      "status": "published"
+    },
+    {
+      "id": "DRB-505",
+      "name": "Dribbling out of pressure when receiving",
+      "status": "published"
+    },
+    {
+      "id": "DRB-506",
+      "name": "Dribbling out of pressure on the half turn",
+      "status": "published"
+    },
+    {
+      "id": "DRB-507",
+      "name": "Half turn under pressure",
+      "status": "published"
+    },
+    {
+      "id": "DRB-508",
+      "name": "Full turn under pressure",
+      "status": "published"
+    },
+    {
+      "id": "HJP-001",
+      "name": "River jump",
+      "status": "draft"
+    },
+    {
+      "id": "HJP-002",
+      "name": "Standing broad jump reps",
+      "status": null
+    },
+    {
+      "id": "HJP-003",
+      "name": "Triple broad jump",
+      "status": null
+    },
+    {
+      "id": "HJP-004",
+      "name": "Single-leg hop to stick",
+      "status": null
+    },
+    {
+      "id": "HJP-005",
+      "name": "Lateral bound series",
+      "status": null
+    },
+    {
+      "id": "HJP-006",
+      "name": "Broad jump to 5 m sprint",
+      "status": null
+    },
+    {
+      "id": "MOB-001",
+      "name": "Ankle Rock and Return",
+      "status": null
+    },
+    {
+      "id": "MOB-002",
+      "name": "Adductor Rock-Back",
+      "status": null
+    },
+    {
+      "id": "MOB-003",
+      "name": "90/90 Hip Switch",
+      "status": null
+    },
+    {
+      "id": "PAS-001",
+      "name": "Wall pass rhythm",
+      "status": null
+    },
+    {
+      "id": "PAS-002",
+      "name": "Passing gates",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-003",
+      "name": "Receive through exit gate",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-004",
+      "name": "Triangle pass-and-move",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-005",
+      "name": "Two-touch scan pass",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-006",
+      "name": "Moving-target pass",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-007",
+      "name": "Rondo 3v1 / 4v1",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-008",
+      "name": "Third-player combination",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-009",
+      "name": "Long-pass target zones",
+      "status": "draft"
+    },
+    {
+      "id": "PAS-010",
+      "name": "Pressure receive-and-release",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-001",
+      "name": "Knock-down targets",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-002",
+      "name": "Gate shooting",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-003",
+      "name": "One-step laces strike",
+      "status": "published"
+    },
+    {
+      "id": "SHT-004",
+      "name": "Four-corner accuracy grid",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-005",
+      "name": "Walk-in approach strike",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-006",
+      "name": "Dribble and finish",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-007",
+      "name": "Sprint to finish",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-008",
+      "name": "COD to finish",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-009",
+      "name": "First-time finish",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-010",
+      "name": "Weak-foot finish block",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-011",
+      "name": "Reactive target finish",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-012",
+      "name": "Position-specific finish pattern",
+      "status": "draft"
+    },
+    {
+      "id": "SHT-501",
+      "name": "Dribble into finish inside the box - far post",
+      "status": "published"
+    },
+    {
+      "id": "SHT-502",
+      "name": "Finishing far post outside the box angled",
+      "status": "published"
+    },
+    {
+      "id": "SHT-503",
+      "name": "Drive into finish inside the box",
+      "status": "published"
+    },
+    {
+      "id": "SHT-504",
+      "name": "Touch into finish inside the box - angled",
+      "status": "published"
+    },
+    {
+      "id": "SHT-505",
+      "name": "Settling into finish - top of the box",
+      "status": "published"
+    },
+    {
+      "id": "SPD-001",
+      "name": "Traffic-light accelerations",
+      "status": "draft"
+    },
+    {
+      "id": "SPD-002",
+      "name": "Falling start",
+      "status": null
+    },
+    {
+      "id": "SPD-003",
+      "name": "Wall switch to sprint",
+      "status": null
+    },
+    {
+      "id": "SPD-004",
+      "name": "Push-up start",
+      "status": null
+    },
+    {
+      "id": "SPD-005",
+      "name": "Light resisted acceleration",
+      "status": "draft"
+    },
+    {
+      "id": "SPD-006",
+      "name": "Build-and-fly sprint",
+      "status": null
+    },
+    {
+      "id": "SPD-007",
+      "name": "Wicket rhythm runs",
+      "status": "draft"
+    },
+    {
+      "id": "SPD-008",
+      "name": "Chase sprint",
+      "status": "draft"
+    },
+    {
+      "id": "SPD-009",
+      "name": "Sprint-cut-sprint",
+      "status": null
+    },
+    {
+      "id": "SPD-010",
+      "name": "Repeated sprint quality set",
+      "status": "draft"
+    },
+    {
+      "id": "SPD-501",
+      "name": "A Series Circuit",
+      "status": "published"
+    },
+    {
+      "id": "SSG-001",
+      "name": "1v1 to two gates",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-002",
+      "name": "2v2 four-goal game",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-003",
+      "name": "3v3 four-goal transition",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-004",
+      "name": "4v4 + neutral possession",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-005",
+      "name": "Numbers-up transition game",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-006",
+      "name": "Conditioned finish game",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-007",
+      "name": "Position-channel game",
+      "status": "draft"
+    },
+    {
+      "id": "SSG-008",
+      "name": "Play-Practice-Play session",
+      "status": "draft"
+    },
+    {
+      "id": "STR-001",
+      "name": "Squat-to-box competency",
+      "status": null
+    },
+    {
+      "id": "STR-002",
+      "name": "Split-squat isometric",
+      "status": null
+    },
+    {
+      "id": "STR-003",
+      "name": "Single-leg RDL reach",
+      "status": null
+    },
+    {
+      "id": "STR-004",
+      "name": "Calf raise progression",
+      "status": null
+    },
+    {
+      "id": "STR-005",
+      "name": "Side-plank progression",
+      "status": "published"
+    },
+    {
+      "id": "STR-006",
+      "name": "Hamstring bridge walkout",
+      "status": null
+    },
+    {
+      "id": "STR-007",
+      "name": "Assisted Nordic progression",
+      "status": null
+    },
+    {
+      "id": "STR-008",
+      "name": "Short-lever Copenhagen hold",
+      "status": "published"
+    },
+    {
+      "id": "STR-009",
+      "name": "Single-leg balance with ball task",
+      "status": "draft"
+    },
+    {
+      "id": "STR-010",
+      "name": "11+ Kids-inspired movement circuit",
+      "status": "draft"
+    },
+    {
+      "id": "STR-501",
+      "name": "Bear crawls",
+      "status": "published"
+    },
+    {
+      "id": "STR-502",
+      "name": "Shoulder Taps",
+      "status": "published"
+    },
+    {
+      "id": "VJP-001",
+      "name": "Jump and stick",
+      "status": null
+    },
+    {
+      "id": "VJP-002",
+      "name": "Snap-down to vertical jump",
+      "status": null
+    },
+    {
+      "id": "VJP-003",
+      "name": "Countermovement jump cluster",
+      "status": null
+    },
+    {
+      "id": "VJP-004",
+      "name": "Pogo series",
+      "status": null
+    },
+    {
+      "id": "VJP-005",
+      "name": "Low hurdle hops",
+      "status": null
+    },
+    {
+      "id": "VJP-006",
+      "name": "Single-leg jump and stick",
+      "status": null
+    },
+    {
+      "id": "VJP-007",
+      "name": "Lateral bound to vertical jump",
+      "status": null
+    },
+    {
+      "id": "VJP-008",
+      "name": "Drop landing to jump",
+      "status": null
+    }
+  ],
+  "matrix": [
+    {
+      "id": "SPD-001",
+      "name": "Traffic-light accelerations"
+    },
+    {
+      "id": "SPD-002",
+      "name": "Falling start"
+    },
+    {
+      "id": "SPD-003",
+      "name": "Wall switch to sprint"
+    },
+    {
+      "id": "SPD-004",
+      "name": "Push-up start"
+    },
+    {
+      "id": "SPD-006",
+      "name": "Build-and-fly sprint"
+    },
+    {
+      "id": "SPD-009",
+      "name": "Sprint-cut-sprint"
+    },
+    {
+      "id": "VJP-001",
+      "name": "Jump and stick"
+    },
+    {
+      "id": "VJP-002",
+      "name": "Snap-down to vertical jump"
+    },
+    {
+      "id": "VJP-003",
+      "name": "Countermovement jump cluster"
+    },
+    {
+      "id": "VJP-004",
+      "name": "Pogo series"
+    },
+    {
+      "id": "VJP-005",
+      "name": "Low hurdle hops"
+    },
+    {
+      "id": "VJP-006",
+      "name": "Single-leg jump and stick"
+    },
+    {
+      "id": "VJP-007",
+      "name": "Lateral bound to vertical jump"
+    },
+    {
+      "id": "HJP-001",
+      "name": "River jump"
+    },
+    {
+      "id": "HJP-002",
+      "name": "Standing broad jump reps"
+    },
+    {
+      "id": "HJP-003",
+      "name": "Triple broad jump"
+    },
+    {
+      "id": "HJP-004",
+      "name": "Single-leg hop to stick"
+    },
+    {
+      "id": "HJP-005",
+      "name": "Lateral bound series"
+    },
+    {
+      "id": "HJP-006",
+      "name": "Broad jump to 5 m sprint"
+    },
+    {
+      "id": "COD-001",
+      "name": "Cone square movement game"
+    },
+    {
+      "id": "COD-002",
+      "name": "Deceleration gate"
+    },
+    {
+      "id": "COD-003",
+      "name": "45-degree cut progression"
+    },
+    {
+      "id": "COD-004",
+      "name": "90-degree cut progression"
+    },
+    {
+      "id": "COD-005",
+      "name": "5-0-5 technique reps"
+    },
+    {
+      "id": "COD-007",
+      "name": "Color-call cut"
+    },
+    {
+      "id": "COD-010",
+      "name": "Ball COD shuttle"
+    },
+    {
+      "id": "DRB-002",
+      "name": "Toe-tap and foundation rhythm"
+    },
+    {
+      "id": "DRB-003",
+      "name": "Inside-outside travel"
+    },
+    {
+      "id": "DRB-005",
+      "name": "Cone maze"
+    },
+    {
+      "id": "DRB-006",
+      "name": "Figure-8 dribble"
+    },
+    {
+      "id": "DRB-008",
+      "name": "Timed slalom with penalties"
+    },
+    {
+      "id": "DRB-009",
+      "name": "Weak-foot gate circuit"
+    },
+    {
+      "id": "DRB-010",
+      "name": "Speed dribble with stop zone"
+    },
+    {
+      "id": "DRB-011",
+      "name": "Color-scan dribble"
+    },
+    {
+      "id": "DRB-013",
+      "name": "Transition dribble to finish"
+    },
+    {
+      "id": "PAS-001",
+      "name": "Wall pass rhythm"
+    },
+    {
+      "id": "SHT-001",
+      "name": "Knock-down targets"
+    },
+    {
+      "id": "SHT-002",
+      "name": "Gate shooting"
+    },
+    {
+      "id": "SHT-003",
+      "name": "One-step laces strike"
+    },
+    {
+      "id": "SHT-004",
+      "name": "Four-corner accuracy grid"
+    },
+    {
+      "id": "SHT-005",
+      "name": "Walk-in approach strike"
+    },
+    {
+      "id": "SHT-006",
+      "name": "Dribble and finish"
+    },
+    {
+      "id": "SHT-008",
+      "name": "COD to finish"
+    },
+    {
+      "id": "SHT-010",
+      "name": "Weak-foot finish block"
+    },
+    {
+      "id": "SHT-011",
+      "name": "Reactive target finish"
+    },
+    {
+      "id": "STR-001",
+      "name": "Squat-to-box competency"
+    },
+    {
+      "id": "STR-002",
+      "name": "Split-squat isometric"
+    },
+    {
+      "id": "STR-003",
+      "name": "Single-leg RDL reach"
+    },
+    {
+      "id": "STR-004",
+      "name": "Calf raise progression"
+    },
+    {
+      "id": "STR-005",
+      "name": "Side-plank progression"
+    },
+    {
+      "id": "STR-006",
+      "name": "Hamstring bridge walkout"
+    },
+    {
+      "id": "STR-009",
+      "name": "Single-leg balance with ball task"
+    },
+    {
+      "id": "BM-001",
+      "name": "Alternating Toe Taps"
+    },
+    {
+      "id": "BM-002",
+      "name": "Inside-Inside Foundations"
+    },
+    {
+      "id": "BM-003",
+      "name": "Sole Rolls Across Body"
+    },
+    {
+      "id": "BM-004",
+      "name": "Outside Circles"
+    },
+    {
+      "id": "BM-005",
+      "name": "Inside-Outside Same Foot"
+    },
+    {
+      "id": "BM-006",
+      "name": "Pull-Push Forward"
+    },
+    {
+      "id": "BM-007",
+      "name": "V-Pull Open"
+    },
+    {
+      "id": "BM-008",
+      "name": "L-Drag Turn"
+    },
+    {
+      "id": "BM-009",
+      "name": "Inside Cut and Exit"
+    },
+    {
+      "id": "BM-010",
+      "name": "Outside Cut and Exit"
+    },
+    {
+      "id": "BM-011",
+      "name": "Drag-Back Turn"
+    },
+    {
+      "id": "BM-012",
+      "name": "Cruyff Turn"
+    },
+    {
+      "id": "BM-013",
+      "name": "Two-Foot Speed Carry"
+    },
+    {
+      "id": "BM-014",
+      "name": "Four-Cone Slalom"
+    },
+    {
+      "id": "BM-015",
+      "name": "Figure-Eight Control"
+    },
+    {
+      "id": "BM-016",
+      "name": "Box Four-Surface Dribble"
+    },
+    {
+      "id": "BM-017",
+      "name": "Step-Over Exit"
+    },
+    {
+      "id": "BM-018",
+      "name": "Scissors Exit"
+    },
+    {
+      "id": "BM-019",
+      "name": "Double Touch Exit"
+    },
+    {
+      "id": "BM-020",
+      "name": "Drag-Push Across"
+    },
+    {
+      "id": "BM-021",
+      "name": "One-Bounce Alternating Juggle"
+    },
+    {
+      "id": "BM-022",
+      "name": "Alternating-Foot Juggle"
+    },
+    {
+      "id": "BM-023",
+      "name": "Thigh-to-Foot Control"
+    },
+    {
+      "id": "BM-024",
+      "name": "Free Juggle Constraint Set"
+    },
+    {
+      "id": "BM-025",
+      "name": "Wall Two-Touch Inside"
+    },
+    {
+      "id": "BM-026",
+      "name": "Wall One-Touch Alternating"
+    },
+    {
+      "id": "BM-027",
+      "name": "Wall Receive Across Body"
+    },
+    {
+      "id": "BM-028",
+      "name": "Wall Scoop and Cushion"
+    },
+    {
+      "id": "MOB-001",
+      "name": "Ankle Rock and Return"
+    },
+    {
+      "id": "MOB-002",
+      "name": "Adductor Rock-Back"
+    },
+    {
+      "id": "MOB-003",
+      "name": "90/90 Hip Switch"
+    },
+    {
+      "id": "CON-001",
+      "name": "Repeat-Effort 10-Yard Shuttle"
+    },
+    {
+      "id": "CON-002",
+      "name": "Tempo Ball-Carry Intervals"
+    }
+  ]
+}

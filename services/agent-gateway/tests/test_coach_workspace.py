@@ -29,7 +29,9 @@ def reset_config(monkeypatch):
 def seed(message="I prefer short dribbling sessions with a ball."):
     inv = training_seed()
     inv.capability = "pose_chat"
-    inv.context = {"now": datetime.now(timezone.utc)}
+    # Keep the synthetic clock inside the fixed training_seed plan horizon.
+    # Wall-clock time makes workout handoff tests expire after September 20.
+    inv.context = {"now": NOW}
     inv.params = {"message": message, "context": {"coachWorkspaceVersion": 1}}
     inv.db.set_doc(("config", "llm"), {"globalEnabled": True, "coachWorkspaceEnabled": True,
         "coachWorkspaceFlashFallbackEnabled": False,
@@ -45,7 +47,7 @@ def next_turn(inv, message="What should I work on next?", *, action=None, same_c
         params["context"]["memoryAction"] = action
     return Invocation(capability="pose_chat", player_id=inv.player_id, uid=inv.uid,
         trusted_claims=deepcopy(inv.trusted_claims), email=inv.email, db=inv.db, storage=inv.storage,
-        context={"now": datetime.now(timezone.utc)}, params=params)
+        context={"now": inv.context['now'] + timedelta(seconds=1)}, params=params)
 
 
 class FakeCoach:

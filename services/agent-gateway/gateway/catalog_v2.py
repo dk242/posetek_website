@@ -133,9 +133,12 @@ def normalize_catalog_drill(drill_id: str, raw: dict) -> dict:
         if lo is not None and hi is not None and lo > hi:
             raise invalid_request(f"Catalog {field} range is reversed")
     # Return only v2 fields. Empty authored arrays/maps remain authoritative.
+    if 'trainingPolicy' in out:
+        from gateway.whole_body import validate_policy
+        out['trainingPolicy'] = validate_policy(out['trainingPolicy'])
     fields = ("schemaVersion", "drillId", "name", "domain", "minAge", "maxAge", "difficultyLevel",
               "equipment", "requiresPartner", "howTo", "dose", "maxFrequencyPerWeek", "coachComments",
-              "adaptiveLevers", "media", "status", "catalogVersion", "normalizationSource")
+              "adaptiveLevers", "media", "status", "catalogVersion", "normalizationSource", "trainingPolicy")
     return {key: deepcopy(out[key]) for key in fields if key in out}
 
 
@@ -197,6 +200,8 @@ def eligible_drill(row: dict, profile: dict, *, equipment=None, allow_partner=No
         partner = False
     if row.get("requiresPartner") and not partner:
         reasons.append("partner_unavailable")
+    from gateway.whole_body import eligibility_reasons
+    reasons.extend(eligibility_reasons(row, profile))
     return not reasons, reasons
 
 

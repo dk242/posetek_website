@@ -52,7 +52,7 @@ def _authorize_and_configure(inv: Invocation) -> tuple[CapabilitySpec, dict]:
     gw_config.check_client_version(cfg, inv.client_version)
     from gateway.personalized_plans import CAPABILITIES,GENERATE,DISCARD,ASSESS,authorize_admin,engine_for
     preview = inv.capability in CAPABILITIES
-    is_v3 = preview or inv.capability in ("generate_training_plan", "apply_workout_draft", "workout_chat")
+    is_v3 = preview or inv.capability in ("generate_training_plan", "apply_workout_draft", "save_workout_edit", "validate_workout_start", "workout_chat")
     enabled = (gw_config.v3_capability_enabled(cfg, inv.capability) if is_v3
                else gw_config.capability_enabled(cfg, inv.capability))
     if not enabled:
@@ -65,7 +65,9 @@ def _authorize_and_configure(inv: Invocation) -> tuple[CapabilitySpec, dict]:
                 raise GatewayError('capability_disabled','Personalized planner submissions are currently disabled; existing drafts remain available')
         elif inv.capability == 'generate_training_plan':
             engine_for(inv.capability,inv.params.get('engineVersion'))
-        role = authz.authorize_v3(inv, mutation=inv.capability == "apply_workout_draft")
+        role = authz.authorize_v3(inv, mutation=inv.capability in ("apply_workout_draft", "save_workout_edit", "validate_workout_start"))
+        if inv.capability == 'save_workout_edit' and role != 'admin':
+            raise GatewayError('permission_denied', 'Manual workout edits require an administrator')
         if inv.capability in ("generate_training_plan",GENERATE,ASSESS):
             from gateway.program_profile import validate_program_intake
             validate_program_intake(inv)
@@ -916,6 +918,18 @@ def run_job_capability(inv: Invocation) -> tuple[dict, dict]:
     if inv.capability == "generate_training_plan":
         from gateway.program_generator import run_program
         return run_program(inv)
+    if inv.capability == 'save_workout_edit':
+        from gateway.manual_workout import save_workout_edit
+        from gateway.usage import aggregate_usage
+        result = save_workout_edit(inv)
+        row = usage_ledger.record_code_usage(inv.db, inv, operation_id='manual:' + str(inv.job_id))
+        return result, aggregate_usage([row])
+    if inv.capability == 'validate_workout_start':
+        from gateway.manual_workout import validate_workout_start
+        from gateway.usage import aggregate_usage
+        result = validate_workout_start(inv)
+        row = usage_ledger.record_code_usage(inv.db, inv, operation_id='start-check:' + str(inv.job_id))
+        return result, aggregate_usage([row])
     if inv.capability == "apply_workout_draft":
         from gateway.workout_persistence import apply_workout_draft
         from gateway.usage import aggregate_usage

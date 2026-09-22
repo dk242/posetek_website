@@ -249,6 +249,16 @@ REGISTRY: dict[str, CapabilitySpec] = {
         provider="code", model="code", params={}, tools=[], output=None,
         validators=[], daily_limit=30, strict_validation=True,
     ),
+    "save_workout_edit": CapabilitySpec(
+        id="save_workout_edit", transport="job", assemblers=[], prompt="",
+        provider="code", model="code", params={}, tools=[], output=None,
+        validators=[], daily_limit=30, strict_validation=True,
+    ),
+    "validate_workout_start": CapabilitySpec(
+        id="validate_workout_start", transport="job", assemblers=[], prompt="",
+        provider="code", model="code", params={}, tools=[], output=None,
+        validators=[], daily_limit=50, strict_validation=True,
+    ),
     "workout_chat": CapabilitySpec(
         id="workout_chat", transport="stream", assemblers=[], prompt="workout_chat_v1",
         # 03A's measured starting point. Server-side knobs permit every model
