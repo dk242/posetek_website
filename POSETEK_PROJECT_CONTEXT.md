@@ -17,9 +17,13 @@ repeat a full application inventory or backend audit and did not deploy changes.
 Dylan confirmed club directors and coaches as the primary audience for the
 Draft B video revision. The proposed visual direction, timed storyboard, source
 map and production approach are in
-[the Draft B video plan](docs/DRAFT_B_VIDEO_PLAN_2026-09-21.md). Creative proposals
-in that document are not approved implementation decisions. Private reference
-media stays outside Git; sample players/results must remain illustrative.
+[the Draft B video plan](docs/DRAFT_B_VIDEO_PLAN_2026-09-21.md). The user subsequently
+authorized building the video and emailing the finished result. Editable production
+source and reproduction notes are in [`video/draft-b/`](video/draft-b/README.md).
+The video uses source-grounded pose geometry, a single illustrative coach sample,
+original high-resolution Figure-8 footage, local neural narration and an original
+score. Private reference media and delivery links stay outside Git; sample
+players/results remain illustrative.
 
 ### Current website release: protected player signup links
 

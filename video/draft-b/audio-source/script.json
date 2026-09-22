@@ -1,0 +1,15 @@
+{
+  "voice": "af_heart",
+  "language": "en-us",
+  "duration": 45,
+  "bpm": 106,
+  "segments": [
+    {"id":"hook", "start":0.3, "latest_end":3.65, "text":"What should your team train next?", "display":"What should your team train next?"},
+    {"id":"evidence", "start":4.3, "latest_end":9.65, "text":"Start with evidence. Six performance tests. One connected view.", "display":"Start with evidence. Six performance tests. One connected view."},
+    {"id":"player", "start":10.3, "latest_end":17.65, "text":"See your club. Understand each player. Turn individual priorities into focused training.", "display":"See your club. Understand each player. Turn individual priorities into focused training."},
+    {"id":"train", "start":18.3, "latest_end":27.65, "text":"A clear focus. A practical drill. Guided sessions in the mobile app, so development continues between tests.", "display":"A clear focus. A practical drill. Guided sessions in the mobile app, so development continues between tests."},
+    {"id":"retest", "start":28.3, "latest_end":34.65, "text":"Then retest. Review what changed, and choose the next step.", "display":"Then retest. Review what changed, and choose the next step."},
+    {"id":"team", "start":35.3, "latest_end":39.65, "text":"Players train. Coaches review. One connected development cycle.", "display":"Players train. Coaches review. One connected development cycle."},
+    {"id":"close", "start":40.3, "latest_end":44.5, "text":"Pose Tech. Talk about your team.", "display":"PoseTek. Talk about your team."}
+  ]
+}

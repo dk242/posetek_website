@@ -1,0 +1,7 @@
+node_modules/
+public/
+output/
+.cache/
+audio-source/.venv/
+audio-source/models/
+audio-source/*.log
