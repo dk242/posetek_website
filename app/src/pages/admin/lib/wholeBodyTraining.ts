@@ -44,9 +44,14 @@ export interface EvidenceSource {
   id: string; title: string; url: string; evidenceType: string; population: string;
   applicability: string; limitations: string;
 }
+export interface DemoReference {
+  title: string; url: string; publisher: string; matchType: "exact" | "component";
+  matchNotes: string; verification: string; checkedAt: string;
+}
 export interface DrillAuthoring {
   drillId?: string; revision: number; productionBatchId: string; filmingWeek: number;
   sources: EvidenceSource[]; filmingInstructions: Record<string, string>;
+  demoReferences?: DemoReference[];
   productionNotes?: string; reviewNotes?: string; reviewStatus: "pending" | "approved";
   publicationHold?: string; [key: string]: unknown;
 }

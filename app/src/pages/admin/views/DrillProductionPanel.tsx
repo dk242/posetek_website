@@ -41,6 +41,17 @@ export default function DrillProductionPanel({ drill, onChanged }: { drill: Cata
     {record && <>
       <div className="admin-row-meta"><span className={`admin-chip ${record.reviewStatus === "approved" ? "accent" : "warn"}`}>Content review: {record.reviewStatus}</span><span className="admin-chip">{progress.uploaded}/3 clips uploaded · {progress.approved}/3 approved</span></div>
       <p className="admin-note">{record.publicationHold || (record.reviewStatus === "approved" && progress.approved === 3 ? "Ready for a final server publication check." : "Publication held: content review and all three approved clips are required.")}</p>
+      {Boolean(record.demoReferences?.length) && <section aria-label="Demo references for filming" className="training-demo-references">
+        <h4>Watch before filming</h4>
+        <p className="admin-note">Use these demonstrations alongside the PoseTek instructions above. Follow the stated setup and dose; component references show part of the exercise, with adaptations listed below.</p>
+        {record.demoReferences?.map((reference, index) => <article key={`${reference.url}-${index}`}>
+          <div className="admin-row-meta"><span className="admin-chip">{reference.matchType === "component" ? "Component reference" : "Movement reference"}</span><span className="admin-note">{reference.publisher}</span></div>
+          <p>{sourceLink(reference.url) ? <a href={sourceLink(reference.url)} target="_blank" rel="noopener noreferrer">{reference.title} ↗</a> : reference.title}</p>
+          <p>{reference.matchNotes}</p>
+          <details><summary>Reference check · {reference.checkedAt}</summary><p className="admin-note">{reference.verification}</p></details>
+        </article>)}
+        <p className="admin-note">External references are for filming preparation. Upload your original PoseTek demonstrations in the three slots below.</p>
+      </section>}
       <fieldset disabled={busy} className="admin-form"><legend>Filming queue</legend>
         <label className="admin-field"><span>Filming week</span><select value={week} onChange={e => setWeek(+e.target.value)}>{[1, 2, 3, 4].map(n => <option key={n} value={n}>Week {n} · {n === 1 ? "Sept 21–27" : n === 2 ? "Sept 28–Oct 4" : n === 3 ? "Oct 5–11" : "Oct 12–18"}</option>)}</select></label>
         <div className="admin-media-grid">{REQUIRED_FILM_SLOTS.map(slot => {

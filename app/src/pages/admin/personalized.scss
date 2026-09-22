@@ -60,6 +60,11 @@
 .training-production fieldset, .training-reviewer-designation fieldset { border:0; padding:0; margin:20px 0; min-width:0; }
 .training-production textarea, .training-reviewer-designation textarea { width:100%; box-sizing:border-box; }
 .training-evidence-list details { border-bottom:1px solid #ffffff24; padding:12px 0; overflow-wrap:anywhere; }
+.training-demo-references { margin:24px 0; }
+.training-demo-references article { border-bottom:1px solid #ffffff24; padding:12px 0; overflow-wrap:anywhere; }
+.training-demo-references article p { line-height:1.6; }
+.training-demo-references article > p:first-of-type a { display:inline-block; padding:8px 0; font-weight:600; }
+.training-demo-references summary { cursor:pointer; min-height:32px; line-height:1.5; }
 .training-evidence-list summary, .training-reviewer-designation summary { cursor:pointer; min-height:32px; line-height:1.5; }
 @media(max-width:760px) { .training-schedule-row { grid-template-columns:1fr 1fr; } .training-schedule-row button { justify-self:start; } }
 @media(max-width:600px) { .pt-pose .personalized-planner :is(.training-context,.training-readiness) .personalized-fields, .training-schedule-row { grid-template-columns:1fr; } }

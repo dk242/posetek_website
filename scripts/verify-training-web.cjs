@@ -1,6 +1,6 @@
 // Verify the exact built application and preserved marketing at a release URL.
 const fs=require('node:fs'),crypto=require('node:crypto'),assert=require('node:assert/strict');
-const DIR='.netlify/training-expansion/release';
+const DIR=process.env.TRAINING_RELEASE_DIRECTORY || '.netlify/training-expansion/release';
 const sha=b=>crypto.createHash('sha1').update(b).digest('hex');
 async function main(){
  const live=process.argv.includes('--live');
