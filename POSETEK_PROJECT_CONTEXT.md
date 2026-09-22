@@ -6,6 +6,21 @@ business document is included.
 
 ## Readiness and source provenance
 
+### September 21 Draft B video planning
+
+Local `main` was fast-forwarded to GitHub `main` at
+`62aa39791bb03293b0e6159142d75f9623ef4505`; the recent source is available in the
+shared repository. A scoped check of the live home/Coaches pages and eight directly
+referenced marketing assets found no relevant source/live drift. This did not
+repeat a full application inventory or backend audit and did not deploy changes.
+
+Dylan confirmed club directors and coaches as the primary audience for the
+Draft B video revision. The proposed visual direction, timed storyboard, source
+map and production approach are in
+[the Draft B video plan](docs/DRAFT_B_VIDEO_PLAN_2026-09-21.md). Creative proposals
+in that document are not approved implementation decisions. Private reference
+media stays outside Git; sample players/results must remain illustrative.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
