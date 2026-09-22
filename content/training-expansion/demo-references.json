@@ -1,0 +1,1376 @@
+{
+  "schemaVersion": 1,
+  "productionBatchId": "whole-body-2026-09",
+  "purpose": "External filming references; not athlete media or content approval.",
+  "references": [
+    {
+      "manifestId": "wb-001",
+      "drillId": "STR-503",
+      "name": "Goblet squat",
+      "videos": [
+        {
+          "title": "Kettlebell Goblet Squat Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/kettlebell-goblet-squat",
+          "publisher": "Muscle & Strength",
+          "matchType": "exact",
+          "matchNotes": "Matches the kettlebell-at-chest squat and whole-foot support. Film the PoseTek comfortable stance and coach-approved depth; the page's parallel-depth target and optional grip experiments are not additional requirements.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-002",
+      "drillId": "STR-504",
+      "name": "Elevated kettlebell deadlift",
+      "videos": [
+        {
+          "title": "Elevated Kettlebell Deadlift",
+          "url": "https://www.youtube.com/watch?v=wmuwz9hEHuU",
+          "publisher": "StrongStrides",
+          "matchType": "exact",
+          "matchNotes": "The description specifies a kettlebell raised on a support, feet on the floor, two hands inside the legs, hip hinge and return to the support. Use PoseTek's stable low block and deliberate reset; keep the arms long rather than actively pulling with them.",
+          "verification": "Indexed video title, publisher and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-003",
+      "drillId": "STR-505",
+      "name": "Dumbbell floor press",
+      "videos": [
+        {
+          "title": "Dumbbell Floor Press Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/dumbbell-floor-press.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches the two-dumbbell press from the floor with bent knees and a controlled floor touch. Use it for the pressing movement only: do not copy the page's suggested end-of-set drop. Film a controlled, coach-taught way to place the weights down, with no elbow bounce or dumbbell collision.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-004",
+      "drillId": "STR-506",
+      "name": "Chest-supported dumbbell row",
+      "videos": [
+        {
+          "title": "Neutral Grip Chest Supported Dumbbell Row Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/chest-supported-dumbbell-row",
+          "publisher": "Muscle & Strength",
+          "matchType": "exact",
+          "matchNotes": "Matches two dumbbells, neutral grip and chest support on an incline bench. Choose the feet-on-floor setup described on the page, not its knees-on-seat option; retain PoseTek's elbows-toward-hips path and keep the chest supported.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-005",
+      "drillId": "STR-507",
+      "name": "Dumbbell reverse lunge",
+      "videos": [
+        {
+          "title": "Dumbbell Rear Lunge Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/dumbbell-rear-lunge.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches dumbbells at the sides, a backward step and return through the front leg. The reference lowers the rear knee to the floor; PoseTek approaches the floor without impact and resets its balance before the next repetition.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-006",
+      "drillId": "STR-508",
+      "name": "Seated dumbbell calf raise",
+      "videos": [
+        {
+          "title": "Seated Dumbbell Calf Raise Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/seated-dumbbell-calf-raise.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Useful for the seated bent-knee heel raise and dumbbells resting on the thighs. The reference uses a block under the forefeet and hanging heels. PoseTek starts with feet flat on the floor, pads the thighs, and lowers the heels only to the floor; omit the block.",
+          "verification": "Video page, named demonstration and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-007",
+      "drillId": "STR-509",
+      "name": "Standing cable anti-rotation press",
+      "videos": [
+        {
+          "title": "Pallof Press Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/pallof-press",
+          "publisher": "Muscle & Strength",
+          "matchType": "exact",
+          "matchNotes": "Pallof press is the same standing anti-rotation pattern: side-on to a chest-height cable, two hands at the chest, press forward and return while resisting turning. Film the feet and pelvis staying still.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-008",
+      "drillId": "STR-510",
+      "name": "Wall-supported squat hold",
+      "videos": [
+        {
+          "title": "Mini Wall Squat with hold",
+          "url": "https://us.physitrack.com/home-exercise-video/mini-wall-squat-with-hold",
+          "publisher": "Physitrack",
+          "matchType": "exact",
+          "matchNotes": "Matches a back-supported wall squat held with the feet forward. Film the shallow, coach-approved depth in PoseTek and show normal breathing and a controlled slide back up.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-009",
+      "drillId": "STR-511",
+      "name": "Supported calf-raise hold",
+      "videos": [
+        {
+          "title": "Isometric Calf Raise",
+          "url": "https://www.youtube.com/watch?v=arLsa_isSOw",
+          "publisher": "Elite Performance Institute / Dr. Brian Damhoff",
+          "matchType": "exact",
+          "matchNotes": "Use the described two-leg bodyweight heel-rise hold with light wall support. PoseTek uses the coach-selected heel height and controlled lowering; omit the video's single-leg or added-load progressions and rehabilitation dose.",
+          "verification": "Video page title and indexed publisher/description checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-010",
+      "drillId": "STR-512",
+      "name": "Quadruped bear-hover hold",
+      "videos": [
+        {
+          "title": "Bear Position Hold",
+          "url": "https://library.theprehabguys.com/vimeo-video/bear-position-hold/",
+          "publisher": "[P]rehab",
+          "matchType": "exact",
+          "matchNotes": "Matches hands under shoulders, knees under hips, knees hovering and a level back. Film a small knee clearance, steady breathing and a controlled return, without crawling or lifting a limb.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-011",
+      "drillId": "PLY-501",
+      "name": "Two-foot jump-rope rebounds",
+      "videos": [
+        {
+          "title": "How to Jump Rope: basic jump demonstration",
+          "url": "https://www.crossrope.com/blogs/blog/how-to-jump-rope",
+          "publisher": "Crossrope",
+          "matchType": "component",
+          "matchNotes": "Use the embedded basic-jump video under 'Your First Jump Rope Exercise' for low two-foot rebounds and wrist-driven rope turns. PoseTek uses a fitted ordinary rope and a short coach-set contact count; the article's weighted-rope recommendations and workouts are not the PoseTek drill.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-012",
+      "drillId": "PLY-502",
+      "name": "Lateral two-foot line hops",
+      "videos": [
+        {
+          "title": "Double-Leg Line Jumps: Lateral (Speed) video",
+          "url": "https://www.emoryhealthcare.org/centers-programs/acl-program/return-to-play/double-leg-line-jump",
+          "publisher": "Emory Healthcare",
+          "matchType": "component",
+          "matchNotes": "Select the 'Lateral (Speed)' video, not the deep-hold or forward/backward versions. PoseTek uses small side-to-side two-foot contacts over a flat line at a controlled rhythm. The page's lateral paragraph appears to repeat forward/backward wording, so use the explicitly labeled lateral clip and PoseTek directions; do not copy its speed target, volume or rehabilitation timeline.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-013",
+      "drillId": "PLY-503",
+      "name": "Low-box jump with step-down",
+      "videos": [
+        {
+          "title": "Box Jumps Progressions: box jumps with step down",
+          "url": "https://www.12minuteathlete.com/workout/box-jumps-tutorial/",
+          "publisher": "12 Minute Athlete",
+          "matchType": "component",
+          "matchNotes": "The page identifies the jump-up/step-down demonstration at 1:03. Film only that variation with a low stable box, full-foot balanced landing and one-foot-at-a-time step-down. Exclude the later tuck jumps, depth jumps and rebounding jump-down variations; box height and resets follow PoseTek.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-014",
+      "drillId": "PLY-504",
+      "name": "Wall plyometric push-off",
+      "videos": [
+        {
+          "title": "Plyometric Wall Push Ups",
+          "url": "https://www.peak-physio.com.au/exercise/plyometric-wall-push-ups/",
+          "publisher": "Peak Physio",
+          "matchType": "component",
+          "matchNotes": "Matches pushing from a wall until the hands briefly leave it and returning with soft elbows. The source uses shoulder-height hands and immediate repetitions; PoseTek specifies chest-height hands, a shallow coach-chosen body angle and a reset after each landing.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-015",
+      "drillId": "SPD-502",
+      "name": "Two-point split-stance acceleration",
+      "videos": [
+        {
+          "title": "Split & Rip Sprint Drill with Tony Holler",
+          "url": "https://coachesinsider.com/track-x-country/split-rip-sprint-drill-with-tony-holler-plainfield-north-high-school-il/",
+          "publisher": "Tony Holler / Championship Productions, hosted by Coaches Insider",
+          "matchType": "component",
+          "matchNotes": "Use the two-point standing start portion for stance and first-step reference. The page also covers three- and four-point starts and a specific arm drill; PoseTek films a static split stance, controlled 10 m acceleration and clear slowing area, with no floor start.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-016",
+      "drillId": "AGL-501",
+      "name": "Lateral shuffle braking",
+      "videos": [
+        {
+          "title": "Playing in the Tunnel — Teaching Lateral Shuffle",
+          "url": "https://leetaft.com/playing-in-the-tunnel/",
+          "publisher": "Lee Taft Athletic Consulting",
+          "matchType": "component",
+          "matchNotes": "Open the linked Teaching Lateral Shuffle video. It illustrates lateral posture and controlled recovery with resistance. PoseTek uses no resistance: shuffle 3 m without crossing the feet, shorten the final steps and stop balanced. Film that braking finish separately.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-017",
+      "drillId": "SPD-503",
+      "name": "Wide-arc curved acceleration",
+      "videos": [
+        {
+          "title": "Curved sprint with a lower load of centrifugal force — Video 1",
+          "url": "https://www.sportsmith.co/articles/testing-and-training-curvilinear-sprinting-in-team-sports/",
+          "publisher": "Alberto Filter / Sportsmith",
+          "matchType": "component",
+          "matchNotes": "Use Video 1, the introductory larger-radius curved sprint, as the movement reference. PoseTek specifies a gentle 15 m arc, gradual speed build and clear runoff. Do not copy the smaller-radius, weighted-vest or ball-reaction progressions later on the page.",
+          "verification": "Publisher video description checked; linked Vimeo player played publicly without sign-in and a curved-running frame was inspected. Full playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-018",
+      "drillId": "RCV-501",
+      "name": "Self-drop instep cushion receive",
+      "videos": [
+        {
+          "title": "How to Control the Soccer Ball out of the Air",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/how-to-control-the-soccer-ball-out-of-the-air",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the laces/instep cushioning demonstration and low solo toss progression. PoseTek drops from around waist height, softens the receiving leg and settles the ball within one step; it does not require a high toss, foot stall or partner service.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-019",
+      "drillId": "BMA-504",
+      "name": "Drop-bounce instep juggling",
+      "videos": [
+        {
+          "title": "How to Juggle a Soccer Ball",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-juggle-a-soccer-ball",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "exact",
+          "matchNotes": "Use the second exercise: drop, allow a bounce, lift with the instep and allow another bounce between touches. This matches the drill's movement; film low, controlled touches below waist height and the catch/reset option, not the later continuous juggling progression.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-020",
+      "drillId": "PAS-501",
+      "name": "Outside-foot ground pass",
+      "videos": [
+        {
+          "title": "1 Touch Technique - Right Outside Foot",
+          "url": "https://blayze.io/blog/soccer/drills/1-touch-technique---right-outside-foot",
+          "publisher": "Mike Semenza / Blayze",
+          "matchType": "component",
+          "matchNotes": "Reference the outside-foot contact and controlled pass through the cones. This example uses one-touch right-foot passing; PoseTek starts with a stationary ball, uses a wide gate 3–5 m away and repeats on both feet.",
+          "verification": "Video player, coach attribution and instructions checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-021",
+      "drillId": "STR-513",
+      "name": "Dumbbell Romanian deadlift",
+      "videos": [
+        {
+          "title": "Dumbbell Romanian Deadlift (RDL)",
+          "url": "https://www.liveleantv.com/dumbbell-romanian-deadlift-rdl/",
+          "publisher": "Live Lean TV / Brad Gouthro",
+          "matchType": "exact",
+          "matchNotes": "Matches a pair of dumbbells in front of the thighs, soft knees and a hip hinge with the weights close to the legs. Use PoseTek's controlled range and stop before losing the position; reaching a parallel torso or touching the floor is not the filming target.",
+          "verification": "Original exercise video page and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-022",
+      "drillId": "STR-514",
+      "name": "Low-box dumbbell step-up",
+      "videos": [
+        {
+          "title": "Dumbbell Step Up Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/node/3916",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches a dumbbell in each hand and stepping up through the lead leg. The source describes a knee-height platform and permits alternating legs. PoseTek uses a low stable box, a level pelvis, a controlled descent and same-side repetitions with a reset.",
+          "verification": "Indexed video page, named demonstration and written instructions checked; direct page fetch was inconsistent and playback was not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-023",
+      "drillId": "STR-515",
+      "name": "Standing single-arm cable row",
+      "videos": [
+        {
+          "title": "ShoulderPerformance.com: Standing 1-arm Cable Row",
+          "url": "https://www.youtube.com/watch?v=-zBPknRjJGU",
+          "publisher": "Eric Cressey / Cressey Sports Performance",
+          "matchType": "component",
+          "matchNotes": "Reference for the standing one-arm cable-row movement. The accessible description does not establish the cable height, stance or rotation limits. Film PoseTek's chest-height cable, fixed split stance and handle-to-ribs pull with the torso facing forward; do not add a rotational row or step.",
+          "verification": "Indexed original video title and publisher checked; detailed setup and playback were not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-024",
+      "drillId": "STR-516",
+      "name": "Half-kneeling dumbbell overhead press",
+      "videos": [
+        {
+          "title": "Half Kneeling Dumbbell Shoulder Press",
+          "url": "https://vimeo.com/707704318",
+          "publisher": "APEC - Athletic Performance Education Company",
+          "matchType": "component",
+          "matchNotes": "The original description confirms a unilateral dumbbell shoulder press from half-kneeling. It does not identify which knee is down. For PoseTek, place the working arm on the kneeling side, keep the ribs over the pelvis, and use the approved comfortable overhead range.",
+          "verification": "Original video page, publisher and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-025",
+      "drillId": "STR-517",
+      "name": "Supine slider hamstring curl",
+      "videos": [
+        {
+          "title": "Valslide Leg Curl Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/valslide-leg-curl",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches a supine bridge with heels on sliders and sliding the legs away and back. The reference describes a longer extension range. PoseTek uses a short controlled slide, keeps the pelvis level, and lowers the hips to reset between repetitions.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-026",
+      "drillId": "STR-518",
+      "name": "Standing cable hip adduction",
+      "videos": [
+        {
+          "title": "How To Do A Standing Cable Hip Adduction",
+          "url": "https://www.youtube.com/watch?v=SIQrpq6YnT8",
+          "publisher": "Live Lean TV Daily Exercises",
+          "matchType": "component",
+          "matchNotes": "Matches the low cable, ankle cuff, supported standing position and inward leg movement. The source brings the leg across the body. PoseTek stops at the midline without crossing the standing foot, twisting the pelvis or swinging the leg.",
+          "verification": "Indexed video title, publisher and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-027",
+      "drillId": "STR-519",
+      "name": "Single-arm suitcase carry",
+      "videos": [
+        {
+          "title": "Suitcase Carry (Demo)",
+          "url": "https://vimeo.com/731202505",
+          "publisher": "E3 Rehab",
+          "matchType": "component",
+          "matchNotes": "Use this one-sided carry reference for an upright walking posture. The accessible video page does not specify the weight implement or distance. PoseTek uses one dumbbell at the side, a clear 10 m lane, slow steps without leaning or swinging, and a controlled set-down before changing hands.",
+          "verification": "Original video page, title and publisher checked; detailed instructions and playback were not available for review.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-028",
+      "drillId": "STR-520",
+      "name": "Heel-dig long-lever bridge hold",
+      "videos": [
+        {
+          "title": "Hamstring bridge with hold – long lever bridge",
+          "url": "https://us.physitrack.com/home-exercise-video/hamstring-bridge-hold-%25e2%2580%2593-long-lever",
+          "publisher": "Physitrack",
+          "matchType": "exact",
+          "matchNotes": "Matches both heels on the floor farther from the hips, heel pressure, a lifted pelvis and a static hold. Use a mat and the coach-selected heel distance; no bench elevation, single-leg variation or automatic progression.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-029",
+      "drillId": "STR-521",
+      "name": "Tall-kneeling cable anti-rotation hold",
+      "videos": [
+        {
+          "title": "Tall Kneeling Cable (Pallof) Hold",
+          "url": "https://www.youtube.com/watch?v=Q1tN068jWPw",
+          "publisher": "Roy Pumphrey",
+          "matchType": "exact",
+          "matchNotes": "The description specifies both knees down, the cable brought to the chest, arms pressed out and a hold. Film side-on to a chest-height cable with a knee pad, light coach-selected load, ribs stacked and normal breathing. Return the handle to the chest to finish.",
+          "verification": "Indexed video title, publisher and description checked; direct page fetch unavailable; playback not verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-030",
+      "drillId": "STR-522",
+      "name": "Prone small-range trunk hold",
+      "videos": [
+        {
+          "title": "Prone trunk extensions, arms at sides",
+          "url": "https://ca.physitrack.com/home-exercise-video/prone-trunk-extensions",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Use the prone position with arms beside the body and the chest-lift direction only. The source describes repeated larger lifts; PoseTek requires a very small comfortable chest lift, a held position and a long neutral neck, then a controlled lower. Do not copy 'as far as you can' or throw the head back.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-031",
+      "drillId": "PLY-505",
+      "name": "Alternating-foot jump-rope rhythm",
+      "videos": [
+        {
+          "title": "Beginner jump rope alternate foot tutorial NOT boxer skip",
+          "url": "https://www.jumpropemom.com/post/beginner-jump-rope-alternate-foot-tutorial-not-boxer-skip",
+          "publisher": "Jump Rope Mom",
+          "matchType": "exact",
+          "matchNotes": "The original coach's tutorial is specifically the alternate-foot pattern, rather than boxer skip. Film a simple low alternating rhythm with an ordinary fitted rope, resetting after a miss. Exclude weighted-rope progressions, crosses and the linked boxer-step variation.",
+          "verification": "Original video tutorial page and description checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-032",
+      "drillId": "PLY-506",
+      "name": "Single-leg forward-back line hops",
+      "videos": [
+        {
+          "title": "Hop and hold – forwards and backwards over a line",
+          "url": "https://us.physitrack.com/home-exercise-video/hop---forwards-and-backwards-over-a-line",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Matches forward/backward hops on the same foot over a flat line. The source regains balance after each hop; PoseTek uses small repeated contacts followed by a balanced finish and then a leg change. Keep the short hop distance and coach-set contact count; its 'affected foot' wording is not an athlete diagnosis.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-033",
+      "drillId": "PLY-507",
+      "name": "Hopscotch single-to-double landings",
+      "videos": [
+        {
+          "title": "Hopscotch alternate legs",
+          "url": "https://na.physitrack.com/home-exercise-video/hopscotch-alternate-legs",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Matches alternating one-foot and two-foot forward landings. PoseTek adds closely spaced single/double flat markers, begins on a single mark, finishes in balance and walks back before changing the starting foot. Keep jumps small rather than copying a deep squat or long forward leap.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-034",
+      "drillId": "PLY-508",
+      "name": "Medicine-ball rebound chest pass",
+      "videos": [
+        {
+          "title": "Medicine Ball Chest Pass",
+          "url": "https://www.youtube.com/watch?v=upEOUUXso2Q",
+          "publisher": "The Kenneth H. Cooper Institute",
+          "matchType": "component",
+          "matchNotes": "Matches a standing chest-height pass into a suitable wall followed by catching the rebound. PoseTek uses a light rebound-safe ball, soft elbows and smooth controlled redirects. Do not copy the video's rapid timed maximum-repetition target or kneeling modification.",
+          "verification": "Indexed video title, publisher and description checked; direct page fetch unavailable; playback not verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-035",
+      "drillId": "SPD-504",
+      "name": "Side-on crossover acceleration",
+      "videos": [
+        {
+          "title": "Hip turn to crossover step — Video 21",
+          "url": "https://simplifaster.com/articles/deconstructing-preformance-training-basketball-defense/",
+          "publisher": "Justin Ochoa / SimpliFaster",
+          "matchType": "component",
+          "matchNotes": "Go to Video 21, Hip turn to crossover step. Use the hip opening and crossover as the reference. PoseTek begins side-on and then accelerates forward for 8 m on a planned signal; it does not add the article's reactive basketball task.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-036",
+      "drillId": "AGL-502",
+      "name": "Planned 135-degree cut",
+      "videos": [
+        {
+          "title": "Cutting tree - 135 degree cut",
+          "url": "https://www.youtube.com/watch?v=Se_9___oVY8",
+          "publisher": "LMU Strength and Conditioning",
+          "matchType": "component",
+          "matchNotes": "Use this explicitly labeled 135-degree cutting-tree demonstration for the sharper direction change. The coach demonstrates on grass using cones. PoseTek uses a short controlled approach and one planned cut back toward the start-side diagonal, then a short exit and reset. Confirm the 135-degree travel-direction change in the filming layout; do not substitute a shallow 45-degree turn or copy a faster approach.",
+          "verification": "Video title and publisher checked in browser; playback access and sampled demonstration frames checked. No published description; not reviewed frame by frame.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-037",
+      "drillId": "AGL-503",
+      "name": "Shuffle-to-crossover transition",
+      "videos": [
+        {
+          "title": "Crossover Step (Videos) — movement combinations",
+          "url": "https://www.breakthroughbasketball.com/defense/defense-crossover-step",
+          "publisher": "Joe Haefner / Breakthrough Basketball",
+          "matchType": "component",
+          "matchNotes": "Use the training example identified on the page as Sandra's movement combinations, particularly the shuffle/crossover changes. The page distinguishes these from turning fully to run. PoseTek films a planned 3 m shuffle into 5 m of lateral crossover travel while facing forward, without an opponent or basketball.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-038",
+      "drillId": "RCV-502",
+      "name": "Thigh-to-foot aerial receive",
+      "videos": [
+        {
+          "title": "Control a Soccer Ball with your Thigh",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/control-a-ball-with-your-thigh",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the low solo-toss thigh cushioning demonstration. PoseTek raises the thigh early, lowers it on contact and adds a settling foot touch; keep the toss just above thigh height and omit harder partner service.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-039",
+      "drillId": "PAS-502",
+      "name": "Sole layoff to supporting partner",
+      "videos": [
+        {
+          "title": "Soccer Skills: The Drag-Back",
+          "url": "https://www.sikana.tv/en/sport/football/soccer-skills-the-drag-back",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Use only the initial sole-on-ball backward roll as a contact reference. The demonstrated move keeps possession and exits in a V; PoseTek instead releases the roll as a gentle layoff to a partner 2–3 m diagonally behind. Film the rear-space check, pass release and movement for the return; do not copy the V-turn.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-040",
+      "drillId": "SHT-506",
+      "name": "Short-range toe-poke finish",
+      "videos": [
+        {
+          "title": "The Art of the Futsal Toe Poke: Full Guide with Tips and Training Drills",
+          "url": "https://www.carofutsal.com.au/post/mastering-futsal-toe-poke-technique",
+          "publisher": "Andre Caro / Caro Futsal",
+          "matchType": "component",
+          "matchNotes": "Open Andre Caro's linked tutorial for toe-contact technique. It covers several futsal situations; PoseTek films a short, low-power toe poke from close range into a wide target, no goalkeeper, resetting after each shot rather than copying the full combinations.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-041",
+      "drillId": "STR-523",
+      "name": "High-handle trap-bar deadlift",
+      "videos": [
+        {
+          "title": "Movement Demo - High Handle Trap Bar Deadlift",
+          "url": "https://www.roguefitness.com/theindex/movement-library/movement-demo-high-handle-trap-bar-deadlift",
+          "publisher": "Rogue Fitness / Jeff Adler",
+          "matchType": "exact",
+          "matchNotes": "The original movement demo explicitly uses the elevated handles of a trap bar with the lifter inside the frame. Film PoseTek's approved starting height, secured plates, level lift and full floor reset between repetitions. The adult demonstrator's load is not a loading recommendation.",
+          "verification": "Original video page, named demonstrator and high-handle setup description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-042",
+      "drillId": "STR-524",
+      "name": "Front-foot-elevated dumbbell split squat",
+      "videos": [
+        {
+          "title": "Front Foot Elevated Dumbbell Split Squat Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/front-foot-elevated-dumbbell-split-squat",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches a shallow riser under the front foot, dumbbells at the sides and a stationary split squat. The source targets rear-knee floor contact. Use PoseTek's coach-approved depth and stable pelvis, with front-leg drive and no rear-leg spring.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-043",
+      "drillId": "STR-525",
+      "name": "Cable lat pulldown",
+      "videos": [
+        {
+          "title": "Lat Pull Down Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/lat-pull-down.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Useful for the seated cable pulldown in front of the body. The reference specifies a wide overhand grip; PoseTek permits a comfortable coach-selected grip. Film thigh-pad and seat adjustment, supported feet and a controlled pull to the upper chest without a large backward lean.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-044",
+      "drillId": "STR-526",
+      "name": "Incline dumbbell bench press",
+      "videos": [
+        {
+          "title": "Incline Dumbbell Bench Press Video Exercise Guide",
+          "url": "https://cdn.muscleandstrength.com/exercises/incline-dumbbell-bench-press.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "exact",
+          "matchNotes": "Matches two dumbbells, an incline bench and controlled pressing through a comfortable shoulder range. Film PoseTek's shallow bench angle and supported feet; keep the body supported and use a coach-taught controlled setup and finish.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-045",
+      "drillId": "STR-527",
+      "name": "Bench-supported dumbbell hip thrust",
+      "videos": [
+        {
+          "title": "Dumbbell Hip Thrust",
+          "url": "https://www.hertssportsvillage.co.uk/dumbbell-hip-thrust-training-video-81",
+          "publisher": "Performance Herts / Hertfordshire Sports Village - Maddi Gibbons",
+          "matchType": "component",
+          "matchNotes": "Original strength-and-conditioning demonstration of a dumbbell hip thrust. The accessible text does not detail the bench, padding or foot placement. For PoseTek, secure the bench, support the upper back, keep both feet grounded and stabilise one padded dumbbell across the hips throughout a controlled lift and return.",
+          "verification": "Original video page, embedded player link and named strength-and-conditioning demonstrator checked; detailed setup and playback were not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-046",
+      "drillId": "STR-528",
+      "name": "Cable pull-through",
+      "videos": [
+        {
+          "title": "How To Do A Cable Pull Through",
+          "url": "https://www.youtube.com/watch?v=fbF4_pn_0xc",
+          "publisher": "Live Lean TV Daily Exercises",
+          "matchType": "exact",
+          "matchNotes": "Matches a rope on the low cable, facing away, cable between the legs and a hip-driven hinge with long arms. Film a controlled return and comfortable depth, without using the arms to lift or arching backward at the top.",
+          "verification": "Indexed video title, publisher and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-047",
+      "drillId": "STR-529",
+      "name": "Half-kneeling cable chop",
+      "videos": [
+        {
+          "title": "Half Kneeling Cable Chop Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/half-kneeling-cable-chop",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Matches half-kneeling and a two-hand diagonal path from a high cable toward the down-knee side. The reference adds a slight crunch/rotation and uses a rope. PoseTek keeps the pelvis still and uses a controlled diagonal pull; do not turn it into a whole-body twisting chop.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-048",
+      "drillId": "STR-530",
+      "name": "Incline push-up midpoint hold",
+      "videos": [
+        {
+          "title": "Isometric Incline Push Up",
+          "url": "https://www.liveleantv.com/how-to-do-an-isometric-incline-push-up-bottom-hold/",
+          "publisher": "Live Lean TV / Brad Gouthro",
+          "matchType": "component",
+          "matchNotes": "Matches hands on a stable elevated support and a straight body during an isometric push-up. The source holds near the bottom; PoseTek holds at a smaller coach-approved midpoint elbow bend. Film on a fixed bench, keep breathing and press back up to finish; do not copy the source's hold duration.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-049",
+      "drillId": "STR-531",
+      "name": "Supported single-leg hinge hold",
+      "videos": [
+        {
+          "title": "Single Leg Reach – Deadlift with Support: quick demo",
+          "url": "https://inspirefulwomen.com/exercises/womens-beginner-no-weights-single-leg-reach-deadlift-with-support-home-lower-body-exercise-proper-form/",
+          "publisher": "Inspireful Women",
+          "matchType": "component",
+          "matchNotes": "Use the public 'Quick Demo' for a bodyweight single-leg hip hinge, free leg extending behind, level pelvis and light hand support. The source uses a hand on a roller/dowel and moving repetitions with a short hold; PoseTek uses light wall support and a sustained coach-selected hinge hold before slowly standing. No external weight or rear-foot support.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-050",
+      "drillId": "STR-532",
+      "name": "Seated ball-squeeze hold",
+      "videos": [
+        {
+          "title": "Seated adduction ball squeeze",
+          "url": "https://us.physitrack.com/home-exercise-video/seated-ball-squeeze",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Matches sitting with a small ball between the knees and inward pressure. The source lists a chair; film PoseTek on a stable bench with feet flat and a soft ball, using a gentle-to-moderate sustained squeeze, normal breathing and gradual release.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-051",
+      "drillId": "PLY-509",
+      "name": "Medicine-ball rotational rebound pass",
+      "videos": [
+        {
+          "title": "Rotational Med Ball Throw",
+          "url": "https://elite-performance-institute.com/exercise-library/medicine-ball-throws/rotational-med-ball-throw/",
+          "publisher": "Elite Performance Institute",
+          "matchType": "component",
+          "matchNotes": "Use for the side-on wall setup and coordinated hip/trunk turn. The source describes throwing then resetting, without specifying the rebound catch. PoseTek adds a soft-arm catch that permits a small turn, followed by a smooth redirect; keep a light rebound-safe ball, gentle effort and no added shuffle or 180-degree turn.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        },
+        {
+          "title": "Medicine Ball Chest Pass: rebound catch component",
+          "url": "https://www.youtube.com/watch?v=upEOUUXso2Q",
+          "publisher": "The Kenneth H. Cooper Institute",
+          "matchType": "component",
+          "matchNotes": "Use only as a second reference for catching and returning a wall rebound. This source faces the wall and chest-passes; PoseTek remains side-on and uses the rotational pass from the first reference. Use soft elbows, controlled reception and PoseTek's dose, not the timed maximum-repetition challenge.",
+          "verification": "Indexed video title, publisher and description checked; direct page fetch unavailable; playback not verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-052",
+      "drillId": "PLY-510",
+      "name": "Quarter-turn jump and stick",
+      "videos": [
+        {
+          "title": "Continuous Rotational Jump – Quarter Turn, In Place",
+          "url": "https://library.theprehabguys.com/vimeo-video/continuous-rotational-jump-quarter-turn-in-place-2/",
+          "publisher": "[P]rehab",
+          "matchType": "component",
+          "matchNotes": "Matches a two-foot jump with a quarter turn and soft two-foot landing. The source is continuous; PoseTek stops in balance after each 90-degree turn, resets and uses small jumps within flat markers. Do not turn again before controlling the landing.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-053",
+      "drillId": "PLY-511",
+      "name": "Split-stance switch jump",
+      "videos": [
+        {
+          "title": "Scissor Lunge",
+          "url": "https://library.theprehabguys.com/vimeo-video/scissor-lunge/",
+          "publisher": "[P]rehab",
+          "matchType": "component",
+          "matchNotes": "Matches pushing off from a split stance, switching the feet in the air and landing in the opposite split stance. PoseTek uses a short stance, shallow dip and small jump, with a full balance reset after each landing; do not copy a deep or continuous jumping-lunge set.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-054",
+      "drillId": "PLY-512",
+      "name": "Two-step approach vertical jump",
+      "videos": [
+        {
+          "title": "Your Answer to Increasing Your Vertical: Penultimate Jump",
+          "url": "https://www.sportmanitoba.ca/resources/your-answer-to-increasing-your-vertical",
+          "publisher": "Sport Manitoba Performance",
+          "matchType": "component",
+          "matchNotes": "Use the first 'Penultimate Jump' video for the approach-to-two-foot-takeoff sequence. PoseTek limits the approach to two easy walk/jog steps, adds a controlled two-foot landing and balance hold, then a walk-back reset. Omit the article's later box, drop and hurdle progressions and maximal-effort cues.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-055",
+      "drillId": "SPD-505",
+      "name": "Half-kneeling acceleration start",
+      "videos": [
+        {
+          "title": "Speed drill: Half Kneeling Sprint Start",
+          "url": "https://www.youtube.com/watch?v=14TzuI0l7Ug",
+          "publisher": "Academy of Sport Speed Australia",
+          "matchType": "exact",
+          "matchNotes": "Matches the half-kneeling start, forward lean and drive through the front foot. Retain PoseTek's comfortable knee pad, controlled first steps, 8 m lane and clear slowing area; the example does not establish the athlete's prescribed volume.",
+          "verification": "Original academy's video listing, direct YouTube link and drill description checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-056",
+      "drillId": "AGL-504",
+      "name": "Backpedal drop-step acceleration",
+      "videos": [
+        {
+          "title": "Acceleration + Backpedal + Drop Step Sprint",
+          "url": "https://www.youtube.com/watch?v=FTH60Lvk6lc",
+          "publisher": "Champion Physical Therapy and Performance",
+          "matchType": "component",
+          "matchNotes": "Reference the backpedal-to-drop-step-to-forward-sprint portion. The title includes an initial acceleration that PoseTek omits: film a controlled 3 m backpedal followed by the planned diagonal 6 m exit and runoff.",
+          "verification": "Video title, publisher and indexed description checked; direct playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-057",
+      "drillId": "SPD-506",
+      "name": "Curve-to-straight acceleration",
+      "videos": [
+        {
+          "title": "Curved sprint with a lower load of centrifugal force — Video 1",
+          "url": "https://www.sportsmith.co/articles/testing-and-training-curvilinear-sprinting-in-team-sports/",
+          "publisher": "Alberto Filter / Sportsmith",
+          "matchType": "component",
+          "matchNotes": "Video 1 supplies the gentle-curve running component only. PoseTek adds a marked transition from an 8 m curve to an 8 m straight, gradually aligning the body without planting for a sharp cut. Film the transition clearly; omit the page's tighter curves and weighted variations.",
+          "verification": "Publisher video description checked; linked Vimeo player played publicly without sign-in and a curved-running frame was inspected. Full playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-058",
+      "drillId": "RCV-503",
+      "name": "Chest-to-foot aerial receive",
+      "videos": [
+        {
+          "title": "How to Chest a Soccer Ball",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/chest-a-soccer-ball",
+          "publisher": "Online Soccer Academy / Emily Grant",
+          "matchType": "component",
+          "matchNotes": "Use the balanced chest contact and low forward control reference. This demonstration uses a partner toss; PoseTek uses a gentle self-toss below head height, soft chest contact and a ground-settling foot touch. No header or volley return is part of the PoseTek drill.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-059",
+      "drillId": "PAS-503",
+      "name": "Driven instep ground pass",
+      "videos": [
+        {
+          "title": "How to Kick a Ball: Soccer Shots",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-kick-a-ball-soccer-shots",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Reference the laces contact, firm ankle and body position for keeping the strike down. This is a shooting lesson; PoseTek applies those mechanics to a controlled 8–12 m ground pass through a wide gate, with a low follow-through and non-maximal force.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-060",
+      "drillId": "SHT-507",
+      "name": "Inside-foot curling finish",
+      "videos": [
+        {
+          "title": "How to Curl a Football",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-curl-a-football",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Use the inside-foot contact and curved follow-through as the visual reference. The example is framed as a free kick around a wall; PoseTek films a short angled approach and comfortable close-range curling finish without a wall or goalkeeper, not a long free-kick attempt.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-061",
+      "drillId": "STR-533",
+      "name": "Machine leg press",
+      "videos": [
+        {
+          "title": "Leg Press Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/45-degree-leg-press.html",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Reference uses a 45-degree sled leg press. PoseTek's machine model may differ, so film that machine's actual seat, safety-stop and release procedure with a coach. Keep the feet supported, stop before the pelvis rolls or heels lift, and avoid forceful knee lockout; do not copy self-spotting or a fixed depth target.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-062",
+      "drillId": "STR-534",
+      "name": "Dumbbell lateral lunge",
+      "videos": [
+        {
+          "title": "How To Do A Dumbbell Lateral Lunge",
+          "url": "https://www.youtube.com/watch?v=R8jArZG2J6Q",
+          "publisher": "Live Lean TV Daily Exercises",
+          "matchType": "exact",
+          "matchNotes": "Matches a pair of dumbbells held at the sides, a sideways step into the lead hip and return to standing. Film PoseTek's grounded feet, long opposite leg and balanced reset; avoid a walking lateral lunge or stepping over an obstacle.",
+          "verification": "Indexed video title, publisher and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-063",
+      "drillId": "STR-535",
+      "name": "Seated leg-curl machine",
+      "videos": [
+        {
+          "title": "Seated Leg Curl Video Exercise Guide",
+          "url": "https://www.muscleandstrength.com/exercises/seated-leg-curl",
+          "publisher": "Muscle & Strength",
+          "matchType": "component",
+          "matchNotes": "Use the seated-machine demonstration for the knee-curl pattern. The page's generic phrase about curling the weight upward is not a cue for the ankle pad: on PoseTek's seated machine, the lower legs curl down and back. Film the actual thigh/ankle-pad fit, supported hips and slow return without a stack impact.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-064",
+      "drillId": "STR-536",
+      "name": "Band-assisted pull-up",
+      "videos": [
+        {
+          "title": "Assisted pull up (narrow overhand grip)",
+          "url": "https://ca.physitrack.com/home-exercise-video/assisted-pull-up",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Shows a resistance-band-assisted pull-up with a narrow overhand grip and a foot in the band. Its band anchoring and mounting instructions may differ from the gym's setup. PoseTek requires a coach-checked band/bar, step-assisted entry and exit, no jumping into the band, no kicking, and the approved grip and range.",
+          "verification": "Original exercise video page and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-065",
+      "drillId": "STR-537",
+      "name": "Single-arm dumbbell overhead carry",
+      "videos": [
+        {
+          "title": "Overhead carry - single arm with dumbbell",
+          "url": "https://au.physitrack.com/home-exercise-video/overhead-carry---single-arm-with-dumbbell",
+          "publisher": "Physitrack",
+          "matchType": "exact",
+          "matchNotes": "Matches one dumbbell supported overhead while walking steadily. Film the clear short lane, ribs stacked, steady elbow and shoulder, and a controlled stop and lower before changing sides. Use the PoseTek dose and coach-selected load.",
+          "verification": "Original exercise video page and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-066",
+      "drillId": "STR-538",
+      "name": "Incline-bench dumbbell Y raise",
+      "videos": [
+        {
+          "title": "How To Do Y Raises - Incline Y Raises",
+          "url": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/y-raises/",
+          "publisher": "PureGym / PT and Gym Manager Tom",
+          "matchType": "exact",
+          "matchNotes": "The bench-supported demonstration matches two light dumbbells, chest against a 30-45 degree incline and arms rising into a Y. Film PoseTek's shallow incline and comfortable range with the chest staying supported; use the bench version rather than the page's standing alternative.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-067",
+      "drillId": "STR-539",
+      "name": "Split-stance single-arm cable press",
+      "videos": [
+        {
+          "title": "Cable Single-Arm Chest Press (Standing)",
+          "url": "https://www.origym.co.uk/blog/cable-chest-press/",
+          "publisher": "OriGym",
+          "matchType": "component",
+          "matchNotes": "Open the section titled Cable Single-Arm Chest Press (Standing). It demonstrates one handle and a staggered stance, but deliberately adds torso rotation and counter-arm movement. PoseTek keeps the pelvis and stance still, places the cable behind at chest height, and presses straight forward without that rotation.",
+          "verification": "Video page, embedded player link and written instructions checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-068",
+      "drillId": "STR-540",
+      "name": "Half-kneeling dumbbell overhead hold",
+      "videos": [
+        {
+          "title": "Half Kneeling Dumbbell Overhead Press (Demo)",
+          "url": "https://vimeo.com/958739361",
+          "publisher": "E3 Rehab",
+          "matchType": "component",
+          "matchNotes": "Use as a half-kneeling dumbbell press/setup reference. The published demo is a press, not PoseTek's sustained overhead hold, and its detailed motion was not independently viewed. Film one light dumbbell, knee padding, a steady half-kneeling base and a still overhead position with ribs down, then lower under control; the coach selects load and hold time.",
+          "verification": "Video page title and publisher checked; no detailed movement description available; playback not verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-069",
+      "drillId": "STR-541",
+      "name": "Seated cable-row hold",
+      "videos": [
+        {
+          "title": "V-Bar Seated Cable Row",
+          "url": "https://vimeo.com/1097941441",
+          "publisher": "Julie Harvey",
+          "matchType": "component",
+          "matchNotes": "Matches seated cable equipment, supported feet, elbows close to the torso and a handle brought toward the upper abdomen/lower ribs. The source is a dynamic row; PoseTek holds the handle by the lower ribs with no shrugging or backward lean, then slowly extends the arms. Use the coach-selected light load; omit heavier-load, partial-rep and drop-set progressions.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-070",
+      "drillId": "STR-542",
+      "name": "Seated hip-flexion self-resisted hold",
+      "videos": [
+        {
+          "title": "Seated Isometric Hip Flexion",
+          "url": "https://www.rehabhero.ca/exercise/seated-isometric-hip-flexion",
+          "publisher": "Rehab Hero / David Song",
+          "matchType": "component",
+          "matchNotes": "Matches sitting tall, lifting one thigh and opposing it with downward pressure from both hands. The source raises the knee higher and gives different intensity/time protocols; PoseTek lifts only slightly, places hands just above the knee and uses gentle matched pressure with a gradual release. Follow PoseTek's coach-reviewed dose, not the source's maximal-effort options.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-071",
+      "drillId": "PLY-513",
+      "name": "Lateral power skips",
+      "videos": [
+        {
+          "title": "Lateral pillar skip",
+          "url": "https://na.physitrack.com/home-exercise-video/lateral-pillar-skip",
+          "publisher": "Physitrack",
+          "matchType": "component",
+          "matchNotes": "Use for lateral skipping rhythm and coordinated opposite arm/leg action. PoseTek keeps the skips low, uses only a slight leading-knee lift, brings the trailing foot through without crossing and rests before returning along the lane. Do not turn this into a high-knee or maximal-height skip.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-072",
+      "drillId": "PLY-514",
+      "name": "Backward two-foot hop and stick",
+      "videos": [
+        {
+          "title": "Backward Jump – Non Counter Movement",
+          "url": "https://library.theprehabguys.com/vimeo-video/backward-jump-non-counter-movement-2/",
+          "publisher": "[P]rehab",
+          "matchType": "component",
+          "matchNotes": "Matches a two-foot backward takeoff and soft balanced two-foot landing. The source begins from a held bent-knee position with arms still; PoseTek uses a very short backward hop in checked clear space, holds the landing, then walks forward to reset. Keep the coach-selected small distance rather than pursuing jump length.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-073",
+      "drillId": "PLY-515",
+      "name": "Incline plyometric push-up",
+      "videos": [
+        {
+          "title": "Incline Plyometric Push-Up – Build Explosive Upper-Body Power",
+          "url": "https://www.youtube.com/watch?v=kMOQKh4bSWI",
+          "publisher": "Train With Cuz / Sean Currey",
+          "matchType": "exact",
+          "matchNotes": "The description identifies bench hand placement, an explosive push, controlled landing and resets between repetitions. Film hands briefly leaving a fixed non-slip bench and returning with soft bent elbows while the body stays aligned. The coach chooses support height; no clap, floor drop or unstable platform.",
+          "verification": "Indexed video title, publisher and description checked; direct page fetch unavailable; playback not verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-074",
+      "drillId": "PLY-516",
+      "name": "Alternating forward bounds",
+      "videos": [
+        {
+          "title": "Horizontal Jumps: Bounds with James Thomas",
+          "url": "https://coachesinsider.com/track-x-country/horizontal-jumps-bounds-with-james-thomas-univ-of-georgia/",
+          "publisher": "Championship Productions / Coaches Insider / Coach James Thomas",
+          "matchType": "component",
+          "matchNotes": "Use the alternate-leg-bound portion of the embedded coaching clip for pushing from one leg onto the opposite leg while travelling forward. PoseTek uses modest distances in a short clear lane, coordinated arms, a balanced finish and walk-back rest. Exclude the clip's single-leg, right-right/left-left and straight-leg bounding variations.",
+          "verification": "Video page and written instructions checked; playback not independently verified",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-075",
+      "drillId": "SPD-507",
+      "name": "Accelerate-float-accelerate run",
+      "videos": [
+        {
+          "title": "Sprint-float-sprint demonstration — The Harmony of Relaxation and Repetition in Sport: Part II",
+          "url": "https://www.just-fly-sports.com/the-harmony-of-relaxation-and-repetition-in-sport-part-ii/",
+          "publisher": "Joel Smith / Just Fly Sports",
+          "matchType": "component",
+          "matchNotes": "Use the embedded sprint-float-sprint video for the change from driving to relaxed running and back. The article discusses long, maximal track efforts; PoseTek uses three 8 m zones at controlled submaximal speed, maintaining relaxed motion in the middle zone and a smooth final increase.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-076",
+      "drillId": "AGL-505",
+      "name": "Backward-running brake and hold",
+      "videos": [
+        {
+          "title": "Finding the Gold in Backpedal Training for Performance — Videos 1–3",
+          "url": "https://simplifaster.com/articles/backpedal-training-athletic-performance/",
+          "publisher": "Lee Taft / SimpliFaster",
+          "matchType": "component",
+          "matchNotes": "Use Videos 1–3 for coordinated backward travel and balance. These demonstrate backpedal mechanics, not PoseTek's complete brake-and-hold sequence. PoseTek uses a short clear lane, progressively shorter steps into a balanced stop, then turns and walks back; omit the rotational/reactive progressions.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-077",
+      "drillId": "AGL-506",
+      "name": "Lateral crossover brake and square",
+      "videos": [
+        {
+          "title": "Crossover Step (Videos) — crossover and return to defensive stance",
+          "url": "https://www.breakthroughbasketball.com/defense/defense-crossover-step",
+          "publisher": "Joe Haefner / Breakthrough Basketball",
+          "matchType": "component",
+          "matchNotes": "Use the training movement-combination video for lateral crossovers and returning to a forward-facing stance. PoseTek adds its own controlled 5 m lane and uncrossing, progressively shorter braking steps before holding square. Do not copy a reactive opponent, hard reversal or the article's single-plant stopping progression.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-078",
+      "drillId": "PAS-504",
+      "name": "Low half-volley wall return",
+      "videos": [
+        {
+          "title": "#17 Soccer Training Session — wall volley / half-volley exercise",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/30-minute-training-sessions/soccer-training-session-17",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the wall exercise described in the session's 15–20 minute training block (not a video timestamp), especially its half-volley option just after the bounce. The lesson also uses side volleys. PoseTek films a low self-drop, one bounce and straight instep return to a low wall target, then controls and resets.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-079",
+      "drillId": "PAS-505",
+      "name": "Checked-space backheel pass",
+      "videos": [
+        {
+          "title": "Soccer Techniques: Back Heel",
+          "url": "https://www.sikana.tv/en/sport/football/soccer-techniques-back-heel",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "exact",
+          "matchNotes": "Matches the basic stationary backheel contact. PoseTek adds an explicit check behind, a wide gate about 2 m back and slightly to the side, a gentle pass, and turning to inspect the outcome before retrieving.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-080",
+      "drillId": "PAS-506",
+      "name": "Self-drop inside-foot volley pass",
+      "videos": [
+        {
+          "title": "Footwork & Inside Foot Volley",
+          "url": "https://www.youtube.com/watch?v=R736Sa2_66c",
+          "publisher": "Christopher Cartlidge / New Mexico Rapids Soccer Club video library",
+          "matchType": "component",
+          "matchNotes": "The club labels this as right-and-left inside-foot volley work. Use the inside-foot contact component; PoseTek removes the footwork sequence and uses a self-drop below knee height, no bounce, to a wide gate 3–4 m away with a reset after each pass.",
+          "verification": "Club video-library description, embedded player title, publisher and direct YouTube link checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ],
+      "filmingWeek": 4
+    }
+  ]
+}

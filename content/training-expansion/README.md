@@ -20,6 +20,15 @@ The plan is 20 complete exercise packages each week. A package contains a primar
 - `sources.json` distinguishes primary studies, official consensus and official coaching guidance, including populations and limitations.
 - `deduplication-reference.json` contains only names, IDs and statuses from the captured 128-entry live catalog and 85-row matrix, plus provenance hashes. Private raw snapshots and recordings are not included.
 - `production-id-map.json` records the verified live IDs assigned during the September 21 import. All 80 match the advisory IDs in the filming matrix and CSV. The live catalog version is `1.0.91`; all 128 prior records were preserved.
+- [Demo references](DEMO_REFERENCES.md) links external video demonstrations for filming preparation, grouped into the four weeks. `demo-references.json` contains the same links and matching notes, generated from the three research group files by `node content/training-expansion/build-demo-references.cjs`. These are separate from the original import manifest and its evidence sources.
+
+The admin production panel displays these links under **Watch before filming**.
+A movement reference matches the named movement; a component reference illustrates
+part of an authored sequence or a related setup. Follow the specific adaptation
+notes and PoseTek instructions, rather than copying a source's load or dose.
+Every link records how it was checked; page/description checks do not imply full
+playback or qualified technique review. These links are private production metadata
+and do not fill athlete media slots or approve content. Record original PoseTek clips.
 
 Every record has `status: draft`, `trainingPolicy.reviewStatus: pending`, an empty media map, and the publication hold “Awaiting content review and three approved videos.” Research desk review has occurred. Qualified human technique/dose/readiness approval and video review have not occurred. No reviewer identity or approval date is fabricated.
 

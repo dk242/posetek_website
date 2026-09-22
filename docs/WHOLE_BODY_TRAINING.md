@@ -57,6 +57,14 @@ content-review status and the three required media slots. Production notes and
 evidence authoring live in private `drillCatalogAuthoring` records, separate from
 athlete-facing coaching text.
 
+The **Watch before filming** section links external demonstrations for all 80
+drills. Matching notes identify the exact PoseTek adaptations where a source shows
+a component or related variant. The publisher and verification method are retained.
+These links live only in private `drillCatalogAuthoring.demoReferences`; they do
+not populate athlete media, change the reviewed evidence, dose or eligibility, or
+approve publication. The portable guide is
+[`DEMO_REFERENCES.md`](../content/training-expansion/DEMO_REFERENCES.md).
+
 An administrator explicitly designates qualified training reviewers by verified
 account ID and records their qualification. Ordinary staff and athletes cannot
 grant themselves review authority. No reviewer or player clearance is inferred or

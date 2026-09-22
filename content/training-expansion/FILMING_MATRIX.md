@@ -1,5 +1,7 @@
 # Four-week filming and evidence matrix
 
+[Open the demo-video references for all 80 drills](DEMO_REFERENCES.md). Each reference includes matching notes and any adaptations needed for the PoseTek version.
+
 80 NEW exercises;20 complete three-clip packages per week,60 required clips weekly,240 total. Every item is a draft. Research review is not qualified human content approval.
 
 Each week includes7 strength,3 isometric,4 plyometric,3 speed/change-of-direction and3 ball packages. The filming sequence is not an athlete workout plan.

@@ -142,6 +142,7 @@ for(let week=1;week<=4;week++){
   for(const r of rows.filter(r=>r.filmingWeek===week))md.push(`| ${r.manifestId} | ${r.category} | ${r.drill.name} | ${r.drill.equipment.join(', ')} | ${r.drill.dose.doseText} |`);
   md.push('');
 }
+md.splice(2,0,'[Open the demo-video references for all 80 drills](DEMO_REFERENCES.md). Each reference includes matching notes and any adaptations needed for the PoseTek version.','');
 md.push('## Individual filming cards','');
 for(const r of rows){const a=r.authoring;md.push(`### ${r.manifestId}: ${r.drill.name}`,'',`**Week${r.filmingWeek}; ${r.category}.** ${a.intendedAdaptation}`,'',`Setup: ${r.drill.howTo.setup}`,'',...r.drill.howTo.steps.map((s,i)=>`${i+1}. ${s}.`),'',`Dose for review: ${r.drill.dose.doseText}; ${r.drill.dose.restText}. ${r.drill.dose.doseNote}`,'',`Easier: ${a.regression} Progression: ${a.progression}`,'',`Distinct from existing content: ${a.distinctness.rationale}${a.distinctness.comparedWith.length?' Compare '+a.distinctness.comparedWith.join(', ')+'.':''}`,'',`Evidence: ${a.evidence.specificity}; ${a.evidence.testRelationship}. ${a.sources.map(s=>`[${s.id}](${s.url})`).join(', ')}. ${a.evidence.limitations}`,'',`**Primary demo:** ${a.filmingInstructions.primaryDemo}`,'',`**Teaching detail:** ${a.filmingInstructions.teachingDetail}`,'',`**Error correction:** ${a.filmingInstructions.errorCorrection}`,'');}
 fs.writeFileSync(path.join(here,'FILMING_MATRIX.md'),md.join('\n').trimEnd()+'\n');
