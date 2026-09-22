@@ -1,0 +1,172 @@
+{
+  "voice": "af_heart",
+  "language": "en-us",
+  "duration": 52,
+  "output_dir": "audio-v3",
+  "bpm": 106,
+  "segments": [
+    {
+      "id": "hook",
+      "start": 0.3,
+      "latest_end": 3.65,
+      "text": "What should your team train next?",
+      "display": "What should your team train next?"
+    },
+    {
+      "id": "evidence",
+      "start": 4.15,
+      "latest_end": 5.42,
+      "text": "Start with evidence.",
+      "display": "Start with evidence."
+    },
+    {
+      "id": "six",
+      "start": 5.55,
+      "latest_end": 6.6,
+      "text": "Six tests.",
+      "display": "Six tests."
+    },
+    {
+      "id": "view",
+      "start": 6.75,
+      "latest_end": 8.65,
+      "text": "One connected view.",
+      "display": "One connected view."
+    },
+    {
+      "id": "club",
+      "start": 9.3,
+      "latest_end": 10.45,
+      "text": "See your club.",
+      "display": "See your club."
+    },
+    {
+      "id": "review",
+      "start": 10.6,
+      "latest_end": 13.9,
+      "text": "Review testing and training across your teams.",
+      "display": "Review testing and training across your teams."
+    },
+    {
+      "id": "choose",
+      "start": 14.2,
+      "latest_end": 15.65,
+      "text": "Choose a team.",
+      "display": "Choose a team."
+    },
+    {
+      "id": "player",
+      "start": 16.0,
+      "latest_end": 17.7,
+      "text": "Understand each player.",
+      "display": "Understand each player."
+    },
+    {
+      "id": "priorities",
+      "start": 17.9,
+      "latest_end": 20.65,
+      "text": "Turn priorities into focused training.",
+      "display": "Turn priorities into focused training."
+    },
+    {
+      "id": "focus",
+      "start": 21.3,
+      "latest_end": 22.45,
+      "text": "A clear focus.",
+      "display": "A clear focus."
+    },
+    {
+      "id": "drill",
+      "start": 22.7,
+      "latest_end": 24.0,
+      "text": "A practical drill.",
+      "display": "A practical drill."
+    },
+    {
+      "id": "mobile",
+      "start": 24.2,
+      "latest_end": 26.85,
+      "text": "Guided sessions in the mobile app.",
+      "display": "Guided sessions in the mobile app."
+    },
+    {
+      "id": "demo",
+      "start": 27.0,
+      "latest_end": 28.25,
+      "text": "Follow the demo.",
+      "display": "Follow the demo."
+    },
+    {
+      "id": "track",
+      "start": 28.4,
+      "latest_end": 31.2,
+      "text": "Track your sets and time.",
+      "display": "Track your sets and time."
+    },
+    {
+      "id": "next",
+      "start": 31.7,
+      "latest_end": 34.6,
+      "text": "And see your next drill.",
+      "display": "And see your next drill."
+    },
+    {
+      "id": "retest",
+      "start": 35.3,
+      "latest_end": 36.65,
+      "text": "Then retest.",
+      "display": "Then retest."
+    },
+    {
+      "id": "change",
+      "start": 37.0,
+      "latest_end": 41.8,
+      "text": "Review what changed, and choose the next step.",
+      "display": "Review what changed, and choose the next step."
+    },
+    {
+      "id": "train",
+      "start": 43.3,
+      "latest_end": 44.55,
+      "text": "Players train.",
+      "display": "Players train."
+    },
+    {
+      "id": "coach",
+      "start": 44.8,
+      "latest_end": 46.6,
+      "text": "Coaches review.",
+      "display": "Coaches review."
+    },
+    {
+      "id": "brand",
+      "start": 47.3,
+      "latest_end": 48.4,
+      "text": "Pose Tech.",
+      "display": "PoseTek."
+    },
+    {
+      "id": "close_evidence",
+      "start": 48.6,
+      "latest_end": 49.95,
+      "text": "Start with evidence.",
+      "display": "Start with evidence."
+    },
+    {
+      "id": "close_next",
+      "start": 50.1,
+      "latest_end": 51.7,
+      "text": "Train what’s next.",
+      "display": "Train what’s next."
+    }
+  ],
+  "max_caption_characters": 58,
+  "transition_swishes": [
+    3.78,
+    8.76,
+    20.76,
+    34.76,
+    42.76,
+    46.76
+  ]
+}

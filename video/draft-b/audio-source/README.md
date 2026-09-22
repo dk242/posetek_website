@@ -1,5 +1,53 @@
 # Draft B audio
 
+## Coaching V3 and investor V1
+
+The optional script argument selects an isolated build without changing the
+original V2 `script.json`. Omitting it still uses V2 and the original `work/`.
+Named variants use `work/<script-name>/` and the output directory in their JSON.
+
+```powershell
+& .venv/Scripts/python.exe synthesize.py coaching-v3.json
+& .venv/Scripts/python.exe mix.py coaching-v3.json
+& .venv/Scripts/python.exe check_speech.py coaching-v3.json
+& .venv/Scripts/python.exe validate_audio.py coaching-v3.json
+
+& .venv/Scripts/python.exe synthesize.py investor-v1.json
+& .venv/Scripts/python.exe mix.py investor-v1.json
+& .venv/Scripts/python.exe check_speech.py investor-v1.json
+& .venv/Scripts/python.exe validate_audio.py investor-v1.json
+```
+
+`--script investor-v1.json` is equivalent to the positional argument. The neural
+voice, models, licenses and original 106 BPM score remain the same. Each variant
+defines its own transition sounds. New variant synthesis caches completed phrases
+using their text, voice, language, speed and duration window; V2 retains its
+uncached generation behavior.
+
+- **Coaching V3:** 52 seconds, output `../public/audio-v3/`. The assessment occupies
+  4–9 seconds, with voice starts at 4.15, 5.55 and 6.75 seconds. Subsequent V2
+  phrases move three seconds earlier. The close says “PoseTek. Start with
+  evidence. Train what’s next.” The last phrase ends at 51.338 seconds.
+- **Investor V1:** 90 seconds, output `../public/audio-investor-v1/`. Scene starts
+  are 0, 8, 17, 33, 43, 54, 64, 75 and 84 seconds. The product section has
+  individual narration starts at 17.18, 22.18 and 27.18 seconds to match testing,
+  coach/player insight and guided training. The final invitation ends at 89.768
+  seconds. The opening and mission received small pacing trims; all subsequent
+  approved wording is preserved, including “planned player subscription”.
+
+Investor captions retain the authored text, split at no more than 55 characters.
+The speech check aligns these short cues to matching words in an independent local
+Whisper transcription and keeps them inside measured scene speech extents. It
+does not replace authored text with recognition guesses. Run speech QA after
+mixing because a new mix regenerates provisional caption timing.
+
+Both variants produce `audio-manifest.json`, `speech-check.json` and
+`validation.json` beside their WAV files. Validation checks exact sample counts,
+speech fit, unclipped audio, caption ordering/text fidelity, and delivery levels.
+These automated checks do not claim subjective listening review.
+
+## Original V2
+
 This build produces a 55-second coach-focused audio master, aligned narration,
 an original restrained 106 BPM underscore, and phrase captions. Narration uses
 the preset American English `af_heart` voice; no person's voice was cloned.

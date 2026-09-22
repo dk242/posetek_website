@@ -66,6 +66,24 @@ club/player data is illustrative. V1 is preserved. See
 [`video/draft-b/PRODUCTION_V2.md`](video/draft-b/PRODUCTION_V2.md) for export,
 validation and delivery records. This work did not deploy or change the website.
 
+### September 22 coaching V3 and investor introduction
+
+The approved video follow-up adds a 52-second coaching revision and a separate
+90-second landscape investor introduction. Coaching V3 trims the six-test section
+to five seconds and closes with 'Start with evidence. Train what’s next.' The
+investor film uses the September 2026 pitch deck's mission, product, first-club
+partnership, business model and expansion strategy. Fundraising amounts, pricing,
+financial forecasts and SAFE terms are intentionally excluded. The player
+subscription remains labeled planned; expansion is a strategy. Northfield/Alex
+screens remain illustrative and separate from the real Vacaville partnership.
+
+Editable source stays under `video/draft-b/`, with V2 preserved as its own
+composition. Audio and rendering select per-edition inputs and outputs. See
+[`video/draft-b/PRODUCTION_V3_INVESTOR.md`](video/draft-b/PRODUCTION_V3_INVESTOR.md)
+and [`video/draft-b/INVESTOR_SOURCE_NOTES.md`](video/draft-b/INVESTOR_SOURCE_NOTES.md)
+for validation, provenance and delivery records. This work does not change the
+website, production services or private athlete data.
+
 ### September 17 website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` was published at https://posetek.net on

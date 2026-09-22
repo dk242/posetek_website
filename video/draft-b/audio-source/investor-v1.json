@@ -1,0 +1,149 @@
+{
+  "voice": "af_heart",
+  "language": "en-us",
+  "duration": 90,
+  "output_dir": "audio-investor-v1",
+  "bpm": 106,
+  "default_speed": 0.98,
+  "max_speed": 1.14,
+  "max_caption_characters": 55,
+  "align_captions": true,
+  "cycle_score": true,
+  "transition_swishes": [
+    7.76,
+    16.76,
+    32.76,
+    42.76,
+    53.76,
+    63.76,
+    74.76,
+    83.76
+  ],
+  "segments": [
+    {
+      "id": "investor_01",
+      "start": 0.18,
+      "latest_end": 7.78,
+      "text": "Every player deserves a clear path to improve. Yet youth clubs often lack the individual evidence used at elite academies.",
+      "display": "Every player deserves a clear path to improve. Yet youth clubs often lack the individual evidence used at elite academies.",
+      "caption_phrases": [
+        "Every player deserves a clear path to improve.",
+        "Yet youth clubs often lack the individual evidence",
+        "used at elite academies."
+      ]
+    },
+    {
+      "id": "investor_02",
+      "start": 8.18,
+      "latest_end": 16.78,
+      "text": "Our mission: make elite-level analysis accessible through phone-based testing, individual insight, and purposeful training.",
+      "display": "Our mission: make elite-level analysis accessible through phone-based testing, individual insight, and purposeful training.",
+      "caption_phrases": [
+        "Our mission: make elite-level analysis accessible",
+        "through phone-based testing, individual insight,",
+        "and purposeful training."
+      ]
+    },
+    {
+      "id": "investor_03_tests",
+      "start": 17.18,
+      "latest_end": 21.7,
+      "text": "Six standardized tests establish a starting point.",
+      "display": "Six standardized tests establish a starting point."
+    },
+    {
+      "id": "investor_03_player",
+      "start": 22.18,
+      "latest_end": 26.7,
+      "text": "Coaches see their teams and understand each player.",
+      "display": "Coaches see their teams and understand each player."
+    },
+    {
+      "id": "investor_03_training",
+      "start": 27.18,
+      "latest_end": 32.78,
+      "text": "Players follow guided sessions, track their work, and train with a clear focus.",
+      "display": "Players follow guided sessions, track their work, and train with a clear focus.",
+      "caption_phrases": [
+        "Players follow guided sessions,",
+        "track their work, and train with a clear focus."
+      ]
+    },
+    {
+      "id": "investor_04",
+      "start": 33.18,
+      "latest_end": 42.78,
+      "text": "Then we retest. Results become the next training decision, creating a continuous development cycle instead of an isolated assessment.",
+      "display": "Then we retest. Results become the next training decision, creating a continuous development cycle instead of an isolated assessment.",
+      "caption_phrases": [
+        "Then we retest.",
+        "Results become the next training decision,",
+        "creating a continuous development cycle",
+        "instead of an isolated assessment."
+      ]
+    },
+    {
+      "id": "investor_05",
+      "start": 43.18,
+      "latest_end": 53.78,
+      "text": "We’re building alongside our first club partner, Vacaville United: showing up, running sessions, listening closely, and improving the product around real needs.",
+      "display": "We’re building alongside our first club partner, Vacaville United: showing up, running sessions, listening closely, and improving the product around real needs.",
+      "caption_phrases": [
+        "We’re building alongside our first club partner,",
+        "Vacaville United: showing up, running sessions,",
+        "listening closely, and improving the product",
+        "around real needs."
+      ]
+    },
+    {
+      "id": "investor_06",
+      "start": 54.18,
+      "latest_end": 63.78,
+      "text": "Our model combines club testing and platform services with a planned player subscription, extending the club relationship into individual development.",
+      "display": "Our model combines club testing and platform services with a planned player subscription, extending the club relationship into individual development.",
+      "caption_phrases": [
+        "Our model combines club testing and platform services",
+        "with a planned player subscription,",
+        "extending the club relationship",
+        "into individual development."
+      ]
+    },
+    {
+      "id": "investor_07",
+      "start": 64.18,
+      "latest_end": 74.78,
+      "text": "The strategy starts with nearby clubs, grows through relationships, and expands region by region—with youth soccer as the starting point.",
+      "display": "The strategy starts with nearby clubs, grows through relationships, and expands region by region—with youth soccer as the starting point.",
+      "caption_phrases": [
+        "The strategy starts with nearby clubs,",
+        "grows through relationships,",
+        "and expands region by region—",
+        "with youth soccer as the starting point."
+      ]
+    },
+    {
+      "id": "investor_08",
+      "start": 75.18,
+      "latest_end": 83.78,
+      "text": "Investment would help strengthen the product, support club delivery, and build a repeatable way to bring more players into that cycle.",
+      "display": "Investment would help strengthen the product, support club delivery, and build a repeatable way to bring more players into that cycle.",
+      "caption_phrases": [
+        "Investment would help strengthen the product,",
+        "support club delivery, and build a repeatable way",
+        "to bring more players into that cycle."
+      ]
+    },
+    {
+      "id": "investor_09",
+      "start": 84.18,
+      "latest_end": 89.78,
+      "text": "Pose Tech. Start with evidence. Train what’s next. Help us bring that opportunity to more players.",
+      "display": "PoseTek. Start with evidence. Train what’s next. Help us bring that opportunity to more players.",
+      "caption_phrases": [
+        "PoseTek. Start with evidence.",
+        "Train what’s next.",
+        "Help us bring that opportunity to more players."
+      ]
+    }
+  ]
+}

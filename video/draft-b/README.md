@@ -1,8 +1,21 @@
 # PoseTek Draft B — Clubs & Coaches
 
-Editable 55-second, 1080 × 1920, 30 fps marketing film built from the approved
-September 21 storyboard. The user authorized production and email delivery on
+Editable PoseTek marketing films built from the approved
+September 21 storyboard and September 22 revision/investor plan. The user authorized production and email delivery on
 September 21, 2026. This project does not modify or deploy the website.
+
+## Current editions
+
+| Edition | Picture | Purpose |
+| --- | --- | --- |
+| `v3` / `PoseTekCoachesV3` | 52s, 1080 × 1920, 30fps | Tighter six-test scene and brand-led closing |
+| `investor` / `PoseTekInvestorV1` | 90s, 1920 × 1080, 30fps | Mission, product, first club partner, model and expansion strategy |
+| `v2` / `PoseTekDraftBV2` | 55s, 1080 × 1920, 30fps | Preserved previous coaching cut |
+
+The September 22 investor film intentionally omits monetary amounts, financial
+forecasts and SAFE terms. Its source boundaries are in
+[INVESTOR_SOURCE_NOTES.md](INVESTOR_SOURCE_NOTES.md). Current production checks
+and delivery receipts are in [PRODUCTION_V3_INVESTOR.md](PRODUCTION_V3_INVESTOR.md).
 
 ## Render
 
@@ -19,17 +32,24 @@ captions. Then run:
 
 ```powershell
 npm run typecheck
-npm run stills
-npm run proof
-npm run render
+node scripts/render.mjs stills v3
+node scripts/render.mjs proof v3
+node scripts/render.mjs final v3
+node scripts/render.mjs stills investor
+node scripts/render.mjs proof investor
+node scripts/render.mjs final investor
 ```
 
-The final file is `output/v2/PoseTek-Draft-B-V2-Clubs-and-Coaches.mp4`.
+Current masters are `output/v3/PoseTek-Coaches-V3.mp4` and
+`output/investor/PoseTek-Investor-V1.mp4`. Omit the edition argument for the
+preserved V2 render at `output/v2/PoseTek-Draft-B-V2-Clubs-and-Coaches.mp4`.
 `npm run studio` opens the editable Remotion project. Final renders include audio
 and captions read by the render script; Studio's default props are silent.
 
 ## Source and media
 
+- `src/FilmV3.tsx` / `RevisionScenesV3.tsx`: scoped 52-second coaching revision.
+- `src/InvestorFilm.tsx`: purpose-built landscape investor composition.
 - `src/Film.tsx`: seven timed scenes, brand treatment, coach sample, training
   preview, captions and transitions. The original pose recording and coach
   sample are imported directly from website source.
@@ -43,7 +63,7 @@ and captions read by the render script; Studio's default props are silent.
 - `audio-source/`: editable narration, original 106 BPM synthesis, local neural
   voice generation, subtitle alignment, verification and model provenance.
 - `scripts/prepare-assets.mjs`: prepares verified source footage and brand fonts.
-- `scripts/render.mjs`: renders style frames, a 26-second proof or the master.
+- `scripts/render.mjs`: renders edition-specific style frames, motion proofs or masters.
 
 The original Figure-8 footage was already available locally at
 `.netlify/drill-demo-source/figure-8-1788831834526194.mp4`; its SHA-256 is verified
@@ -92,3 +112,9 @@ The timer is elapsed session time, consistent with the native app reference.
 The second approved original clip is `wall-pass-1788468661750095.mov`; asset
 preparation checks its provenance hash and normalizes it like Figure-8.
 V1 remains preserved locally and documented in [PRODUCTION.md](PRODUCTION.md).
+
+## Investor map provenance
+
+`src/us-map.json` contains the contiguous US outline from Natural Earth 1:110m
+country data, which is public domain. The source URL is recorded with the data.
+The map illustrates an expansion strategy; it does not depict customer locations.

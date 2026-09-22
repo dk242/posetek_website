@@ -11,12 +11,9 @@ import re
 import subprocess
 import numpy as np
 import soundfile as sf
+from audio_config import ROOT, load_config
 
-ROOT=Path(__file__).resolve().parent
-WORK=ROOT/'work'
-SPEC=json.loads((ROOT/'script.json').read_text(encoding='utf-8'))
-OUT=ROOT.parent/'public'/SPEC.get('output_dir','audio')
-OUT.mkdir(parents=True,exist_ok=True)
+SCRIPT_PATH,SPEC,WORK,OUT=load_config()
 TIMINGS=json.loads((WORK/'voice-timing.json').read_text(encoding='utf-8'))
 SR=48000
 N=SR*SPEC['duration']
@@ -71,7 +68,27 @@ for seg in TIMINGS:
     starts=[0]+[b for a,b in selected]
     ends=[a for a,b in selected]+[len(x)/SR]
     for phrase,a,b in zip(phrases,starts,ends):
-        captions.append({'start':round(seg['start']+a,3),'end':round(seg['start']+b,3),'text':phrase})
+        # New scripts may request readable short cues. Speech QA can refine the
+        # provisional subdivisions against independently transcribed word times.
+        maximum=SPEC.get('max_caption_characters',10000)
+        groups=[]
+        current=''
+        for word in phrase.split():
+            if current and len(current+' '+word)>maximum:
+                groups.append(current)
+                current=word
+            else:
+                current=(current+' '+word).strip()
+        if current:
+            groups.append(current)
+        total=sum(len(g.split()) for g in groups)
+        elapsed=0
+        for group in groups:
+            words=len(group.split())
+            begin=a+(b-a)*elapsed/total
+            elapsed+=words
+            end=a+(b-a)*elapsed/total
+            captions.append({'start':round(seg['start']+begin,3),'end':round(seg['start']+end,3),'text':group})
 sf.write(WORK/'narration-raw.wav',narration,SR,subtype='PCM_24')
 normalize(WORK/'narration-raw.wav',-17,OUT/'narration.wav')
 
@@ -142,14 +159,14 @@ for b in range(math.ceil(SPEC['duration']/beat)):
     if at>4:
         place(hat(),at+.5*beat,.034,(-1 if b%2 else 1)*.45)
     if b%4==0:
-        root=roots[min(b//16,4)]
+        root=roots[(b//16)%len(roots)] if SPEC.get('cycle_score',False) else roots[min(b//16,4)]
         place(sine_note(root,1.6,.47),at,.10*intensity)
     if b%4 in (0,3) and 9<at<SPEC['duration']-5:
-        chord=chords[min(b//16,4)]
+        chord=chords[(b//16)%len(chords)] if SPEC.get('cycle_score',False) else chords[min(b//16,4)]
         freq=chord[(b//4)%len(chord)]*2
         place(sine_note(freq,.8,.16),at+.75*beat,.022,(-1 if b%2 else 1)*.3)
 # Soft air movement supports scene changes, with no conspicuous sweep per card.
-for at in [3.78,11.76,23.76,37.76,45.76,49.76]:
+for at in SPEC.get('transition_swishes',[3.78,11.76,23.76,37.76,45.76,49.76]):
     n=round(.38*SR)
     t=np.arange(n)/SR
     noise=RNG.normal(0,1,n)
@@ -182,7 +199,7 @@ def srt_time(t):
     ms=round(t*1000)
     return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}'
 (OUT/'captions.srt').write_text('\n\n'.join(f"{i+1}\n{srt_time(c['start'])} --> {srt_time(c['end'])}\n{c['text']}" for i,c in enumerate(captions))+'\n',encoding='utf-8')
-report={'voice':SPEC['voice'],'model':'Kokoro-82M v1.0, Apache-2.0','runtime':'kokoro-onnx 0.6.1, MIT','bpm':SPEC['bpm'],'score':'Original procedural synthesis. No third-party music or audio samples.','sample_rate':SR,'duration_seconds':SPEC['duration'],'captions':'Sentence/phrase boundaries aligned to waveform silence runs on a 10 ms grid; not word-level alignment.','audio':{}}
+report={'script':SCRIPT_PATH.name,'voice':SPEC['voice'],'model':'Kokoro-82M v1.0, Apache-2.0','runtime':'kokoro-onnx 0.6.1, MIT','bpm':SPEC['bpm'],'score':'Original procedural synthesis. No third-party music or audio samples.','sample_rate':SR,'duration_seconds':SPEC['duration'],'captions':'Sentence boundaries aligned to waveform silence runs on a 10 ms grid; long-caption subdivisions are provisional until speech QA.','audio':{}}
 for name in ['narration.wav','bed.wav','master.wav']:
     p=OUT/name
     x,sr=sf.read(p)
