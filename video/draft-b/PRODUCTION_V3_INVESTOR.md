@@ -1,4 +1,4 @@
-# Coaching V3 and Investor V1 production â€” September 22, 2026
+# Coaching V3 and Investor V1 production — September 22, 2026
 
 The user approved implementation and email delivery of two films: the 52-second
 vertical coaching revision and a separate 90-second landscape investor introduction.
@@ -9,16 +9,16 @@ application data, training catalog or deployment was changed.
 
 Coaching V3 reduces the assessment section from eight to five seconds. All six
 source recordings begin together at their own frame rates; containers form at
-6.7â€“7.2 seconds and the club transition centers on 9 seconds. Subsequent scenes
+6.7–7.2 seconds and the club transition centers on 9 seconds. Subsequent scenes
 shift three seconds earlier. The closing says **Start with evidence. Train what's
 next.** and retains the coach-page URL, without the previous sales line.
 
 Investor V1 uses a purpose-built landscape composition, with the same fonts,
 palette, recorded movement data, approved drill footage and illustrative player.
-Its sequence is opportunity (0â€“8), mission (8â€“17), tests (17â€“22), club/player
-(22â€“27), guided session (27â€“33), retest cycle (33â€“43), first partnership (43â€“54),
-business model (54â€“64), expansion strategy (64â€“75), investment purpose (75â€“84)
-and brand close (84â€“90). No monetary amounts, projections, pricing, SAFE terms,
+Its sequence is opportunity (0–8), mission (8–17), tests (17–22), club/player
+(22–27), guided session (27–33), retest cycle (33–43), first partnership (43–54),
+business model (54–64), expansion strategy (64–75), investment purpose (75–84)
+and brand close (84–90). No monetary amounts, projections, pricing, SAFE terms,
 unsigned partner logos or private player data are included.
 
 The deck's mission and club-serving ethos are the narrative source. Source/claim
@@ -55,12 +55,12 @@ review is claimed.
 | Property | Value |
 | --- | --- |
 | Master | `output/v3/PoseTek-Coaches-V3.mp4` |
-| Picture | 1080 Ã— 1920, H.264, 30fps, 1,560 decoded frames |
+| Picture | 1080 × 1920, H.264, 30fps, 1,560 decoded frames |
 | Picture / container | 52.000 / 52.053333 seconds |
 | Audio | Stereo AAC, 48kHz; -16.00 LUFS, -2.51 dBTP |
 | Master bytes | 15,059,591 |
 | SHA-256 | `23d5edbe82d55c0801634a5d106bc73fb8115cebce7ccb221c87ba0d9f02a865` |
-| Email preview | 540 Ã— 960; 2,880,604 bytes |
+| Email preview | 540 × 960; 2,880,604 bytes |
 
 Master and email preview decode end-to-end without errors. The 11-second proof
 covers the shortened test-to-club transition and the revised closing. The master
@@ -91,3 +91,7 @@ with instructions to open the link through the user's existing Google account.
 No videos were sent to investors or other recipients, and no public sharing was
 created. Both full-resolution files and previews were also copied into the
 original workspace's ignored output folders alongside the previous exports.
+
+Mailbox readback confirmed both matching subjects and attachment presence:
+coaching at 2026-09-22T11:04:50Z and investor at 2026-09-22T11:06:28Z. This confirms
+mailbox presence, not that the user opened either film.
