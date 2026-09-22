@@ -14,9 +14,9 @@ import soundfile as sf
 
 ROOT=Path(__file__).resolve().parent
 WORK=ROOT/'work'
-OUT=ROOT.parent/'public/audio'
-OUT.mkdir(parents=True,exist_ok=True)
 SPEC=json.loads((ROOT/'script.json').read_text(encoding='utf-8'))
+OUT=ROOT.parent/'public'/SPEC.get('output_dir','audio')
+OUT.mkdir(parents=True,exist_ok=True)
 TIMINGS=json.loads((WORK/'voice-timing.json').read_text(encoding='utf-8'))
 SR=48000
 N=SR*SPEC['duration']
@@ -58,8 +58,6 @@ for seg in TIMINGS:
     speech_ranges.append((seg['start'],seg['end']))
     # Sentences map to measured silence runs in the generated waveform.
     phrases=[s.strip() for s in re.findall(r'[^.!?]+[.!?]?',seg['display']) if s.strip()]
-    if seg['id']=='train':
-        phrases=['A clear focus.','A practical drill.','Guided sessions in the mobile app,','so development continues between tests.']
     step=int(SR*.01)
     energy=np.array([np.sqrt(np.mean(x[i:i+step]**2)) for i in range(0,len(x),step)])
     quiet=energy<.0045
@@ -119,22 +117,22 @@ chords=[[146.832,174.614,220.000,329.628],
         [116.541,146.832,174.614,220.000],
         [174.614,220.000,261.626,391.995],
         [130.813,146.832,195.998,261.626]]
-for block in range(5):
+for block in range(math.ceil(SPEC['duration']/(16*beat))):
     at=block*16*beat
-    duration=min(16*beat+1,45-at)
+    duration=min(16*beat+1,SPEC['duration']-at)
     if duration<=0:
         continue
     t=np.arange(round(duration*SR))/SR
     env=np.minimum(t/1.4,1)*np.minimum((duration-t)/1.2,1)
     pad=np.zeros((len(t),2))
-    for k,freq in enumerate(chords[block]):
+    for k,freq in enumerate(chords[block%len(chords)]):
         pad[:,0]+=np.sin(2*np.pi*freq*t)*.013
         pad[:,1]+=np.sin(2*np.pi*(freq*1.0012)*t+.2)*.013
     pad*=env[:,None]
     place(pad,at,.65)
-for b in range(math.ceil(45/beat)):
+for b in range(math.ceil(SPEC['duration']/beat)):
     at=b*beat
-    if at>43.6:
+    if at>SPEC['duration']-1.4:
         continue
     intensity=.65 if at<4 else 1
     if b%4 in (0,2):
@@ -146,12 +144,12 @@ for b in range(math.ceil(45/beat)):
     if b%4==0:
         root=roots[min(b//16,4)]
         place(sine_note(root,1.6,.47),at,.10*intensity)
-    if b%4 in (0,3) and 9<at<40:
+    if b%4 in (0,3) and 9<at<SPEC['duration']-5:
         chord=chords[min(b//16,4)]
         freq=chord[(b//4)%len(chord)]*2
         place(sine_note(freq,.8,.16),at+.75*beat,.022,(-1 if b%2 else 1)*.3)
 # Soft air movement supports scene changes, with no conspicuous sweep per card.
-for at in [3.78,9.76,17.76,27.76,34.76,39.76]:
+for at in [3.78,11.76,23.76,37.76,45.76,49.76]:
     n=round(.38*SR)
     t=np.arange(n)/SR
     noise=RNG.normal(0,1,n)
@@ -184,7 +182,7 @@ def srt_time(t):
     ms=round(t*1000)
     return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}'
 (OUT/'captions.srt').write_text('\n\n'.join(f"{i+1}\n{srt_time(c['start'])} --> {srt_time(c['end'])}\n{c['text']}" for i,c in enumerate(captions))+'\n',encoding='utf-8')
-report={'voice':SPEC['voice'],'model':'Kokoro-82M v1.0, Apache-2.0','runtime':'kokoro-onnx 0.6.1, MIT','bpm':SPEC['bpm'],'score':'Original procedural synthesis. No third-party music or audio samples.','sample_rate':SR,'duration_seconds':45,'captions':'Sentence/phrase boundaries aligned to waveform silence runs on a 10 ms grid; not word-level alignment.','audio':{}}
+report={'voice':SPEC['voice'],'model':'Kokoro-82M v1.0, Apache-2.0','runtime':'kokoro-onnx 0.6.1, MIT','bpm':SPEC['bpm'],'score':'Original procedural synthesis. No third-party music or audio samples.','sample_rate':SR,'duration_seconds':SPEC['duration'],'captions':'Sentence/phrase boundaries aligned to waveform silence runs on a 10 ms grid; not word-level alignment.','audio':{}}
 for name in ['narration.wav','bed.wav','master.wav']:
     p=OUT/name
     x,sr=sf.read(p)

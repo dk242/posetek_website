@@ -1,6 +1,6 @@
 # Draft B audio
 
-This build produces a 45-second coach-focused audio master, aligned narration,
+This build produces a 55-second coach-focused audio master, aligned narration,
 an original restrained 106 BPM underscore, and phrase captions. Narration uses
 the preset American English `af_heart` voice; no person's voice was cloned.
 The script spells the spoken company name `Pose Tech`, while captions retain
@@ -20,21 +20,21 @@ python -m venv .venv
 
 `fetch_models.py` downloads the official kokoro-onnx release assets and checks
 their recorded SHA-256 hashes. Models, the virtual environment, and work files
-are ignored. WAV outputs under `../public/audio/` are ignored too. Keep generated
+are ignored. WAV outputs under `../public/audio-v2/` are ignored too. Keep generated
 media out of Git; retain the editable script and score. The generated caption
 data and manifest are reproduced alongside the audio on each build.
 
-`script.json` is the narration source. The seven scene starts are 0.3, 4.3, 10.3,
-18.3, 28.3, 35.3, and 40.3 seconds. The last spoken phrase ends at 42.509 seconds,
-leaving the end card and music room to resolve.
+`script.json` is the narration source. Its 21 phrase starts align to the revised
+assessment, club, player, guided-session, retest and CTA scenes. The last spoken
+phrase ends at 53.000 seconds, leaving two seconds for the music to resolve.
 
 ## Outputs
 
-- `master.wav`: stereo 48 kHz/24-bit PCM, 45.000 seconds; -16.14 LUFS integrated,
-  -1.78 dBTP measured true peak.
-- `narration.wav`: mono 48 kHz/24-bit PCM, padded to 45 seconds; -17.03 LUFS.
-- `bed.wav`: stereo 48 kHz/24-bit PCM, 45 seconds; -30.88 LUFS after ducking.
-- `captions.json`: 18 phrase cues in `{start, end, text}` format, seconds.
+- `master.wav`: stereo 48 kHz/24-bit PCM, 55.000 seconds; -16.02 LUFS integrated,
+  -1.65 dBTP measured true peak.
+- `narration.wav`: mono 48 kHz/24-bit PCM, padded to 55 seconds; -17.02 LUFS.
+- `bed.wav`: stereo 48 kHz/24-bit PCM, 55 seconds; -30.65 LUFS after ducking.
+- `captions.json`: 21 phrase cues in `{start, end, text}` format, seconds.
 - `captions.srt`: equivalent subtitle file.
 - `segments.json`: scene narration timing and synthesis settings.
 - `audio-manifest.json`: exact durations, channel counts, levels, licenses and hashes.
@@ -46,7 +46,7 @@ The final mix has no clipped samples. The production agent cannot listen to
 audio directly; waveform, timing, levels and speech transcription are the
 available automated checks. A local Whisper base.en transcription recovered the
 full intended message, including the company name as "Pose tech". It transcribed
-"focused training" as "focus training", a minor suffix discrepancy; no substantive
+"focused training" as "focus training" and "sets and time" as "sets in time"; no substantive
 message, URL, number, or outcome promise was added. The company URL is displayed
 on the end card rather than spoken.
 

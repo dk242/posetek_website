@@ -1,4 +1,4 @@
-"""Render the seven scene-length neural voice clips using local Kokoro.
+"""Render the timed neural voice phrases using local Kokoro.
 
 Each generated file stays in ignored work/. Public text only, no service call.
 """
@@ -30,7 +30,7 @@ for seg in SCRIPT['segments']:
     samples=trim(samples,sr)
     window=seg['latest_end']-seg['start']
     if len(samples)/sr > window:
-        speed=(len(samples)/sr)/window*1.025
+        speed*= (len(samples)/sr)/window*1.025
         samples,sr=tts.create(seg['text'],voice=SCRIPT['voice'],speed=speed,lang=SCRIPT['language'])
         samples=trim(samples,sr)
     if len(samples)/sr > window:

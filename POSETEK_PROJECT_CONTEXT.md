@@ -25,6 +25,17 @@ original high-resolution Figure-8 footage, local neural narration and an origina
 score. Private reference media and delivery links stay outside Git; sample
 players/results remain illustrative.
 
+### September 21 Draft B V2 implementation
+
+The user approved and received a 55-second revision for club directors and coaches.
+Six recorded test demonstrations play together before their containers form. The
+club overview leads into a U13 roster and Alex's focus; the guided session shows
+elapsed time, set completion and a transition from Figure-8 to Wall pass rhythm.
+Live admin and native app references informed the visual behavior; all pictured
+club/player data is illustrative. V1 is preserved. See
+[`video/draft-b/PRODUCTION_V2.md`](video/draft-b/PRODUCTION_V2.md) for export,
+validation and delivery records. This work did not deploy or change the website.
+
 ### Current website release: protected player signup links
 
 Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
