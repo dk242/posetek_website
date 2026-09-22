@@ -79,6 +79,9 @@ contacts and isometric hold time, including per-side work, current plan/history 
 declared outside activity. Calendar-date spacing is conservative; it does not claim
 an exact hourly recovery interval from date-only inputs. New restricted work is
 held around declared conflicting sessions rather than silently ignoring them.
+Exercise limits apply to that exercise's own exposure; the reviewer's limits apply
+to the combined workload for each movement family. Combining two different exercises
+does not incorrectly reuse one exercise's dose cap as the family's total cap.
 
 Generation stays a draft on the web. Activation, native persistence, AI workout
 application, manual saves and workout starts recheck the applicable policy.
@@ -107,6 +110,11 @@ also demonstrate refusal of missing/expired/revoked clearance, unavailable equip
 pain, changed loading, stale revisions and unverified restricted plans. Native
 execution needs the same current server authorization boundary, not a local boolean.
 Record build/device versions and results before a separate reviewed gate change.
+Include assigned reviewer access in acceptance: canonical organization membership
+and legacy coach documents keyed by the reviewer's UID are supported. Legacy coach
+records stored under unrelated document IDs fail closed in the readiness authoring
+and log-rule boundary and need a reviewed identity mapping before that reviewer can
+clear training. PoseTek-scoped designated reviewers can perform the admin review.
 
 ## Release and recovery
 

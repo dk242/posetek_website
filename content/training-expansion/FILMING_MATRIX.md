@@ -2035,4 +2035,3 @@ Evidence: officialCoachingRationale; general. [FA_PASS2022](https://learn.englan
 **Teaching detail:** Show the setup close enough to reproduce it: Mark a wide target gate 3-4 m away with an empty lane. Use a low self-drop and a controlled service, not a high volley. Explain: Show a stable inside-foot surface. Demonstrate the easier option: Inside-foot pass after one bounce. Explain that the coach chooses progression and any external load.
 
 **Error correction:** Explain the error without deliberately loading an unsafe position: Reaching high or losing balance: lower the drop. Contrast a safe low-effort example with the correct version. Refilm normal correct repetitions. Do not demonstrate pain, maximal strain, risky falls or unsafe equipment use.
-

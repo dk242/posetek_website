@@ -271,11 +271,35 @@ def load_violations(workout, catalog, profile, *, plan=None, week=1, order=1, pr
             if prior.get('workoutId') != workout.get('workoutId'):
                 history.append((session_date(context, prior_week['weekNumber'], prior['order']), prior))
     history.extend(prior_workouts)
+    def rolling_quantity(unit, current, dated_loads):
+        return max(current + sum(q[unit] for at, q in dated_loads
+                   if day-timedelta(days=offset) <= at <= day+timedelta(days=6-offset)) for offset in range(7))
+
     for block, row in policy_blocks:
         policy = row['trainingPolicy']
         if not session_allowed(row, profile, week, order): reasons.append('external_schedule_conflict')
         if policy['modality'] == 'plyometric' and block.get('repUnit') not in ('contacts', 'reps'):
             reasons.append('plyometric_contacts_unquantified')
+        # Catalog caps belong to this exercise. The coach's readiness caps
+        # separately bound the combined load of every exercise in each family.
+        exercise_total = Counter()
+        for current in workout.get('blocks', []):
+            if current.get('drillId') == row['drillId']:
+                exercise_total.update(quantities(current, row))
+        exercise_history = []
+        for prior_date, prior in history:
+            if prior_date is None:
+                reasons.append('load_history_incomplete'); continue
+            for previous in prior.get('blocks', []):
+                if previous.get('drillId') == row['drillId']:
+                    exercise_history.append((prior_date, quantities(previous, row)))
+        for unit in ('sets', 'contacts', 'holdSeconds'):
+            weekly = rolling_quantity(unit, exercise_total[unit], exercise_history)
+            for window, count in (('Session', exercise_total[unit]), ('Week', weekly)):
+                key = unit + 'Per' + window
+                limit = policy['limits'].get(key)
+                if count and (not _int(limit, 1) or count > limit):
+                    reasons.append('exercise_limit_' + key)
         for family in families_for(row):
             dated_loads = []
             for prior_date, prior in history:
@@ -287,12 +311,11 @@ def load_violations(workout, catalog, profile, *, plan=None, week=1, order=1, pr
                 if day - timedelta(days=6) <= prior_date <= day + timedelta(days=6):
                     for b in relevant: dated_loads.append((prior_date, quantities(b, catalog.get(b.get('drillId'), {}))))
             for unit in ('sets', 'contacts', 'holdSeconds'):
-                rolling = max(totals[family][unit] + sum(q[unit] for at, q in dated_loads
-                              if day-timedelta(days=offset) <= at <= day+timedelta(days=6-offset)) for offset in range(7))
+                rolling = rolling_quantity(unit, totals[family][unit], dated_loads)
                 for window, count in (('Session', totals[family][unit]), ('Week', rolling)):
                     key = unit + 'Per' + window
-                    limits = [v for v in (policy['limits'].get(key), readiness_limits.get(key)) if _int(v, 1)]
-                    if count and (not limits or count > min(limits)): reasons.append('load_limit_' + key)
+                    limit = readiness_limits.get(key)
+                    if count and (not _int(limit, 1) or count > limit): reasons.append('load_limit_' + key)
     return list(dict.fromkeys(reasons))
 
 

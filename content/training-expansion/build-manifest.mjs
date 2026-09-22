@@ -144,5 +144,5 @@ for(let week=1;week<=4;week++){
 }
 md.push('## Individual filming cards','');
 for(const r of rows){const a=r.authoring;md.push(`### ${r.manifestId}: ${r.drill.name}`,'',`**Week${r.filmingWeek}; ${r.category}.** ${a.intendedAdaptation}`,'',`Setup: ${r.drill.howTo.setup}`,'',...r.drill.howTo.steps.map((s,i)=>`${i+1}. ${s}.`),'',`Dose for review: ${r.drill.dose.doseText}; ${r.drill.dose.restText}. ${r.drill.dose.doseNote}`,'',`Easier: ${a.regression} Progression: ${a.progression}`,'',`Distinct from existing content: ${a.distinctness.rationale}${a.distinctness.comparedWith.length?' Compare '+a.distinctness.comparedWith.join(', ')+'.':''}`,'',`Evidence: ${a.evidence.specificity}; ${a.evidence.testRelationship}. ${a.sources.map(s=>`[${s.id}](${s.url})`).join(', ')}. ${a.evidence.limitations}`,'',`**Primary demo:** ${a.filmingInstructions.primaryDemo}`,'',`**Teaching detail:** ${a.filmingInstructions.teachingDetail}`,'',`**Error correction:** ${a.filmingInstructions.errorCorrection}`,'');}
-fs.writeFileSync(path.join(here,'FILMING_MATRIX.md'),md.join('\n')+'\n');
+fs.writeFileSync(path.join(here,'FILMING_MATRIX.md'),md.join('\n').trimEnd()+'\n');
 console.log(`Built ${rows.length} drafts,${rows.length*3} clip briefs; comparison catalog${reference.live.length},matrix${reference.matrix.length}.`);

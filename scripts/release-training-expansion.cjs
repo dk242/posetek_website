@@ -34,6 +34,12 @@ async function main(){
   fs.writeFileSync(`${DIR}/live-firestore.rules`,liveRules);
   await drain();
   console.log(JSON.stringify({revision:EXPECTED,rulesMatchHead:liveRules===committedRules,buildServiceAccount:previousBuild.serviceAccount,sourceBucket:previousBuild.source.storageSource.bucket,capabilities:Object.keys(unpack(config).capabilities||{})}));
+ } else if(action==='archive-build'){
+  assert.ok(!fs.existsSync(`${DIR}/stage-operation.json`),'A staged release must be reviewed before archiving.');
+  const b=read('build-result');assert.ok(['SUCCESS','FAILURE','TIMEOUT','CANCELLED'].includes(b.status),'Wait for a terminal build result.');
+  const target=`${DIR}/build-history/${b.id}`;assert.ok(!fs.existsSync(target),'Build history already exists.');fs.mkdirSync(target,{recursive:true});
+  for(const file of ['source.tar.gz','source.json','build-request.json','build-submitted.json','build-result.json','build-log-tail.json'])if(fs.existsSync(`${DIR}/${file}`))fs.renameSync(`${DIR}/${file}`,`${target}/${file}`);
+  console.log(JSON.stringify({archivedBuild:b.id,status:b.status,reason:'Superseded by reviewed source correction; never staged or promoted.'}));
  } else if(action==='build'){
   assert.ok(!fs.existsSync(`${DIR}/build-submitted.json`),'Build already submitted.');
   assert.equal(cp.execFileSync('git',['status','--porcelain','--','services/agent-gateway'],{encoding:'utf8'}).trim(),'','Commit reviewed gateway source first.');
@@ -84,9 +90,9 @@ async function main(){
   const publication=await c.api(url,'PATCH',{release:{name:before.release.name,rulesetName:candidate.name},updateMask:'rulesetName'});save('storage-publication',publication);assert.equal((await c.api(url)).rulesetName,candidate.name);console.log(JSON.stringify({ruleset:candidate.name}));
  } else if(action==='config'){
   const before=read('before'),current=await c.api(`${DOCUMENTS}/config/llm`);assert.equal(current.updateTime,before.config.updateTime,'Config drift');
-  const old=unpack(current),capabilities={...old.capabilities,save_workout_edit:{enabled:true,dailyLimitPerUser:100},validate_workout_start:{enabled:true,dailyLimitPerUser:100}};
-  const patch={capabilities,wholeBodyTraining:{previewEnabled:true,mobileVerified:false}};
-  const body={writes:[{update:{name:current.name,fields:fields(patch)},updateMask:{fieldPaths:['capabilities.save_workout_edit','capabilities.validate_workout_start','wholeBodyTraining']},currentDocument:{updateTime:current.updateTime}}]};save('config-request',body);
+  const old=unpack(current),capabilities={...old.capabilities,save_workout_edit:{enabled:true,dailyLimitPerUser:30},validate_workout_start:{enabled:true,dailyLimitPerUser:50}};
+  const patch={capabilities,wholeBodyTraining:{...(old.wholeBodyTraining||{}),previewEnabled:true,mobileVerified:false}};
+  const body={writes:[{update:{name:current.name,fields:fields(patch)},updateMask:{fieldPaths:['capabilities.save_workout_edit','capabilities.validate_workout_start','wholeBodyTraining.previewEnabled','wholeBodyTraining.mobileVerified']},currentDocument:{updateTime:current.updateTime}}]};save('config-request',body);
   save('config-result',await c.api(`${DOCUMENTS}:commit`,'POST',body));const after=await c.api(`${DOCUMENTS}/config/llm`);save('config-after',after);
   const next=unpack(after);for(const [key,value] of Object.entries(old.capabilities))assert.deepEqual(next.capabilities[key],value);assert.equal(next.wholeBodyTraining.mobileVerified,false);console.log(JSON.stringify({previewEnabled:true,mobileVerified:false,capabilitiesAdded:['save_workout_edit','validate_workout_start']}));
  } else if(action==='verify'){

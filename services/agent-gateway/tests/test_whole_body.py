@@ -157,6 +157,81 @@ def test_different_exercise_ids_cannot_evade_shared_load_caps():
     assert 'load_limit_setsPerSession' in violations
 
 
+def test_per_exercise_caps_and_combined_family_session_caps_are_separate():
+    athlete = profile()
+    athlete['wholeBody']['readiness']['limits']['setsPerSession'] = 6
+    catalog = {did: row(did) for did in ('STR-501', 'STR-502', 'STR-503', 'STR-504')}
+    for exercise in catalog.values():
+        exercise['trainingPolicy']['limits'].update(setsPerSession=2, setsPerWeek=4)
+    assert load_violations(blocks('STR-501', 'STR-502', sets=2), catalog, athlete) == []
+    # Three sets of one exercise exceed its cap despite space in the family cap.
+    rejected = load_violations(blocks('STR-501', sets=3), catalog, athlete)
+    assert 'exercise_limit_setsPerSession' in rejected
+    assert 'load_limit_setsPerSession' not in rejected
+    assert 'exercise_limit_setsPerSession' in load_violations(blocks('STR-501', 'STR-501', sets=2), catalog, athlete)
+    # Different IDs cannot bypass the coach's six-set combined family budget.
+    rejected = load_violations(blocks(*catalog, sets=2), catalog, athlete)
+    assert 'load_limit_setsPerSession' in rejected
+    assert 'exercise_limit_setsPerSession' not in rejected
+
+
+def test_per_exercise_rolling_week_caps_do_not_become_shared_family_caps():
+    athlete = profile()
+    athlete['wholeBody']['readiness']['limits'].update(setsPerSession=6, setsPerWeek=6)
+    catalog = {did: row(did) for did in ('STR-501', 'STR-502')}
+    for exercise in catalog.values():
+        exercise['trainingPolicy']['limits'].update(setsPerSession=2, setsPerWeek=2)
+    earlier = (NOW.date()-timedelta(days=3), blocks('STR-502', sets=2))
+    assert load_violations(blocks('STR-501', sets=2), catalog, athlete, prior_workouts=[earlier]) == []
+    rejected = load_violations(blocks('STR-502', sets=2), catalog, athlete, prior_workouts=[earlier])
+    assert 'exercise_limit_setsPerWeek' in rejected
+    assert 'load_limit_setsPerWeek' not in rejected
+
+
+@pytest.mark.parametrize('mode,unit,reps,exercise_cap,family_cap', [
+    ('plyometric', 'contacts', 4, 10, 20), ('isometric', 'holdSeconds', 10, 25, 50)])
+def test_contacts_and_holds_have_distinct_exercise_and_family_caps(mode, unit, reps, exercise_cap, family_cap):
+    athlete = profile()
+    athlete['wholeBody']['readiness']['limits'].update({unit+'PerSession': family_cap, unit+'PerWeek': family_cap*2})
+    catalog = {did: row(did) for did in ('STR-501', 'STR-502')}
+    for exercise in catalog.values():
+        exercise['trainingPolicy'].update(modality=mode, loaded=False)
+        exercise['trainingPolicy']['limits'].update({unit+'PerSession': exercise_cap, unit+'PerWeek': exercise_cap*2})
+    candidate = blocks('STR-501', 'STR-502', sets=2)
+    for block in candidate['blocks']: block.update(reps=reps, repUnit='seconds' if mode == 'isometric' else 'contacts')
+    assert load_violations(candidate, catalog, athlete) == []
+    candidate['blocks'][0]['perSide'] = True
+    rejected = load_violations(candidate, catalog, athlete)
+    assert 'exercise_limit_' + unit + 'PerSession' in rejected
+    assert 'load_limit_' + unit + 'PerSession' in rejected
+
+
+def test_solver_applies_each_exercise_cap_without_limiting_combined_family_to_it():
+    from gateway.personalized_composition import compose_personalized_week
+    from gateway.workout_time import estimate_block
+    athlete = profile(); athlete['intake'].update(sessionsPerWeek=1, minutesPerSession=5, horizonWeeks=1)
+    athlete['intake']['trainingContext']['sessionDays'] = [0]
+    athlete['wholeBody']['readiness']['limits'].update(setsPerSession=6, setsPerWeek=6)
+    catalog = {did: row(did) for did in ('STR-501', 'STR-502')}
+    options = {}
+    for did, exercise in catalog.items():
+        exercise['trainingPolicy']['limits'].update(setsPerSession=2, setsPerWeek=4)
+        options[did] = []
+        for sets in (2, 3):
+            dose = {'sets': sets, 'reps': 60, 'repUnit': 'seconds', 'perSide': False,
+                    'restSeconds': 0, 'restScope': 'sets', 'restBetweenSetsSeconds': None, 'familiarizationReps': 0}
+            options[did].append({**dose, 'estimatedMinutes': estimate_block(dose)['estimatedMinutes']})
+    priorities = [{'role': 'primary', 'eligibleDrillIds': [did]} for did in catalog]
+    orders, _ = compose_personalized_week(athlete, catalog, options, list(catalog), {'strength': 4}, {},
+                                          week_number=1, priority_domains=['strength'], objective_priorities=priorities)
+    selected = orders[0]['blocks']
+    assert len(selected) == 2 and all(block['sets'] == 2 for block in selected)
+    for exercise in catalog.values(): exercise['trainingPolicy']['limits']['setsPerWeek'] = 1
+    with pytest.raises(GatewayError, match='No legal weekly combination'):
+        compose_personalized_week(athlete, catalog, options, list(catalog), {'strength': 4}, {},
+                                  week_number=1, priority_domains=['strength'], objective_priorities=priorities)
+
+
 def test_isometric_and_loaded_strength_share_same_family_budget():
     iso = row('STR-502'); iso['trainingPolicy'] = policy(modality='isometric', loaded=False)
     candidate = blocks('STR-501', 'STR-502', sets=5)

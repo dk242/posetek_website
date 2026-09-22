@@ -68,4 +68,3 @@ function AdminMediaReviewPreview({ path, generation, title }: { path: string; ge
   useEffect(() => { let live = true; setUrl(""); setError(""); void storage.ref(path).getDownloadURL().then(next => { if (live) setUrl(next); }).catch(() => { if (live) setError("The review video could not load. Reload before approving it."); }); return () => { live = false; }; }, [path, generation]);
   return <>{url && <video controls playsInline preload="metadata" src={url} aria-label={`Review ${title}`} style={{ width: "100%", maxHeight: 280 }} />}{error && <p className="form-message" role="alert">{error}</p>}</>;
 }
-

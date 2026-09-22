@@ -173,6 +173,12 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
             for dose in legal:
                 if dose['estimatedMinutes'] > minutes + session_tolerance:
                     continue
+                if row.get('trainingPolicy'):
+                    from gateway.whole_body import quantities
+                    amounts = quantities(dose, row)
+                    if any(count > row['trainingPolicy']['limits'].get(unit+'PerSession', 0)
+                           for unit, count in amounts.items()):
+                        continue
                 # Allocation and time errors dominate these small preferences.
                 cost = .02 + rank[did] * (.001 if objective_priorities else .00001) + slot * .0000001
                 if old:
@@ -192,6 +198,11 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
         constraint({i: 1 for i in indices}, hi=1)
     for did, indices in by_drill.items():
         constraint({i: 1 for i in indices}, hi=catalog[did]['maxFrequencyPerWeek'] - frequency.get(did, 0))
+        if catalog[did].get('trainingPolicy'):
+            from gateway.whole_body import quantities
+            for unit in ('sets', 'contacts', 'holdSeconds'):
+                constraint({i: quantities(choices[i][2], catalog[did])[unit] for i in indices},
+                           hi=catalog[did]['trainingPolicy']['limits'].get(unit+'PerWeek', 0))
 
     if any(row.get('trainingPolicy') for row in catalog.values()):
         from gateway.whole_body import families_for, quantities, session_date, recovery_days
