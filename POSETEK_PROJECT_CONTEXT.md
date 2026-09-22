@@ -1,6 +1,6 @@
 # PoseTek website project context
 
-Reviewed on September 17, 2026. This guide summarizes the available repository and
+Reviewed on September 21, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
@@ -19,8 +19,19 @@ experience, supervision and the full outside schedule constrain expanded trainin
 No exercise, video, reviewer qualification or player readiness is auto-approved.
 The mobile compatibility gate stays false pending Taiyo's device acceptance.
 
-The source implementation is validated and prepared for release. The final live
-status belongs in `deployment/WHOLE_BODY_TRAINING_PRODUCTION.json` once verified.
+The release is live and verified. Website deployment `6ab1e8b84adb5788815542e4`
+was published September 21 at 7:54:47 PM PDT; gateway revision
+`agent-gateway-web-64db60701c6e` serves all traffic after 1,488 container tests
+passed (six private-history tests skipped). Catalog version `1.0.91` contains
+the 80 new unpublished drafts and preserves all 128 prior records. All 34 observed
+active plans remain unchanged. The reconciled baseline protects 673 application
+files; approved Players and Coaches marketing bytes remain exact. Read
+`deployment/WHOLE_BODY_TRAINING_PRODUCTION.json` for the verified receipt and
+`content/training-expansion/production-id-map.json` for actual catalog IDs.
+Nine new training callables and their access rules are deployed. No reviewers,
+player clearances, video approvals or publications were created. Activation and
+workout starts involving any of the new 80 exercises remain held until mobile
+acceptance; ordinary existing plans retain their current behavior.
 Deploy only the composed `deployment/whole-body-firestore.rules`; the root rules
 file also includes separate, unreleased native testing work. Preserve existing
 plans, logs, all prior catalog content and approved marketing bytes.
@@ -55,9 +66,9 @@ club/player data is illustrative. V1 is preserved. See
 [`video/draft-b/PRODUCTION_V2.md`](video/draft-b/PRODUCTION_V2.md) for export,
 validation and delivery records. This work did not deploy or change the website.
 
-### Current website release: protected player signup links
+### September 17 website release: protected player signup links
 
-Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
+Deployment `6aac924a597bd46f15cf468a` was published at https://posetek.net on
 September 17, 2026 at 6:31:29 PM PDT (`2026-09-18T01:31:29.567Z`). Feature source
 `c00b031c8a0011297f8357c1a6c028377b5c30e0` is on `codex/player-invitation-flow`.
 The branch also preserves the concurrent gateway source and September 16 cohort

@@ -19,6 +19,7 @@ The plan is 20 complete exercise packages each week. A package contains a primar
 - `FILMING_MATRIX.md` provides the four weekly lists and a complete filming card for each exercise. `filming-matrix.csv` provides the same review/production information in a sortable table.
 - `sources.json` distinguishes primary studies, official consensus and official coaching guidance, including populations and limitations.
 - `deduplication-reference.json` contains only names, IDs and statuses from the captured 128-entry live catalog and 85-row matrix, plus provenance hashes. Private raw snapshots and recordings are not included.
+- `production-id-map.json` records the verified live IDs assigned during the September 21 import. All 80 match the advisory IDs in the filming matrix and CSV. The live catalog version is `1.0.91`; all 128 prior records were preserved.
 
 Every record has `status: draft`, `trainingPolicy.reviewStatus: pending`, an empty media map, and the publication hold “Awaiting content review and three approved videos.” Research desk review has occurred. Qualified human technique/dose/readiness approval and video review have not occurred. No reviewer identity or approval date is fabricated.
 
@@ -32,7 +33,7 @@ An objective relationship is a planning relationship. “Direct” means the tas
 
 Most intervention evidence is program-level and includes small, male-heavy samples. Official skill guidance supports a teaching rationale, not a quantified performance promise. No entry claims that its exact dose is proven, that an outcome is guaranteed, or that exercise treats pain or prevents a particular injury.
 
-All new exercises require coach clearance for ages 10–18. Age and access to a standard gym do not establish readiness. Loaded exercises require a coach-entered individual load or assistance instruction. Strength, isometric and plyometric content also requires a verified capable mobile client before mobile prescription. Unknown readiness does not grant eligibility. Saved plans are not rewritten by the library expansion.
+All new exercises require coach clearance for ages 10–18. Age and access to a standard gym do not establish readiness. Loaded exercises require a coach-entered individual load or assistance instruction. Activation and workout starts involving any of these 80 exercises, including ball and field work, remain held until the mobile acceptance gate is verified. Unknown readiness does not grant eligibility. Saved plans are not rewritten by the library expansion.
 
 The numeric dose and exposure limits are conservative authoring proposals awaiting human review. Schema sets count complete prescribed sets; `perSide` doubles repetitions, contacts or hold seconds, not the sets field. Coaches must account for team training, gym work, other sports and matches. A maximum frequency per exercise is not permission to stack every exercise at that frequency. No automatic maximal loads, 1RM inference, depth jumps or Olympic lifts are included.
 

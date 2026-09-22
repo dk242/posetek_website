@@ -44,6 +44,11 @@ matrix, CSV and per-exercise briefs are in `content/training-expansion/`.
 Actual IDs are assigned atomically at import and recorded in the release receipt;
 the manifest's suggested IDs are advisory.
 
+The September 21 import is verified at catalog version `1.0.91`. Actual IDs are
+recorded in `content/training-expansion/production-id-map.json` and match all IDs
+in the filming matrix and CSV. All 128 previous catalog records and 34 active
+plans were preserved. The 80 additions remain unpublished and pending review.
+
 ## Admin production workflow
 
 In the drill library, filter the new production batch by filming week. Open an
@@ -98,8 +103,9 @@ An unfinished session is revalidated before resuming through the web workflow.
 ## Mobile acceptance remains outstanding
 
 `config/llm.wholeBodyTraining.mobileVerified` remains **false**. This is a deliberate
-delivery gate, not evidence of completed device testing. The new gym content stays
-unpublished, and restricted activation is held. No native source or native rules
+delivery gate, not evidence of completed device testing. All 80 new exercises stay
+unpublished. Activation and workout starts involving any of them, including ball
+and field work, remain held until mobile acceptance. No native source or native rules
 are deployed by this task.
 
 Taiyo's Mac/iPhone/TestFlight acceptance must demonstrate that the released mobile

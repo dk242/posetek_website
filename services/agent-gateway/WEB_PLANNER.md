@@ -1,5 +1,16 @@
 # Shared personalized planner
 
+The September 21 whole-body expansion is live as
+`agent-gateway-web-64db60701c6e`, with website deployment
+`6ab1e8b84adb5788815542e4`. The release adds deterministic manual saves and
+current workout-start validation, alongside reviewed equipment, readiness and
+workload constraints. All 80 new exercises remain unpublished drafts. Their
+activation and workout starts remain held pending mobile device acceptance;
+`wholeBodyTraining.mobileVerified` is false. Existing active plans were preserved.
+Read [the whole-body handoff](../../docs/WHOLE_BODY_TRAINING.md) and
+[verified release receipt](../../deployment/WHOLE_BODY_TRAINING_PRODUCTION.json).
+The earlier release descriptions below are historical checkpoints.
+
 This service is editable source recovered from the image serving the personalized
 admin pilot. `SOURCE_BASELINE.json` records the matching Cloud Build archive and
 original file hashes. The Cloud Run service's older `buildConfig` is not its serving
