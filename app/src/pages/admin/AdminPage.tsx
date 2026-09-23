@@ -9,17 +9,21 @@
 
 import { Suspense, lazy } from "react";
 import type { ReactNode } from "react";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { sendAdminVerification } from "./lib/identity";
 import { useAdminSession } from "./lib/session";
+import type { AdminSession } from "./lib/session";
 import "../../styles/pose-portal.css";
 import "./admin.scss";
 import "./admin-surfaces.scss";
+import "../../styles/admin-theme.scss";
+import "./admin-dashboard.scss";
 import AdminHeader from "./views/AdminHeader";
+import AdminBreadcrumbs from "./views/AdminBreadcrumbs";
 
 const OrganizationPage = lazy(() => import("../organization/OrganizationPage"));
-const AdminHome = lazy(() => import("./views/AdminHome"));
+const AdminOverview = lazy(() => import("./views/AdminOverview"));
 const DrillLibrary = lazy(() => import("./views/DrillLibrary"));
 const DrillDetail = lazy(() => import("./views/DrillDetail"));
 const DrillForm = lazy(() => import("./views/DrillForm"));
@@ -34,10 +38,31 @@ const AnalysisWorkspace = lazy(() => import("./views/AnalysisWorkspace"));
 const PersonalizedPrograms = lazy(() => import("./views/PersonalizedPrograms"));
 
 export default function AdminPage() {
+  const location = useLocation();
+  const preview = import.meta.env.DEV && new URLSearchParams(location.search).get("preview") === "1";
+  if (preview) {
+    return <AdminConsole session={{ kind: "ready", identity: {
+      uid: "preview-admin",
+      email: "admin@posetek.test",
+      displayName: "Preview admin",
+      adminDomain: true,
+      emailVerified: true,
+      isAdmin: true,
+    } }} preview />;
+  }
+  return <AuthenticatedAdminConsole />;
+}
+
+function AuthenticatedAdminConsole() {
   const session = useAdminSession();
+  return <AdminConsole session={session} />;
+}
+
+function AdminConsole({ session, preview = false }: { session: AdminSession; preview?: boolean }) {
   const navigate = useNavigate();
 
   async function signOut() {
+    if (preview) return;
     await auth.signOut();
     navigate("/signin", { replace: true });
   }
@@ -80,7 +105,7 @@ export default function AdminPage() {
     body = (
       <Suspense fallback={<div className="portal-loading"><span className="spinner" /><p>Loading…</p></div>}>
         <Routes>
-          <Route index element={<AdminHome />} />
+          <Route index element={<AdminOverview uid={session.identity.uid} preview={preview} />} />
           <Route path="feeds" element={<Navigate to="/feed" replace />} />
           <Route path="drills" element={<DrillLibrary />} />
           <Route path="drills/new" element={<DrillForm mode="create" />} />
@@ -118,9 +143,9 @@ export default function AdminPage() {
 
   return (
     <div className={`pt-pose portal-body pt-admin${session.kind === "ready" ? " admin-ready" : ""}`}>
-      <AdminHeader ready={session.kind === "ready"}
+      <AdminHeader ready={session.kind === "ready"} preview={preview}
         email={session.kind === "ready" ? session.identity.email : undefined} onSignOut={() => void signOut()} />
-      <main className="admin-shell">{body}</main>
+      <main className="admin-shell">{session.kind === "ready" && <AdminBreadcrumbs />}{body}</main>
     </div>
   );
 }
