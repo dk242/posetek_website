@@ -41,8 +41,8 @@ describe("num / mean", () => {
     expect(num(undefined)).toBeNull();
     expect(num("x")).toBeNull();
     expect(num(Infinity)).toBeNull();
-    // Legacy quirk: Number(null) === 0, so null parses to 0.
-    expect(num(null)).toBe(0);
+    // Missing values must stay unavailable.
+    expect(num(null)).toBeNull();
   });
   it("mean of empty list is null", () => {
     expect(mean([])).toBeNull();
@@ -226,13 +226,13 @@ describe("dashboardMetrics", () => {
 
 describe("parsePose", () => {
   it("parses arrays of [x, y] frames", () => {
-    expect(parsePose([[[1, 2], [3, 4]]])).toEqual([[{ x: 1, y: 2 }, { x: 3, y: 4 }]]);
+    expect(parsePose([[[.1, .2], [.3, .4]]])).toEqual([[{ x: .1, y: .2, visibility: null }, { x: .3, y: .4, visibility: null }]]);
   });
   it("parses {frames: [{landmarks: [...]}]}", () => {
-    expect(parsePose({ frames: [{ landmarks: [{ x: .1, y: .2 }] }] })).toEqual([[{ x: .1, y: .2 }]]);
+    expect(parsePose({ frames: [{ landmarks: [{ x: .1, y: .2 }] }] })).toEqual([[{ x: .1, y: .2, visibility: null }]]);
   });
   it("parses {frames: [{pose: [[x, y]]}]}", () => {
-    expect(parsePose({ frames: [{ pose: [[5, 6]] }] })).toEqual([[{ x: 5, y: 6 }]]);
+    expect(parsePose({ frames: [{ pose: [[.5, .6]] }] })).toEqual([[{ x: .5, y: .6, visibility: null }]]);
   });
   it("handles missing input", () => {
     expect(parsePose(null)).toEqual([]);
@@ -260,8 +260,8 @@ describe("frameMarkers", () => {
       { label: "End", frame: 3 },
     ]);
   });
-  it("sprint only reads meta frames and filters missing ones", () => {
-    expect(frameMarkers(sprint, { startFrame: 4 }, {})).toEqual([]);
+  it("sprint falls back to rep frames and filters missing ones", () => {
+    expect(frameMarkers(sprint, { startFrame: 4 }, {})).toEqual([{ label: "Start", frame: 4 }]);
     expect(frameMarkers(sprint, {}, { startFrame: 1, finishFrame: 9 })).toEqual([
       { label: "Start", frame: 1 },
       { label: "Finish", frame: 9 },

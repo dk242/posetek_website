@@ -64,6 +64,19 @@ service cloud.firestore {
         : legacyCoachOf(pid);
     }
     function visiblePlayer(pid) { return selfPlayer(pid) || coachOf(pid) || isPosetekAdmin(); }
+    // Who may create/update an athlete's recording sessions. Same predicate the
+    // generic players/{pid}/{sub} block applied to sessions before they got their
+    // own match block, so no existing recorder gains or loses access.
+    // A verified PoseTek admin may record into an existing athlete's recording
+    // spine exactly like that athlete's coach (sessions, repLinks); the top-level
+    // staff-test-recording block already covers reps/sessions/trainingSessions.
+    function adminRecorder(pid) {
+      return isPosetekAdmin() && exists(/databases/$(database)/documents/players/$(pid));
+    }
+    function recordingWriter(pid) {
+      return adminRecorder(pid)
+        || (!isPosetekAdmin() && (!clubPlayer(pid) || (signedIn() && (selfPlayer(pid) || coachOf(pid)))));
+    }
     function testingSignedIn() {
       return signedIn()
         && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
@@ -260,7 +273,8 @@ match /llmJobs/{jobId} {
       && (request.resource.data.capability in ['generate_personalized_plan','activate_personalized_plan','discard_personalized_plan','assess_personalized_plan']
         ? personalizedActor(request.resource.data.playerId) && request.resource.data.params.get('engineVersion', '') == 'personalized-v1'
           && (request.resource.data.capability in ['generate_personalized_plan','assess_personalized_plan']
-            ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow'])
+            ? request.resource.data.params.keys().hasOnly(['planVersion','statsProfile','intake','timezone','engineVersion','evidenceWindow','useProvisionalEstimates'])
+              && request.resource.data.params.get('useProvisionalEstimates', false) is bool
               && request.resource.data.params.planVersion == 3
               && request.resource.data.params.intake is map
               && request.resource.data.params.timezone is string

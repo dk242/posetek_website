@@ -73,12 +73,15 @@ test("coach cannot include another team's player or forge organization access", 
   assert.equal(allowed.participantCount, 1);
 });
 
-test("start blocks missing weight without allocating sessions", async () => {
+test("start proceeds without weight and keeps the missing status on the snapshot", async () => {
   const { db, testing } = harness({ "players/player-a": { ...base["players/player-a"], weight: null } });
   const event = await draft(testing, ["player-a"]);
-  await assert.rejects(testing.startTestingEvent({ eventId: event.eventId }, auth("manager")), { code: "failed-precondition" });
-  assert.equal(db.snapshot(`testingEvents/${event.eventId}`).status, "starting");
-  assert.equal(db.snapshot(`players/player-a/sessions/testing_${event.eventId}_station-1_jump`), undefined);
+  await testing.startTestingEvent({ eventId: event.eventId }, auth("manager"));
+  assert.equal(db.snapshot(`testingEvents/${event.eventId}`).status, "live");
+  const participant = db.snapshot(`testingEvents/${event.eventId}/participants/player-a`);
+  assert.equal(participant.weightKg, null);
+  assert.equal(participant.weightStatus, "missing");
+  assert.notEqual(db.snapshot(`players/player-a/sessions/testing_${event.eventId}_station-1_jump`), undefined);
 });
 
 test("start refreshes weight from the canonical player after setup", async () => {

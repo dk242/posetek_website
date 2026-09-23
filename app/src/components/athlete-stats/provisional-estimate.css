@@ -1,0 +1,10 @@
+.provisional-estimate-note { border: 1px dashed #ffc969; border-radius: 12px; padding: 12px 14px; margin: 12px 0; color: inherit; background: rgba(255,201,105,.055); }
+.provisional-estimate-note > div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; color: #ffc969; }
+.provisional-estimate-note strong, .provisional-estimate-note span { font-size: 13px; }
+.provisional-estimate-note p { margin: 7px 0; font-size: 12px; line-height: 1.55; }
+.provisional-estimate-note small { display: block; font-size: 11px; line-height: 1.5; opacity: .8; }
+.provisional-estimate-note details { margin-top: 8px; font-size: 11px; }
+.provisional-estimate-note summary { cursor: pointer; }
+.provisional-estimate-note summary:focus-visible { outline: 2px solid #ffc969; outline-offset: 3px; }
+.provisional-chart-marker { fill: #11271e; stroke: #ffc969; stroke-width: 2.5; }
+.provisional-chart-line { fill: none; stroke: #ffc969; stroke-width: 1.5; stroke-dasharray: 4 4; }

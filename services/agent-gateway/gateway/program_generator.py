@@ -10,8 +10,8 @@ from zoneinfo import ZoneInfo
 
 from gateway.errors import GatewayError
 from gateway.program_profile import validate_program_intake,assemble_program_profile,now_for,DOMAINS
-from gateway.program_focus import compute_focus_split,largest_remainder,focus_policy
-from gateway.program_composition import dose_options,catalog_capacity,select_drills,compose_work_order,deliverable_week_allocations,describe_intent
+from gateway.program_focus import largest_remainder,focus_policy
+from gateway.program_composition import dose_options,catalog_capacity,deliverable_week_allocations,describe_intent
 from gateway.registry import PROGRAM_STAGES,program_stage
 
 COACH_SCHEMA={'type':'object','additionalProperties':False,'required':['parsedEmphasis'],'properties':{
@@ -205,6 +205,9 @@ def build_workout(inv,work_order,catalog,frequency,plan):
         _workout_progress(inv,'build',week,order,finished=True)
         _workout_progress(inv,'time_check',week,order)
         envelope=inv.context.get('workoutDraft') or {};workout=deepcopy(envelope.get('workout') or {})
+        if (plan.get('assessment') or {}).get('methodologyVersion') == 'evidence-objectives-v1':
+            from gateway.personalized_objectives import annotate_workout
+            annotate_workout(workout,plan['assessment']['priorities'],catalog)
         check=validate_workout(workout,catalog,inv.context['programProfile'],frequency=frequency,plan=plan,target=target,
                                allow_partner=inv.context['workoutContext']['allowPartner'])
         issues=[v['message'] for v in check.get('violations') or []]
@@ -228,8 +231,13 @@ def build_workout(inv,work_order,catalog,frequency,plan):
         # Independent catalog-backed check; model cannot silently reinterpret
         # or repair a failed intention by rewriting it.
         try:
-            result=_model_call(inv,'adversarial',{'workout':workout,'deterministicCheck':check,
-                   'catalog':[{k:catalog[b['drillId']].get(k) for k in ('drillId','name','domain','howTo','coachComments')} for b in workout['blocks']]},
+            semantic_context={'workout':workout,'deterministicCheck':check,
+                   'catalog':[{k:catalog[b['drillId']].get(k) for k in ('drillId','name','domain','howTo','coachComments')} for b in workout['blocks']]}
+            if (plan.get('assessment') or {}).get('methodologyVersion') == 'evidence-objectives-v1':
+                from gateway.personalized_views import priority_view
+                semantic_context['trainingObjectives']=[priority_view(p) for p in plan['assessment']['priorities']]
+                semantic_context['evidenceConstraint']='Check relevance explanations against these objectives. Conditional estimates are support, not measured deficits; no cause is diagnosed from total time or speed.'
+            result=_model_call(inv,'adversarial',semantic_context,
                    schema=CHECK_SCHEMA,iteration=label,attempt=attempt)
         except GatewayError as exc:
             if exc.code != 'validation_failed':
@@ -299,10 +307,11 @@ def run_program(inv,*,persist=True,personalized=False):
                                           'totalUnits':3+intake['horizonWeeks']+4*total_workouts+1}
     _progress(inv,'assess')
     profile=assess_player(inv)
-    if personalized:
-        from gateway.personalized_assessment import prepare_personalized_profile,compute_personalized_focus,curriculum_report
-        from gateway.personalized_composition import compose_personalized_week,allocation_check,preserve_priority_targets,ENGINE_VERSION
-        profile=prepare_personalized_profile(inv,profile)
+    # Native and reviewed web v3 creation share methodology, not persistence.
+    from gateway.personalized_assessment import prepare_personalized_profile,compute_personalized_focus,curriculum_report
+    from gateway.personalized_composition import compose_personalized_week,allocation_check,preserve_priority_targets,project_week_targets,ENGINE_VERSION
+    from gateway.personalized_objectives import VERSION,rank_drills
+    profile=prepare_personalized_profile(inv,profile)
     _progress(inv,'assess',finished=True)
     _progress(inv,'coach_parse')
     parsed=parse_coach_feedback(inv,profile)
@@ -315,7 +324,7 @@ def run_program(inv,*,persist=True,personalized=False):
     options={did:dose_options(row) for did,row in eligible.items()};eligible={did:r for did,r in eligible.items() if options[did]}
     cap=catalog_capacity(eligible,options,intake['sessionsPerWeek'],intake['minutesPerSession'])
     stage_start=time.monotonic()
-    split=(compute_personalized_focus if personalized else compute_focus_split)(profile,{r['domain'] for r in eligible.values()},parsed,cap)
+    split=compute_personalized_focus(profile,{r['domain'] for r in eligible.values()},parsed,cap,catalog=eligible)
     _digest_record(inv,'focus_split',stage_start,split)
     _progress(inv,'focus_split',finished=True)
     unapplied=split.pop('unappliedCoachRequests');unevidenced=split.pop('unevidencedLowScores')
@@ -334,6 +343,7 @@ def run_program(inv,*,persist=True,personalized=False):
     inputs={k:deepcopy(v) for k,v in profile.items() if k not in ('intake','dataGaps','measuredMetricIds')}
     assessment={'summary':(f'{profile["age"]}-year-old ' if profile['age'] is not None else 'Age unavailable; ')+f'{profile["position"] or "position-neutral"} player. Build repeatable soccer skills with controlled physical support.',
                 'findings':split.pop('findings'),'dataGaps':data_gaps[:30],'inputs':inputs,'focusSplit':split}
+    assessment.update(methodologyVersion=VERSION,priorities=deepcopy(split.pop('priorities')),estimatePolicy=deepcopy(profile['estimatePolicy']))
     final=split['final'];N=intake['horizonWeeks'];S=intake['sessionsPerWeek'];M=intake['minutesPerSession'];now=now_for(inv)
     plan={'schemaVersion':3,'planId':'p_'+hashlib.sha256(inv.job_id.encode()).hexdigest()[:28],'playerId':inv.player_id,'jobId':inv.job_id,
           'generatedAt':now,'status':'active','startDate':now.astimezone(ZoneInfo(inv.params['timezone'])).date().isoformat(),'timezone':inv.params['timezone'],
@@ -343,12 +353,12 @@ def run_program(inv,*,persist=True,personalized=False):
           'weeks':[],'disclaimers':['D1 standards and the focus table are provisional product references.','Stop for pain and seek qualified guidance.']}
     if personalized:
         plan.update(engineVersion=ENGINE_VERSION,status='draft')
-        assessment['curriculum']=curriculum_report(catalog,profile,options)
+    assessment['curriculum']=curriculum_report(catalog,profile,options)
     evidence=load_history_evidence(inv)
     previous_core=[]
     for wn in range(1,N+1):
         _progress(inv,'select',detail=f'Week {wn} of {N}')
-        stage_start=time.monotonic();ranking=select_drills(eligible,profile,previous_core)
+        stage_start=time.monotonic();ranking=rank_drills(eligible,profile,previous_core)
         _digest_record(inv,'select',stage_start,{'weekNumber':wn,'candidates':ranking,'retainedCore':previous_core},iteration=f'w{wn}')
         _progress(inv,'select',key=f'select/w{wn}',finished=True,detail=f'Week {wn} of {N}')
         week={'weekNumber':wn,'theme':'Build the core' if wn==1 else 'Progress the core',
@@ -356,22 +366,20 @@ def run_program(inv,*,persist=True,personalized=False):
               'progressionNote':None if wn==N else 'Keep the core drills; increase reps only where the catalog and time budget allow.', 'workouts':[]}
         plan['weeks'].append(week)
         projection=deliverable_week_allocations(eligible,options,final,S*M)
-        if personalized:
-            projection=preserve_priority_targets(projection,final,S*M,split['measuredPriorityDomains'])
+        projection=preserve_priority_targets(projection,final,S*M,split['measuredPriorityDomains'])
+        projection=project_week_targets(projection,final,S*M,profile['trainingPriorities'],S,cap,split['measuredPriorityMaxPct'])
         remaining=deepcopy(projection['allocations'])
-        schedulable={d:(final[d] if remaining.get(d,0)>0 else 0) for d in final}
-        week_orders=None
-        if personalized:
-            priorities=split['measuredPriorityDomains']
-            unsupported=[d for d in priorities if not remaining.get(d,0)]
-            if unsupported:
-                raise GatewayError('context_unavailable','A measured priority cannot fit a legal dose: '+', '.join(unsupported)+'. Increase available training time or review curriculum.')
-            initial_frequency=build_frequency_context(plan,{'kind':'generation','jobId':inv.job_id,'weekNumber':wn,'order':1},evidence['logs'],evidence['reservations'],now=now)
-            if initial_frequency.get('coverage')!='complete':
-                raise GatewayError('context_unavailable','Weekly frequency cannot be enforced from incomplete dated evidence.')
-            week_orders,diagnostics=compose_personalized_week(profile,eligible,options,ranking,remaining,initial_frequency['counts'],
-                week_number=wn,previous_week=plan['weeks'][wn-2] if wn>1 else None,priority_domains=priorities)
-            week['allocationSearch']=diagnostics
+        priorities=split['measuredPriorityDomains']
+        unsupported=[d for d in priorities if not remaining.get(d,0)]
+        if unsupported:
+            raise GatewayError('context_unavailable','A measured priority cannot fit a legal dose: '+', '.join(unsupported)+'. Increase available training time or review curriculum.')
+        initial_frequency=build_frequency_context(plan,{'kind':'generation','jobId':inv.job_id,'weekNumber':wn,'order':1},evidence['logs'],evidence['reservations'],now=now)
+        if initial_frequency.get('coverage')!='complete':
+            raise GatewayError('context_unavailable','Weekly frequency cannot be enforced from incomplete dated evidence.')
+        week_orders,diagnostics=compose_personalized_week(profile,eligible,options,ranking,remaining,initial_frequency['counts'],
+            week_number=wn,previous_week=plan['weeks'][wn-2] if wn>1 else None,priority_domains=priorities,
+            objective_priorities=profile['trainingPriorities'],primary_cap_minutes=split['measuredPriorityMaxPct']*S*M/100)
+        week['allocationSearch']=diagnostics
         for order in range(1,S+1):
             target={'kind':'generation','jobId':inv.job_id,'weekNumber':wn,'order':order}
             frequency_context=build_frequency_context(plan,target,evidence['logs'],evidence['reservations'],now=now)
@@ -381,7 +389,7 @@ def run_program(inv,*,persist=True,personalized=False):
             prior=plan['weeks'][wn-2]['workouts'][order-1] if wn>1 else None
             _workout_progress(inv,'shape',wn,order)
             stage_start=time.monotonic()
-            work_order=week_orders[order-1] if week_orders is not None else compose_work_order(profile,eligible,options,ranking,schedulable,freq,week_number=wn,order=order,remaining=remaining,prior_workout=prior)
+            work_order=week_orders[order-1]
             _digest_record(inv,'shape',stage_start,work_order,iteration=f'w{wn}s{order}')
             _workout_progress(inv,'shape',wn,order,finished=True)
             workout=build_workout(inv,work_order,catalog,freq,plan)
@@ -389,10 +397,12 @@ def run_program(inv,*,persist=True,personalized=False):
             _progress(inv,'adversarial',completed_workouts=(wn-1)*S+order,detail=f'Checked workout {(wn-1)*S+order} of {total_workouts}')
             for b in workout['blocks']:remaining[b['domain']]=remaining.get(b['domain'],0)-b['estimatedMinutes']
         derive_week(week,final,S*M,previous_week=plan['weeks'][wn-2] if wn>1 else None,allocation_projection=projection)
-        if personalized:
-            week['check']['allocation']=allocation_check(week,projection['allocations'],priorities)
-            if not week['check']['allocation']['passed']:
-                raise GatewayError('validation_failed',f'Week {wn} did not meet its individual targets after validation. No plan was activated; review the schedule or curriculum.')
+        week['check']['allocation']=allocation_check(week,projection['allocations'],priorities)
+        if not week['check']['allocation']['passed']:
+            raise GatewayError('validation_failed',f'Week {wn} did not meet its individual targets after validation. No plan was activated; review the schedule or curriculum.')
+        primary_minutes=sum(b['estimatedMinutes'] for w in week['workouts'] for b in w['blocks'] if b['domain'] in priorities)
+        if primary_minutes > split['measuredPriorityMaxPct']*S*M/100 + 1e-8:
+            raise GatewayError('validation_failed',f'Week {wn} exceeds the age/level measured-priority allowance. No plan was activated.')
         total=week['check']['estimatedMinutes']
         if abs(total-S*M)>max(5,S*M*.1):raise GatewayError('validation_failed',f'Week {wn} does not fit the weekly budget')
         core={b['drillId'] for w in week['workouts'] for b in w['blocks']}
@@ -409,6 +419,7 @@ def run_program(inv,*,persist=True,personalized=False):
              'generatorVersion':'program-v3-03a-2026-09-08','formulaVersion':'expected-minutes-v1-01A','focusTableVersion':focus_policy()['version'],
              'modelConfiguration':{sid:{'provider':program_stage(sid,inv.context.get('_stageModels')).provider,'model':program_stage(sid,inv.context.get('_stageModels')).model,
                  'params':program_stage(sid,inv.context.get('_stageModels')).params} for sid in PROGRAM_STAGES}}
+    private['methodologyVersion']=VERSION
     _progress(inv,'persist',detail='Saving your training program')
     if personalized:
         private['engineVersion']=ENGINE_VERSION

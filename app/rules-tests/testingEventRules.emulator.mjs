@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, runTransaction, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, runTransaction, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 const projectId = 'demo-posetek-testing-events';
 const env = await initializeTestEnvironment({
@@ -28,7 +28,7 @@ try {
       [`players/${playerId}/sessions/testing-jump`]: { repCount: 0, sessionType: 'jump' },
       [`players/${playerId}/reps/rep-1`]: { repType: 'jump', testingEventId: eventId },
       [`players/${playerId}/recordingCounters/jump`]: { nextSessionNumber: 2, nextAbsoluteRepNumber: 4 },
-      [`testingEvents/${eventId}`]: { organizationId: 'club', ownerUid: 'manager', operatorUids: ['manager', 'revoked'], status: 'live' },
+      [`testingEvents/${eventId}`]: { organizationId: 'club', ownerUid: 'manager', operatorUids: ['manager', 'revoked', 'admin'], status: 'live' },
       [`testingEvents/${eventId}/participants/${playerId}`]: { playerDocId: playerId, rosterOrder: 0 },
       [`testingEvents/${eventId}/stations/station-1`]: {
         id: 'station-1', order: 1, claimedByUid: 'manager', claimedDeviceId: 'phone-a', leaseExpiresAt: future,
@@ -74,7 +74,18 @@ try {
   await allowed(incrementOnce());
   assert.equal((await getDoc(sessionRef)).data().repCount, 1);
   await denied(updateDoc(linkRef, { eventId: 'forged' }));
-  assert.equal(checks, 11);
+
+  // A verified PoseTek admin records with a coach's rights: sessions, reps and rep links
+  // for an existing athlete, never deletes, never a nonexistent athlete.
+  const admin = env.authenticatedContext('admin', { email: 'admin@posetek.net', email_verified: true }).firestore();
+  await allowed(getDoc(doc(admin, `testingEvents/${eventId}`)));
+  await allowed(setDoc(doc(admin, `players/${playerId}/sessions/admin-jump`), { repCount: 0, sessionType: 'jump' }));
+  await allowed(setDoc(doc(admin, `players/${playerId}/reps/rep-2`), { repType: 'jump', testingEventId: eventId }));
+  await allowed(setDoc(doc(admin, `players/${playerId}/sessions/admin-jump/repLinks/rep-2`), { repId: 'rep-2', eventId, createdAt: serverTimestamp() }));
+  await allowed(updateDoc(doc(admin, `players/${playerId}/sessions/admin-jump`), { repCount: 1 }));
+  await denied(deleteDoc(doc(admin, `players/${playerId}/reps/rep-2`)));
+  await denied(setDoc(doc(admin, 'players/nobody/sessions/admin-jump'), { repCount: 0, sessionType: 'jump' }));
+  assert.equal(checks, 18);
   console.log(`${checks} testing-event rule assertions passed.`);
 } finally {
   await env.cleanup();

@@ -18,7 +18,7 @@ REGION = 'us-central1'
 ENDPOINTS = ('getClubInsightsV2', 'recordInsightUsage', 'projectInsightPlayer', 'projectInsightRecords',
              'projectInsightRevisions', 'projectInsightFailures', 'projectInsightArtifacts', 'projectInsightArtifactDeletes')
 FILES = ('insights-entrypoints.js', 'insights-v2.js', 'insights-v2-projection.js', 'insights-v2-qualification.js',
-         'insight-usage.js', 'club-access.js', 'athlete-storage-paths.js', 'package.json', 'package-lock.json')
+         'processing-evidence.js', 'insight-usage.js', 'club-access.js', 'athlete-storage-paths.js', 'package.json', 'package-lock.json')
 API = 'https://cloudfunctions.googleapis.com/v1/'
 PARENT = f'projects/{PROJECT}/locations/{REGION}'
 BUCKET = 'kickai-69dd0.firebasestorage.app'

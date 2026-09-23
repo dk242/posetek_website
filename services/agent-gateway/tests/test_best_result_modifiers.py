@@ -198,15 +198,15 @@ def test_one_best_result_changes_persisted_workout_minutes_with_same_age_and_pos
     from evals.program_v3 import seed_invocation
     from gateway.program_generator import run_program
     from tests.test_program_generator_v3 import ConstructingProvider
+    from tests.test_evidence_objectives_v1 import seed_primary, supplied
 
     def generate(score):
         inv = seed_invocation('cb15')
         # Keep real catalog and intake, while isolating best-result influence.
         inv.db._docs = {path: row for path, row in inv.db._docs.items() if 'reps' not in path}
         inv.params['intake'].update(horizonWeeks=1, sessionsPerWeek=sessions, minutesPerSession=minutes)
-        inv.params['statsProfile'] = snapshot(
-            ('broadJump', 'power', metric_row('broadJumpDistance', score=score)),
-        )
+        inv.params['intake']['equipment']=list(set(inv.params['intake']['equipment'])|{'tapeMeasure'})
+        supplied(inv,seed_primary(inv,'broadJumpDistance',score))
         with patch('gateway.providers.base.get_provider', lambda _: ConstructingProvider(inv)):
             plan, _ = run_program(inv)
         assert inv.db.get_doc(('players', inv.player_id, 'trainingPlans', plan['planId']))

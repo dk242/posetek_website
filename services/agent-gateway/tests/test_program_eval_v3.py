@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from evals.program_v3 import FIXTURES,PROFILES,ReplayProvider,qualitative_assertions,run_profile,seed_invocation
+from evals.program_v3 import FIXTURES,PROFILES,ReplayProvider,qualitative_assertions,run_profile,seed_invocation,seed_methodology_evidence
 from gateway.errors import GatewayError
 
 
@@ -73,6 +73,31 @@ def test_qualitative_gates_are_independent_of_authored_pass_response():
     plan['weeks'][0]['workouts'][0]['focusDomains']=['strength']
     checks=qualitative_assertions(plan,PROFILES['cb15'])
     assert any(not c['passed'] and 'built domains' in c['requirement'] for c in checks)
+
+
+def test_methodology_replay_seed_has_canonical_media_and_native_rounded_primaries():
+    from gateway.personalized_evidence import read_authoritative_results
+    from gateway.personalized_assessment import prepare_personalized_profile
+    from gateway.program_profile import assemble_program_profile
+    inv = seed_methodology_evidence(seed_invocation('cb15'), 'cb15')
+    evidence = read_authoritative_results(inv)
+    assert len(evidence['rows']) == 11 and all(row['qualified'] for row in evidence['rows'])
+    profile = prepare_personalized_profile(inv, assemble_program_profile(inv))
+    assert len(profile['bestResults']) == 6
+    assert profile['bestResults']['dribbleTotalTime']['bestCanonical'] == 12
+    assert profile['bestResults']['dribbleTotalTime']['score'] == 51.99
+    assert all(row['source'] == 'qualified_server_result' for row in profile['bestResults'].values())
+    assert not list(seed_methodology_evidence(seed_invocation('nostats'), 'nostats').player_ref().collection('reps').stream())
+
+
+def test_allocation_gates_recompute_minutes_instead_of_trusting_generator_flags():
+    artifact = run_profile('cb15'); plan = deepcopy(artifact['plan'])
+    week = plan['weeks'][0]
+    row = week['check']['allocation']['domains'][0]
+    row['targetMinutes'] += 100
+    row['met'] = True
+    checks = qualitative_assertions(plan, PROFILES['cb15'])
+    assert any(not c['passed'] and 'disclosed allocation' in c['requirement'] for c in checks)
 
 
 def test_live_mode_requires_explicit_project_and_supported_region(monkeypatch):
@@ -154,15 +179,15 @@ def test_historical_live_recordings_refuse_changed_solver_context(profile_id, fi
 
 
 @pytest.mark.parametrize('profile_id', ['striker17'])
-def test_03a_live_recordings_replay_offline(profile_id, monkeypatch):
+def test_03a_pre_methodology_recording_refuses_changed_context_offline(profile_id, monkeypatch):
     if not (FIXTURES.parent / 'runs' / f'03a-deterministic-{profile_id}.json.gz').exists():
         pytest.skip('Private historical model recording is excluded from the source handoff')
     from gateway.providers import anthropic_direct, anthropic_vertex, vertex_gemini
     for provider in (anthropic_direct, anthropic_vertex, vertex_gemini):
         monkeypatch.setattr(provider, '_client', lambda: pytest.fail('Offline replay called a provider'))
     artifact = run_profile(profile_id, tape_path=FIXTURES.parent / 'runs' / f'03a-deterministic-{profile_id}.json.gz')
-    assert artifact['passed'], artifact['error']
+    assert artifact['passed'] is False and artifact['plan'] is None
+    assert 'context changed' in artifact['error']['message']
     assert artifact['actualModelSpendUsd'] == artifact['actualModelCalls'] == 0
     assert artifact['stageModels']['build'] == 'code'
     assert not any(call['stage'] == 'build' for call in artifact['calls'])
-    assert artifact['usage']['inputTokens'] > 0

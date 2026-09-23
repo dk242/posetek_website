@@ -14,8 +14,8 @@ describe("account navigation rendering", () => {
     const html = renderToStaticMarkup(<MemoryRouter><PlayerRosterRow player={player} context={{ orgId: "club", teamId: "team", coachId: "coach" }} /></MemoryRouter>);
     expect(html).toContain('href="/admin/accounts/player/athlete?orgId=club&amp;teamId=team&amp;coachId=coach"');
     expect(html).toContain('href="/admin/accounts/player/athlete/results?orgId=club&amp;teamId=team&amp;coachId=coach"');
-    expect(html).toContain('aria-label="Copy signup code for Example Athlete"');
-    expect(html).toContain("SAMPLE-CODE");
+    expect(html).toContain("Checking invitation…");
+    expect(html).not.toContain("SAMPLE-CODE");
     expect(html).not.toContain("coachId=coach/results");
   });
   it("opens the named team directly without a synthetic coach link or a projected roster count", () => {

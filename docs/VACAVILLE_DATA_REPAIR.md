@@ -1,5 +1,10 @@
 # Vacaville September 16 data repair
 
+This document records the ownership repair. The later authorized measurement
+recovery is documented separately in
+[`VACAVILLE_REP_RECOVERY.md`](VACAVILLE_REP_RECOVERY.md); its eleven accepted rep
+revisions do not alter the historical ownership-repair receipt below.
+
 ## Status and approved result
 
 **The production repair was applied and verified.** The CLI completed verification

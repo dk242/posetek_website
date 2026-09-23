@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { auth, db } from '../../../lib/firebase';
+import { auth, cloud, db } from '../../../lib/firebase';
+import { visibleAttempts } from '../../../lib/result-values';
+import { parseProvisionalEstimates } from '../../../lib/provisional-estimates';
 import { DRILLS, drillByKey } from '../lib/drills';
 import { accepted, allStatsReps, normalizeRep } from '../lib/metrics';
 import type { PortalContext } from '../views/shared';
@@ -28,26 +30,34 @@ export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalCont
   const location = useLocation(), navigate = useNavigate(), route = playerRoute(location.search);
   const preview = ctx.access === 'preview';
   const [reps, setReps] = useState(initialReps), [athlete, setAthlete] = useState(ctx.athlete), [dataset, setDataset] = useState(defaultDataset);
+  const [provisionalEstimates, setProvisionalEstimates] = useState(ctx.provisionalEstimates || []);
   const [visited, setVisited] = useState(new Set([route.view])), [request, setRequest] = useState<Row | null>(null), [refreshError, setRefreshError] = useState('');
   useEffect(() => { setVisited(old => new Set([...old, route.view])); }, [route.view]);
   useEffect(() => {
     if (preview) return;
     const player = db.collection('players').doc(ctx.playerId!);
+    let alive = true, refreshVersion = 0;
     const stopPlayer = player.onSnapshot(d => { if (d.exists) setAthlete({ ...d.data(), id: d.id }); }, e => setRefreshError(e.message));
-    const stopReps = player.collection('reps').onSnapshot(s => {
-      const rows = s.docs.map(normalizeRep);
-      setReps(old => Object.fromEntries(DRILLS.map(d => [d.key, d.key === 'freeRecord' ? old.freeRecord : rows.filter(r => accepted(r, d))])));
-      setRefreshError('');
+    const stopReps = player.collection('reps').onSnapshot(() => {
+      const version = ++refreshVersion;
+      void cloud.httpsCallable('getAthleteEffectiveResults')({ playerId: ctx.playerId }).then(response => {
+        if (!alive || version !== refreshVersion) return;
+        const payload = response.data as Row;
+        const rows = visibleAttempts((payload.reps || []).map(normalizeRep));
+        setReps(old => Object.fromEntries(DRILLS.map(d => [d.key, d.key === 'freeRecord' ? old.freeRecord : rows.filter(r => accepted(r, d))])));
+        setProvisionalEstimates(parseProvisionalEstimates(payload.provisionalEstimates));
+        setRefreshError('');
+      }).catch(e => { if (alive && version === refreshVersion) { setProvisionalEstimates([]); setRefreshError(e.message); } });
     }, e => setRefreshError(e.message));
     const stopBenchmarks = db.collection('benchmarks').doc('d1').onSnapshot(d => {
       const value = d.data();
       if (value?.schemaVersion === 1 && value.tier === 'd1' && value.cells && Number.isInteger(value.generation)) setDataset(old => value.generation > old.generation ? value : old);
     }, () => { /* bundled generation remains valid offline */ });
-    return () => { stopPlayer(); stopReps(); stopBenchmarks(); };
+    return () => { alive = false; ++refreshVersion; stopPlayer(); stopReps(); stopBenchmarks(); };
   }, [ctx.playerId, preview]);
   const all = useMemo(() => allStatsReps(reps), [reps]);
   const profile = useMemo(() => playerProfile(all, athlete, dataset), [all, athlete, dataset]);
-  const playerCtx = useMemo(() => ({ ...ctx, athlete, allStatsReps: () => all }), [ctx, athlete, all]);
+  const playerCtx = useMemo(() => ({ ...ctx, athlete, provisionalEstimates, allStatsReps: () => all, allResultReps: () => Object.values(reps).flat() }), [ctx, athlete, all, reps, provisionalEstimates]);
   const go = (view: string, drill?: string, session?: string, rep?: string) => {
     if (view === 'feed') { navigate(preview ? '/feed?preview=1' : '/feed'); return; }
     const params = new URLSearchParams(location.search);

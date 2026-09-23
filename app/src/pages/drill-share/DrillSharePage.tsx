@@ -1,3 +1,4 @@
+import { visibleAttempts, resultUsable } from "../../lib/result-values";
 // Port of broadJumpPage.html / changeOfDirectionPage.html / dribblingPage.html +
 // the boot/auth/share/copy-link/tab logic of athlete-drill-view.js. One component
 // serves all three drills; App.tsx passes the drill key exactly like the legacy
@@ -8,6 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, cloud } from "../../lib/firebase";
+import type { ProvisionalEstimate } from "../../lib/provisional-estimates";
 import { useThemeColor } from "../../lib/use-theme-color";
 // drill-share.scss is imported BEFORE AthleteStats (and its stylesheet) so the
 // bundle keeps the legacy cascade order: athlete-drill-view.css loaded first,
@@ -28,7 +30,7 @@ import {
   previewStatsReps,
   type Rep,
 } from "./drill-lib";
-import { loadStatsReps, resolveAuthorizedPlayer, resolveViewer, type ViewerInfo } from "./drill-data";
+import { loadStatsBundle, resolveAuthenticatedDrillPlayer, type ViewerInfo } from "./drill-data";
 import ResultsSurface from "./ResultsSurface";
 
 interface PlayerState {
@@ -66,6 +68,8 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [reps, setReps] = useState<Rep[]>([]);
   const [statsReps, setStatsReps] = useState<Rep[]>([]);
+  const [provisionalEstimates, setProvisionalEstimates] = useState<ProvisionalEstimate[]>([]);
+  const [estimateReps, setEstimateReps] = useState<Rep[]>([]);
   const [activeView, setActiveViewState] = useState<"stats" | "results">(
     params.get("view") === "results" ? "results" : "stats",
   );
@@ -101,16 +105,18 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
     async function start(user: { uid: string; email?: string | null }) {
       try {
         setBoot({ phase: "loading", message: "Resolving athlete profile…" });
-        const resolvedViewer = await resolveViewer(user);
-        const resolvedPlayer = await resolveAuthorizedPlayer(resolvedViewer, params.get("player"));
+        const { viewer: resolvedViewer, player: resolvedPlayer } = await resolveAuthenticatedDrillPlayer(user, params.get("player"));
         if (cancelled) return;
         setBoot({ phase: "loading", message: `Loading ${config.title.toLowerCase()} results…` });
-        const allReps = await loadStatsReps(resolvedPlayer.id);
+        const bundle = await loadStatsBundle(resolvedPlayer.id);
+        const allReps = bundle.reps;
         if (cancelled) return;
         setViewer(resolvedViewer);
         setPlayer(resolvedPlayer);
-        setStatsReps(allReps);
-        setReps(allReps.filter(rep => rep._statsDrill === config.key));
+        setProvisionalEstimates(bundle.provisionalEstimates || []);
+        setEstimateReps(allReps);
+        setStatsReps(visibleAttempts(allReps).filter(resultUsable));
+        setReps(visibleAttempts(allReps).filter(rep => rep._statsDrill === config.key));
         setBoot({ phase: "ready" });
       } catch (error: any) {
         console.error(`[${config.key}]`, error);
@@ -137,13 +143,15 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
         const currentPayload = currentResult?.payload || {};
         if (cancelled) return;
         setViewer({ role: "shared", data: {} });
+        setProvisionalEstimates([]);
+        setEstimateReps([]);
         setPlayer({ id: null, data: currentPayload.athlete || {} });
         shareExpiresAtMillisRef.current = asNumber(currentPayload.expiresAtMillis);
         const allReps = payloads.flatMap(({ drillConfig, payload }) =>
           (Array.isArray(payload?.reps) ? payload.reps : []).map((rep: Record<string, any>) => normalizeSharedRep(rep, drillConfig)),
         );
-        setStatsReps(allReps);
-        setReps(allReps.filter(rep => rep._statsDrill === config.key));
+        setStatsReps(visibleAttempts(allReps).filter(resultUsable));
+        setReps(visibleAttempts(allReps).filter(rep => rep._statsDrill === config.key));
         setBoot({ phase: "ready" });
       } catch (error: any) {
         console.error(`[${config.key}] shared link failed`, error);
@@ -160,8 +168,8 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
       const allReps = previewStatsReps();
       setViewer({ role: "coach", uid: "preview", docId: "preview-coach", data: { members: ["preview-player"] } });
       setPlayer({ id: "preview-player", data: { firstName: "Jordan", lastName: "Athlete", height: 178, weight: 72.5 } });
-      setStatsReps(allReps);
-      setReps(allReps.filter(rep => rep._statsDrill === config.key));
+      setStatsReps(visibleAttempts(allReps).filter(resultUsable));
+      setReps(visibleAttempts(allReps).filter(rep => rep._statsDrill === config.key));
       setBoot({ phase: "ready" });
     }
 
@@ -225,7 +233,7 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
       await copyResultUrl(previewUrl.toString());
       return;
     }
-    if (viewer?.role !== "coach") return;
+    if (!viewer || !["coach", "manager", "admin"].includes(viewer.role)) return;
     setCopyBusy(true);
     setCopyLabel("Creating secure link…");
     try {
@@ -250,12 +258,12 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
     preview,
     shareToken,
     playerId: player?.id ?? null,
-    viewerRole: viewer?.role,
+    viewerRole: viewer?.role === "admin" || viewer?.role === "manager" ? "coach" : viewer?.role,
   };
   // Legacy renderShell() repoints the brand link at the current drill page once
   // data is loaded; before that it keeps the static profile.html target.
   const brandTo = ready ? buildPageUrl(config.page, {}, urlState) : "/athlete";
-  const showCopyButton = ready && viewer?.role === "coach";
+  const showCopyButton = ready && Boolean(viewer && ["coach", "manager", "admin"].includes(viewer.role));
   const name = athleteDisplayName(player?.data);
 
   return (
@@ -325,7 +333,7 @@ function DrillShareApp({ drill }: { drill: PageDrillKey }) {
               />
             </div>
             <div id="statsSurface" className={activeView !== "stats" ? "hidden" : ""}>
-              <AthleteStats reps={statsReps} athleteName={name} athlete={player.data || {}} />
+              <AthleteStats reps={statsReps} athleteName={name} athlete={player.data || {}} provisionalEstimates={shareToken ? [] : provisionalEstimates} estimateReps={shareToken ? [] : estimateReps} />
             </div>
           </>
         )}

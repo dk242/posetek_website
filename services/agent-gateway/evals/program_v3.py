@@ -104,6 +104,60 @@ def _reps(db,player,value):
               'sessionNumber':session,'repNumber':trial,'createdAt':NOW,'protocolId':'cone-slalom-standard-v1','valid':True})
 
 
+def seed_methodology_evidence(inv, profile_id):
+    """Explicit synthetic recordings for the current-methodology eval harness.
+
+    Historical axis-only inputs are not authoritative primary results. Keep
+    seed_invocation unchanged for legacy contract tests; this adapter supplies
+    matching canonical reps, identity sidecars, and native-rounded snapshots.
+    The recorded synthetic dribbling time takes precedence over its old axis
+    score. No fixture claims to be a live athlete or a measured model response.
+    """
+    fixture = PROFILES[profile_id]
+    if fixture.get('stats') is None:
+        return inv
+    anchors = json.loads((FIXTURES.parents[1] / 'knowledge/planner_primary_anchors_v2.json').read_text())['cells']['u16|male']
+    specs = (
+        ('ballSpeed', 'shooting', 'kick', 'striking', 'velocity'),
+        ('verticalJumpHeight', 'jump', 'jump', 'power', 'jumpHeight'),
+        ('broadJumpDistance', 'broadJump', 'broadJump', 'power', 'broadJumpDistance'),
+        ('sprintCompletionTime', 'sprint', 'sprint', 'speed', 'totalTime'),
+        ('codTotalTime', 'changeOfDirection', 'changeOfDirection', 'agility', 'totalTime'),
+        ('dribbleTotalTime', 'dribbling', 'dribbling', 'ballControl', 'totalTime'),
+    )
+    drills = []
+    for mid, drill, client_drill, axis, field in specs:
+        reference = anchors[mid]; score = fixture['stats'][axis]
+        value = reference * (100 / score if mid.endswith('Time') else score / 100)
+        if drill == 'dribbling' and fixture.get('athleteDribblingTime') is not None:
+            value = fixture['athleteDribblingTime']; score = reference / value * 100
+        existing = [snap for snap in inv.player_ref().collection('reps').stream()
+                    if snap.to_dict().get('repType') == drill]
+        if not existing:
+            ref = inv.player_ref().collection('reps').document('primary_' + drill)
+            ref.set({'repType': drill, field: value, 'sessionNumber': 1, 'repNumber': 1, 'createdAt': NOW})
+            existing = [ref.get()]
+        for snap in existing:
+            rep = snap.to_dict(); folder = f'{inv.player_id}/{"deadballShot" if drill == "shooting" else drill}/session{rep["sessionNumber"]}/kick{rep["repNumber"]}'
+            rep.update({field: value, 'storagePath': folder + '/synthetic.mov'})
+            if drill == 'sprint':
+                rep['max_velocity'] = 6.0  # Overall qualification is independent of completion time.
+            inv.player_ref().collection('reps').document(snap.id).set(rep)
+            primary = rep['max_velocity'] if drill == 'sprint' else value
+            inv.storage.put(folder + '/metadata.json', {field: value, **({'max_velocity': primary} if drill == 'sprint' else {}),
+                'resultsValid': True, 'processingStatus': 'complete', 'failedSteps': []})
+            inv.storage.put(folder + '/reprocess_context.json', {'rep': {'repId': snap.id, 'playerDocId': inv.player_id},
+                'result': {'resultsValid': True, 'primaryMetric': primary}})
+        drills.append({'drill': client_drill, 'displayName': client_drill, 'repCount': len(existing),
+            'sessionCount': len({snap.to_dict()['sessionNumber'] for snap in existing}), 'isLowConfidence': True,
+            'lastRecorded': NOW.isoformat(), 'metrics': [{'metric': mid, 'score': round(score, 2),
+                'bestCanonical': round(value, 4), 'latestCanonical': round(value, 4), 'referenceCanonical': round(reference, 4),
+                'repCount': len(existing), 'band': 'developing', 'bestFormatted': f'{value:.4f}', 'unitLabel': 's' if mid.endswith('Time') else 'm/s' if mid == 'ballSpeed' else 'm'}]})
+    inv.params['statsProfile']['drills'] = drills
+    inv.params['statsProfile']['totalReps'] = sum(row['repCount'] for row in drills)
+    return inv
+
+
 def authored_response(active,profile_id):
     """One-time tape preparation only; never used by normal replay or live."""
     stage=active['stage'];context=active['context'];actions=[]
@@ -180,8 +234,15 @@ def qualitative_assertions(plan,fixture):
         totals=Counter(b['domain'] for w in workouts for b in w['blocks']);minutes=Counter()
         for w in workouts:
             for b in w['blocks']:minutes[b['domain']]+=b['estimatedMinutes']
-        ball=sum(minutes[d] for d in ('passing','receiving','shooting','dribbling'))
-        check(ball/max(1,sum(minutes.values()))>=expected['ballShareMin'],f'Week {week["weekNumber"]}: technical ball work at least {expected["ballShareMin"]:.0%} of block minutes')
+        # The old solver's fixed ball-share floor is not the new bounded policy.
+        # Recompute every disclosed weekly allocation from actual block minutes;
+        # do not accept the planner's own `met` or `passed` flags as proof.
+        allocation_rows = week.get('check', {}).get('allocation', {}).get('domains', [])
+        check(bool(allocation_rows), f'Week {week["weekNumber"]}: discloses numeric allocation targets')
+        for row in allocation_rows:
+            target = row['targetMinutes']; actual = minutes[row['domain']]
+            check(abs(actual-target) <= max(5, .1*target) + 1e-8 and actual == row['actualMinutes'],
+                  f'Week {week["weekNumber"]}: {row["domain"]} actual minutes meet its disclosed allocation')
         for domain in expected.get('physicalDomains',[]):check(totals[domain]>0,f'Week {week["weekNumber"]}: contains {domain}')
         core={b['drillId'] for w in workouts for b in w['blocks']}
         if prior:check(len(core&prior)/len(prior)>=expected['minimumCoreRetention'],f'Week {week["weekNumber"]}: retains at least 60% of prior core')
@@ -216,7 +277,10 @@ def history_preservation_assertions(inv, fixture):
 
 def _source_hashes():
     root=Path(__file__).resolve().parents[1]
-    paths=[*sorted((root/'gateway').glob('program_*.py')),root/'gateway/registry.py',root/'gateway/prompts.py',root/'knowledge/program_focus_v3.json',FIXTURES/'catalog_v2.json',FIXTURES/'profiles.json',*EXTRA_PROFILE_FILES]
+    paths=[*sorted((root/'gateway').glob('program_*.py')),*sorted((root/'gateway').glob('personalized_*.py')),
+           root/'gateway/workout_persistence.py',root/'gateway/registry.py',root/'gateway/prompts.py',
+           root/'knowledge/program_focus_v3.json',root/'knowledge/personalized_objectives_v1.json',
+           root/'knowledge/planner_primary_anchors_v2.json',Path(__file__),FIXTURES/'catalog_v2.json',FIXTURES/'profiles.json',*EXTRA_PROFILE_FILES]
     return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
 
 
@@ -235,7 +299,7 @@ def run_profile(profile_id,*,mode='replay',stage_models=None,prepare=False,tape_
         record=next((r for r in tape['runs'] if r['profileId']==profile_id),None)
         if record is None:raise ValueError('Recorded artifact has no matching profile')
         tape=record.get('replayTape') or {'source':'recorded-live','calls':record['calls']}
-    inv=seed_invocation(profile_id,stage_models)
+    inv=seed_methodology_evidence(seed_invocation(profile_id,stage_models),profile_id)
     replay=ReplayProvider(inv,profile_id,tape,prepare=prepare)
     source_hashes=_source_hashes()
     started=time.monotonic();plan=None;error=None;usage={};checks=[]

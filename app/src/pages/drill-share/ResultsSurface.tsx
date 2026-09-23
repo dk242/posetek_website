@@ -1,3 +1,4 @@
+import { attemptLabel, resultLabel } from "../../lib/result-values";
 // Port of renderShell()'s results surface: page intro + drill catalog, validation
 // banner, Chart.js history chart, summary metrics, D1 comparison, session list and
 // the session/rep viewer panel (artifact loading + selection).
@@ -82,9 +83,12 @@ export default function ResultsSurface({
     if (!shareToken) requestedUrl.searchParams.set("player", String(playerId));
     requestedUrl.searchParams.set("session", `session${rep.sessionNumber}`);
     requestedUrl.searchParams.set("rep", `kick${rep.repNumber}`);
+    requestedUrl.searchParams.set("repId", rep.id);
     window.history.replaceState({}, "", requestedUrl);
 
-    const artifacts = await loadArtifacts({ rep, config, playerId, shareToken, preview });
+    let artifacts;
+    try { artifacts = await loadArtifacts({ rep, config, playerId, shareToken, preview }); }
+    catch { artifacts = { mediaSource: "error" }; }
     if (seq !== seqRef.current) return;
     setArtifactsBundle({ seq, artifacts, rep });
   }
@@ -147,7 +151,7 @@ export default function ResultsSurface({
     if (!active || !reps.length || currentRepId !== null) return;
     const sessionParam = String(initialParams.get("session") || "").replace(/\D/g, "");
     const repParam = String(initialParams.get("rep") || initialParams.get("kick") || "").replace(/\D/g, "");
-    const match = reps.find(rep =>
+    const match = reps.find(rep => rep.id === initialParams.get("repId")) || reps.find(rep =>
       (!sessionParam || rep.sessionNumber === Number(sessionParam)) &&
       (!repParam || rep.repNumber === Number(repParam)),
     );
@@ -161,6 +165,7 @@ export default function ResultsSurface({
     if (!artifactsBundle) return;
     const meta = (artifactsBundle.artifacts["metadata.json"] || {}) as Record<string, any>;
     const failedSteps = Array.isArray(meta.failedSteps) ? meta.failedSteps : [];
+    if (artifactsBundle.rep.resultStatus) { setBanner(resultLabel(artifactsBundle.rep) || null); return; }
     const hasWarning = meta.resultsValid === false || failedSteps.length > 0;
     if (!hasWarning) {
       setBanner(null);
@@ -288,7 +293,7 @@ export default function ResultsSurface({
                   data-rep-id={rep.id}
                   onClick={() => void selectRep(rep.id)}
                 >
-                  {`S${rep.sessionNumber} · R${rep.repNumber}`}
+                  {`S${rep.sessionNumber} · ${attemptLabel(rep, reps.filter(item => item.sessionNumber === rep.sessionNumber))}`}
                 </button>
               ))}
             </div>

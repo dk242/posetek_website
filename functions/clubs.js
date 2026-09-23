@@ -336,13 +336,18 @@ function createClubs({ invitations, db, FieldValue, HttpsError, now = () => Date
   async function issueClubPlayerInvitation(data, auth) {
     authRequired(auth);
     const playerId = id(data.playerId, "player");
-    if (invitations) return invitations.ensure(playerId, auth, { rotate: true });
-    const code = `PLR-${randomBytes(16).toString("hex").toUpperCase()}`;
+    // Normal player onboarding preserves issued invitations. Deliberate rotation
+    // remains separate from this endpoint so retries cannot invalidate a code.
+    if (invitations) return invitations.ensure(playerId, auth);
+    let code = `PLR-${randomBytes(16).toString("hex").toUpperCase()}`;
     await db.runTransaction(async (tx) => {
       const state = await readClub(tx, data.organizationId, auth, false);
       const player = state.players.find((entry) => entry.id === playerId);
       if (!player || (!isClubAdmin(auth) && !memberCanAccessPlayer(state.actor, auth.uid, player))) fail("permission-denied", "This player is not assigned to your club access.");
       if (!canIssuePlayerCode(player)) fail("failed-precondition", "This player already has an account binding. Their sign-in does not need a new code.");
+      const existing = [player.signupCode, player.code].find(value => typeof value === "string" && /^[A-Za-z0-9-]{6,64}$/.test(value));
+      if (player.signupCodeVersion === 2 && existing) { code = existing; return; }
+      if (player.signupCodeVersion === 3) fail("failed-precondition", "Use the protected invitation service for this player.");
       tx.update(db.collection("players").doc(playerId), {
         signupCode: code, code: FieldValue.delete(), signupCodeVersion: 2,
         signupInvitedAt: stamp(), signupInvitedByUID: auth.uid, updatedAt: stamp(),

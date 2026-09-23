@@ -9,15 +9,55 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 4:05:05 AM PDT as
-`6aabc66e9bcc60cc5c2ee12c`.
+The latest release was published September 17, 2026 at 6:31:29 PM PDT as
+`6aac924a597bd46f15cf468a`.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the latest production receipt](deployment/EXPANDED_INSIGHTS_PRODUCTION.json).
+[the website production receipt](deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
+
+**Player signup links live:** Admin account and organization rosters offer
+**Copy signup link** and **Copy code** for existing invitations. **Generate code**
+appears only when an invitation is missing. Existing valid codes are preserved.
+Links open Player signup with the
+code filled in and claim the existing profile after account creation. Read
+[the signup handoff](docs/PLAYER_INVITATION_LINKS.md). All 21 previously issued
+codes were verified unchanged; real athlete accounts were not claimed for testing.
+
+**Evidence-linked planning live:** the admin planner and mobile-generated plans
+share the new evidence-to-priority-to-exercise methodology. Goals are optional;
+every exercise explains its purpose and progress check. Admin drafts still
+require explicit activation, while mobile generation keeps its existing daily
+limit and active-plan behavior. Read the
+[methodology and delivery contract](docs/PERSONALIZED_PLANNER_METHODOLOGY.md).
+Existing plans and recording repairs are preserved. Native source-contract
+validation does not replace installed-iPhone acceptance.
+The [gateway description follow-up](deployment/PLANNER_INTENT_PRODUCTION.json)
+is live at revision `agent-gateway-web-62c05fa8fbde`. It reports actual training
+minutes with neutral wording while preserving exercise selection and workload.
+The [September 16 cohort rollout](docs/SEP16_TRAINING_PLAN_ROLLOUT.md) is complete:
+twelve reviewed active plans and 48 workouts, stored under the existing player
+profiles for later signup. Planning-age assumptions did not change birthdays.
+
+**Reviewed Dribbling and Agility estimates live:** authenticated skill maps show
+separately labeled conditional estimates, with optional low-confidence planning
+context. They add no measured results, completion counts, rankings, Insights or
+shared results. A confirmed agility recording was also corrected from Sprint to
+Change of Direction; its finish remains missing and the genuine Sprint result is
+preserved. Read the [Agility estimate and recovery contract](docs/PROVISIONAL_AGILITY_RECOVERY.md)
+and the [earlier Dribbling handoff](docs/PROVISIONAL_DRIBBLING_RECOVERY.md). Preserve
+the current 32-entry archive guard in `onvideoupload-00027-guw` and all repair journals.
+
+**Testing audit fixes live:** reviewed results, duplicate suppression, independent
+metric validity and exact-attempt video/pose replay are deployed. Read the
+[audit release and Mac handoff](docs/TESTING_AUDIT_BUILD_HANDOFF.md). Taiyo's native
+candidate is pushed as `codex/testing-audit-remediation` at `e2c3736`; Xcode,
+physical-iPhone acceptance and TestFlight remain outstanding. Historical footage
+gaps are recorded separately and are not claimed as software repairs.
 
 **Website follow-up live:** canonical account
 hierarchy and reviewed personalized planning now serve
-admin, staff and athlete web surfaces. Native mobile generation is unchanged.
+admin, staff and athlete web surfaces. The shared planner methodology described
+above now also serves native mobile generation.
 Expanded Insights is live for admins, organization managers and assigned coaches,
 with demographic charts, verified testing, workout outcomes and prospective
 estimated active use. Read the [expanded handoff](docs/insights/EXPANDED_INSIGHTS_HANDOFF.md)
@@ -113,8 +153,8 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 228 application/public
-files from deployment `6aaba570721b0d41e0eabf90`. A fresh build downloads and
+`deployment/homepage-baseline.json`, and preserves all 612 application/public
+files from deployment `6aac924a597bd46f15cf468a`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.

@@ -291,6 +291,7 @@ class FakeStorage:
 
     def __init__(self, files: dict[str, Any] | None = None, bucket_name: str = "test-bucket"):
         self._files = dict(files or {})
+        self._metadata = {}
         self._bucket_name = bucket_name
 
     @property
@@ -313,6 +314,14 @@ class FakeStorage:
         if key not in self._files:
             raise FileNotFoundError(path)
         return self._files[key]
+
+    def read_evidence_json(self, path: str) -> Any:
+        return self.download_json(path)
+
+    def object_metadata(self, path: str) -> dict:
+        if path not in self._files:
+            raise FileNotFoundError(path)
+        return self._metadata.get(path, {'generation': '1', 'md5Hash': 'AAAAAAAAAAAAAAAAAAAAAA==', 'size': 10})
 
 
 # ---------------------------------------------------------------------------

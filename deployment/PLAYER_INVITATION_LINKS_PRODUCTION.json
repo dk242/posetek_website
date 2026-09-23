@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "release": "Protected player signup links",
+  "status": "website-and-scoped-invitation-callables-live",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/player-invitation-flow",
+    "featureCommit": "c00b031c8a0011297f8357c1a6c028377b5c30e0",
+    "integratedSourceCommit": "48778f9828c8405708fb8ff150a1aabbcbbdb1c3",
+    "concurrentGatewayAndCohortCommitsPreserved": ["28123da", "28cafa1"],
+    "concurrentGatewayRedeployedByThisRelease": false
+  },
+  "website": {
+    "deploymentId": "6aac924a597bd46f15cf468a",
+    "publishedAt": "2026-09-18T01:31:29.567Z",
+    "url": "https://posetek.net",
+    "previousDeploymentId": "6aac7f6c315a6190c054fba7",
+    "applicationSha1": "d40f15dcb599f71e51c469cb858ba255abf0c88c",
+    "productionVerifiedAt": "2026-09-18T01:32:06.385Z",
+    "localFilesVerified": 644,
+    "productionInventoryFiles": 645,
+    "httpFilesChecked": 552,
+    "routesChecked": 11,
+    "protectedBaselineFiles": 612,
+    "protectedBaselineBytes": 89697796,
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingFilesPreserved": 32,
+    "marketingSourceCommit": "38a817e",
+    "verifiedCandidatePromotedUnchanged": true
+  },
+  "backend": {
+    "project": "kickai-69dd0",
+    "region": "us-central1",
+    "generation": 1,
+    "verifiedAt": "2026-09-18T01:23:41.313Z",
+    "existingUpdatesLimitedToSourceUploadUrl": true,
+    "targets": [
+      {"name":"ensurePlayerSignupInvitation","previousVersion":"1","version":"2","sourceArchiveSha256":"ce82547339ed94e4f9937dc7fa7f916e821f7472c930a17f8d229822d2e22444"},
+      {"name":"issueClubPlayerInvitation","previousVersion":"2","version":"3","sourceArchiveSha256":"edc968c29a3488ea54708050f675a548562158d1487c0aaa0cfd3f2a95285d4c"},
+      {"name":"redeemPlayerSignupCode","previousVersion":"3","version":"4","sourceArchiveSha256":"f3ce511aa1dd68382bae79ab8621dbd868668830f096fc1d1cd9183d2c1c71d0"},
+      {"name":"getPlayerSignupInvitation","previousVersion":null,"version":"1","sourceArchiveSha256":"402617d065218f3e97d81c0674cf0a9b7a26ec2289932ffeeab3abe98381db61"},
+      {"name":"validatePlayerSignupInvitation","previousVersion":null,"version":"1","sourceArchiveSha256":"38e2dff1b29e2ad89816e9c733f5c2de6579b1be4ad512d8a5e26e9a6a901997"}
+    ],
+    "allTargetConfigurationAndIamVerified": true,
+    "unrelatedCentralFunctionsPreserved": 54,
+    "existingIamPoliciesPreserved": 57,
+    "rulesUnchanged": true,
+    "videoRevisionPreserved": "onvideoupload-00027-guw",
+    "videoArchiveGuardsPreserved": 32,
+    "gatewayExcludedFromDeploymentAndComparison": true
+  },
+  "invitationContract": {
+    "canonicalLink": "https://posetek.net/signin#playerCode=<encoded-code>",
+    "legacyQueryLinksAccepted": true,
+    "codeRemovedFromAddressBar": true,
+    "staffGetterAuthenticatedAuthorizedAndReadOnly": true,
+    "generateOnlyWhenMissing": true,
+    "copyRereadsCurrentInvitation": true,
+    "normalActionsNeverRotateValidCodes": true,
+    "successfulClaimUsesExistingCanonicalPlayerId": true,
+    "publicPreflightResponseContainsOnlyValidityBoolean": true,
+    "publicChecksPerIpPer15Minutes": 60,
+    "rateMetadata": "SHA-512 keyed private admissionAttempts counters; no raw IP, code or athlete identity; logical expiry, no new TTL policy"
+  },
+  "existingInvitations": {
+    "verifiedAt": "2026-09-18T01:34:28.400Z",
+    "codesCompared": 21,
+    "codesUnchanged": 21,
+    "stillUnclaimed": 21,
+    "indexesMatched": true,
+    "publicValidAndInvalidChecksPassed": true,
+    "unauthenticatedStaffGetterRejected": true,
+    "accountOrInvitationMutationsByVerification": 0,
+    "rateMetadataRequestsInThisReadback": 2,
+    "additionalBrowserPreflightsAlsoWriteRateMetadata": true
+  },
+  "validation": {
+    "frontendFullSuite": {"passed":987,"files":76,"scope":"Passed before final small signup retry/cleanup adjustment"},
+    "finalSignupTests": {"passed":21,"scope":"Passed after final retry/cleanup adjustment"},
+    "finalTypeScriptBuildPassed": true,
+    "backendFocusedTestsPassed": 59,
+    "privateRolloutOperatorTestsPassed": 9,
+    "releaseAndReconciledBaselineTestsPassed": 19,
+    "independentSourceReviewHadNoConcreteBlocker": true,
+    "browserChecks": [
+      "Signed-out draft accepts retained code, prefills Player signup and enables Create Account",
+      "Code is scrubbed from URL, masked in the form and Clarity is absent",
+      "Same-page invitation hash navigation works",
+      "Synthetic invalid and empty invitation links disable account creation",
+      "Invalid invitation form reviewed at 390 by 844; viewport restored",
+      "Return to regular sign-in and ordinary organization signup remain available",
+      "Production organization roster and account-monitor invitation controls load",
+      "Production Copy signup link shows success and copies canonical fragment URL",
+      "Copied production link prefills code; existing signed-in account correctly blocks new account creation"
+    ]
+  },
+  "preserved": {
+    "twelveActiveCohortPlansAndPrivateContexts": true,
+    "measuredResultsReviewedEstimatesAndRepairJournals": true,
+    "nativeSourceAndNativeRules": true,
+    "gatewayRevision": "agent-gateway-web-62c05fa8fbde"
+  },
+  "limitations": [
+    "Real recipient accounts were not created or redeemed during verification; actual verification email delivery was not exercised",
+    "Real missing invitations were not generated during verification; creation and redemption cases use synthetic tests",
+    "Public preflight does not reserve a code; final redemption remains atomic and authoritative",
+    "No athlete messages were sent by this release",
+    "Taiyo's Xcode, physical-iPhone and TestFlight acceptance remain outstanding on native candidate e2c3736"
+  ],
+  "recovery": {
+    "websiteRollbackCandidate": "6aac7f6c315a6190c054fba7",
+    "backend": "Original source archives, configuration and IAM snapshots remain private. Review a source-only rollback if required; do not deploy broad repository functions or native rules.",
+    "data": "No invitation rotation, player claims, test-result or plan-data rollback belongs to this release"
+  },
+  "handoff": "docs/PLAYER_INVITATION_LINKS.md"
+}

@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
-  player: vi.fn(), membership: vi.fn(), coach: vi.fn(), own: vi.fn(), admin: vi.fn(), call: vi.fn(),
+  player: vi.fn(), membership: vi.fn(), coach: vi.fn(), own: vi.fn(), admin: vi.fn(), call: vi.fn(), freeRecords: vi.fn(),
 }));
 vi.mock("../../../lib/firebase", () => ({
   default: {}, auth: { currentUser: { uid: "viewer" } },
-  db: { collection: () => ({ doc: () => ({ get: mocks.player }) }) },
+  db: { collection: () => ({ doc: () => ({ get: mocks.player,
+    collection: () => ({ where: (field: string, operation: string, value: string) => ({ get: () => mocks.freeRecords(field, operation, value) }) }),
+  }) }) },
   cloud: { httpsCallable: (name: string) => (data: unknown) => mocks.call(name, data) },
   storage: { ref: () => ({ listAll: async () => ({ prefixes: [], items: [] }) }) },
 }));
@@ -23,6 +25,7 @@ beforeEach(() => {
   mocks.own.mockReturnValue(false); mocks.admin.mockResolvedValue({ isAdmin: false });
   mocks.coach.mockResolvedValue({ id: "viewer", data: () => ({ members: ["original-player-doc"] }) });
   mocks.call.mockResolvedValue({ data: { athletes: [] } });
+  mocks.freeRecords.mockResolvedValue({ docs: [] });
 });
 describe("club athlete handoff", () => {
   it("preserves the player's existing document ID and never resolves by email", async () => {
@@ -56,6 +59,20 @@ describe("club athlete handoff", () => {
   it("continues resolving legacy independent coach rosters", async () => {
     mocks.player.mockResolvedValue(player({ organizationId: undefined, teamId: undefined }));
     expect((await loadAuthenticated({ uid: "viewer" }, "original-player-doc")).access).toBe("coach");
+  });
+  it("preserves Free Record documents outside measured results without double counting field aliases", async () => {
+    const recording = { id: "free-record", data: () => ({ repType: "freeRecord", drillType: "freeRecord", sessionNumber: 1, repNumber: 1 }) };
+    mocks.freeRecords.mockResolvedValue({ docs: [recording] });
+    mocks.call.mockResolvedValue({ data: { version: 1, reps: [] } });
+    const result = await loadAuthenticated({ uid: "viewer" }, "original-player-doc");
+    expect(result.reps.freeRecord.map(rep => rep.id)).toEqual(["free-record"]);
+    expect(mocks.freeRecords).toHaveBeenCalledWith("repType", "==", "freeRecord");
+    expect(mocks.freeRecords).toHaveBeenCalledWith("drillType", "==", "freeRecord");
+  });
+  it("does not substitute raw measurements when canonical result verification fails", async () => {
+    mocks.call.mockRejectedValue(new Error("Result evidence unavailable"));
+    await expect(loadAuthenticated({ uid: "viewer" }, "original-player-doc")).rejects.toThrow("Result evidence unavailable");
+    expect(mocks.freeRecords).not.toHaveBeenCalled();
   });
   it("asks the server for this athlete's actual team standings", async () => {
     await loadTeamStandings("original-player-doc");

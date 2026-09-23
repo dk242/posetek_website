@@ -1,3 +1,4 @@
+import { finiteNumber, resultUsable, metricValue } from "../../../lib/result-values";
 // Pure constants and helpers ported verbatim from athlete-mobile-pages.js
 // (window.PoseTekMobilePages). No DOM, no Firebase — the views consume these.
 
@@ -74,10 +75,7 @@ export function dateText(value: any): string {
     : "Recently";
 }
 
-export function number(value: unknown): number | null {
-  const parsed = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
+export const number = finiteNumber;
 
 export function initials(name: any): string {
   return String(name || "A").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
@@ -234,9 +232,9 @@ export function boardsFromPlayers(
       const values = player.reps
         .filter(rep => {
           const type = rep.repType || rep.drillType;
-          return category.key === "shooting" ? ["deadballShot", "shooting", "side_kick"].includes(type) : type === category.key;
+          return resultUsable(rep) && (category.key === "shooting" ? ["deadballShot", "shooting", "side_kick"].includes(type) : type === category.key);
         })
-        .map(rep => category.fields.map(field => number(rep[field])).find(value => value !== null))
+        .map(rep => category.fields.map(field => metricValue(rep, field)).find(value => value !== null))
         .filter((value): value is number => value !== undefined && value !== null);
       if (!values.length) return null;
       const raw = category.lower ? Math.min(...values) : Math.max(...values);

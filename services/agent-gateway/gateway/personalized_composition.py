@@ -1,8 +1,8 @@
-"""Optional planner: allocate legal whole doses across the entire training week.
+"""Shared v3 allocator for native generation and reviewed admin plan drafts.
 
-Unlike the current composer, this optimizer cannot replace the player's domain
-targets with a generic ball-work preference. Its result still passes the shared
-catalog, time, frequency, progression and independent semantic validators.
+Fit legal whole doses to disclosed weekly domain targets and reviewed primary
+objectives. Results pass the catalog, time, frequency, progression and
+independent semantic validators before their route-specific persistence.
 """
 from collections import Counter, defaultdict
 from copy import deepcopy
@@ -40,6 +40,62 @@ def preserve_priority_targets(projection, split, budget, priorities):
     return value
 
 
+def project_week_targets(projection, split, budget, priorities, sessions, capacity, primary_cap):
+    """Fund whole-domain slots before solving; one session has at most four.
+
+    Measured objectives retain their target. Lower-priority general domains
+    can be folded transparently when a short schedule cannot hold every theme.
+    Catalog, 40-percent and age-specific primary caps still bound recipients.
+    """
+    from gateway.program_focus import largest_remainder
+    value = deepcopy(projection)
+    primary = {p['domain'] for p in priorities if p['role'] == 'primary'}
+    nominal = largest_remainder(split, budget)
+    ceilings = {d: int(min(40, capacity.get(d,40))*budget//100) for d in value['allocations']}
+    group_ceiling = int(primary_cap*budget//100)
+    priority_rank = {d: min((p['rank'] for p in priorities if p['domain'] == d), default=999) for d in value['allocations']}
+    unassigned = 0; capped = {}
+    # The inherited whole-dose projection can already have redistributed more
+    # than these limits. Normalize that input before testing further increments.
+    for domain, amount in value['allocations'].items():
+        removed = max(0, amount-ceilings[domain])
+        if removed:
+            value['allocations'][domain] -= removed
+            capped[domain] = removed; unassigned += removed
+    while sum(value['allocations'].get(d,0) for d in primary) > group_ceiling:
+        reducible = [d for d in primary if value['allocations'].get(d,0) > 1]
+        if not reducible:
+            raise GatewayError('context_unavailable','The measured-priority cap cannot retain positive work for every primary objective.')
+        domain = max(reducible,key=lambda d:(value['allocations'][d]-nominal.get(d,0),
+                                            value['allocations'][d],priority_rank[d],d))
+        value['allocations'][domain] -= 1
+        capped[domain] = capped.get(domain,0)+1; unassigned += 1
+    if any(value['allocations'].get(d,0) <= 0 for d in primary):
+        raise GatewayError('context_unavailable','The schedule cannot retain a positive target for every primary objective.')
+    funded = [d for d, m in value['allocations'].items() if m > 0]
+    if not capped and len(funded) <= 4*sessions:
+        return value
+    keep = set(sorted(funded, key=lambda d: (d not in primary, priority_rank[d], -split[d], d))[:4*sessions])
+    if not primary <= keep:
+        raise GatewayError('context_unavailable', 'The schedule cannot hold every primary objective; add a session or review priorities.')
+    for domain in funded:
+        if domain in keep:
+            continue
+        amount = value['allocations'][domain]
+        unassigned += amount; value['allocations'][domain] = 0
+        value.setdefault('foldedMinutesByDomain', {})[domain] = amount
+    while unassigned:
+        recipients = [d for d in keep if value['allocations'][d] < ceilings[d]
+                      and (d not in primary or sum(value['allocations'][p] for p in primary) < group_ceiling)]
+        if not recipients:
+            break
+        domain = min(recipients, key=lambda d: (value['allocations'][d]/max(1, split[d]), priority_rank[d], d))
+        value['allocations'][domain] += 1; unassigned -= 1
+    value.update(domainSlotLimit=4*sessions, unallocatedMinutes=unassigned,cappedMinutesByDomain=capped,
+                 projectionReason='Whole-dose targets were reconciled with the age, catalog and four-domains-per-session limits. Unallocated minutes remain explicit when those limits prevent redistribution.')
+    return value
+
+
 def allocation_check(week, targets, priority_domains=()):
     actual = Counter()
     for workout in week['workouts']:
@@ -73,7 +129,7 @@ def _progression_options(row, original, profile):
 
 
 def compose_personalized_week(profile, catalog, options, ranking, targets, frequency, *,
-                              week_number, previous_week=None, priority_domains=(), time_limit=20):
+                              week_number, previous_week=None, priority_domains=(), objective_priorities=(), primary_cap_minutes=None, time_limit=20):
     from scipy.optimize import Bounds, LinearConstraint, milp
     from scipy.sparse import coo_matrix
     import numpy as np
@@ -113,7 +169,7 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
                 if dose['estimatedMinutes'] > minutes + session_tolerance:
                     continue
                 # Allocation and time errors dominate these small preferences.
-                cost = .02 + rank[did] * .00001 + slot * .0000001
+                cost = .02 + rank[did] * (.001 if objective_priorities else .00001) + slot * .0000001
                 if old:
                     cost -= .01
                     if dose['reps'] > old['reps']:
@@ -164,6 +220,23 @@ def compose_personalized_week(profile, catalog, options, ranking, targets, frequ
         error = variable(10. if domain in priority_domains else 5., hi=tolerance, binary=False)
         constraint({**volume, error: -1}, hi=target)
         constraint({**volume, error: 1}, lo=target)
+
+    # Every primary objective needs a reviewed relevant exercise, not merely
+    # another exercise in the same broad domain.
+    for priority in objective_priorities:
+        if priority['role'] != 'primary':
+            continue
+        ids = set(priority.get('eligibleDrillIds', []))
+        indices = [i for did in ids for i in by_drill[did]]
+        if not indices:
+            raise GatewayError('context_unavailable', 'No legal reviewed exercise remains for a primary objective. Review available time, equipment or curriculum.')
+        constraint({i: 1 for i in indices}, lo=1)
+
+    # Per-domain fitting tolerances must not silently increase the combined
+    # age/level allowance for measured priorities.
+    if primary_cap_minutes is not None and priority_domains:
+        constraint({i: choices[i][2]['estimatedMinutes'] for d in priority_domains for i in by_domain[d]},
+                   hi=primary_cap_minutes)
 
     # Preserve the existing >=60% distinct-drill retention rule across weeks.
     if prior_core:

@@ -31,8 +31,8 @@ test("invalid deployment configuration fails at startup", () => {
   }
 });
 
-function loadHandler(archives = {}) {
-  const calls = { storage: [], posts: [], errors: [], registration: null };
+function loadHandler(archives = {}, postError = null) {
+  const calls = { storage: [], posts: [], errors: [], logs: [], registration: null };
   const plain = value => JSON.parse(JSON.stringify(value));
   class Storage {
     bucket(bucket) {
@@ -51,9 +51,10 @@ function loadHandler(archives = {}) {
       calls.registration = plain(options);
       return handler;
     } },
-    "firebase-functions": { logger: { log() {}, error(...args) { calls.errors.push(args); } } },
+    "firebase-functions": { logger: { log(...args) { calls.logs.push(args); }, error(...args) { calls.errors.push(args); } } },
     axios: { async post(url, payload) {
       calls.posts.push({ url, payload: plain(payload) });
+      if (postError) throw postError;
       return { status: 200, data: { accepted: true } };
     } },
     "@google-cloud/storage": { Storage },
@@ -149,4 +150,36 @@ test("ordinary body scan images retain the existing body-scan processor contract
     payload: { gcs_path: object.name, video_url: "https://example.invalid/test-signed-video", bucket: object.bucket },
   }]);
   assert.deepEqual(calls.errors, []);
+});
+
+test("all six explicitly local-processed test archives skip cloud duplication without Storage or HTTP work", async () => {
+  const { handle, calls } = loadHandler();
+  for (const drill of ["deadballShot", "sprint", "jump", "broadJump", "changeOfDirection", "dribbling"]) {
+    await handle({ data: { ...data, name: `athlete/${drill}/session1/kick2/video.mov`, metadata: { posetekLocalProcessed: "true", posetekContextVersion: "1" } } });
+  }
+  assert.deepEqual(calls.posts, []); assert.deepEqual(calls.storage, []);
+  assert.equal(calls.logs.length, 6);
+});
+
+test("free record and legacy uploads retain processing even when unsupported marker values are supplied", async () => {
+  for (const [name, metadata] of [
+    ["athlete/freeRecord/session1/kick2/video.mov", { posetekLocalProcessed: "true", posetekContextVersion: "1" }],
+    ["athlete/jump/session1/kick2/video.mov", {}],
+    ["athlete/jump/session1/kick2/video.mov", { posetekLocalProcessed: "true", posetekContextVersion: "2" }],
+    ["athlete/jump/session1/kick2/video.mov", { posetekLocalProcessed: true, posetekContextVersion: "1" }],
+  ]) {
+    const { handle, calls } = loadHandler();
+    await handle({ data: { ...data, name, metadata } });
+    assert.equal(calls.posts.length, 1);
+  }
+});
+
+test("processor failures remain failures in logs without request retries or signed URL/error-body disclosure", async () => {
+  const error = Object.assign(Error("secret-signed-url"), { response: { status: 503, data: "private response" }, code: "ERR_BAD_RESPONSE" });
+  const { handle, calls } = loadHandler({}, error);
+  await handle({ data });
+  assert.equal(calls.posts.length, 1); assert.equal(calls.errors.length, 1);
+  const logs = JSON.stringify([...calls.logs, ...calls.errors]);
+  for (const value of ["secret-signed-url", "private response", "test-signed-video", "Successfully sent", "responded with status"]) assert.equal(logs.includes(value), false);
+  assert.ok(logs.includes("503"));
 });

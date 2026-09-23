@@ -1,3 +1,4 @@
+import { resultUsable } from "../../lib/result-values";
 // Canvas rendering ported from athlete-drill-view.js (drawFrame + overlays).
 // Colors, line widths, fonts and label geometry are copied verbatim.
 
@@ -109,7 +110,7 @@ export function drawPoseFrame({ canvas, frames, frameIndex, drillKey, artifacts,
   });
 }
 
-function drawBroadJumpOverlay(
+export function drawBroadJumpOverlay(
   context: CanvasRenderingContext2D,
   width: number,
   height: number,
@@ -117,12 +118,13 @@ function drawBroadJumpOverlay(
   artifacts: Record<string, any>,
   rep: Rep,
 ): void {
+  if (!resultUsable(rep)) return;
   const meta = (artifacts["metadata.json"] || {}) as Record<string, any>;
   const fit = (artifacts["foot_piecewise_fit.json"] || {}) as Record<string, any>;
   const ground = asNumber(meta.ground_loc_y);
   const takeoffX = asNumber(fit.startFootXNorm);
   const landingX = asNumber(fit.endFootXNorm);
-  if (ground !== null) {
+  if (ground !== null && ground >= 0 && ground <= 1) {
     context.strokeStyle = "rgba(0,0,0,.75)";
     context.lineWidth = 2;
     context.beginPath();
@@ -132,7 +134,7 @@ function drawBroadJumpOverlay(
   }
   const guides: [number | null, string][] = [[takeoffX, "#71d39b"], [landingX, "#ff7d7d"]];
   guides.forEach(([x, color]) => {
-    if (x === null) return;
+    if (x === null || x < 0 || x > 1) return;
     context.save();
     context.setLineDash([7, 5]);
     context.strokeStyle = color;
@@ -143,7 +145,7 @@ function drawBroadJumpOverlay(
     context.stroke();
     context.restore();
   });
-  if (takeoffX !== null && landingX !== null) {
+  if (takeoffX !== null && landingX !== null && takeoffX >= 0 && takeoffX <= 1 && landingX >= 0 && landingX <= 1) {
     const distance = mergedMetric(artifacts, rep, "broadJumpDistance");
     context.fillStyle = "rgba(0,0,0,.68)";
     const centerX = ((takeoffX + landingX) / 2) * width;
@@ -163,7 +165,7 @@ function drawBroadJumpOverlay(
   let started = false;
   for (let index = low; index <= frameIndex && index < comSeries.length; index += 1) {
     const point = parsePoint(comSeries[index]);
-    if (!point) continue;
+    if (!point) { started = false; continue; }
     const p = mapped(point, width, height);
     if (started) context.lineTo(p.x, p.y);
     else {
@@ -190,7 +192,7 @@ function drawBroadJumpOverlay(
   });
 }
 
-function drawShuttleOverlay(
+export function drawShuttleOverlay(
   context: CanvasRenderingContext2D,
   width: number,
   height: number,
@@ -199,6 +201,7 @@ function drawShuttleOverlay(
   artifacts: Record<string, any>,
   rep: Rep,
 ): void {
+  if (!resultUsable(rep)) return;
   const meta = (artifacts["metadata.json"] || {}) as Record<string, any>;
   const bounds = resolveShuttleBounds(meta, rep);
   const start = asInteger(meta.startFrame) ?? 0;
@@ -209,7 +212,7 @@ function drawShuttleOverlay(
     for (let index = start; index <= frameIndex && index < frames.length; index += 1) {
       const phase = shuttlePhaseAt(index, bounds);
       const center = hipCenter(frames[index]);
-      if (!phase || phase.key !== phaseKey || !center) continue;
+      if (!phase || phase.key !== phaseKey || !center) { started = false; continue; }
       phaseColor = phase.color;
       const p = mapped(center, width, height);
       if (started) context.lineTo(p.x, p.y);

@@ -4,6 +4,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { metricValue as effectiveMetric, resultUsable } from "../../lib/result-values";
 import * as benchmarks from "../../lib/benchmarks";
 import type { BenchmarkKey } from "../../lib/benchmarks";
 
@@ -117,7 +118,7 @@ function drillFor(rep: any): string {
 
 function metricValue(rep: any, definition: StatsMetricDefinition): number | null {
   for (const field of definition.fields) {
-    const value = number(rep[field]);
+    const value = effectiveMetric(rep, field);
     if (value !== null) return value;
   }
   return null;
@@ -154,7 +155,8 @@ export function sessionCount(reps: any[]): number {
   return new Set(reps.map(rep => `${rep._statsDrill || rep.repType || rep.drillType}:${rep.sessionNumber || 1}`)).size;
 }
 
-export function buildProfile(reps: any[]): AthleteProfile {
+export function buildProfile(sourceReps: any[]): AthleteProfile {
+  const reps = sourceReps.filter(resultUsable);
   const sections: Record<string, StatsSection> = {};
   AXES.forEach(axis => {
     const slots = METRICS.filter(metric => metric.axis === axis.key);

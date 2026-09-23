@@ -34,7 +34,7 @@ function attemptKey(rep) {
   const number = Number.isSafeInteger(rep.repNumber) && rep.repNumber > 0 ? rep.repNumber : null;
   return session !== null && number !== null ? JSON.stringify([drill, session, number]) : null;
 }
-function duplicateIds(reps) {
+function duplicateIds(reps, corrections) {
   const result = new Set(), groups = new Map();
   for (const rep of reps) {
     const key = attemptKey(rep);
@@ -45,6 +45,20 @@ function duplicateIds(reps) {
     // The verified historical duplication is a pathless jump mirror of a
     // path-backed jump. Shared session labels alone do not collapse captures.
     if (recorded.length) for (const rep of group) if (drillOf(rep) === "jump" && !rep.storagePath) result.add(rep.id);
+  }
+  // Explicit cross-drill duplicate corrections live in a server-owned path.
+  // Mobile-writable duplicateOf/adminRevision fields alone confer no authority.
+  if (corrections?.schemaVersion === 1 && typeof corrections.repairId === "string" && /^[A-Za-z0-9_-]{1,200}$/.test(corrections.repairId)
+    && Number.isFinite(corrections.reviewedAtMillis) && corrections.reviewedAtMillis > 0
+    && corrections.duplicateReps && typeof corrections.duplicateReps === "object" && !Array.isArray(corrections.duplicateReps)) {
+    const byId = new Map(reps.map(rep => [rep.id, rep]));
+    for (const [id, targetId] of Object.entries(corrections.duplicateReps)) {
+      const rep = byId.get(id), target = byId.get(targetId);
+      if (!rep || !target || id === targetId || rep.duplicateOf !== targetId
+        || Object.hasOwn(corrections.duplicateReps, targetId) || target.duplicateOf || result.has(targetId)
+        || (rep.playerId && target.playerId && rep.playerId !== target.playerId)) continue;
+      result.add(id);
+    }
   }
   return result;
 }
@@ -78,7 +92,7 @@ function qualifyRep(rep, evidence = {}, duplicate = false) {
   const sidecarMetric = context?.result?.primaryMetric;
   const metricAgrees = !Number.isFinite(sidecarMetric) || agrees(metric.value, sidecarMetric)
     || (["jump_height_in", "jump_height_inches"].includes(metric.sourceField) && agrees(metric.value, sidecarMetric * 0.0254));
-  if (activeFailures.length || !validMetadata || (!revised && (rootInvalid || !sidecarValid || !metricAgrees))) {
+  if (activeFailures.length || !validMetadata || (!revised && (evidence.identityConflict || rootInvalid || !sidecarValid || !metricAgrees))) {
     return { ...base, needsReview: 1, reason: "evidenceNotComplete" };
   }
   return { ...base, qualified: 1, reason: revised ? "acceptedRevision" : "verifiedResult", metric };

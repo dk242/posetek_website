@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { attemptLabel, resultLabel } from "../../../lib/result-values";
 import Chart from "chart.js/auto";
 import type { Drill } from "../lib/drills";
 import {
@@ -156,8 +157,8 @@ export default function DrillDashboard({ drill, reps: rawReps, athlete, onOpenRe
                         data-session={session.folder}
                         onClick={() => onOpenRep(sessionFolder(rep), rep.id)}
                       >
-                        <strong>Rep {repNumber(rep)}</strong>
-                        <span>{drill.metric ? formatValue(metricRaw(rep, drill), drill) : "View recording"} · View analysis</span>
+                        <strong>{attemptLabel(rep, session.items)}</strong>
+                        <span>{drill.metric ? formatValue(metricRaw(rep, drill), drill) : "View recording"} · {resultLabel(rep) || "View analysis"}</span>
                       </button>
                     ))}
                   </div>

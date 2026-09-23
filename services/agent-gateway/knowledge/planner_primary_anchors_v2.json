@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "generation": 2,
+  "tier": "d1",
+  "source": "Native bundled D1Benchmarks.json, generation 2; exact primary p50 anchors. Provisional product references, not peer ranks.",
+  "sourceSha256": "684e62d2168656a37ccbd3deed1b1a820110781543fbccecab7a2e2c53dd9990",
+  "cells": {
+    "senior|female": {
+      "ballSpeed": 31.387863,
+      "broadJumpDistance": 1.712068,
+      "codTotalTime": 4.999091,
+      "dribbleTotalTime": 6.451818,
+      "sprintCompletionTime": 1.965455,
+      "verticalJumpHeight": 0.428017
+    },
+    "senior|male": {
+      "ballSpeed": 35.668026,
+      "broadJumpDistance": 1.945532,
+      "codTotalTime": 4.3992,
+      "dribbleTotalTime": 5.6776,
+      "sprintCompletionTime": 1.7296,
+      "verticalJumpHeight": 0.486383
+    },
+    "senior|unspecified": {
+      "ballSpeed": 33.527944,
+      "broadJumpDistance": 1.8288,
+      "codTotalTime": 4.68,
+      "dribbleTotalTime": 6.04,
+      "sprintCompletionTime": 1.84,
+      "verticalJumpHeight": 0.4572
+    },
+    "u12|female": {
+      "ballSpeed": 22.599261,
+      "broadJumpDistance": 1.232689,
+      "codTotalTime": 6.943182,
+      "dribbleTotalTime": 8.960859,
+      "sprintCompletionTime": 2.729798,
+      "verticalJumpHeight": 0.308172
+    },
+    "u12|male": {
+      "ballSpeed": 25.680979,
+      "broadJumpDistance": 1.400783,
+      "codTotalTime": 6.11,
+      "dribbleTotalTime": 7.885556,
+      "sprintCompletionTime": 2.402222,
+      "verticalJumpHeight": 0.350196
+    },
+    "u12|unspecified": {
+      "ballSpeed": 24.14012,
+      "broadJumpDistance": 1.316736,
+      "codTotalTime": 6.5,
+      "dribbleTotalTime": 8.388889,
+      "sprintCompletionTime": 2.555556,
+      "verticalJumpHeight": 0.329184
+    },
+    "u14|female": {
+      "ballSpeed": 25.738048,
+      "broadJumpDistance": 1.403896,
+      "codTotalTime": 6.096452,
+      "dribbleTotalTime": 7.868071,
+      "sprintCompletionTime": 2.396896,
+      "verticalJumpHeight": 0.350974
+    },
+    "u14|male": {
+      "ballSpeed": 29.247781,
+      "broadJumpDistance": 1.595336,
+      "codTotalTime": 5.364878,
+      "dribbleTotalTime": 6.923902,
+      "sprintCompletionTime": 2.109268,
+      "verticalJumpHeight": 0.398834
+    },
+    "u14|unspecified": {
+      "ballSpeed": 27.492914,
+      "broadJumpDistance": 1.499616,
+      "codTotalTime": 5.707317,
+      "dribbleTotalTime": 7.365854,
+      "sprintCompletionTime": 2.243902,
+      "verticalJumpHeight": 0.374904
+    },
+    "u16|female": {
+      "ballSpeed": 28.562955,
+      "broadJumpDistance": 1.557982,
+      "codTotalTime": 5.493506,
+      "dribbleTotalTime": 7.08991,
+      "sprintCompletionTime": 2.15984,
+      "verticalJumpHeight": 0.389495
+    },
+    "u16|male": {
+      "ballSpeed": 32.457904,
+      "broadJumpDistance": 1.770434,
+      "codTotalTime": 4.834286,
+      "dribbleTotalTime": 6.239121,
+      "sprintCompletionTime": 1.900659,
+      "verticalJumpHeight": 0.442609
+    },
+    "u16|unspecified": {
+      "ballSpeed": 30.510429,
+      "broadJumpDistance": 1.664208,
+      "codTotalTime": 5.142857,
+      "dribbleTotalTime": 6.637363,
+      "sprintCompletionTime": 2.021978,
+      "verticalJumpHeight": 0.416052
+    },
+    "u18|female": {
+      "ballSpeed": 30.446227,
+      "broadJumpDistance": 1.660706,
+      "codTotalTime": 5.153702,
+      "dribbleTotalTime": 6.651359,
+      "sprintCompletionTime": 2.026242,
+      "verticalJumpHeight": 0.415177
+    },
+    "u18|male": {
+      "ballSpeed": 34.597985,
+      "broadJumpDistance": 1.887166,
+      "codTotalTime": 4.535258,
+      "dribbleTotalTime": 5.853196,
+      "sprintCompletionTime": 1.783093,
+      "verticalJumpHeight": 0.471791
+    },
+    "u18|unspecified": {
+      "ballSpeed": 32.522106,
+      "broadJumpDistance": 1.773936,
+      "codTotalTime": 4.824742,
+      "dribbleTotalTime": 6.226804,
+      "sprintCompletionTime": 1.896907,
+      "verticalJumpHeight": 0.443484
+    }
+  }
+}

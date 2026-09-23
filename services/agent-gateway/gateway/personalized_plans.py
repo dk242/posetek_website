@@ -44,7 +44,7 @@ def _snapshots(ref, read):
     return sorted([{'id': s.id, **_data(s)} for s in read(ref)], key=lambda row: row['id'])
 
 
-def state(inv, read=_read):
+def state(inv, read=_read, *, methodology=True):
     player = _data(read(inv.player_ref()))
     age, source, _ = resolve_age(player, inv.params.get('intake') or {}, _now(inv))
     profile = {k: player.get(k) for k in ('position', 'gender', 'organizationId', 'teamId', 'coachUID', 'coachId', 'coachDocId')}
@@ -65,6 +65,11 @@ def state(inv, read=_read):
         'historyHash': digest({'logs': logs, 'reservations': reservations}), 'testingHash': digest(reps),
         'scheduleRevision': revision,
         'activePlans': [{'planId': p['id'], 'planRevision': p.get('planRevision', 1)} for p in active]}
+    if methodology:
+        from gateway.personalized_evidence import read_authoritative_results, read_estimates
+        evidence = read_authoritative_results(inv, read=read)
+        _, estimates = read_estimates(inv, read=read, evidence=evidence)
+        baseline['methodologyEvidenceHash'] = digest({'qualified': evidence['private'], 'estimates': estimates})
     return baseline, active, logs, reservations
 
 
@@ -140,8 +145,9 @@ def assess_priorities(inv):
     options={did:dose_options(row) for did,row in eligible.items()}
     eligible={did:row for did,row in eligible.items() if options[did]}
     cap=catalog_capacity(eligible,options,profile['intake']['sessionsPerWeek'],profile['intake']['minutesPerSession'])
-    split=compute_personalized_focus(profile,{r['domain'] for r in eligible.values()},parsed,cap)
+    split=compute_personalized_focus(profile,{r['domain'] for r in eligible.values()},parsed,cap,catalog=eligible)
     return {'engineVersion':ENGINE_VERSION,'assessedAt':_now(inv),'findings':split['findings'],
+            'methodologyVersion':split['methodologyVersion'],'priorities':split['priorities'],'estimatePolicy':profile['estimatePolicy'],
             'focusSplit':split['final'],'evidencePolicy':profile['evidencePolicy'],'peer':profile['peer'],
             'dataGaps':profile['dataGaps'],'curriculum':curriculum_report(catalog,profile,options),
             'intake':profile['intake']},aggregate_usage(getattr(inv,'_provider_usage_records',[]))
@@ -170,7 +176,8 @@ def activate_draft(inv):
         if plan['startDate'] != _now(inv).astimezone(ZoneInfo(plan['timezone'])).date().isoformat():
             raise GatewayError('validation_failed', 'The draft start date has passed; generate a fresh draft for today')
         inv.params['intake'] = plan['intake']
-        baseline, active, logs, reservations = state(inv, read)
+        inv.params['useProvisionalEstimates'] = bool((plan.get('assessment', {}).get('estimatePolicy') or {}).get('enabled', False))
+        baseline, active, logs, reservations = state(inv, read, methodology='methodologyEvidenceHash' in draft['baseline'])
         if baseline != draft['baseline']:
             raise GatewayError('validation_failed', 'Player context, testing, active plan or workout activity changed. Generate a fresh draft and review the updated comparison.')
         context = _data(read(context_ref))

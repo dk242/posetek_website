@@ -3,7 +3,8 @@
 Offline is the default and never measures model quality. --live sends the three
 deterministically valid cases once each, with no retries or repair. Gross missing
 domains and time overruns are rejected before the model, as in production.
-Synthetic workouts use the real catalog snapshot and the current cb15 replay.
+Synthetic workouts use the historical sanitized catalog snapshot and the current
+methodology cb15 replay; they do not assert current live publication eligibility.
 """
 from __future__ import annotations
 
@@ -18,7 +19,7 @@ from pathlib import Path
 import time
 
 from evals.coach_parse_03a import gcloud_auth,save_record
-from evals.program_v3 import run_profile,seed_invocation
+from evals.program_v3 import run_profile,seed_invocation,seed_methodology_evidence
 from gateway.catalog_v2 import load_catalog
 from gateway.program_composition import dose_options
 from gateway.program_profile import assemble_program_profile
@@ -27,6 +28,8 @@ from gateway.workout_tools import validate_workout
 MAX_BUDGET_USD=.15
 ROOT=Path(__file__).parents[1]
 SOURCE_PATHS=('gateway/program_generator.py','gateway/program_composition.py','gateway/program_focus.py',
+              'gateway/personalized_assessment.py','gateway/personalized_composition.py','gateway/personalized_objectives.py',
+              'gateway/personalized_evidence.py','gateway/personalized_views.py','knowledge/personalized_objectives_v1.json',
               'gateway/prompts.py','gateway/registry.py','gateway/providers/vertex_gemini.py',
               'gateway/providers/anthropic_direct.py','gateway/usage.py','evals/adversarial_03a.py','evals/fixtures/catalog_v2.json',
               'evals/fixtures/replay/cb15.json')
@@ -49,7 +52,7 @@ def build_cases():
     replay=run_profile('cb15')
     if not replay['passed'] or not replay.get('plan'):
         raise ValueError('Current cb15 replay must pass before using its honest control')
-    plan=replay['plan'];inv=seed_invocation('cb15')
+    plan=replay['plan'];inv=seed_methodology_evidence(seed_invocation('cb15'),'cb15')
     profile=assemble_program_profile(inv);catalog=load_catalog(inv)
     good=deepcopy(plan['weeks'][0]['workouts'][0])
     for key in ('check','revision','editedBy','editorUid','editedAt','previousRevision'):

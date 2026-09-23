@@ -13,19 +13,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import firebase, { auth, db } from "../../lib/firebase";
+import firebase, { auth, cloud, db } from "../../lib/firebase";
 import { getClubContext } from "../../lib/organization-data";
 import { findCoach, findPlayer } from "../../lib/identity";
 import { useThemeColor } from "../../lib/use-theme-color";
 import { refreshAdminIdentity, sendAdminVerification, upsertAdminProfile } from "../admin/lib/identity";
-import { injectClarity } from "./clarity";
+import { capturePlayerInvitationLink, createInvitedPlayer, forgetPlayerInvitationLink, initialPlayerInvitationLink, readPlayerInvitationLink, unavailablePlayerInvitation } from "./player-invitation-link";
 import {
   coachHomeRoute,
   coachOrgInputError,
   coachOrgStep2Copy,
   getSafeReturnToUrl,
   playerHomeRoute,
-  playerIdFromRedeemResult,
   playerSignupRoute,
   validateIndependentSignup,
   validateOrgSignup,
@@ -44,10 +43,13 @@ import "./landing.scss";
 export default function LandingPage() {
   useThemeColor("#04130e"); // kickai.html: <meta name="theme-color" content="#04130e">
   const navigate = useNavigate();
+  const [invitationLink, setInvitationLink] = useState(() => { capturePlayerInvitationLink(window); return initialPlayerInvitationLink(); });
+  const [signedIn, setSignedIn] = useState(Boolean(auth.currentUser));
+  const [invitationCheck, setInvitationCheck] = useState<"checking" | "ready" | "unavailable" | "error" | null>(invitationLink.present ? "checking" : null);
 
   // Overlay modals (the login panel is inline now — legacy showModal(loginModal)
   // only scrolls it into view and focuses the email field).
-  const [signupOpen, setSignupOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(invitationLink.present);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [coachOrgOpen, setCoachOrgOpen] = useState(false);
   const loginPanelRef = useRef<HTMLElement>(null);
@@ -64,13 +66,30 @@ export default function LandingPage() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Player-code signup form
-  const [playerCode, setPlayerCode] = useState("");
+  const [playerCode, setPlayerCode] = useState(invitationLink.code);
   const [playerEmail, setPlayerEmail] = useState("");
   const [playerPassword, setPlayerPassword] = useState("");
   const [playerConfirmPassword, setPlayerConfirmPassword] = useState("");
   const [playerCodeError, setPlayerCodeError] = useState("");
   const [playerCodeSuccess, setPlayerCodeSuccess] = useState("");
   const [playerCodeLoading, setPlayerCodeLoading] = useState(false);
+  const pendingPlayerSignup = useRef<firebase.User | null>(null);
+  const verificationSentFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Pasting another invitation into an already-open sign-in tab is a fragment
+    // navigation, not a document reload. Consume it just like the initial link.
+    const openInvitation = () => {
+      if (!readPlayerInvitationLink(window.location.href).invitation.present) return;
+      capturePlayerInvitationLink(window);
+      const next = initialPlayerInvitationLink();
+      setInvitationLink(next); setPlayerCode(next.code); setActiveTab("playerCode");
+      setSignupOpen(true); setPlayerCodeError(""); setInvitationCheck("checking");
+    };
+    window.addEventListener("hashchange", openInvitation);
+    window.addEventListener("popstate", openInvitation);
+    return () => { window.removeEventListener("hashchange", openInvitation); window.removeEventListener("popstate", openInvitation); };
+  }, []);
 
   // Organization signup form
   const [firstName, setFirstName] = useState("");
@@ -112,17 +131,30 @@ export default function LandingPage() {
   const redirectTimerRef = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(redirectTimerRef.current), []);
 
-  // Microsoft Clarity is still embedded in kickai.html's <head>; inject it from
-  // this page only. Title as legacy <title>.
+  // Authentication and invitation fields must never enter session replay.
   useEffect(() => {
     document.title = "Sign In | PoseTek";
-    injectClarity();
+    return () => forgetPlayerInvitationLink();
   }, []);
+
+  useEffect(() => {
+    if (!invitationLink.present) return;
+    let current = true;
+    if (!/^[A-Za-z0-9-]{6,64}$/.test(playerCode.trim())) { setInvitationCheck("unavailable"); return; }
+    setInvitationCheck("checking");
+    const timer = window.setTimeout(() => {
+      cloud.httpsCallable("validatePlayerSignupInvitation")({ code: playerCode })
+        .then(result => { if (current) setInvitationCheck((result.data as { valid?: boolean })?.valid === true ? "ready" : "unavailable"); })
+        .catch(() => { if (current) setInvitationCheck("error"); });
+    }, 350);
+    return () => { current = false; window.clearTimeout(timer); };
+  }, [invitationLink.present, playerCode]);
 
   // Check auth state to update UI (legacy: a signed-out visitor carrying a safe
   // returnTo gets the login panel brought into view)
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user: any) => {
+      setSignedIn(Boolean(user));
       if (!user && getSafeReturnToUrl()) showLoginPanel();
     });
     return unsubscribe;
@@ -375,7 +407,6 @@ export default function LandingPage() {
     const email = playerEmail;
     const password = playerPassword;
     const confirmPasswordVal = playerConfirmPassword;
-    let user: any = null;
 
     try {
       setPlayerCodeLoading(true);
@@ -385,21 +416,41 @@ export default function LandingPage() {
       const problem = validatePlayerCodeSignup({ code, password, confirmPassword: confirmPasswordVal });
       if (problem) throw new Error(problem);
 
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      user = userCredential.user;
-      await user.sendEmailVerification();
+      const playerId = await createInvitedPlayer({ code, email, password }, {
+        currentUser: () => auth.currentUser,
+        validate: async value => (await cloud.httpsCallable("validatePlayerSignupInvitation")({ code: value })).data?.valid === true,
+        create: async (address, secret) => {
+          const result = await auth.createUserWithEmailAndPassword(address, secret);
+          if (!result.user) throw new Error("Your account could not be created. Please try again.");
+          return result.user;
+        },
+        verify: async user => {
+          if (verificationSentFor.current !== user.uid) {
+            await user.sendEmailVerification(); verificationSentFor.current = user.uid;
+          }
+        },
+        redeem: redeemPlayerSignupCode,
+        resolve: async user => (await findPlayer(db, user.uid))?.id || null,
+        created: user => { pendingPlayerSignup.current = user; },
+        discard: async user => {
+          try { await user.delete(); }
+          catch { throw new Error("Your new account could not be cleared after signup stopped. Keep this page open and try Create Account again when your connection is available."); }
+          pendingPlayerSignup.current = null; verificationSentFor.current = null;
+        },
+      }, pendingPlayerSignup.current);
 
-      const result = await redeemPlayerSignupCode(code);
-      const playerId = playerIdFromRedeemResult(result);
-
-      setPlayerCodeSuccess("Account created successfully!");
+      forgetPlayerInvitationLink();
+      pendingPlayerSignup.current = null;
+      const signupUid = auth.currentUser?.uid;
+      if (!signupUid) throw new Error("Your account was created. Sign in to open your athlete profile.");
+      setPlayerCodeSuccess("Account created. Check your inbox for the verification email.");
       redirectTimerRef.current = window.setTimeout(() => {
-        navigate(playerSignupRoute(playerId)); // legacy: profile.html?userType=player[&player=…]
+        if (auth.currentUser?.uid !== signupUid) { setPlayerCodeError("Your account was created. Sign in with that account to open your athlete profile."); return; }
+        // The trusted redemption response selects the existing canonical profile.
+        navigate(invitationLink.present ? `/athlete?player=${encodeURIComponent(playerId)}` : playerSignupRoute(playerId));
       }, 1500);
     } catch (error: any) {
-      console.error("Signup error:", error);
-      await discardFailedSignup(user);
-      setPlayerCodeError(error.message);
+      setPlayerCodeError(error?.message || "Your account could not be created. Please try again.");
     } finally {
       setPlayerCodeLoading(false);
     }
@@ -594,7 +645,7 @@ export default function LandingPage() {
       </main>
 
       {/* Signup Modal */}
-      <div className={`modal-overlay${signupOpen ? " active" : ""}`} id="signupModal">
+      <div className={`modal-overlay${signupOpen ? " active" : ""}`} id="signupModal" data-clarity-mask="true">
         <div className="auth-modal">
           <div className="modal-content-wrapper">
             <div className="modal-header">
@@ -639,6 +690,11 @@ export default function LandingPage() {
 
             {/* Player Tab */}
             <div className={`tab-content${activeTab === "playerCode" ? " active" : ""}`} id="playerCodeTab">
+              {invitationLink.present && <p className="login-support" role="status">
+                {invitationCheck === "checking" ? "Checking your player invitation…" : invitationCheck === "ready" ? "Your player code is filled in. Enter your email and choose a password to open your existing profile." : invitationCheck === "error" ? "We could not check your invitation. Try Create Account again when your connection is available." : unavailablePlayerInvitation}
+              </p>}
+              {signedIn && !pendingPlayerSignup.current && <p className="login-support">You are already signed in. <button type="button" className="secondary-action" onClick={() => { void auth.signOut().catch(() => setPlayerCodeError("Could not sign out. Please try again.")); }}>Sign out to create another account</button></p>}
+              {invitationLink.present && <p className="login-support"><button type="button" className="secondary-action" onClick={() => { closeSignupModal(); showLoginPanel(); }}>Already have an account? Sign in</button></p>}
               <form
                 id="playerCodeForm"
                 onSubmit={(e) => {
@@ -657,7 +713,8 @@ export default function LandingPage() {
                     spellCheck={false}
                     required
                     value={playerCode}
-                    onChange={(e) => setPlayerCode(e.target.value)}
+                    data-clarity-mask="true"
+                    onChange={(e) => { setPlayerCode(e.target.value); setPlayerCodeError(""); }}
                   />
                 </div>
                 <div className="form-group">
@@ -719,7 +776,7 @@ export default function LandingPage() {
                 >
                   {playerCodeSuccess}
                 </div>
-                <button type="submit" className="submit-btn" id="playerCodeSubmit" disabled={playerCodeLoading}>
+                <button type="submit" className="submit-btn" id="playerCodeSubmit" disabled={playerCodeLoading || (signedIn && !pendingPlayerSignup.current) || invitationCheck === "checking" || (invitationLink.present && invitationCheck === "unavailable" && !pendingPlayerSignup.current)}>
                   <span style={{ opacity: playerCodeLoading ? 0.5 : 1 }}>Create Account</span>
                   <span
                     className="spinner"

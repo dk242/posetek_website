@@ -18,7 +18,7 @@
 import firebase, { auth, db } from "../../../lib/firebase";
 import { resolveEligibility } from "../../../lib/contracts/types";
 import type { Position, TechnicalEligibility } from "../../../lib/contracts/types";
-import { playerSignup } from "./signup";
+import { playerSignup, withoutSignupSecrets } from "./signup";
 import { getClubContext } from "../../../lib/organization-data";
 import { buildClubHierarchy, hasClubIdentity, staffName } from "./accountHierarchy";
 
@@ -169,7 +169,7 @@ export function playerRow(id: string, data: any): PlayerRow {
       ? (typeof data.organizationId === "string" && data.organizationId ? data.organizationId : null) : refId(data?.organization),
     teamId: typeof data?.teamId === "string" && data.teamId ? data.teamId : null,
     ...playerSignup(data),
-    raw: data || {},
+    raw: withoutSignupSecrets(data || {}),
   };
 }
 

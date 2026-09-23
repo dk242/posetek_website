@@ -11,17 +11,53 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aabc66e9bcc60cc5c2ee12c`, published
-September 17, 2026 at 4:05:05 AM PDT. Expanded Insights includes demographics,
+The latest recorded production release is `6aac924a597bd46f15cf468a`, published
+September 17, 2026 at 6:31:29 PM PDT. Player signup links prefill the current code;
+staff can copy existing links or generate a code only when missing. Normal actions
+preserve valid codes. Read `deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json`
+and `docs/PLAYER_INVITATION_LINKS.md`; no real recipient accounts were claimed
+during verification. Evidence-linked personalized planning now
+serves the current admin planner and native schema-3 generation through shared
+gateway revision `agent-gateway-web-62c05fa8fbde`. Coaching goals are optional.
+Admin plans remain drafts until activated; native generation retains its existing
+permissions, schema and daily limit of one. The narrow request-rules update permits
+only an optional boolean estimate preference. Read
+`deployment/EVIDENCE_PLANNER_PRODUCTION.json`,
+`deployment/PLANNER_INTENT_PRODUCTION.json` and
+`docs/PERSONALIZED_PLANNER_METHODOLOGY.md` before planner changes.
+The gateway-only description follow-up lists actual domain minutes without
+claiming a lead from nearly equal totals; prescriptions and website bytes remain
+unchanged by that release.
+The September 16 cohort now has twelve reviewed active schema-3 plans, four
+workouts each. Preserve these and their private contexts. Read
+`docs/SEP16_TRAINING_PLAN_ROLLOUT.md` and
+`deployment/SEP16_TRAINING_PLANS_ACTIVATED.json` before changing cohort plans;
+seven age assumptions were intake-only and must not be treated as recorded DOBs.
+Reviewed provisional Dribbling and Agility
+estimates add explicitly labeled skill-map and optional planning context,
+separate from measured results, qualification, rankings and Insights. A confirmed
+Sprint-to-Agility classification correction removes the incomplete attempt from
+measured Sprint results while preserving the genuine Sprint attempt. Read
+`deployment/PROVISIONAL_AGILITY_PRODUCTION.json` and
+`docs/PROVISIONAL_AGILITY_RECOVERY.md`; the prior Dribbling receipt remains a
+historical checkpoint. The preceding testing audit adds canonical
+qualified results, proven duplicate suppression, exact capture media and truthful
+pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 612 files.
+Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
+capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
+native repository rules. Preserve the 32-entry video archive guard in
+`onvideoupload-00027-guw` and the separate historical repair journals.
+Expanded Insights includes demographics,
 verified testing, workout outcomes and estimated active use for admins,
 organization managers and assigned coaches, preserving the account hierarchy,
 reviewed personalized web planner and exact Players and
 Coaches marketing bytes from `6aab9fbaa73be75422324ba4` and concurrent source
 commit `38a817e`. Gateway, rules and personalized configuration are live; native
-mobile generation is unchanged. Native usage is prepared on the separate
-`codex/expanded-insights-usage` mobile branch for Taiyo's Mac/TestFlight release;
+mobile generation uses the shared methodology above. Native usage is included in the new remediation
+branch (the prior `codex/expanded-insights-usage` branch is historical) for Taiyo's Mac/TestFlight release;
 it is unavailable until athletes install that build. Read
-`deployment/EXPANDED_INSIGHTS_PRODUCTION.json` for the current receipt,
+`deployment/EXPANDED_INSIGHTS_PRODUCTION.json` for the prior Insights receipt,
 `docs/insights/EXPANDED_INSIGHTS_HANDOFF.md` for definitions, retention and recovery,
 `docs/insights/V2_CONTRACT.md` for the versioned reporting interface, and
 `docs/insights/INTEGRATION.md` for the earlier dashboard semantics and
@@ -50,7 +86,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 318 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 612 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 

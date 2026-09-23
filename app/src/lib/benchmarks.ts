@@ -1,3 +1,4 @@
+import { finiteNumber } from "./result-values";
 // Port of athlete-benchmarks.js (window.PoseTekBenchmarks). Pure data + math, no DOM.
 
 const MPH_TO_MS = 1 / 2.23694;
@@ -53,15 +54,15 @@ export function get(key: string): BenchmarkMetric | null {
 
 export function score(key: string, value: unknown): number | null {
   const definition = get(key);
-  const measured = Number(value);
-  if (!definition || !Number.isFinite(measured) || measured <= 0 || !definition.reference) return null;
+  const measured = finiteNumber(value);
+  if (!definition || measured === null || measured <= 0 || !definition.reference) return null;
   return 100 * (definition.direction === "lower" ? definition.reference / measured : measured / definition.reference);
 }
 
 export function format(key: string, value: unknown): string {
   const definition = get(key);
-  const measured = Number(value);
-  return definition && Number.isFinite(measured) ? definition.format(measured) : "—";
+  const measured = finiteNumber(value);
+  return definition && measured !== null ? definition.format(measured) : "—";
 }
 
 export const generation = 2;

@@ -33,3 +33,11 @@ test("malformed recording numbers cannot change the signed folder", () => {
     assert.throws(() => storageFolderCandidates("athlete", "sprint", {sessionNumber}, bucket));
   }
 });
+test("immutable capture folders are exact and never fall back to reused numeric coordinates", () => {
+  const captureId = "a".repeat(32), captured = `${folder}/capture_${captureId}`;
+  assert.deepEqual(storageFolderCandidates("athlete", "sprint", { storagePath: `${captured}/video.mov`, captureId, sessionNumber: 2, repNumber: 3 }, bucket), [captured]);
+  assert.throws(() => storageFolderCandidates("athlete", "sprint", { storagePath: `${captured}/video.mov`, captureId: "b".repeat(32) }, bucket));
+  for (const invalid of [`${folder}/capture_short/video.mov`, `${folder}/capture_${captureId}/other/video.mov`]) {
+    assert.throws(() => storageFolderCandidates("athlete", "sprint", { storagePath: invalid }, bucket));
+  }
+});

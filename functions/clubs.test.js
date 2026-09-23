@@ -59,7 +59,16 @@ test("existing player invitations respect team assignments and cannot reset a cl
   await assert.rejects(clubs.issueClubPlayerInvitation({ organizationId: "club", playerId: "pa" }, admin), { code: "failed-precondition" });
   const first = await clubs.issueClubPlayerInvitation({ organizationId: "club", playerId: "unclaimed" }, admin);
   const second = await clubs.issueClubPlayerInvitation({ organizationId: "club", playerId: "unclaimed" }, manager);
-  assert.notEqual(first.code, second.code);
+  assert.equal(first.code, second.code);
+});
+
+test("legacy club invitation retries preserve valid version-2 codes without profile or result writes", async () => {
+  const { clubs, db } = harness({ "players/unclaimed": { organizationId: "club", teamId: "a", registered: false, signupCode: "CURRENT22", signupCodeVersion: 2 }, "players/unclaimed/reps/r": { max_velocity: 8 } });
+  const before = [...db.docs.keys()].map(path => [path, db.snapshot(path)]);
+  for (const actor of [coachA, manager, admin]) {
+    assert.equal((await clubs.issueClubPlayerInvitation({ organizationId: "club", playerId: "unclaimed" }, actor)).code, "CURRENT22");
+  }
+  assert.deepEqual([...db.docs.keys()].map(path => [path, db.snapshot(path)]), before);
 });
 
 test("directory and context isolate manager, team coach, athlete and other clubs", async () => {
@@ -220,7 +229,7 @@ test("legacy organization codes cannot admit staff or move club identities", asy
 });
 test("leaderboards use canonical team assignments despite broad stale coach rosters", async () => {
   const { db } = harness();
-  const boards = createTeamLeaderboard({ db, HttpsError });
+  const boards = createTeamLeaderboard({ db, HttpsError, effectiveResults: { listForPlayer: async () => ({ reps: [] }) } });
   const result = await boards.getTeamLeaderboard({ uid: "athlete-a" });
   assert.deepEqual(result.athletes.map((p) => p.id), ["pa"]);
   assert.equal(result.teamId, "a");

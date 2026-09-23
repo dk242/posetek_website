@@ -1,0 +1,16 @@
+{
+  "endpoint": "getTeamLeaderboard",
+  "version": "1",
+  "files": {
+    "admission.js": "c398b14fe2c1b5ae71999ffb54a81b255ce6fc7340f2229a49b764c741c356cf",
+    "athlete-shares.js": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+    "athlete-storage-paths.js": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+    "club-access.js": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+    "club-branding.js": "57c76d7d805556de3293a82ac97124f8f5b18d64c187382e7651a7f6b412b949",
+    "clubs.js": "08e73a358f5f5ff2b250b021787c78aaf9c9c3d57a03dc3e95c473c15a3c3487",
+    "index.js": "d2522ada5b1fc624c09255194e2c60aed7464eb65c72a65d9870c1999f221511",
+    "package-lock.json": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+    "package.json": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+    "team-leaderboard.js": "3900ff759a7e4221b184e396c970370abd904dd8cb97bcb6ff8ad46154d6b1ac"
+  }
+}

@@ -15,7 +15,7 @@
           {
             "domain": "speed",
             "direction": "more",
-            "strength": 1
+            "strength": 1.0
           }
         ]
       },
@@ -34,7 +34,7 @@
       "stage": "adversarial",
       "iteration": "w1s1",
       "attempt": 0,
-      "contextSha256": "6ad894098cc5d3b53b1edc4e2edfef36dd945edf131d3ec78c4d4c4459ba56fb",
+      "contextSha256": "1c927532b54a64f4ddb2882ff1a6c17c30ce7dff8dd86a9ebe17d50e99509f7f",
       "toolActions": [],
       "result": {
         "passed": true,
@@ -55,7 +55,7 @@
       "stage": "adversarial",
       "iteration": "w1s2",
       "attempt": 0,
-      "contextSha256": "9e47b3aa53b65e5212431a8b7fa3248f66b36eff9287d52efcde06a187caec6b",
+      "contextSha256": "940a5d3448a5e00fbe66e8b455a34bff8c5fd9eba5754dd0d2d8d0c12e3a4b18",
       "toolActions": [],
       "result": {
         "passed": true,
@@ -76,7 +76,7 @@
       "stage": "adversarial",
       "iteration": "w2s1",
       "attempt": 0,
-      "contextSha256": "69443627bc2b4afeb00511869cadb40895e5cdcb5ef1c82b44b2d43d96058427",
+      "contextSha256": "017b4527d3d76c7d3b8a80bb71b769adba332b87a5e5dd0eecf10ea82f6d113e",
       "toolActions": [],
       "result": {
         "passed": true,
@@ -97,7 +97,7 @@
       "stage": "adversarial",
       "iteration": "w2s2",
       "attempt": 0,
-      "contextSha256": "ac5426e1543d5050ae5ab04ce1e7795da8aad7f05ef63eff27caa9d9a3b5a9b9",
+      "contextSha256": "ff219d09cb6186d4be55a2c5b0f897b9215e7c73ac0f185e5f283b0bb0ee3378",
       "toolActions": [],
       "result": {
         "passed": true,

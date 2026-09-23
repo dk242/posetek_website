@@ -73,6 +73,16 @@ test("only a verified posetek.net admin can revise a rep", async () => {
   await assert.rejects(revisions.reviseRep(payload, { uid: "x", email: "nolan@posetek.net.evil.com", emailVerified: true }), { code: "permission-denied" });
   await assert.rejects(revisions.reviseRep(payload, null), { code: "unauthenticated" });
 });
+test("revising an immutable capture writes only its exact folder, preserving the reused legacy folder", async () => {
+  const captureId = "c".repeat(32), folder = `${FOLDER}/capture_${captureId}`;
+  const legacy = JSON.stringify({ totalTime: 99 });
+  const { revisions, store, writes } = harness({ seed: { "players/p1/reps/r1": { ...REP, captureId, storagePath: `${folder}/video.mov` } },
+    files: { [`${FOLDER}/metadata.json`]: legacy, [`${folder}/metadata.json`]: JSON.stringify({ totalTime: null, failedSteps: ["cod.metrics"] }) } });
+  const result = await revisions.reviseRep(payload, admin);
+  assert.equal(result.folder, folder);
+  assert.equal(store.get(`${FOLDER}/metadata.json`), legacy);
+  assert.ok(writes.every(write => write.path.startsWith(folder + "/")));
+});
 
 test("a revision overwrites the rep in place, keeps identity fields, and snapshots the original", async () => {
   const { db, revisions, store } = harness();

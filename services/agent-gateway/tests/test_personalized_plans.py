@@ -170,21 +170,25 @@ def test_explicit_release_gates():
 
 
 def test_recent_snapshot_moderate_priority_and_missing_window():
-    inv=invocation(); profile=assemble_program_profile(inv)
-    profile['bestResults']={'sprintCompletionTime':{'category':'speed','score':70,'repCount':3,'bestCanonical':4.2,'drill':'sprint'},
-        'ballSpeed':{'category':'striking','score':100,'repCount':3,'bestCanonical':30,'drill':'kick'}}
-    profile['peer']={'status':'unavailable'};profile['measuredMetricIds']=[]
-    missing=prepare_personalized_profile(inv,profile)
-    assert not missing['bestResults']
-    inv.params['evidenceWindow']={'oldestAt':inv.context['_now']-timedelta(days=1),'newestAt':inv.context['_now']}
+    from tests.test_evidence_objectives_v1 import seed_primary, supplied
+    inv=invocation()
+    inv.db._docs={path:row for path,row in inv.db._docs.items() if 'reps' not in path}
+    supplied(inv,seed_primary(inv,'sprintCompletionTime',70),seed_primary(inv,'ballSpeed',100))
+    # Native callers have no evidenceWindow. The current qualified recordings
+    # establish dates; supplying a fresh client window cannot revive old data.
+    inv.params.pop('evidenceWindow',None)
+    profile=assemble_program_profile(inv)
     recent=prepare_personalized_profile(inv,profile)
+    assert recent['bestResults']
     catalog=load_catalog(inv);eligible={did:r for did,r in catalog.items() if eligible_drill(r,recent)[0]}
     options={did:dose_options(r) for did,r in eligible.items()}
     cap=catalog_capacity(eligible,options,2,60)
-    split=compute_personalized_focus(recent,{r['domain'] for r in eligible.values()},[],cap)
+    split=compute_personalized_focus(recent,{r['domain'] for r in eligible.values()},[],cap,catalog=eligible)
     finding=next(f for f in split['findings'] if f['basis']=='within_player_priority')
     assert finding['domain']=='speed' and finding['confidence']=='low'
     assert split['afterGaps']['speed']>split['base']['speed']
     assert sum(split['final'].values())==100
-    inv.params['evidenceWindow']['oldestAt']-=timedelta(days=181)
+    for doc in inv.player_ref().collection('reps').stream():
+        inv.player_ref().collection('reps').document(doc.id).update({'createdAt':inv.context['_now']-timedelta(days=181)})
+    inv.params['evidenceWindow']={'oldestAt':inv.context['_now'],'newestAt':inv.context['_now']}
     assert not prepare_personalized_profile(inv,profile)['bestResults']

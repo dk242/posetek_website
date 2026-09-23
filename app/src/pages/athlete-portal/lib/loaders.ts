@@ -4,6 +4,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { visibleAttempts } from "../../../lib/result-values";
+import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import { loadClubMembership } from "../../../lib/organization-data";
 import { canAccessClubPlayer } from "../../../lib/organization";
 import { refreshAdminIdentity } from "../../admin/lib/identity";
@@ -11,7 +13,7 @@ import firebase, { auth, cloud, db, storage } from "../../../lib/firebase";
 import { findCoach as findCoachByUid, findPlayer, ownsPlayer } from "../../../lib/identity";
 import type { Drill } from "./drills";
 import { DRILLS } from "./drills";
-import { accepted, artifactFolder, fullName, mergeUnique, normalizeRep, num, repNumber, sessionNumber } from "./metrics";
+import { accepted, fullName, mergeUnique, normalizeRep, num, repNumber, sessionNumber } from "./metrics";
 import { boardsFromPlayers, number } from "./mobile";
 
 export type Access = "athlete" | "coach" | "manager" | "admin" | "shared" | "preview";
@@ -21,6 +23,7 @@ export interface PortalData {
   playerId: string | null;
   athlete: any;
   reps: Record<string, any[]>;
+  provisionalEstimates?: ProvisionalEstimate[];
 }
 
 const emptyReps = (): Record<string, any[]> => Object.fromEntries(DRILLS.map(d => [d.key, []]));
@@ -57,16 +60,17 @@ export async function loadAuthenticated(user: any, requestedPlayer: string | nul
     access = "coach";
   }
   const athlete = { id: playerDoc.id, ...playerDoc.data() };
-  const snapshot = await playerDoc.ref.collection("reps").get();
-  const all = snapshot.docs.map(normalizeRep);
+  const effective = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId: playerDoc.id });
+  const all = visibleAttempts(((effective.data as any).reps || []).map(normalizeRep));
   const reps = emptyReps();
   DRILLS.forEach(drill => { reps[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
+  reps.freeRecord = await loadFreeRecordReps(playerDoc.id);
   try {
     reps.freeRecord = mergeUnique(reps.freeRecord, await listFreeRecordStorage(playerDoc.id));
   } catch (error) {
     console.warn("[profile] Free Record listing unavailable", error);
   }
-  return { access, playerId: playerDoc.id, athlete, reps };
+  return { access, playerId: playerDoc.id, athlete, reps, provisionalEstimates: parseProvisionalEstimates((effective.data as any).provisionalEstimates) };
 }
 
 export async function listFreeRecordStorage(playerId: string): Promise<any[]> {
@@ -99,6 +103,15 @@ export async function listFreeRecordStorage(playerId: string): Promise<any[]> {
   return rows;
 }
 
+// Free Record is outside verified testing and retains its existing document-backed recordings.
+export async function loadFreeRecordReps(playerId: string): Promise<any[]> {
+  const collection = db.collection("players").doc(playerId).collection("reps");
+  const snapshots = await Promise.all([collection.where("repType", "==", "freeRecord").get(), collection.where("drillType", "==", "freeRecord").get()]);
+  const rows = new Map<string, any>();
+  snapshots.flatMap(snapshot => snapshot.docs).forEach(doc => { const rep = normalizeRep(doc); if (accepted(rep, DRILLS.find(drill => drill.key === "freeRecord")!)) rows.set(doc.id, rep); });
+  return [...rows.values()];
+}
+
 export async function loadShared(token: string): Promise<PortalData> {
   const calls = DRILLS.map(drill =>
     cloud.httpsCallable("getAthleteResultsShare")({ token, drill: drill.key })
@@ -109,7 +122,7 @@ export async function loadShared(token: string): Promise<PortalData> {
   const valid = results.filter(item => item.payload);
   if (!valid.length) throw results[0]?.error || new Error("This results link is invalid or expired.");
   const reps = emptyReps();
-  valid.forEach(({ drill, payload }) => { reps[drill.key] = (payload.reps || []).map(normalizeRep); });
+  valid.forEach(({ drill, payload }) => { reps[drill.key] = visibleAttempts((payload.reps || []).map(normalizeRep)); });
   return { access: "shared", playerId: null, athlete: valid[0].payload.athlete, reps };
 }
 
@@ -117,11 +130,18 @@ export interface RepArtifacts {
   artifactUrls?: Record<string, string>;
   mediaUrl?: string | null;
   folder?: string;
+  source?: "recording" | "diagnostic" | "unavailable";
+  expiresAtMillis?: number;
+  resultStatus?: { qualified: boolean; duplicate: boolean; reason: string; revisionId: string | null };
 }
 
 export async function authArtifacts(drill: Drill, rep: any, playerId: string): Promise<RepArtifacts> {
-  const folder = artifactFolder(rep, drill, playerId);
-  const base = storage.ref(folder);
+  if (drill.key !== "freeRecord") {
+    const response = await cloud.httpsCallable("getAthleteRepMedia")({ playerId, drill: drill.key, repId: rep.id });
+    return (response.data as RepArtifacts) || {};
+  }
+  const { artifactFolder } = await import("./metrics");
+  const folder = artifactFolder(rep, drill, playerId), base = storage.ref(folder);
   const urls: Record<string, string> = {};
   await Promise.all(drill.artifacts.map(async name => {
     try { urls[name] = await base.child(name).getDownloadURL(); } catch { /* missing artifact */ }
@@ -137,7 +157,7 @@ export async function authArtifacts(drill: Drill, rep: any, playerId: string): P
       try { mediaUrl = await base.child(name).getDownloadURL(); break; } catch { /* try next */ }
     }
   }
-  return { artifactUrls: urls, mediaUrl, folder };
+  return { artifactUrls: urls, mediaUrl, folder, source: mediaUrl ? "recording" : "unavailable" };
 }
 
 export async function sharedArtifacts(drill: Drill, rep: any, token: string | null): Promise<RepArtifacts> {
@@ -211,9 +231,9 @@ export async function loadTeamStandings(playerId: string): Promise<Record<string
   const players = await Promise.all(ids.map(async id => {
     const [player, reps] = await Promise.all([
       db.collection("players").doc(id).get(),
-      db.collection("players").doc(id).collection("reps").get(),
+      cloud.httpsCallable("getAthleteEffectiveResults")({ playerId: id }),
     ]);
-    return { id, name: fullName(player.data() || {}), reps: reps.docs.map(doc => doc.data()) };
+    return { id, name: fullName(player.data() || {}), reps: ((reps.data as any).reps || []) };
   }));
   return boardsFromPlayers(players);
 }

@@ -6,9 +6,278 @@ business document is included.
 
 ## Readiness and source provenance
 
-### Current release: Expanded Insights
+### Current website release: protected player signup links
 
-Deployment `6aabc66e9bcc60cc5c2ee12c` is live at https://posetek.net/insights,
+Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
+September 17, 2026 at 6:31:29 PM PDT (`2026-09-18T01:31:29.567Z`). Feature source
+`c00b031c8a0011297f8357c1a6c028377b5c30e0` is on `codex/player-invitation-flow`.
+The branch also preserves the concurrent gateway source and September 16 cohort
+activation handoff. All 644 local files match production's 645-entry inventory;
+the reconciled baseline protects 612 application/public files. The approved
+Players and Coaches marketing bytes remain exact.
+
+Staff can copy an existing signup link or generate a code only when missing.
+The fragment link opens Player signup with its code filled in and removes the
+code from the address bar. Signup retains the existing canonical player ID,
+including the active training plan. Normal get/copy/issue actions preserve valid
+codes. Five scoped invitation callables are deployed; the public validity check
+uses private hashed-IP rate counters and returns no athlete identity.
+
+Final readback at `2026-09-18T01:34:28.400Z` verified all 21 previously issued
+codes unchanged and unclaimed. Production copy/prefill and signed-in account
+guard behavior were checked. No real recipient account was created or redeemed,
+and verification-email delivery was not exercised. Gateway, rules, video guards,
+results, estimates, active plans and native source remain unchanged by this
+release. Taiyo's Mac/iPhone/TestFlight acceptance remains outstanding. See
+[the signup handoff](docs/PLAYER_INVITATION_LINKS.md) and
+[production receipt](deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json).
+
+### Vacaville measurement recovery
+
+The September 17 first pass repaired eleven failed September 16 attempts using
+original recordings and audited revisions. The second pass corrected eight more
+numerical results: four August change-of-direction times, one September 16
+dribbling time and three broad jumps. A further mislabeled broad jump was
+reclassified without a numeric result because its landing was not measurable.
+Category migrations preserve the same rep IDs, recording dates and original
+files, with explicit session and server-owned duplicate corrections. The user
+confirmed the 5.875-inch black marker; the four first-pass jump repairs already
+used that calibration and remain unchanged.
+
+The first pass made no deployment changes. The second pass extended the existing
+video processor's exact archive guard to 26 entries in verified revision
+`onvideoupload-00025-vic`, with source unchanged. The later follow-up below expands
+that map to 30 entries; preserve the full current map during later deployments.
+The concurrent application/reader remediation has its
+own release receipts and is not a website release performed by this data repair.
+Twelve original failures and one newly identified incomplete broad jump still
+require complete footage or retesting. See
+[`docs/VACAVILLE_REP_RECOVERY.md`](docs/VACAVILLE_REP_RECOVERY.md) for evidence,
+the **2026-09-17T21:08:20.691Z** final checkpoint, private evidence locations
+and the expanded rollback boundary. Earlier release checkpoint totals below
+remain records of their original observation.
+
+### September 16 cohort: twelve active training plans
+
+The user-authorized cohort rollout is complete. Final readback at
+`2026-09-18T01:24:20.280434Z` confirmed exactly one reviewed active schema-3 plan
+for each of twelve September 16 testers: two weeks, two solo sessions per week,
+48 workouts total. Priorities were chosen automatically, with reviewed estimates
+enabled. Seven
+missing ages used the user-approved team-peer assumptions in plan intake only;
+profiles and birthdays are unchanged. Existing recordings, estimates, workout
+logs, historical drafts and the original four activations were preserved.
+The existing signup claim links users to the same canonical player IDs where
+the active plans are stored; this operation did not send invitations or claim
+accounts. See [the rollout handoff](docs/SEP16_TRAINING_PLAN_ROLLOUT.md) and
+[activation receipt](deployment/SEP16_TRAINING_PLANS_ACTIVATED.json). Historical
+pilot receipts below retain their unactivated status at their original checkpoints.
+
+### Current gateway follow-up: accurate workout descriptions
+
+Gateway revision `agent-gateway-web-62c05fa8fbde` serves all traffic, verified at
+`2026-09-18T01:13:01.386Z` (September 17, 6:13 PM PDT). Source commit
+`903b4540f4eae37dd9e2fa944d08c00d62ef8a2c` is pushed on
+`codex/evidence-linked-planner`. The backend-only fix lists actual domain minutes
+as “Time allocation” and uses “jumping” for the generic plyometrics label. It
+does not infer a lead from near-equal totals or claim landing technique from the
+category name. Exercise selection, prescribed doses, ordering, checks and retry
+policy are unchanged. All 19 synthetic comparisons preserved prescriptions;
+18 authored replay tapes changed only their context fingerprints.
+
+The immutable candidate completed its mandatory full test process successfully;
+the final numerical test total was unavailable and is not inferred. Website
+bytes, Firestore rules, planner configuration, IAM, the 32 archive guards,
+effective-results reader and native schema remain unchanged by this release.
+See [the follow-up receipt](deployment/PLANNER_INTENT_PRODUCTION.json) and
+[methodology handoff](docs/PERSONALIZED_PLANNER_METHODOLOGY.md). The website
+release and original pilot checkpoint below retain their historical facts.
+
+### Previous website release: Evidence-linked personalized planner
+
+Deployment `6aac7f6c315a6190c054fba7` was published to https://posetek.net on
+September 17, 2026 at 5:35:06 PM PDT (`2026-09-18T00:35:06.349Z`). Application
+source `8a1445708a46b37090dd658c8c631c16ae3fd69c`, gateway source
+`5a2d62b3c18f197ca69041fc6821e6d45c258d5e` and request-rules source
+`55d63d1e2e448ef871e46f4d0488fc23e66c74b2` are pushed on
+`codex/evidence-linked-planner`. See the
+[production receipt](deployment/EVIDENCE_PLANNER_PRODUCTION.json) and
+[methodology handoff](docs/PERSONALIZED_PLANNER_METHODOLOGY.md).
+
+The current admin planner and native schema-3 generation share server-qualified
+evidence, bounded priorities, time allocation and reviewed exercise mappings.
+All coaching goals may remain unchecked; up to two optional goals add emphasis.
+Measured results, reviewed conditional estimates and general practice remain
+distinct. Each exercise includes an explanation and progress check; primary
+objectives require at least one reviewed relevant exercise. This does not imply
+every exercise or every minute in that domain has a metric-specific link.
+The web interface provides Evidence, Schedule, Review and Use plan steps.
+
+At this release checkpoint, gateway revision `agent-gateway-web-e75e9318d15d`
+served all traffic; the later gateway-only follow-up above supersedes it. The only rules
+change permits optional boolean `useProvisionalEstimates` on personalized
+assessment/generation; actor checks and activation/discard contracts are unchanged.
+Native generation retains its existing active-plan behavior and daily limit of
+one. Admin generation remains a draft until explicitly activated. Current mobile
+readers use the existing exercise explanation; rich priority cards are web-only.
+Installed-iPhone/TestFlight acceptance was not performed by this release.
+
+One live two-week pilot draft passed saved-context, public projection and workout
+checks with four workouts and 22 explained exercise entries. It remains ready and
+unactivated. Existing reps, active plans, workout logs and schedules are unchanged.
+Its 65- and 63-minute sessions include transitions and satisfy the inherited 10%
+time tolerance; a requested 60 minutes is a target, not a strict ceiling. Some
+supporting exercise selections remain explicitly labeled general practice.
+
+All 592 local files match 593 production inventory entries. The reconciled
+baseline protects 560 application/public files and preserves approved marketing
+bytes. Validation includes 942 frontend tests, TypeScript, 353 rules assertions,
+19 application-release/baseline checks, native contract checks and a successful
+full candidate-container test process. Its final numerical pytest total was not
+available and is not inferred. The 32 recording archive guards, effective-results
+reader, four reviewed estimates, capability settings and repair journals remain
+unchanged. Historical receipts below remain records of their original checkpoints.
+
+### Previous release: Reviewed provisional Agility evidence
+
+Deployment `6aac6cc0bfb1ddbe0a73e636` was published at https://posetek.net on
+September 17, 2026 at 3:47:35 PM PDT (`2026-09-17T22:47:35.951Z`). Application
+source `64b1dca569b43bad319fbc7c116d22717be9ad5b` is pushed on
+`codex/provisional-dribbling-recovery`. See
+[`deployment/PROVISIONAL_AGILITY_PRODUCTION.json`](deployment/PROVISIONAL_AGILITY_PRODUCTION.json)
+and [`docs/PROVISIONAL_AGILITY_RECOVERY.md`](docs/PROVISIONAL_AGILITY_RECOVERY.md).
+
+The capture owner confirmed that a Sprint-labeled recording was the no-ball
+agility test. The same-ID classification correction preserves its date, all
+31 original session objects and the genuine Sprint attempt. Twenty destination
+objects plus two administrative revision before-images retain the reviewed and
+original analysis. Unsupported Sprint and movement values are cleared, so the
+incomplete recording removes one formerly qualified Sprint result. Its finish
+remains unavailable as a measured Change of Direction result.
+
+A separately reviewed conditional Agility estimate was appended to one existing
+private document with its previous Dribbling entry and raw fields unchanged.
+Both estimates can appear on the authenticated skill map and in optional
+low-confidence planning context. They add no measured results, overall rating,
+completion count, ranking, Insights value or shared result. Each is suppressed
+only by a qualified result for its own drill. The reader is ACTIVE version 4;
+post-publication measured responses match the checkpoint after classification.
+The source-only update changed one helper and preserved 11 other packaged files,
+all 57 checked function IAM policies, 56 other central function definitions and
+rules. Preserve all 32 archive guards in `onvideoupload-00027-guw`.
+
+The website contains 542 verified local files matching 543 production inventory
+entries. The reconciled baseline protects 510 application/public files and keeps
+the approved Players and Coaches marketing bytes. Validation passed 49 focused
+frontend tests, a later nine-test assertion suite, TypeScript, 450 preview HTTP
+checks across 11 routes and 19 release/baseline tests. The nine-test suite overlaps
+the focused run; these are not 58 distinct tests or a full-suite rerun. Backend
+checks passed 44 workspace tests and 39 isolated tests, with one private fixture
+excluded from the candidate after passing in the workspace. Independent migration
+checks passed 99/99; append review passed 12/12 and its runner tests passed 8/8.
+Production chart and planner review passed, including one priority-preview
+assessment using both stated goals. No workout plan was generated or activated.
+Native display and the outstanding
+Mac/iPhone/TestFlight acceptance are unchanged.
+
+### Data-only follow-up: additional provisional Dribbling evidence
+
+One additional reviewed Dribbling estimate was created at
+`2026-09-17T23:01:06.940559Z`, using the existing authenticated reader and website.
+The earlier feasibility summary had confused the proportion of the return leg
+observed with the proportion of the full out-and-back course. Independent review
+corrected that interpretation: full-course coverage is
+`1 - remainingReturnFraction / 2`. The existing 75-percent Dribbling eligibility
+threshold and `constant_return_pace_v1` method were retained.
+
+The create-only publication adds one private document and one estimate, bringing
+the reviewed total to four entries across three players: three Dribbling and one
+Agility. The original detected start remains an explicit assumption and the
+finish remains unrecorded. No rep, session, recording or measured result was
+rewritten; the existing qualified agility result is preserved. There was no new
+deployment or code, rules, configuration or guard change. The current version-4
+reader, 510-file baseline and all 32 archive guards remain in place. See the
+[data-only receipt](deployment/PROVISIONAL_DRIBBLING_DATA_FOLLOWUP.json) and
+[Dribbling handoff](docs/PROVISIONAL_DRIBBLING_RECOVERY.md#additional-data-only-follow-up).
+Authenticated readback at `2026-09-17T23:02:24.400Z` matched the reviewed estimate,
+preserved measured rows exactly and omitted private provenance. Production
+profile and planner checks passed with an explicit estimated label, sensitivity
+range and optional low-confidence context. No workout plan was generated or
+activated.
+Earlier production receipts remain immutable records of their checkpoints.
+
+### Previous release: Reviewed provisional Dribbling evidence
+
+Deployment `6aac666c61025a8e62e8c399` was published at https://posetek.net on
+September 17, 2026 at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`). Application
+source `e1c410153549a0e65dd36738d840391901059807` is pushed on
+`codex/provisional-dribbling-recovery`. See
+[`deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json`](deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
+and [`docs/PROVISIONAL_DRIBBLING_RECOVERY.md`](docs/PROVISIONAL_DRIBBLING_RECOVERY.md).
+
+Two reviewed near-finish Dribbling recordings now have explicitly labeled,
+conditional estimates on authenticated skill maps and optional low-confidence
+planning context. The estimates remain separate from measured results, overall
+ratings, qualification, completion counts, rankings, Insights and shared results.
+They disappear when a qualified Dribbling result becomes available. No Agility
+estimate was published by that release, and it generated or activated no workout plan.
+
+The authenticated `getAthleteEffectiveResults` reader was verified at version 3. Its
+source-only deployment preserved configuration, all 57 checked function IAM
+policies, 56 unrelated central function definitions and rules releases. The
+video processor at that checkpoint was `onvideoupload-00026-bup` with 30 archive guards;
+its source and the prior 26 entries remain intact. Two further mislabeled attempts
+were moved to one Dribbling session with the same IDs and original recordings.
+Both remain incomplete, and the successful original agility attempt is unchanged.
+Two separately journaled private estimate documents add no measured results.
+
+The verified website contains 494 local files matching the 495-file production
+inventory. The reconciled protected baseline has 462 application/public files.
+Approved Players and Coaches marketing bytes are unchanged. Production review
+confirmed both labeled estimates, unchanged measured counts and an enabled
+planner with the reversible estimate option. Baseline/release checks passed 19/19.
+The initial frontend suite passed 928 tests with one five-second home-pose timeout;
+that file passed all 10 tests in isolation. After a sixth provisional test was
+added, its focused suite passed 6/6. TypeScript, 402 preview HTTP checks and 11
+preview routes passed. Backend validation passed 37 workspace tests and 32
+immutable-candidate tests, with one private fixture deliberately excluded from
+the candidate and already passed in the workspace. These are separate checks,
+not a claim that a final complete frontend suite was rerun. Native display and
+the outstanding Mac/iPhone/TestFlight acceptance remain unchanged.
+
+### Previous release: Testing audit remediation
+
+Deployment `6aac59bb9c49063e622aa65a` was published at https://posetek.net on
+September 17, 2026 at 2:22:42 PM PDT (`2026-09-17T21:22:42.725Z`). See
+[`deployment/TESTING_AUDIT_PRODUCTION.json`](deployment/TESTING_AUDIT_PRODUCTION.json)
+and [`docs/TESTING_AUDIT_BUILD_HANDOFF.md`](docs/TESTING_AUDIT_BUILD_HANDOFF.md).
+Authenticated results, shared results and native team rankings use reviewed
+qualification. Failed measurements remain unavailable, proven mirrors are
+excluded, and explicit review nulls cannot be replaced by stale metadata.
+Original or verified diagnostic media uses exact capture identity; replay respects
+confidence, aspect ratio and recorded timestamps. Legacy clips without trustworthy
+timing support manual pose inspection rather than invented synchronization.
+
+The unchanged verified candidate contains 445 local files matching the 446-file
+production inventory; its protected application baseline contained 413 files.
+Approved Players and Coaches marketing bytes remain intact. The original workbook
+is unchanged; its 264 overlapping issue rows have a separate private disposition
+ledger. The independent post-repair checkpoint above has 258 qualifying results,
+27 proven duplicates and all 40 qualifying vertical jumps with available peak
+indices. Historical evidence gaps and retests remain explicit.
+
+Native source is pushed at `e2c3736` on `codex/testing-audit-remediation` in
+`athelyticsOG/posetek-mobile-app`, based on main `944177b` (which already includes
+Insights usage). It retains source video for six tests, journals immutable capture
+IDs and frozen ownership, commits idempotently after artifact acknowledgement,
+and adds coach Finish plus a 60-second cutoff for COD/dribbling. The native handoff
+is `docs/plans/TESTING_AUDIT_REMEDIATION_HANDOFF.md`. It remains code complete with
+Mac compilation, XCTest, physical-iPhone acceptance and TestFlight outstanding.
+No native rules, Apple signing settings or App Store Connect build were changed.
+
+### Previous release: Expanded Insights
+
+Deployment `6aabc66e9bcc60cc5c2ee12c` was published for https://posetek.net/insights,
 published September 17, 2026 at 4:05:05 AM PDT (`2026-09-17T11:05:05.592Z`),
 from application source `706f103`. See
 [`deployment/EXPANDED_INSIGHTS_PRODUCTION.json`](deployment/EXPANDED_INSIGHTS_PRODUCTION.json)
@@ -178,7 +447,7 @@ cloud Firebase configuration unless a developer explicitly changes it.
 
 That source handoff did not deploy frontend/backend or modify production data;
 its 171-file preservation baseline was historical. The later application release
-above reconciles the current baseline to 228 files. Future application releases
+above then reconciled that baseline to 228 files. Future application releases
 still need a full application review and deliberate baseline reconciliation.
 
 ### Previous marketing release: public coaches and clubs page
@@ -616,7 +885,7 @@ npm --prefix app run build:marketing
 
 The production command is `node scripts/build-production.mjs`. In the current
 release architecture it verifies the live app against the September 17 baseline,
-preserves 228 application/public files, serves the preserved application through `/application.html`, and
+preserves 462 application/public files, serves the preserved application through `/application.html`, and
 adds the isolated homepage at `/` and `/index.html` with assets under
 `/marketing/assets/`. Output is `production-dist`. The ordinary application build
 outputs `dist` and is a different path; editing app source alone does not replace
@@ -671,8 +940,13 @@ Initial preparation verification (before the scrolling update):
 
 ## Context documents and precedence
 
-1. `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`:
-   current application/backend release, validation, privacy and recovery.
+1. `deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
+   `docs/PROVISIONAL_DRIBBLING_RECOVERY.md`: current application/backend release,
+   conditional-estimate contract, validation, privacy and recovery.
+   `deployment/TESTING_AUDIT_PRODUCTION.json` and
+   `docs/TESTING_AUDIT_BUILD_HANDOFF.md` record the preceding testing remediation.
+   `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`
+   retain the earlier application build and hierarchy/planning handoff.
    `deployment/COACHES_PAGE_PRODUCTION.json` records the preserved marketing release.
    `deployment/ATHLETIC_MALE_VIEWER_PRODUCTION.json` is a historical viewer receipt;
    `deployment/VIEWER_DESIGN_REFERENCE.md` records the viewer design decisions.

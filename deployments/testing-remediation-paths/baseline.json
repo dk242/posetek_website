@@ -1,0 +1,80 @@
+{
+  "endpoints": {
+    "adminReviseRep": {
+      "version": "3",
+      "files": {
+        "CLUB_CONTRACT.md": "f14fcbfa9a775b86a9f9723f0eec19db745f48f01754147d9c83c08c70aafda0",
+        "admission.js": "c398b14fe2c1b5ae71999ffb54a81b255ce6fc7340f2229a49b764c741c356cf",
+        "admission.test.js": "b8a371b31f5c3c06c529ba2918c4f74c73fd08d04a5d7dcfae7faff886f41afb",
+        "athlete-shares.js": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+        "athlete-shares.test.js": "1fc0dc23bcaa13254f42144119dd7c22c375185c7d72a296b6faf8859caadb1f",
+        "athlete-storage-paths.js": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+        "athlete-storage-paths.test.js": "ff2c4fa95099efb03db5719207c119b12bfc3b772c5c1c3026f3ac419a0fb228",
+        "club-access.js": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+        "club-branding.js": "57c76d7d805556de3293a82ac97124f8f5b18d64c187382e7651a7f6b412b949",
+        "club-branding.test.js": "cca30223cfc735388da6e7e0c996e41a1f8dfe524dcc3de9bd08432461ae4c40",
+        "clubs.js": "08e73a358f5f5ff2b250b021787c78aaf9c9c3d57a03dc3e95c473c15a3c3487",
+        "clubs.test.js": "36ad84c0f95b3c9868973d1924dfb82b341b5b3a6da21c940460f4e5cc8f173b",
+        "index.js": "a5d53720f25a49153fe6e0e4cbed8300958726a84e66aceaab7dddd2b0e01fc1",
+        "package-lock.json": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+        "package.json": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+        "rep-revisions.js": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911",
+        "rep-revisions.test.js": "9949c53587b824a3c9e1346a416dc6307db11b41bbc46c303bd9c27f07d75bb8",
+        "team-leaderboard.js": "3e7624f50f475c9b0e4efd763da59740171d844d94d8182ab5bb87a4e0eae162",
+        "team-leaderboard.test.js": "84d4f20b6e33f309fa9349ce2b496e75f772963f9f062fb49faa368d4dc5e892",
+        "test-support/fake-firestore.js": "d48ca79277bb1c5186a571652d124563cc5663ab8238901db608dc907cc9a227"
+      }
+    },
+    "adminSaveAnalysisReview": {
+      "version": "1",
+      "files": {
+        ".gcloudignore": "9dd16b9295741ac4e1f699d58a2c666143842644c5c3cb90d70d210080c63342",
+        "admission.js": "c398b14fe2c1b5ae71999ffb54a81b255ce6fc7340f2229a49b764c741c356cf",
+        "analysis-reviews.js": "f6b35baa027ffc28c80b1014adb3e45e19a7e390e346b9e99c66108ad5d7b02c",
+        "athlete-shares.js": "74f87becf1202b4b4519a1931493ea344a01f0dffdbf1e80594df7ac06ff0120",
+        "athlete-storage-paths.js": "f437bfd60f9de4e5bb79ba507787ee4d276f4960b925b068b97036dcf0cd0c9c",
+        "club-access.js": "bcdc0d47fb51143f4bfcee2019d5c7e4e50a2c8ebf4e68ef1f7f38069299deb2",
+        "club-branding.js": "57c76d7d805556de3293a82ac97124f8f5b18d64c187382e7651a7f6b412b949",
+        "clubs.js": "08e73a358f5f5ff2b250b021787c78aaf9c9c3d57a03dc3e95c473c15a3c3487",
+        "index.js": "3675a6269a0d8bbafde614a36b713c0175471a78e6a67751adba18fd153d69a4",
+        "package.json": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+        "rep-revisions.js": "56e72867a1f4d5308bff89683fb1af0bb4dacfb1f332ac0292ca68ffd50b8911",
+        "team-leaderboard.js": "3e7624f50f475c9b0e4efd763da59740171d844d94d8182ab5bb87a4e0eae162"
+      }
+    },
+    "getSocialMedia": {
+      "version": "4",
+      "files": {
+        ".runtimeconfig.json": "5a516fc06a04d088f5327cb214c34742e486eaf4177d6de992e2c7a6f30bfe72",
+        "CLUB_CONTRACT.md": "0258649e463d7b598b74c9fee065e2d678f83852c9f399bcae8fa39c7a8634fd",
+        "admission.js": "2ed4e85114307f0864955dee497d61f31b4525c41cf15d11589feb0860707b77",
+        "admission.test.js": "5fe83dbca719314a5b6073c8d476e35eb4d1c2c24ce97ad1b86b4d9061cf5126",
+        "analysis-reviews.js": "8ab4dc3730d51aead7ebb29860a60d22d8f1c2326c562077f9a4063fe8a35c11",
+        "analysis-reviews.test.js": "ca62ec2772feae6b601b797228fa1db3cb1b0c14d648cbb1c40eb382d4bd093e",
+        "athlete-shares.js": "25f798f1d45c2c5d2eb56b2bf6cc7d402d2a361a6a509579b3864e009843b28a",
+        "athlete-shares.test.js": "80b06d0f2538670f8a221b0b6cfe65987f06d0d66f20a0ba3542061b563642bc",
+        "athlete-storage-paths.js": "79521a18eb2fd24702f12e6b36f2b8b14f0acb8d72574b7dc3c392c7257502a2",
+        "athlete-storage-paths.test.js": "f5439aab95e524ab01de1242c336ba3b37bfb50fd4ff6d8cdd466c64d16c2dc0",
+        "club-access.js": "ecc45c631b6b2bbf204621a896410f60f40d3d46f98df5576515616c82d5834a",
+        "club-branding.js": "8806eb29cd93c43e3e24b545f05cb037034fd8a9c653bd3d3ecbadc13dac9da0",
+        "club-branding.test.js": "f4bf339fd5fca41de381461abbc2b4852da01ebc238c3f4918d8acfca27864df",
+        "clubs.js": "42c561f5916ac9036d63707513986400cd1b8cb996c8eacafb162a160694498b",
+        "clubs.test.js": "50340ea72d23120ab7937d0477332409a4ff5665933ceb32dddb909070e78dcb",
+        "index.js": "db5d1078cc12117e7102a88c88bb1c2b10f2bd0e4837681798f9125272347631",
+        "package-lock.json": "50a3b53078a82209bf36b6123e4cc27d01614274cd3aa3e9ed86d0dd420a4ea0",
+        "package.json": "a9ac459e8c2330272c3fc52ab9d27b48f40dbd0dca9855f0983cef3f49e44686",
+        "player-invitations.js": "36c3e431eee8d561682de52c189d6cba46133df4a7787266e473660582db690e",
+        "player-invitations.test.js": "e2186dfcb25f985885ad64e40ca877e9ffc15f6a115c5d6a3a3fb5ce1f33b291",
+        "rep-revisions.js": "25d074dcb3afff568fb66c5575abb0d59a9b8997b41b1164aa1204a1d4c64d52",
+        "rep-revisions.test.js": "94ab1ff2d91f1a2c4f6b29ea3e52945632cbd7d4b8aa35d9c95ecc6d503826d6",
+        "social-benchmarks.json": "7d9c5f217692731c10416b1ebbeb3adf9823917fbe573a5da55f8d4fe194351f",
+        "social-projection.js": "14abdc010dc00cdc095f70922fab7efc773f583453c9e4a0d8ccc6714ee5cf8d",
+        "social.js": "c3eb68cf6c7d4dc67d113ff8bfe6d81161d85faf8cd71cac06c8246b8167af0e",
+        "social.test.js": "eae80a86a8181ee93f5b940ae4d9cd7f9d45e3250e1cb385bf89887c68495b52",
+        "team-leaderboard.js": "3708cdadf32f3ff48625f2d1b050efcfbf1d72571fe59184f27927219ac4c29d",
+        "team-leaderboard.test.js": "ba45cbd2c9ee643baff0ef1d17f761f6854de9fe3df2560ed602e5a43d17b881",
+        "test-support/fake-firestore.js": "ee1106cd2dabfb040dc1542789e6295accf19ca7711abfe38b61d131cab04dbd"
+      }
+    }
+  }
+}

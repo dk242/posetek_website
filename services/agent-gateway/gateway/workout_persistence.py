@@ -225,6 +225,11 @@ def persist_program(inv, plan, private_context):
     """Create the program and immutable original evidence atomically; supersede active plans."""
     authorize_v3(inv)
     plan = deepcopy(plan)
+    # New native v3 plans cross the same explicit privacy boundary as reviewed
+    # web plans. Original evidence remains only in the server-owned context.
+    if (plan.get('assessment') or {}).get('methodologyVersion') == 'evidence-objectives-v1':
+        from gateway.personalized_views import public_plan
+        plan = public_plan(plan)
     from gateway.personalized_composition import CURRENT_ENGINE_VERSION
     plan['engineVersion'] = CURRENT_ENGINE_VERSION
     private_context = {**private_context, 'engineVersion': CURRENT_ENGINE_VERSION}
@@ -269,6 +274,13 @@ def persist_program(inv, plan, private_context):
             if current_revision != revision:
                 raise _ReloadContext()
             active = read(inv.player_ref().collection('trainingPlans').where('status', '==', 'active'))
+            if private_context.get('methodologyVersion') == 'evidence-objectives-v1':
+                from gateway.personalized_evidence import read_authoritative_results, read_estimates
+                fresh_evidence = read_authoritative_results(inv, read=read)
+                _, fresh_estimates = read_estimates(inv, read=read, evidence=fresh_evidence)
+                if (_bytes(fresh_evidence['private']) != _bytes(private_context.get('authoritativeEvidence', {}))
+                        or _bytes(fresh_estimates) != _bytes(private_context.get('conditionalEvidence', {}))):
+                    raise GatewayError('validation_failed', 'Testing or conditional evidence changed during generation; generate a fresh plan.')
             for week in plan['weeks']:
                 for workout in week['workouts']:
                     target = {'kind': 'plan', 'planId': plan_id, 'workoutId': workout['workoutId'], 'baseRevision': 1}

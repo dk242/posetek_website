@@ -1,0 +1,157 @@
+# Reviewed provisional dribbling evidence
+
+The September 17 follow-up adds a deliberately separate estimate for two reviewed
+September 16 dribbling recordings that stop near the finish. The user authorized
+one-time assumptions for the skill map and individualized planning. The original
+attempts remain incomplete; no projected value is written as a measured result.
+Athlete identities, recordings, source hashes and measurement journals stay in
+ignored private evidence, outside Git.
+
+This release was published as `6aac666c61025a8e62e8c399` on September 17, 2026
+at 3:22:58 PM PDT (`2026-09-17T22:22:58.156Z`), from source `e1c4101` on
+`codex/provisional-dribbling-recovery`. The authenticated reader was verified at
+version 3. See the [sanitized production receipt](../deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json)
+for the scoped backend source verification, website inventory, test results and
+preservation checks. Production review confirmed the two labeled estimates and
+planner option without generating or activating a workout plan.
+
+The later [Agility follow-up](PROVISIONAL_AGILITY_RECOVERY.md) and its
+[production receipt](../deployment/PROVISIONAL_AGILITY_PRODUCTION.json) extend
+the reader to version 4 and preserve both existing Dribbling estimates. They add
+one independently reviewed Agility estimate after a separate classification
+correction. The current website is `6aac6cc0bfb1ddbe0a73e636`; preserve the full
+32-entry guard in `onvideoupload-00027-guw`. Counts, limits and 30-entry guard
+references below describe this earlier Dribbling release's checkpoint.
+
+## Reader and display contract
+
+`getAthleteEffectiveResults` adds an authenticated-only `provisionalEstimates`
+array. Its existing `reps` projection and qualification are unchanged. Estimates
+come only from the server-owned
+`players/{playerId}/insightMetadata/provisionalEstimates` document. Existing
+private-path rules deny client writes. Shared-link readers do not read or return
+this document. No new permissions or public sharing surface is introduced.
+
+The validator accepts only the versioned dribbling method, ordered time bounds,
+low confidence and recent review/capture dates. It checks the current original
+rep identity, drill, timestamp and exact movie pointer, plus the live object's
+generation and MD5 against the privately reviewed source. Duplicate or foreign
+attempts, malformed entries, stale footage and future dates are rejected.
+
+Any qualified Dribbling result suppresses the estimate. This includes a later
+retest: the estimate never competes with the measured personal best. Deactivate
+the private entry to withdraw it. Estimates expire with the 180-day evidence
+window; retaining the private document is audit history, not an active score.
+
+Authenticated profile charts render an amber hollow marker and dashed adjacent
+segments with an explicit Estimated label. The marker uses the chart's existing
+dribbling completion-time reference. It is separate from the measured polygon,
+overall rating, rep/session counts, category-completion counts, rankings and
+Insights. No projected foot preference, ball distance, phase timing or no-ball
+agility value is inferred. Native app display is unchanged.
+
+## Method and interpretation
+
+The reviewed method retains the originally detected start as an assumption. It
+uses decoded video presentation timestamps and high-confidence hip positions
+from the final 0.5, 1, 1.5 and 2 seconds, projects the recent return pace to the
+original home marker and rounds the result to a tenth of a second. It does not
+claim an observed finish.
+
+The displayed range varies future return speed by plus/minus 20 percent and
+rounds outward. It is a conditional sensitivity range, not a statistical
+confidence interval or a guaranteed bound. Unrecorded pauses, ball loss and
+start-boundary error are not covered. `observedCourseFraction` describes progress
+along the standardized straight out-and-back marker course, not the exact curved
+body trajectory or the proportion of video retained.
+
+## Planning behavior
+
+The personalized planner exposes a checked, reversible option to include reviewed
+estimates as low-confidence coaching context. Generation and priority assessment
+reload authoritative evidence immediately before submission. A valid new test
+therefore removes the provisional context on the next request.
+
+The estimate and missing-finish assumption are included in the existing intake
+context field. Dribbling is added as a stated goal when one of the two goal slots
+is available; existing chosen goals are preserved. The existing bounded goal
+allocation policy handles that priority. This is coaching context, not a
+fabricated best-result deficit, peer percentile or automatic change in level.
+The measured `statsProfile` and `bestResults` remain unchanged. The interface
+reserves room within the existing 500-character intake limit rather than
+silently truncating the user's notes. No workout plan is generated or activated
+by publishing these estimates.
+
+## Associated classification repair
+
+Two mislabeled September 16 Change of Direction attempts were transferred to one
+Dribbling session with the same rep IDs, recording dates and original rep numbers.
+The original successful agility attempt remains unchanged. Each destination has
+ten objects: video, pose, reviewed metadata/context/annotations, original metadata
+and context, and three copies of session calibration. All originals remain intact.
+Unsupported measurements stay null and the attempts remain unqualified.
+
+The video upload archive guard is now 30 entries in
+`onvideoupload-00026-bup`; all prior 26 entries were retained and the source archive
+was unchanged. Preserve the full current map during later deployments.
+
+## Evidence and recovery
+
+Private evidence lives under the ignored
+`.netlify/vacaville-rep-investigation/` repair directories, including the two
+classification manifests and journals, independent verification, decoded-timing
+estimate method/receipt, and a separate two-document estimate seed plan/journal.
+The exact guard extension has its own private upload-guard receipt. Earlier
+repair journals are immutable historical records.
+
+Estimate publication uses one atomic compare-and-set commit for the two private
+documents, with before-images, pinned evidence and pre/post source checks. It
+does not write reps or recordings. A rollback must compare current document
+versions with the publication receipt before restoring those before-images;
+do not overwrite a later review. Classification rollback has a wider boundary
+and must use its own session/rep/artifact journal.
+
+Backend and website release receipts belong under the separately ignored
+`.netlify/provisional-dribbling-release/` directory. Reverting the web display or
+authenticated reader may hide estimates while preserving their private evidence.
+Preserve canonical result/media services, native capture compatibility, private
+rules, earlier repairs and the 30-entry video guard in any rollback.
+
+## Additional data-only follow-up
+
+At `2026-09-17T23:01:06.940559Z`, one additional private Dribbling estimate was
+created under the existing `constant_return_pace_v1` contract. An earlier
+feasibility summary confused return-leg coverage with complete-course coverage.
+The corrected interpretation is `1 - remainingReturnFraction / 2`, measured
+along the two straight marker-to-marker legs. Independent video, timing and
+regression review confirms eligibility under the unchanged 75-percent threshold.
+No agility result, cohort value or other attempt was substituted.
+
+The projection retains the original detected start as an explicit assumption,
+uses recent observed return motion and gives an outward-rounded pace-sensitivity
+range. It does not recover a finish frame or validate a complete test. One
+create-only write added one estimate document, preserving every source rep and
+session and the existing qualified agility result. The reviewed inventory now
+contains four estimates across three players: three Dribbling and one Agility.
+
+This follow-up required no new website/backend deployment or code, rules,
+configuration or video-guard changes. Website `6aac6cc0bfb1ddbe0a73e636`, reader
+version 4, the 510-file protected baseline and all 32 guards remain current.
+The separate [data publication receipt](../deployment/PROVISIONAL_DRIBBLING_DATA_FOLLOWUP.json)
+records this checkpoint without changing earlier release receipts. Athlete
+identities, performance values and evidence remain private.
+
+Authenticated readback at `2026-09-17T23:02:24.400Z` exactly matched the reviewed
+projection and preserved every measured row. Drill filtering returned the
+appropriate evidence and omitted private provenance. Production profile review
+confirmed the estimated label and sensitivity range, unchanged measured counts
+and the existing agility result. The planner displayed optional low-confidence
+context and enabled generation; no workout plan was generated or activated.
+
+The publication runner passed 11 tests and independent plan review passed ten
+checks. Fresh checks pinned the migrated source movie and pose and compared the
+complete raw rep and session inventories. The single write requires the target
+document to be absent; an existing empty document is also protected. A lost
+acknowledgement is reconciled by readback without automatic resubmission.
+Withdrawing the estimate requires a fresh document-version check and must not
+erase a later review. Earlier category-migration journals remain unchanged.
