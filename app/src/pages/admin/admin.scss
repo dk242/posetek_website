@@ -15,12 +15,12 @@
   --admin-line: rgba(255, 255, 255, 0.10);
   --admin-text: #f7fbf9;
   --admin-dim: rgba(247, 251, 249, 0.62);
-  --admin-accent: #7cff18;
+  --admin-accent: #b7f34a;
   --admin-warn: #ffb847;
   --admin-danger: #f87171;
 
   min-height: 100vh;
-  background: linear-gradient(135deg, #041610, #092a20, #082417);
+  background: var(--admin-bg);
   color: var(--admin-text);
 
   .admin-header {
@@ -131,7 +131,7 @@
 
     &.warn { border-color: rgba(255, 184, 71, 0.5); }
     &.danger { border-color: rgba(248, 113, 113, 0.55); }
-    &.good { border-color: rgba(124, 255, 24, 0.4); }
+    &.good { border-color: rgba(183, 243, 74, 0.4); }
 
     p { margin: 0; }
   }

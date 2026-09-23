@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
+import { CHART_AXIS, CHART_THEME } from "./chartTheme";
 
-const AXIS = { ticks: { color: "#9fb8ae" }, grid: { color: "rgba(255,255,255,.06)" }, border: { display: false } };
+const AXIS = CHART_AXIS;
 
 export function WeeklyRepsChart({ labels, values }: { labels: string[]; values: number[] }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -11,9 +12,10 @@ export function WeeklyRepsChart({ labels, values }: { labels: string[]; values: 
     if (!canvas) return;
     const chart = new Chart(canvas, {
       type: "bar",
-      data: { labels, datasets: [{ label: "Recording documents", data: values, backgroundColor: "#b7f34a", borderRadius: 4, borderSkipped: "bottom", maxBarThickness: 36 }] },
+      data: { labels, datasets: [{ label: "Recording documents", data: values, backgroundColor: CHART_THEME.accent, borderRadius: 4, borderSkipped: "bottom", maxBarThickness: 36 }] },
       options: {
         maintainAspectRatio: false,
+        animation: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: any) => `${item.formattedValue} recording documents` } } },
         scales: { x: { ...AXIS, grid: { display: false } }, y: { ...AXIS, beginAtZero: true, ticks: { ...AXIS.ticks, precision: 0 } } },
       },
@@ -36,18 +38,19 @@ export function MetricTrendChart({ label, unit, labels, values }: { label: strin
           label,
           data: values,
           spanGaps: true,
-          borderColor: "#b7f34a",
+          borderColor: CHART_THEME.accent,
           borderWidth: 2,
           tension: .3,
           pointRadius: 4,
           pointHoverRadius: 6,
-          pointBackgroundColor: "#b7f34a",
-          pointBorderColor: "#0c2119",
+          pointBackgroundColor: CHART_THEME.accent,
+          pointBorderColor: CHART_THEME.surface,
           pointBorderWidth: 2,
         }],
       },
       options: {
         maintainAspectRatio: false,
+        animation: false,
         interaction: { mode: "index", intersect: false },
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: any) => `Best ${item.formattedValue} ${unit}` } } },
         scales: { x: { ...AXIS, grid: { display: false } }, y: { ...AXIS, ticks: { ...AXIS.ticks, callback: (value: any) => `${Number(Number(value).toFixed(2))} ${unit}` } } },

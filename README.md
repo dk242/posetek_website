@@ -127,6 +127,11 @@ For application development, run `npm --prefix app run dev` and use the URL Vite
 prints. This serves the application source, which is a different build from the
 isolated public homepage. Mobile source remains a reference for shared behavior.
 
+The admin dashboard source now has a development-only synthetic preview at
+`/admin?preview=1`. See [the admin dashboard cleanup handoff](docs/admin/DASHBOARD_CLEANUP.md)
+for the shared admin/Insights design system, responsive screenshot command, and
+release boundary.
+
 ## Validate homepage changes
 
 ```powershell
