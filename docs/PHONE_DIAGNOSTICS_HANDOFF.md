@@ -1,8 +1,9 @@
 # Phone diagnostics — implementation checkpoint
 
-Status: **in progress — code complete, physical/deployed verification outstanding; not released, deployed, or merged**. Paired mobile plan:
-`PoseTek-mobile-app/docs/plans/PHONE_DIAGNOSTICS_AND_TRIAGE_PLAN.md` on branch
-`phone-diagnostics-triage`. This is additive diagnostic evidence, not a metric,
+Status: **in progress — code complete, physical/deployed verification outstanding; locally integrated into main, not released or deployed**. Paired mobile plan:
+`PoseTek-mobile-app/docs/plans/PHONE_DIAGNOSTICS_AND_TRIAGE_PLAN.md`.
+The validated paired `phone-diagnostics-triage` branches integrate through local non-fast-forward
+merges; physical/deployed checks remain release gates and do not hold the source branches open. This is additive diagnostic evidence, not a metric,
 leaderboard, testing-station authorization or athlete-identity source.
 
 ## Contracts and sources

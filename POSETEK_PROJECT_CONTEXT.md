@@ -1030,8 +1030,9 @@ baseline, rebuild, preview, and validate the intended changes before publishing.
 
 ## Phone diagnostics implementation (2026-09-23)
 
-The paired mobile/website `phone-diagnostics-triage` feature branches are in progress,
-not released or merged. Read [docs/PHONE_DIAGNOSTICS_HANDOFF.md](docs/PHONE_DIAGNOSTICS_HANDOFF.md)
+The paired mobile/website diagnostics implementation is integrated into local `main`
+through `phone-diagnostics-triage` non-fast-forward merges. Physical/deployed acceptance
+remains in progress; no release or push has occurred. Read [docs/PHONE_DIAGNOSTICS_HANDOFF.md](docs/PHONE_DIAGNOSTICS_HANDOFF.md)
 for the schema-2 upload broker, private viewer/rules, disabled retention service,
 code-complete source and explicit device/deployment gates. Automated validation includes
 689 canonical rules tests, 58 cross-ruleset assertions and 16 backend tests; mobile
