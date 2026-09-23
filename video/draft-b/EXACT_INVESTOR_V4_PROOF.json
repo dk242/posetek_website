@@ -1,0 +1,35 @@
+{
+  "version": "investor-exact-v4",
+  "duration_seconds": 113,
+  "frames": 3390,
+  "fps": 30,
+  "master": {
+    "file": "PoseTek-Investor-Exact-V4-1080p.mp4",
+    "bytes": 24885381,
+    "sha256": "78703c942e6925336c5fd10685861605ba31f460d6000b57e19b36822322f29e",
+    "passed": true
+  },
+  "loudness_lufs": -16.33,
+  "true_peak_dbtp": -1.84,
+  "narration_passages": 9,
+  "narration_words": 203,
+  "caption_cues": 39,
+  "preserved_versions": [
+    "V1",
+    "V2",
+    "V3"
+  ],
+  "source_checks": 52,
+  "encoded_visual_checks": 4,
+  "delivery_authorized": true,
+  "delivery_receipt": "Ignored local output/investor-exact-v4/delivery-receipt.json",
+  "public_application_changes": false,
+  "delivery": {
+    "email_sent": true,
+    "mailbox_readback_with_attachment": true,
+    "received_at": "2026-09-23T10:40:53Z",
+    "private_uploads_verified": 5,
+    "source_package_parts": 2,
+    "local_complete_source_zip": true
+  }
+}

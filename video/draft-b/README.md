@@ -1,3 +1,7 @@
+# Latest: investor exact-script V4
+
+The approved V4 is a separate 113-second edition with a faster technique walkthrough, dynamic platform and connected test/data/plan/retest ending. See [V4 reproduction and evidence notes](EXACT_INVESTOR_V4.md). V1–V3 remain preserved. No website or app behavior changes.
+
 # PoseTek video productions
 
 ## Investor exact-script edition

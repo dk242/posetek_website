@@ -1,0 +1,56 @@
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
+import vm from 'node:vm';
+import ts from 'typescript';
+const json=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const checks=[],check=(name,passed,observed)=>checks.push({name,passed:Boolean(passed),observed});
+const t=await json('src/investor-exact-v4-timing.json'),v3=await json('src/investor-exact-v3-timing.json');
+const spec=await json('audio-source/investor-exact-v2.json'),captions=await json('public/audio-investor-exact-v4/captions.json'),oldCaptions=await json('public/audio-investor-exact-v3/captions.json');
+check('113 seconds /3390 frames /30fps',t.duration===113&&t.duration_frames===3390&&t.fps===30);
+check('Nine passages /203 exact words',spec.passages.length===9&&spec.passages.map(p=>p.text).join(' ').split(/\s+/).length===203);
+check('Caption text and order exact',captions.map(c=>c.text).join(' ')===spec.passages.map(p=>p.text).join(' '));
+check('Caption timing preserved except final two passages shifted six seconds',captions.every((c,i)=>c.text===oldCaptions[i].text&&Math.abs(c.start-(oldCaptions[i].start-(oldCaptions[i].start>=100.2?6:0)))<1e-6&&Math.abs(c.end-(oldCaptions[i].end-(oldCaptions[i].start>=100.2?6:0)))<1e-6));
+check('Scene clock continuously tiles film',t.scenes[0].start===0&&t.scenes.at(-1).end===3390&&t.scenes.every((s,i)=>s.end>s.start&&(!i||s.start===t.scenes[i-1].end)));
+check('Earlier scene clock unchanged',JSON.stringify(t.scenes.filter(s=>s.start<2382))===JSON.stringify(v3.scenes.filter(s=>s.start<2382)));
+const prior=await json('output/investor-exact-v4/preserved-files.json');
+for(const [path,digest] of Object.entries(prior))check('Preserved '+path,hash(await fs.readFile(path))===digest);
+const source=await fs.readFile('src/InvestorExactFilmV4.tsx','utf8'),old=await fs.readFile('src/InvestorExactFilmV3.tsx','utf8');
+const astFor=code=>ts.createSourceFile('source',code,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+const functionText=(code,name)=>{const ast=astFor(code);return ast.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text===name).getText(ast).replace(/\r\n/g,'\n');};
+for(const name of ['Phone','HeadSwap','OpeningSetup','Field','CaptureToTests'])check('Unchanged earlier renderer: '+name,functionText(source,name)===functionText(old,name));
+const code=await fs.readFile('src/ExactTechniqueV4.tsx','utf8');
+const fn=vm.runInNewContext(ts.transpileModule(functionText(code,'exactTechniqueStateV4').replace(/^export\s+/,''),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText+';exactTechniqueStateV4',{Math,timing:t});
+for(const [range,sourceFrame,duration] of [['backswing',458,78],['support_foot',472,96],['arm_balance',472,96],['followthrough',522,75]]){
+ const [a,b]=t.technique[range];
+ check('Exact stationary '+range+' '+sourceFrame,b-a===duration&&Array.from({length:b-a},(_,i)=>fn(a+i)).every(s=>s.mode==='paused'&&420+s.index*2===sourceFrame));
+}
+for(const key of ['approach_backswing','approach_contact','approach_followthrough']){
+ const [a,b]=t.technique[key];check('Original quarter-speed motion: '+key,Array.from({length:b-a-1},(_,i)=>fn(a+i+1).index-fn(a+i).index).every(d=>d===1));
+}
+check('Completion30frames and Continue actions follow cue holds',t.technique.completion[1]-t.technique.completion[0]===30&&JSON.stringify(t.technique.continue_frames)==='[114,217,313,413]');
+check('Quarter-speed selection remains explicit',code.includes('frame>=4&&frame<13')&&code.includes('quarter=frame>=12'));
+const oldTech=await fs.readFile('src/ExactTechniqueV2.tsx','utf8');
+check('Cue layout and saved measurements unchanged',code.slice(code.indexOf('  const speedMenu'),code.indexOf('    <Pointer')).replace(/\r\n/g,'\n')===oldTech.slice(oldTech.indexOf('  const speedMenu'),oldTech.indexOf('    <Pointer')).replace(/\r\n/g,'\n'));
+const closing=await fs.readFile('src/ExactClosingV4.tsx','utf8');
+const closFn=vm.runInNewContext(ts.transpileModule(functionText(closing,'closingJumpStateV4').replace(/^export\s+/,''),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText+';closingJumpStateV4',{Math,timing:t,ease:(f,a,b)=>{const u=Math.max(0,Math.min(1,(f-a)/(b-a)));return u*u*(3-2*u);}});
+check('Two complete 1x saved-jump repetitions',t.closing.duration_frames/t.closing.pose_replay_frames===2&&[0,90].every(start=>Array.from({length:61},(_,i)=>closFn(start+i).sourceFrame).every((n,i)=>n===120+i*4)));
+check('Replay reset invisible, after landing/recovery',closFn(83).sourceFrame===360&&closFn(84).sourceFrame===120&&closFn(84).opacity===0&&closFn(89).opacity===1);
+check('Six-second muted phone excerpt at original speed',t.closing.phone_source_start===300&&t.closing.phone_source_end_exclusive===480&&closing.includes("product/screen-demo.mp4')} muted"));
+check('No two-kick coda in V4',!t.scenes.some(s=>s.id==='two-kick-review')&&!source.includes('<ExactKickReview'));
+check('Recorded7.48baseline, illustrativeplan, pendingretest',closing.includes('7.48')&&closing.includes('EXAMPLE PLAN')&&closing.includes('NEXT ASSESSMENT · PENDING')&&!/improved|improvement|personal best/i.test(closing));
+const priorCheck=await json('output/investor-exact-v3/source-validation.json');
+check('V3 calibrated/countdown/anonymity checks passed',priorCheck.passed);
+const cod=await json('output/investor-exact-v3/cod-source-validation.json');
+check('Qualified calibrated COD asset unchanged',cod.passed&&hash(await fs.readFile('public/investor-exact-v3/cod.json'))===cod.renderPayloadSha256);
+check('V3 comparison and broadjump source modules reused',source.includes("from './ExactChangeOfDirectionV3'")&&source.includes("from './ExactBroadJumpV2'"));
+const broad=await json('public/investor-exact-v2/broadjump.json'),profile=await json('public/investor-exact/profile.json');
+check('Broadjump values retained',JSON.stringify([(broad.metrics.distanceMeters*3.28084).toFixed(1),(broad.metrics.peakHeightMeters*39.3701).toFixed(1),broad.metrics.flightSeconds.toFixed(2),broad.metrics.trackedFoot])===JSON.stringify(['4.8','22.1','0.42','right']));
+check('Coda baseline grounded in recorded profile',profile.axes.find(a=>a.id==='ballControl').metrics[0].value==='7.48');
+const a=await json('public/audio-investor-exact-v4/audio-manifest.json');
+check('Audio113s, unchanged prefix and speech',a.passed&&a.samples===5424000&&a.prefix_pcm_identical_until===79.4&&a.original_demo.isolated_pcm_identical);
+check('Continuous music16dBbelow speech and level/peak',a.ducking.demo_music_nonzero_all_100ms_blocks&&Math.abs(a.ducking.measured_voiced_energy_separation_db-16)<.5&&Math.abs(a.audio['master.wav'].integrated_lufs+16)<.5&&a.audio['master.wav'].true_peak_dbtp<=-1);
+const report={createdAt:new Date().toISOString(),passed:checks.every(c=>c.passed),checks};
+await fs.writeFile('output/investor-exact-v4/source-validation.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({passed:report.passed,checks:checks.length,failed:checks.filter(c=>!c.passed)},null,2));
+if(!report.passed)process.exitCode=1;

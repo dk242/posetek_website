@@ -18,7 +18,10 @@
     "verify:exact-v2": "node scripts/verify-exact-v2-source.mjs && node scripts/verify-exact-v2-proof.mjs",
     "stills:exact-v3": "node scripts/render-exact-v3.mjs stills",
     "proof:exact-v3": "node scripts/render-exact-v3.mjs proof",
-    "verify:exact-v3": "node scripts/verify-exact-v3-source.mjs && node scripts/verify-exact-v3-proof.mjs"
+    "verify:exact-v3": "node scripts/verify-exact-v3-source.mjs && node scripts/verify-exact-v3-proof.mjs",
+    "stills:exact-v4": "node scripts/render-exact-v4.mjs stills",
+    "render:exact-v4": "node scripts/render-exact-v4.mjs master",
+    "verify:exact-v4": "node scripts/verify-exact-v4-source.mjs && node scripts/verify-exact-v4-proof.mjs master"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.526",
