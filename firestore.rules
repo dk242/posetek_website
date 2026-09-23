@@ -713,8 +713,119 @@ match /drillCatalogMeta/{docId} {
       allow read, write: if false;
     }
 
+
+    // Phone diagnostics schema 2. Observational records never authorize station control.
+    function diagnosticActor(d) {
+      return signedIn() && d.reportedByUid == request.auth.uid
+        && ((d.get('scope', 'attempt') == 'actor'
+          && d.playerDocumentID == null && d.attemptId == null
+          && d.get('processingRunId', null) == null
+          && d.get('testingEventId', null) == null
+          && d.get('repId', null) == null && d.get('kind', '') == 'system_diagnostic')
+          || (d.get('scope', '') == 'stationSetup' && d.playerDocumentID == null
+            && d.attemptId == null && d.processingRunId == null
+            && d.testingEventId is string && testingEventOperator(d.testingEventId)
+            && d.stationId in ['station-1','station-2','station-3']
+            && d.setupOperationId is string && d.setupOperationId.matches('^[a-f0-9-]{36}$')
+            && d.recordingDeviceId is string && d.recordingDeviceId.size() <= 128
+            && d.setupVersion is int && d.setupVersion >= 1)
+          || (d.get('scope', 'attempt') == 'attempt'
+            && d.playerDocumentID is string && recordingWriter(d.playerDocumentID)));
+    }
+    function diagnosticShape(d) {
+      return d.schemaVersion == 2 && d.sequence is int && d.sequence >= 1
+        && d.sequence <= 1000000000 && d.occurredAt is timestamp
+        && d.reportedByUid is string && d.reportedByUid.size() <= 128
+        && d.keys().hasOnly(['schemaVersion','scope','kind','reportedByUid','originReporterUid',
+          'playerDocumentID','attemptId','processingRunId','latestRunId','lastStage','repId','originLaunchId','drillType','sequence',
+          'occurredAt','lifecycle','manifestPath','build','calibrationId','calibrationObservationId',
+          'failureStage','message','failedSteps','classification','artifactUploadState','storage','createdAt','updatedAt',
+          'userNote','userNoteCreatedAt','setupOperationId','testingEventId','stationId','recordingDeviceId','setupVersion',
+          'artifactsAcknowledgedAt','investigationHold','artifactReferences','retentionState',
+          'retentionReviewedBy','retentionReviewedAt','retentionStartedAt','retentionCompletedAt','uploadSessionIssuedAt'])
+        && (!('userNote' in d) || (d.userNote is string && d.userNote.size() <= 10000))
+        && (!('failureStage' in d) || (d.failureStage is string && d.failureStage.size() <= 96))
+        && (!('lastStage' in d) || (d.lastStage is string && d.lastStage.size() <= 96))
+        && (d.get('latestRunId', null) == null || (d.latestRunId is string && d.latestRunId.matches('^[a-f0-9-]{36}$')))
+        && (!('message' in d) || (d.message is string && d.message.size() <= 512))
+        && (!('failedSteps' in d) || (d.failedSteps is list && d.failedSteps.size() <= 16))
+        && (!('build' in d) || (d.build is string && d.build.size() <= 128))
+        && (!('drillType' in d) || (d.drillType is string && d.drillType.size() <= 64))
+        && (!('lifecycle' in d) || d.lifecycle in ['captureIntent','recording','clipRetained',
+          'processingStarted','computeCompleted','prepared','failedRecoverably','cancelled',
+          'interruptedUnknown','commitPending','committed'])
+        && (!('artifactUploadState' in d) || d.artifactUploadState in ['pending','partial','complete'])
+        && (!('classification' in d) || d.classification in ['resourcePressureAbort','interruptedUnknown',
+          'recoverableFailure','preparedResultUnavailable','unmatchedSystemEvidence','failed'])
+        && (d.attemptId == null || (d.attemptId is string && d.attemptId.matches('^[a-f0-9-]{36}$')))
+        && (d.get('processingRunId', null) == null || (d.processingRunId is string && d.processingRunId.matches('^[a-f0-9-]{36}$')))
+        && d.updatedAt == request.time;
+    }
+    function diagnosticUpdate() {
+      return resource.data.get('retentionState', 'active') == 'active'
+        && request.resource.data.sequence >= resource.data.sequence
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'sequence','lifecycle','latestRunId','lastStage','failureStage','message','failedSteps','classification','artifactUploadState','storage',
+          'updatedAt','userNote','userNoteCreatedAt']);
+    }
+    match /processingAttempts/{attemptId} {
+      allow get: if signedIn() && !exists(/databases/$(database)/documents/processingAttempts/$(attemptId));
+      allow list: if isPosetekAdmin();
+      allow get: if isPosetekAdmin() || diagnosticActor(resource.data);
+      function validAttempt() {
+        return diagnosticActor(request.resource.data) && diagnosticShape(request.resource.data)
+          && request.resource.data.get('scope', 'attempt') == 'attempt'
+          && attemptId.matches('^[a-f0-9-]{36}$') && request.resource.data.attemptId == attemptId
+          && request.resource.data.manifestPath == 'processing_attempts/' + request.auth.uid + '/' + attemptId + '/manifest.json';
+      }
+      allow create: if validAttempt() && request.resource.data.createdAt == request.time
+        && !('uploadSessionIssuedAt' in request.resource.data);
+      allow update: if validAttempt() && resource.data.reportedByUid == request.auth.uid && diagnosticUpdate();
+      allow delete: if false;
+    }
+    match /failureCases/{reportId} {
+      allow get: if signedIn() && !exists(/databases/$(database)/documents/failureCases/$(reportId));
+      allow list: if isPosetekAdmin();
+      allow get: if isPosetekAdmin() || diagnosticActor(resource.data);
+      function validIncident() {
+        let d = request.resource.data;
+        return diagnosticActor(d) && diagnosticShape(d)
+          && d.kind in ['hard_failure','partial_results','pose_validation_failed','interrupted_processing',
+            'resource_abort','calibration_rejected','capture_interrupted','system_diagnostic','station_setup_failed']
+          && ((d.get('scope', 'attempt') == 'attempt'
+              && ((d.get('processingRunId', null) != null && reportId == 'processing-' + d.processingRunId)
+                || (d.get('processingRunId', null) == null && reportId == 'capture-' + d.attemptId)))
+            || (d.get('scope', '') == 'stationSetup' && reportId == 'setup-' + d.setupOperationId)
+            || (d.get('scope', '') == 'actor' && reportId.matches('^system-[a-f0-9]{64}$')))
+          && d.storage is map && d.storage.size() <= 8
+          && d.storage.prefix == 'failure_cases/' + reportId
+          && d.storage.keys().hasOnly(['prefix','reportPath','videoPath','logPath','calibrationPath','calibrationImagePath','systemDiagnosticPath'])
+          && (!('reportPath' in d.storage) || d.storage.reportPath == d.storage.prefix + '/report.json')
+          && (!('videoPath' in d.storage) || d.storage.videoPath == d.storage.prefix + '/video.mov')
+          && (!('logPath' in d.storage) || d.storage.logPath == d.storage.prefix + '/log.jsonl')
+          && (!('calibrationPath' in d.storage) || d.storage.calibrationPath == d.storage.prefix + '/calibration.json')
+          && (!('calibrationImagePath' in d.storage) || d.storage.calibrationImagePath == d.storage.prefix + '/calibration.jpg')
+          && (!('systemDiagnosticPath' in d.storage) || d.storage.systemDiagnosticPath == d.storage.prefix + '/system_diagnostic.json');
+      }
+      function legacyReport() {
+        let d = request.resource.data;
+        return signedIn() && d.get('schemaVersion', 1) == 1
+          && d.reportedByUid == request.auth.uid && recordingWriter(d.playerDocumentID)
+          && d.storage.prefix == 'failure_cases/' + reportId;
+      }
+      allow create: if (validIncident() || legacyReport()) && request.resource.data.createdAt == request.time
+        && !request.resource.data.keys().hasAny(['artifactsAcknowledgedAt','investigationHold','artifactReferences',
+          'retentionState','retentionReviewedBy','retentionReviewedAt','retentionStartedAt','retentionCompletedAt','uploadSessionIssuedAt']);
+      allow update: if signedIn() && resource.data.get('reportedByUid', '') == request.auth.uid
+        && ((validIncident() && resource.data.get('schemaVersion', 1) == 2 && diagnosticUpdate())
+          || (legacyReport() && resource.data.get('schemaVersion', 1) == 1
+            && request.resource.data.playerDocumentID == resource.data.playerDocumentID
+            && request.resource.data.createdAt == resource.data.createdAt));
+      allow delete: if false;
+    }
+
     match /{root}/{doc=**} {
-      allow read, write: if !(root in ['playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','testingEvents','testingEventInvites','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
+      allow read, write: if !(root in ['processingAttempts','failureCases','playerSignupInvitations','playerSignupCodes','socialActivities','socialActivitySettings','socialPreferences','socialConnections','socialSettings','socialReports','socialRateLimits','players','coaches','admins','config','llmJobs','llmUsage','llmDailyAllowances','drillCatalog','drillCatalogMeta','organizations','teams','clubStaffInvitations','testingEvents','testingEventInvites','admissionAttempts','athleteResultSharesV2','insightSettings','insightUsageDays','insightUsageIntervals','insightUsageActors']);
     }
     match /config/{configId}/{nested=**} {
       allow read, write: if configId != 'llm';

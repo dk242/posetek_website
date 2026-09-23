@@ -6,6 +6,16 @@ const { playerSegment, storageFolderCandidates } = require("./athlete-storage-pa
 
 admin.initializeApp();
 const db = admin.firestore();
+const { createDiagnosticUploads } = require("./diagnostic-uploads");
+const diagnosticUploads = createDiagnosticUploads({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+exports.beginDiagnosticUpload = functions.https.onCall((data, context) => diagnosticUploads.authorize(data || {}, requireCaller(context)));
+
+const { createDiagnosticRetention } = require("./diagnostic-retention");
+const diagnosticRetention = createDiagnosticRetention({ db, bucket: admin.storage().bucket("kickai-69dd0.firebasestorage.app"), FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
+exports.acknowledgeDiagnosticArtifacts = functions.firestore.document("failureCases/{incidentId}").onWrite((_, context) => diagnosticRetention.acknowledge(context.params.incidentId));
+exports.setDiagnosticInvestigationHold = functions.https.onCall((data, context) => diagnosticRetention.protect(data || {}, requireCaller(context)));
+exports.cleanupDiagnosticArtifacts = functions.runWith({ timeoutSeconds: 120, memory: "256MB" }).pubsub.schedule("every 24 hours").onRun(() => diagnosticRetention.sweep());
+
 // Additive reporting and engagement endpoints; existing callables stay intact.
 const insightEntrypoints = require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller);
 Object.assign(exports, insightEntrypoints);

@@ -1026,3 +1026,12 @@ comparison reference. If newer original source becomes available, reconcile it
 with the recovered modules instead of replacing the user's accepted changes.
 For any further release, verify the current application against the reconciled
 baseline, rebuild, preview, and validate the intended changes before publishing.
+
+
+## Phone diagnostics checkpoint (2026-09-22)
+
+The paired mobile/website `phone-diagnostics-triage` feature branches are in progress,
+not released or merged. Read [docs/PHONE_DIAGNOSTICS_HANDOFF.md](docs/PHONE_DIAGNOSTICS_HANDOFF.md)
+for the schema-2 upload broker, private viewer/rules, disabled retention service,
+passed checks and explicit implementation/device/deployment gates. This checkpoint
+does not change the recorded production release or authorize cleanup.

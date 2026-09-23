@@ -38,7 +38,7 @@ service firebase.storage {
     }
     function validPlayerId(pid) {
       return pid is string && pid.size() > 0
-        && !(pid in ['diagnostics', 'failure_cases', 'trainingPlanContexts',
+        && !(pid in ['processing_attempts', 'diagnostics', 'failure_cases', 'trainingPlanContexts',
           'drillCatalogMedia', 'kicking-analysis', 'users', 'organizations',
           'coaches', 'admins', 'config', 'ProfessionalOverlay', 'llmJobs', 'teams', 'clubStaffInvitations']);
     }
@@ -113,17 +113,56 @@ service firebase.storage {
       allow delete: if isPosetekAdmin() && version == 'app';
     }
 
+
+    match /processing_attempts/{uid}/{attemptId}/{fileName} {
+      function attemptAuthor() {
+        let d = firestore.get(/databases/(default)/documents/processingAttempts/$(attemptId)).data;
+        return signedIn() && uid == request.auth.uid && d.reportedByUid == uid
+          && d.manifestPath == 'processing_attempts/' + uid + '/' + attemptId + '/manifest.json';
+      }
+      allow read: if fileName == 'manifest.json' && isPosetekAdmin();
+      // Schema 2 uploads use beginDiagnosticUpload's current-access checks.
+      allow create, update: if false;
+      allow delete: if false;
+    }
+    match /failure_cases/{reportId}/{fileName} {
+      function reportAuthor() {
+        let d = firestore.get(/databases/(default)/documents/failureCases/$(reportId)).data;
+        return signedIn() && d.get('reportedByUid', '') == request.auth.uid
+          && d.get('storage', {}).get('prefix', '') == 'failure_cases/' + reportId;
+      }
+      function bundleFile() {
+        return fileName in ['report.json','video.mov','calibration.jpg','log.jsonl','calibration.json','system_diagnostic.json'];
+      }
+      function boundedFile() {
+        return (fileName == 'video.mov' && request.resource.contentType == 'video/quicktime'
+            && request.resource.size <= 512 * 1024 * 1024)
+          || (fileName == 'calibration.jpg' && request.resource.contentType == 'image/jpeg'
+            && request.resource.size <= 8 * 1024 * 1024)
+          || (fileName == 'log.jsonl' && request.resource.contentType == 'application/x-ndjson'
+            && request.resource.size <= 2 * 1024 * 1024)
+          || (fileName in ['report.json','calibration.json','system_diagnostic.json']
+            && request.resource.contentType == 'application/json' && request.resource.size <= 2 * 1024 * 1024);
+      }
+      allow read: if bundleFile() && (isPosetekAdmin() || (reportAuthor()
+        && firestore.get(/databases/(default)/documents/failureCases/$(reportId)).data.get('schemaVersion', 1) == 1));
+      allow create, update: if bundleFile() && boundedFile() && reportAuthor()
+        && firestore.get(/databases/(default)/documents/failureCases/$(reportId)).data.get('schemaVersion', 1) == 1
+        && firestore.get(/databases/(default)/documents/failureCases/$(reportId)).data.get('retentionState', 'active') == 'active';
+      allow delete: if false;
+    }
+
     // Preserve existing authenticated recording/media flows, excluding the two
     // namespaces whose authoring/privacy policy is defined above.
     match /{root}/{rest=**} {
       allow read: if request.auth != null
-        && !(root in ['trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
+        && !(root in ['processing_attempts', 'failure_cases', 'trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
         && (!migratedRoot(root) || isPosetekAdmin() || playerActor(root));
       allow write: if request.auth != null
-        && !(root in ['trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
+        && !(root in ['processing_attempts', 'failure_cases', 'trainingPlanContexts', 'drillCatalogMedia', 'organizations'])
         && (!migratedRoot(root) || playerActor(root))
         && (!isPosetekAdmin() || root in ['diagnostics','failure_cases']);
-      allow create, update: if isPosetekAdmin() && validPlayerId(root)
+      allow create, update: if !(root in ['processing_attempts','failure_cases']) && isPosetekAdmin() && validPlayerId(root)
         && firestore.exists(/databases/(default)/documents/players/$(root));
     }
   }
