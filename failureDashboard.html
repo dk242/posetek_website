@@ -185,6 +185,12 @@
         <option value="hard_failure">Hard failure</option>
         <option value="partial_results">Partial results</option>
         <option value="pose_validation_failed">Pose validation</option>
+        <option value="interrupted_processing">Interrupted processing</option>
+        <option value="capture_interrupted">Interrupted capture</option>
+        <option value="resource_abort">Resource abort</option>
+        <option value="calibration_rejected">Calibration rejected</option>
+        <option value="station_setup_failed">Station setup</option>
+        <option value="system_diagnostic">Launch / OS evidence</option>
       </select>
     </label>
     <label>Failed stage
@@ -279,6 +285,12 @@ let allCases = [];
 let filtered = [];
 
 const KIND_META = {
+  interrupted_processing: { label: "Interrupted · cause unknown", cls: "partial" },
+  capture_interrupted: { label: "Capture interrupted", cls: "partial" },
+  resource_abort: { label: "Protective resource abort", cls: "partial" },
+  calibration_rejected: { label: "Calibration rejected", cls: "hard" },
+  station_setup_failed: { label: "Station setup", cls: "hard" },
+  system_diagnostic: { label: "Launch / unmatched OS evidence", cls: "pose" },
   hard_failure:          { label: "✕ hard failure",    cls: "hard" },
   partial_results:       { label: "◐ partial",         cls: "partial" },
   pose_validation_failed:{ label: "◇ pose validation", cls: "pose" }
@@ -289,6 +301,11 @@ function normalize(doc) {
   const storage = d.storage || {};
   return {
     id: doc.id,
+    attemptId: d.attemptId || null,
+    processingRunId: d.processingRunId || null,
+    setupOperationId: d.setupOperationId || null,
+    classification: d.classification || "unknown",
+    occurredAt: d.occurredAt && d.occurredAt.toDate ? d.occurredAt.toDate() : null,
     createdAt: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null,
     deviceCreatedAt: d.deviceCreatedAt || null,
     kind: d.kind || "hard_failure",
@@ -308,7 +325,7 @@ function normalize(doc) {
     iosVersion: d.iosVersion || "?",
     deviceModel: d.deviceModel || "?",
     capture: d.capture || null,
-    uploadState: d.artifactUploadState || "?",
+    uploadState: d.retentionState && d.retentionState !== "active" ? d.retentionState : (d.artifactUploadState || "?"),
     userNote: d.userNote || null,
     storage: {
       // Paths are the source of truth; URLs are resolved through the staff
@@ -539,7 +556,7 @@ async function openDetail(id) {
          <label><input type="checkbox" id="tCom" checked> COM track</label>
          <span id="overlayInfo"></span>
        </div>`
-    : `<div class="video-missing">No video was uploaded for this case.</div>`;
+    : `<div class="video-missing">Video is unavailable here. Check upload state; evidence may still be pending.</div>`;
 
   const calibBlock = c.storage.calibrationImageURL
     ? `<div class="section-label">Calibration picture</div><img class="calib-img" src="${escapeAttr(c.storage.calibrationImageURL)}" alt="Calibration frame">`
@@ -569,6 +586,10 @@ async function openDetail(id) {
           <div class="fact"><div class="k">Session · rep</div><div class="v">session ${escapeHtml(String(c.session ?? "?"))} · rep ${escapeHtml(String(c.rep ?? "?"))}</div></div>
           <div class="fact"><div class="k">Rep doc</div><div class="v">${escapeHtml(c.repId || "not created")}</div></div>
           <div class="fact"><div class="k">Upload state</div><div class="v">${escapeHtml(c.uploadState)}</div></div>
+          <div class="fact"><div class="k">Attempt / setup</div><div class="v">${escapeHtml(c.attemptId || c.setupOperationId || "unavailable")}</div></div>
+          <div class="fact"><div class="k">Processing run</div><div class="v">${escapeHtml(c.processingRunId || "unavailable")}</div></div>
+          <div class="fact"><div class="k">Evidence classification</div><div class="v">${escapeHtml(c.classification)}</div></div>
+          <div class="fact"><div class="k">Device occurrence time</div><div class="v">${c.occurredAt ? escapeHtml(formatTime(c.occurredAt)) : "unavailable"}</div></div>
           <div class="fact"><div class="k">App</div><div class="v">${escapeHtml(c.appVersion)} (${escapeHtml(c.build)})</div></div>
           <div class="fact"><div class="k">Device</div><div class="v">${escapeHtml(c.deviceModel)} · iOS ${escapeHtml(c.iosVersion)}</div></div>
           ${c.capture ? `

@@ -1026,3 +1026,16 @@ comparison reference. If newer original source becomes available, reconcile it
 with the recovered modules instead of replacing the user's accepted changes.
 For any further release, verify the current application against the reconciled
 baseline, rebuild, preview, and validate the intended changes before publishing.
+
+
+## Phone diagnostics implementation (2026-09-23)
+
+The paired mobile/website diagnostics implementation is integrated into local `main`
+through `phone-diagnostics-triage` non-fast-forward merges. Physical/deployed acceptance
+remains in progress; no release or push has occurred. Read [docs/PHONE_DIAGNOSTICS_HANDOFF.md](docs/PHONE_DIAGNOSTICS_HANDOFF.md)
+for the schema-2 upload broker, private viewer/rules, disabled retention service,
+code-complete source and explicit device/deployment gates. Automated validation includes
+689 canonical rules tests, 58 cross-ruleset assertions and 16 backend tests; mobile
+builds, 56 focused XTests and support/recovery empty-state UI pass. Deployed broker/IAM,
+retention concurrency, populated viewer/retry and physical-iPhone acceptance remain
+unverified. This work does not change the recorded production release or authorize cleanup.
