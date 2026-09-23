@@ -2,6 +2,12 @@
 
 ## Investor exact-script edition
 
+The current review is the separate 119-second V3 edition, with a continuous phone
+result transition, original-speed change-of-direction comparison and music beneath
+the original app prompts. See [EXACT_INVESTOR_V3.md](EXACT_INVESTOR_V3.md).
+Use `npm run proof:exact-v3` and `npm run verify:exact-v3`.
+All earlier editions remain preserved; final master/email follows proof approval.
+
 The separate September 23 investor edition follows all nine supplied passages
 verbatim. See [EXACT_INVESTOR_V1.md](EXACT_INVESTOR_V1.md) for the 2:53 timeline,
 source evidence, reproduction and required proof review before master/email.

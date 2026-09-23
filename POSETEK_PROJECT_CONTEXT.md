@@ -1,5 +1,15 @@
 # PoseTek website project context
 
+### September 23 investor exact-script V3 review
+
+The current investor video review is a separate 119-second V3 edition. Its nine
+production passages and V2 narration/captions remain exact. The phone carries the
+recorded broad-jump result into the six-test grid; a qualified, anonymous
+change-of-direction turn comparison replaces sprint. Music continues beneath the
+original app audio. See [the V3 video handoff](video/draft-b/EXACT_INVESTOR_V3.md).
+Prior exports remain preserved. Final master, editable media package and email
+follow user proof approval. This video work changes no website or backend behavior.
+
 Reviewed on September 21, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.

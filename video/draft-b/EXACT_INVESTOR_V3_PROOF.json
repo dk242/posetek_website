@@ -1,0 +1,40 @@
+{
+  "createdAt": "2026-09-23T09:51:31.4391445Z",
+  "status": "V3 timed proof awaiting user creative review",
+  "file": "PoseTek-Investor-Exact-V3-Timed-Proof.mp4",
+  "bytes": 12341744,
+  "sha256": "df0a072bcda2b636106bd3890b28d5587a4ba17c45abdb7f6ca3c1397e2519aa",
+  "passed": true,
+  "durationSeconds": 119,
+  "reviewResolution": [
+    1280,
+    720
+  ],
+  "compositionResolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "frames": 3570,
+  "authoredWords": 203,
+  "passages": 9,
+  "captionCues": 39,
+  "sourceChecks": 24,
+  "encodedChecks": 24,
+  "levels": {
+    "integrated_lufs": -16.46,
+    "true_peak_dbtp": -1.6,
+    "loudness_range_lu": 9.2
+  },
+  "encodedCountdownLagSamples": 0,
+  "originalDemoSampleOffset": 1032000,
+  "musicContinuous": true,
+  "comparison": "Qualified individual change-of-direction recordings, aligned at saved turnaround, original speed and calibrated scale; no equal-course timing claim",
+  "preservedV1AndV2": true,
+  "approval": {
+    "creativeProofApproved": false,
+    "finalMasterRendered": false,
+    "finalEmailSent": false
+  },
+  "scope": "Video source and proof only. No website, native app or backend changes."
+}
