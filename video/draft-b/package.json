@@ -12,7 +12,10 @@
     "stills:exact": "node scripts/render-exact.mjs stills",
     "proof:exact": "node scripts/render-exact.mjs proof",
     "verify:exact": "node scripts/verify-exact-proof.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "stills:exact-v2": "node scripts/render-exact-v2.mjs stills",
+    "proof:exact-v2": "node scripts/render-exact-v2.mjs proof",
+    "verify:exact-v2": "node scripts/verify-exact-v2-source.mjs && node scripts/verify-exact-v2-proof.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.526",

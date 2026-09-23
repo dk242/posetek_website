@@ -134,3 +134,11 @@ V1 remains preserved locally and documented in [PRODUCTION.md](PRODUCTION.md).
 `src/us-map.json` contains the contiguous US outline from Natural Earth 1:110m
 country data, which is public domain. The source URL is recorded with the data.
 The map illustrates an expansion strategy; it does not depict customer locations.
+
+## Investor exact-script V2 (119-second review)
+
+The separate shorter edition follows the nine final production passages exactly.
+See [EXACT_INVESTOR_V2.md](EXACT_INVESTOR_V2.md) for the revised transitions,
+recorded broad-jump metrics, source limits, shared clock, reproduction and review gate.
+Use `npm run proof:exact-v2` and `npm run verify:exact-v2`. Previous exports remain
+unchanged. The final master, editable media package and email follow proof approval.

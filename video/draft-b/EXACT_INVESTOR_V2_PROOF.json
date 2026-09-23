@@ -1,0 +1,49 @@
+{
+  "createdAt": "2026-09-23T09:02:18.939Z",
+  "status": "V2 timed proof awaiting user creative review",
+  "file": "PoseTek-Investor-Exact-V2-Timed-Proof.mp4",
+  "bytes": 13098051,
+  "sha256": "c58e00aa763f461f2a810917445e314d1f46d2ab607afb58b13a583d5e79dd57",
+  "passed": true,
+  "durationSeconds": 119,
+  "reviewResolution": [
+    1280,
+    720
+  ],
+  "compositionResolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "frames": 3570,
+  "authoredWords": 203,
+  "passages": 9,
+  "captionCues": 39,
+  "sourceChecks": 41,
+  "encodedChecks": 26,
+  "levels": {
+    "integratedLufs": -15.97,
+    "truePeakDbtp": -2.22
+  },
+  "encodedCountdownAlignment": {
+    "passed": true,
+    "sampleRate": 48000,
+    "countdownLagSamples": 0,
+    "countdownCorrelation": 0.9999932941557614,
+    "spokenOneSeconds": 35.526,
+    "firstClearlyAirborneFrame": 1096,
+    "takeoffSeconds": 36.53333333333333,
+    "intervalSeconds": 1.007333333333328,
+    "toleranceSeconds": 0.03333333333333333,
+    "sourceAudioReservedInterval": {
+      "start": 21.5,
+      "end": 46.5
+    }
+  },
+  "approval": {
+    "creativeProofApproved": false,
+    "finalMasterRendered": false,
+    "finalEmailSent": false
+  },
+  "scope": "Video source and proof only. No website, native app or backend changes."
+}

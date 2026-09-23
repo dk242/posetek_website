@@ -100,3 +100,6 @@ export const InvestorExactFilm:React.FC<Props>=({audioEnabled=false,captions=[]}
   {audioEnabled&&<Audio src={staticFile('audio-investor-exact-v1/master.wav')}/>}
  </AbsoluteFill>;
 };
+
+// Shared presentation chrome; V1 scene timing and output remain unchanged.
+export {Fonts,Heading,Panel,Label,Platform,CapturePhone};
