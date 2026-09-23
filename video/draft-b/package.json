@@ -9,6 +9,9 @@
     "proof": "node scripts/render.mjs proof",
     "render": "node scripts/render.mjs final",
     "studio": "remotion studio src/index.ts",
+    "stills:exact": "node scripts/render-exact.mjs stills",
+    "proof:exact": "node scripts/render-exact.mjs proof",
+    "verify:exact": "node scripts/verify-exact-proof.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

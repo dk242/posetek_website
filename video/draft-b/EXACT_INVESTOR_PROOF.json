@@ -1,0 +1,38 @@
+{
+  "createdAt": "2026-09-23T08:04:48.709Z",
+  "status": "Timed proof awaiting user creative review; final master and email not yet authorized by proof approval",
+  "file": "PoseTek-Investor-Exact-V1-Timed-Proof.mp4",
+  "bytes": 12614465,
+  "sha256": "baf65cdaa69dd4fb7c1e5bc5a7569c39180c54fa7622f748059f069ab1d084eb",
+  "passed": true,
+  "durationSeconds": 173,
+  "reviewResolution": [
+    1280,
+    720
+  ],
+  "compositionResolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "frames": 5190,
+  "authoredWords": 203,
+  "passages": 9,
+  "captionCues": 39,
+  "levels": {
+    "integratedLufs": -15.96,
+    "truePeakDbtp": -1.49
+  },
+  "approval": {
+    "creativeProofApproved": false,
+    "finalMasterRendered": false,
+    "finalEmailSent": false
+  },
+  "scope": "Video source and proof only. No website, native app or backend changes.",
+  "encodedCountdownAlignment": {
+    "lagSamples": 0,
+    "sampleRate": 48000,
+    "correlation": 0.99999549,
+    "spokenOneSeconds": 39.026
+  }
+}

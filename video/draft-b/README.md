@@ -1,5 +1,13 @@
 # PoseTek video productions
 
+## Investor exact-script edition
+
+The separate September 23 investor edition follows all nine supplied passages
+verbatim. See [EXACT_INVESTOR_V1.md](EXACT_INVESTOR_V1.md) for the 2:53 timeline,
+source evidence, reproduction and required proof review before master/email.
+Run `npm run proof:exact` for the timed review. Previous editions below remain
+historical exports and are not the controlling copy for this investor edition.
+
 Editable PoseTek marketing films built from the approved
 September 21 storyboard and September 22 revision/investor plan. The user authorized production and email delivery on
 September 21, 2026. This project does not modify or deploy the website.
@@ -8,12 +16,13 @@ September 21, 2026. This project does not modify or deploy the website.
 
 | Edition | Picture | Purpose |
 | --- | --- | --- |
+| `exact` / `PoseTekInvestorExactV1` | 173s, 1920 × 1080 composition; 720p proof | Nine exact passages and the revised investor visual plan |
 | `product` / `PoseTekProductV1` | 150s, 1920 × 1080, 30fps | Supplied app/field recordings, verified movement comparisons and the assessment-to-training cycle |
 | `v3` / `PoseTekCoachesV3` | 52s, 1080 × 1920, 30fps | Tighter six-test scene and brand-led closing |
 | `investor` / `PoseTekInvestorV1` | 90s, 1920 × 1080, 30fps | Mission, product, first club partner, model and expansion strategy |
 | `v2` / `PoseTekDraftBV2` | 55s, 1080 × 1920, 30fps | Preserved previous coaching cut |
 
-The product demonstration follows the approved Pitch Doc and has its own source, factual boundaries and production receipt in [PRODUCT_DEMONSTRATION.md](PRODUCT_DEMONSTRATION.md). It requires an authorized local asset package; the generic asset preparation command below does not retrieve the private comparison recordings.
+The prior product demonstration has historical source and production notes in [PRODUCT_DEMONSTRATION.md](PRODUCT_DEMONSTRATION.md). Its adapted narration was superseded by the exact-script investor edition above. It requires an authorized local asset package; the generic asset preparation command below does not retrieve the private comparison recordings.
 
 The September 22 investor film intentionally omits monetary amounts, financial
 forecasts and SAFE terms. Its source boundaries are in

@@ -1,0 +1,168 @@
+{
+  "version": "investor-exact-v1",
+  "voice": "af_heart",
+  "language": "en-us",
+  "synthesis_rate": 1.0,
+  "output_dir": "audio-investor-exact-v1",
+  "bpm": 106,
+  "source": "Nine exact narration passages from the approved INVESTOR_EXACT_IMPLEMENTATION_PLAN.md; original words, casing, punctuation, and order retained.",
+  "pronunciation_only_substitutions": {
+    "posetek": "Pose Tech",
+    "professional/d1": "professional, D one"
+  },
+  "timeline": {
+    "duration": 173.0,
+    "fps": 30,
+    "duration_frames": 5190,
+    "original_demo": {
+      "start": 25.0,
+      "end": 50.0
+    },
+    "passage_starts": {
+      "passage_01": 0.35,
+      "passage_02": 14.35,
+      "passage_03": 50.35,
+      "passage_04": 59.35,
+      "passage_05": 71.35,
+      "passage_06": 99.15,
+      "passage_07": 112.35,
+      "passage_08": 140.35,
+      "passage_09": 149.35
+    },
+    "scene_ends": {
+      "passage_01": 14,
+      "passage_02": 25,
+      "passage_03": 59,
+      "passage_04": 71,
+      "passage_05": 87,
+      "passage_06": 112,
+      "passage_07": 140,
+      "passage_08": 149,
+      "passage_09": 158
+    },
+    "transitions": [
+      14,
+      50,
+      59,
+      71,
+      87,
+      112,
+      140,
+      149,
+      158,
+      166,
+      171
+    ],
+    "visual_only_coda": {
+      "start": 158,
+      "kick_review_end": 166,
+      "platform_end": 171,
+      "identity_end": 173
+    }
+  },
+  "passages": [
+    {
+      "id": "passage_01",
+      "text": "At posetek, we combine innovations in smartphone computing power, computer vision, and AI to bring elite level performance testing to every competitive soccer player looking to bring their game to the next level.",
+      "tts_text": "At Pose Tech, we combine innovations in smartphone computing power, computer vision, and AI to bring elite level performance testing to every competitive soccer player looking to bring their game to the next level.",
+      "text_sha256": "7853cf1f9a9a86e2085315e7b634cbd04587da3881d483b0e8bef4c765cfb542",
+      "caption_phrases": [
+        "At posetek, we combine innovations",
+        "in smartphone computing power,",
+        "computer vision, and AI to bring",
+        "elite level performance testing",
+        "to every competitive soccer player",
+        "looking to bring their game to the next level."
+      ]
+    },
+    {
+      "id": "passage_02",
+      "text": "Using just the smartphone, our custom made cones, and our proprietary technology, we are able to capture athletes' movements across a broad sets of movements",
+      "tts_text": "Using just the smartphone, our custom made cones, and our proprietary technology, we are able to capture athletes' movements across a broad sets of movements",
+      "text_sha256": "864b7e8fd94bcef2348be00d42f152fcd87815a96807e08c265223db0f5a44d1",
+      "caption_phrases": [
+        "Using just the smartphone, our custom made cones,",
+        "and our proprietary technology,",
+        "we are able to capture athletes' movements",
+        "across a broad sets of movements"
+      ]
+    },
+    {
+      "id": "passage_03",
+      "text": "Our technology captures the movements of the athletes with computer vision directly on the smartphone, processing them in real-time",
+      "tts_text": "Our technology captures the movements of the athletes with computer vision directly on the smartphone, processing them in real-time",
+      "text_sha256": "66789586d67a0d3d5b52e08973af571cc04f22eb03f45da2e970ed2a5dbe1d8d",
+      "caption_phrases": [
+        "Our technology captures the movements of the athletes",
+        "with computer vision directly on the smartphone,",
+        "processing them in real-time"
+      ]
+    },
+    {
+      "id": "passage_04",
+      "text": "And grades their performance both against the professional/d1 standard, along with where their position and where they sit on the developmental pathway",
+      "tts_text": "And grades their performance both against the professional, D one standard, along with where their position and where they sit on the developmental pathway",
+      "text_sha256": "b24ca1464ae35122b9976a18a439d69e87de4009cec3b4cf9eb537360f8df444",
+      "caption_phrases": [
+        "And grades their performance both",
+        "against the professional/d1 standard,",
+        "along with where their position",
+        "and where they sit on the developmental pathway"
+      ]
+    },
+    {
+      "id": "passage_05",
+      "text": "A deep understanding of how the player is developing allows us to produce personalized, customizable workout plans that target the things that specific player needs to focus on.",
+      "tts_text": "A deep understanding of how the player is developing allows us to produce personalized, customizable workout plans that target the things that specific player needs to focus on.",
+      "text_sha256": "a04c1cadb77cbe23e4c8d842d9ed1694613f20b5fd0be392b7f268051b5d4578",
+      "caption_phrases": [
+        "A deep understanding of how the player is developing",
+        "allows us to produce personalized, customizable workout plans",
+        "that target the things that specific player needs to focus on."
+      ]
+    },
+    {
+      "id": "passage_06",
+      "text": "Athletes can follow these workouts on the app, in the same way an athlete might work with a private trainer",
+      "tts_text": "Athletes can follow these workouts on the app, in the same way an athlete might work with a private trainer.",
+      "text_sha256": "b59108ee0e04c21b435527da8e8bda8153df0f85b5104fbe254d4d6b8ef60982",
+      "caption_phrases": [
+        "Athletes can follow these workouts on the app,",
+        "in the same way an athlete might work with a private trainer"
+      ],
+      "tts_terminal_pause": true
+    },
+    {
+      "id": "passage_07",
+      "text": "Our AI technology also compares your technique against the pros and finds your weaknesses and provides the tips and queues that closes the loop on performance improvement",
+      "tts_text": "Our AI technology also compares your technique against the pros and finds your weaknesses and provides the tips and queues that closes the loop on performance improvement",
+      "text_sha256": "2ce5b8cf19e090f17ca1bfe275b3ecae981701193ecb99cc9bad98381f2506c3",
+      "caption_phrases": [
+        "Our AI technology also compares your technique",
+        "against the pros and finds your weaknesses",
+        "and provides the tips and queues",
+        "that closes the loop on performance improvement"
+      ]
+    },
+    {
+      "id": "passage_08",
+      "text": "And periodic retesting and re-evaluation allows the athlete to grow with the platform.",
+      "tts_text": "And periodic retesting and re-evaluation allows the athlete to grow with the platform.",
+      "text_sha256": "4bd55865d2135c76fb34f42e21bbdc5d74d07214dfb8b6af941beac4cf49ab06",
+      "caption_phrases": [
+        "And periodic retesting and re-evaluation",
+        "allows the athlete to grow with the platform."
+      ]
+    },
+    {
+      "id": "passage_09",
+      "text": "One system that democratizes the technology and coaching assistance that only the pros used to get.",
+      "tts_text": "One system that democratizes the technology and coaching assistance that only the pros used to get.",
+      "text_sha256": "9f6c272734ebf3205a554b56bc285afbead1247911d91d077ee6989123a2edec",
+      "caption_phrases": [
+        "One system that democratizes the technology",
+        "and coaching assistance that only the pros used to get."
+      ]
+    }
+  ]
+}
