@@ -57,3 +57,13 @@ test("conflicting athlete UID bindings do not grant self access", async () => {
   const h = harness({}, { "players/player": { authenticationUID: "staff", userUID: "other" } });
   await assert.rejects(h.api.authorize(data, actor));
 });
+
+test("only hash-bound original observations declared by this incident may upload", async () => {
+  const id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+  const h = harness({ calibrationObservations: { [id]: "b".repeat(64) } });
+  const observation = { ...data, path: `failure_cases/processing-test/calibration_observations/${id}.png`, contentType: "image/png", sha256: "b".repeat(64) };
+  await h.api.authorize(observation, actor);
+  await assert.rejects(h.api.authorize({ ...observation, sha256: "a".repeat(64) }, actor));
+  await assert.rejects(h.api.authorize({ ...observation, path: observation.path.replace(id, "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") }, actor));
+  assert.equal(h.issued.length, 1);
+});

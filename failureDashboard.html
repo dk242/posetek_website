@@ -190,7 +190,7 @@
         <option value="resource_abort">Resource abort</option>
         <option value="calibration_rejected">Calibration rejected</option>
         <option value="station_setup_failed">Station setup</option>
-        <option value="system_diagnostic">OS diagnostic</option>
+        <option value="system_diagnostic">Launch / OS evidence</option>
       </select>
     </label>
     <label>Failed stage
@@ -290,7 +290,7 @@ const KIND_META = {
   resource_abort: { label: "Protective resource abort", cls: "partial" },
   calibration_rejected: { label: "Calibration rejected", cls: "hard" },
   station_setup_failed: { label: "Station setup", cls: "hard" },
-  system_diagnostic: { label: "Unmatched OS evidence", cls: "pose" },
+  system_diagnostic: { label: "Launch / unmatched OS evidence", cls: "pose" },
   hard_failure:          { label: "✕ hard failure",    cls: "hard" },
   partial_results:       { label: "◐ partial",         cls: "partial" },
   pose_validation_failed:{ label: "◇ pose validation", cls: "pose" }

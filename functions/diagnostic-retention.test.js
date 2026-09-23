@@ -62,3 +62,40 @@ test("an outstanding resumable session delays cleanup until its safety window ex
   await h.db.doc("failureCases/processing-test").update({ uploadSessionIssuedAt: FakeTimestamp.fromMillis(time - 9 * 86400000) });
   assert.deepEqual(await h.api.cleanIncident("processing-test"), { state: "expired" });
 });
+
+test("bundle expiry deletes only declared original observations", async () => {
+  const id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+  const h = harness({ calibrationObservations: { [id]: "a".repeat(64), "../../player": "bad" } });
+  await h.api.cleanIncident("processing-test");
+  assert.ok(h.deleted.includes(`failure_cases/processing-test/calibration_observations/${id}.png`));
+  assert.ok(h.deleted.every(path => !path.includes("..")));
+});
+
+test("terminal acknowledged attempts expire only when no incident or hold references them", async () => {
+  const id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+  const h = harness();
+  const target = h.db.doc(`processingAttempts/${id}`);
+  await target.set({ schemaVersion: 2, lifecycle: "committed", artifactUploadState: "complete",
+    reportedByUid: "reporter", manifestPath: `processing_attempts/reporter/${id}/manifest.json`,
+    artifactsAcknowledgedAt: FakeTimestamp.fromMillis(time - 31 * 86400000) });
+  await h.api.protect({ attemptId: id, hold: true, references: [] }, admin);
+  assert.deepEqual(await h.api.cleanAttempt(id), { skipped: true });
+  await h.api.protect({ attemptId: id, hold: false, references: [] }, admin);
+  await h.db.doc("failureCases/linked").set({ attemptId: id });
+  assert.deepEqual(await h.api.cleanAttempt(id), { skipped: true });
+  await h.db.doc("failureCases/linked").delete();
+  assert.deepEqual(await h.api.cleanAttempt(id), { state: "expired" });
+  assert.ok(h.deleted.includes(`processing_attempts/reporter/${id}/manifest.json`));
+  assert.equal((await target.get()).data().retentionState, "expired");
+});
+test("pending attempts and recent upload sessions cannot expire", async () => {
+  const id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+  for (const extra of [{ lifecycle: "processingStarted" }, { uploadSessionIssuedAt: FakeTimestamp.fromMillis(time) }]) {
+    const h = harness();
+    await h.db.doc(`processingAttempts/${id}`).set({ schemaVersion: 2, lifecycle: "committed", artifactUploadState: "complete",
+      reportedByUid: "reporter", manifestPath: `processing_attempts/reporter/${id}/manifest.json`,
+      artifactsAcknowledgedAt: FakeTimestamp.fromMillis(time - 31 * 86400000), ...extra });
+    assert.deepEqual(await h.api.cleanAttempt(id), { skipped: true });
+    assert.equal(h.deleted.length, 0);
+  }
+});

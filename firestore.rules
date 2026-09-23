@@ -732,13 +732,24 @@ match /drillCatalogMeta/{docId} {
           || (d.get('scope', 'attempt') == 'attempt'
             && d.playerDocumentID is string && recordingWriter(d.playerDocumentID)));
     }
+    function diagnosticObservationAt(m, i) {
+      let keys = m.keys();
+      return keys.size() <= i || (keys[i].matches('^[a-f0-9-]{36}$')
+        && m[keys[i]] is string && m[keys[i]].matches('^[a-f0-9]{64}$'));
+    }
+    function diagnosticObservations(d) {
+      let m = d.get('calibrationObservations', {});
+      return m is map && m.size() <= 4 && diagnosticObservationAt(m, 0)
+        && diagnosticObservationAt(m, 1) && diagnosticObservationAt(m, 2)
+        && diagnosticObservationAt(m, 3);
+    }
     function diagnosticShape(d) {
-      return d.schemaVersion == 2 && d.sequence is int && d.sequence >= 1
+      return diagnosticObservations(d) && d.schemaVersion == 2 && d.sequence is int && d.sequence >= 1
         && d.sequence <= 1000000000 && d.occurredAt is timestamp
         && d.reportedByUid is string && d.reportedByUid.size() <= 128
         && d.keys().hasOnly(['schemaVersion','scope','kind','reportedByUid','originReporterUid',
           'playerDocumentID','attemptId','processingRunId','latestRunId','lastStage','repId','originLaunchId','drillType','sequence',
-          'occurredAt','lifecycle','manifestPath','build','calibrationId','calibrationObservationId',
+          'occurredAt','lifecycle','manifestPath','build','calibrationId','calibrationObservationId','calibrationObservations',
           'failureStage','message','failedSteps','classification','artifactUploadState','storage','createdAt','updatedAt',
           'userNote','userNoteCreatedAt','setupOperationId','testingEventId','stationId','recordingDeviceId','setupVersion',
           'artifactsAcknowledgedAt','investigationHold','artifactReferences','retentionState',
@@ -752,7 +763,7 @@ match /drillCatalogMeta/{docId} {
         && (!('build' in d) || (d.build is string && d.build.size() <= 128))
         && (!('drillType' in d) || (d.drillType is string && d.drillType.size() <= 64))
         && (!('lifecycle' in d) || d.lifecycle in ['captureIntent','recording','clipRetained',
-          'processingStarted','computeCompleted','prepared','failedRecoverably','cancelled',
+          'processingQueued','processingStarted','computeCompleted','prepared','failedRecoverably','cancelled',
           'interruptedUnknown','commitPending','committed'])
         && (!('artifactUploadState' in d) || d.artifactUploadState in ['pending','partial','complete'])
         && (!('classification' in d) || d.classification in ['resourcePressureAbort','interruptedUnknown',
@@ -779,7 +790,8 @@ match /drillCatalogMeta/{docId} {
           && request.resource.data.manifestPath == 'processing_attempts/' + request.auth.uid + '/' + attemptId + '/manifest.json';
       }
       allow create: if validAttempt() && request.resource.data.createdAt == request.time
-        && !('uploadSessionIssuedAt' in request.resource.data);
+        && !request.resource.data.keys().hasAny(['artifactsAcknowledgedAt','investigationHold','artifactReferences',
+          'retentionState','retentionReviewedBy','retentionReviewedAt','retentionStartedAt','retentionCompletedAt','uploadSessionIssuedAt']);
       allow update: if validAttempt() && resource.data.reportedByUid == request.auth.uid && diagnosticUpdate();
       allow delete: if false;
     }
@@ -796,7 +808,9 @@ match /drillCatalogMeta/{docId} {
               && ((d.get('processingRunId', null) != null && reportId == 'processing-' + d.processingRunId)
                 || (d.get('processingRunId', null) == null && reportId == 'capture-' + d.attemptId)))
             || (d.get('scope', '') == 'stationSetup' && reportId == 'setup-' + d.setupOperationId)
-            || (d.get('scope', '') == 'actor' && reportId.matches('^system-[a-f0-9]{64}$')))
+            || (d.get('scope', '') == 'actor' && (reportId.matches('^system-[a-f0-9]{64}$')
+              || (d.get('originLaunchId', '') is string && reportId == 'launch-' + d.originLaunchId.lower()
+                && reportId.matches('^launch-[a-f0-9-]{36}$')))))
           && d.storage is map && d.storage.size() <= 8
           && d.storage.prefix == 'failure_cases/' + reportId
           && d.storage.keys().hasOnly(['prefix','reportPath','videoPath','logPath','calibrationPath','calibrationImagePath','systemDiagnosticPath'])

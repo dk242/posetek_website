@@ -13,8 +13,8 @@ function createDiagnosticRetention({ db, bucket, FieldValue, HttpsError, now = D
     return db.collection("failureCases").doc(id);
   };
 
-  async function acknowledge(id) {
-    const target = ref(id);
+  async function acknowledge(id, collection = "failureCases") {
+    const target = collection === "processingAttempts" ? db.collection(collection).doc(id) : ref(id);
     return db.runTransaction(async tx => {
       const snapshot = await tx.get(target);
       const d = snapshot.data();
@@ -30,7 +30,8 @@ function createDiagnosticRetention({ db, bucket, FieldValue, HttpsError, now = D
         || data.references.some(v => typeof v !== "string" || !/^[a-zA-Z0-9_-]{1,128}$/.test(v))) {
       throw new HttpsError("invalid-argument", "Supply a hold and bounded reference IDs.");
     }
-    const target = ref(data.incidentId);
+    if (data.attemptId != null && !/^[a-f0-9-]{36}$/.test(data.attemptId)) throw new HttpsError("invalid-argument", "Invalid attempt ID.");
+    const target = data.attemptId ? db.collection("processingAttempts").doc(data.attemptId) : ref(data.incidentId);
     return db.runTransaction(async tx => {
       const snapshot = await tx.get(target);
       const d = snapshot.data();
@@ -69,7 +70,10 @@ function createDiagnosticRetention({ db, bucket, FieldValue, HttpsError, now = D
     // A failed object delete leaves the claim in place. Retries may repeat
     // successful deletions; 404 is success. Metadata remains an authorization
     // tombstone and an audit of expired evidence, not a promise of completeness.
-    for (const name of phase === "videoDeleting" ? ["video.mov"] : FILES) {
+    const record = (await target.get()).data();
+    const observations = Object.keys(record.calibrationObservations || {}).filter(id => /^[a-f0-9-]{36}$/.test(id)).slice(0, 4);
+    const files = [...FILES, ...observations.map(id => `calibration_observations/${id}.png`)];
+    for (const name of phase === "videoDeleting" ? ["video.mov"] : files) {
       await bucket.file(`failure_cases/${id}/${name}`).delete({ ignoreNotFound: true });
     }
     await db.runTransaction(async tx => {
@@ -79,6 +83,39 @@ function createDiagnosticRetention({ db, bucket, FieldValue, HttpsError, now = D
         retentionCompletedAt: FieldValue.serverTimestamp() });
     });
     return { state: phase === "videoDeleting" ? "videoExpired" : "expired" };
+  }
+
+  async function cleanAttempt(id) {
+    if (!/^[a-f0-9-]{36}$/.test(id)) return { skipped: true };
+    const target = db.collection("processingAttempts").doc(id);
+    // Incident evidence is retained independently. Preserve the shared history
+    // whenever any incident references it, including held/partial old reports.
+    const incidents = await db.collection("failureCases").where("attemptId", "==", id).limit(1).get();
+    if (incidents.docs.length) return { skipped: true };
+    const path = await db.runTransaction(async tx => {
+      const d = (await tx.get(target)).data();
+      if (!d || d.schemaVersion !== 2 || d.investigationHold === true || (d.artifactReferences?.length ?? 0) > 0
+          || d.retentionState === "expired" || !["committed", "cancelled"].includes(d.lifecycle)
+          || typeof d.reportedByUid !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(d.reportedByUid)
+          || d.manifestPath !== `processing_attempts/${d.reportedByUid}/${id}/manifest.json`) return null;
+      if (d.retentionState === "allDeleting") return d.manifestPath;
+      const acknowledged = milliseconds(d.artifactsAcknowledgedAt);
+      const updated = milliseconds(d.updatedAt);
+      const lastSession = milliseconds(d.uploadSessionIssuedAt);
+      if (d.artifactUploadState !== "complete" || !Number.isFinite(acknowledged)
+          || now() - Math.max(acknowledged, Number.isFinite(updated) ? updated : acknowledged) < 30 * DAY
+          || (Number.isFinite(lastSession) && now() - lastSession < 8 * DAY)) return null;
+      tx.update(target, { retentionState: "allDeleting", retentionStartedAt: FieldValue.serverTimestamp() });
+      return d.manifestPath;
+    });
+    if (!path) return { skipped: true };
+    await bucket.file(path).delete({ ignoreNotFound: true });
+    await db.runTransaction(async tx => {
+      const d = (await tx.get(target)).data();
+      if (d?.retentionState !== "allDeleting") throw new Error("Attempt retention claim changed");
+      tx.update(target, { retentionState: "expired", retentionCompletedAt: FieldValue.serverTimestamp() });
+    });
+    return { state: "expired" };
   }
 
   async function sweep() {
@@ -95,10 +132,17 @@ function createDiagnosticRetention({ db, bucket, FieldValue, HttpsError, now = D
     }
     // A rotating bounded cursor avoids held/partial oldest rows starving later
     // candidates. A failed deletion is revisited on the next sweep cycle.
-    await control.set({ cursor: batch.docs.length === 50 ? batch.docs.at(-1).id : null,
+    let attemptQuery = db.collection("processingAttempts").orderBy("__name__").limit(50);
+    if (typeof config.attemptCursor === "string" && /^[a-f0-9-]{36}$/.test(config.attemptCursor)) attemptQuery = attemptQuery.startAfter(config.attemptCursor);
+    const attempts = await attemptQuery.get();
+    for (const snapshot of attempts.docs) {
+      try { results.push(await cleanAttempt(snapshot.id)); }
+      catch { results.push({ retryPending: true }); }
+    }
+    await control.set({ attemptCursor: attempts.docs.length === 50 ? attempts.docs.at(-1).id : null, cursor: batch.docs.length === 50 ? batch.docs.at(-1).id : null,
       lastSweepAt: FieldValue.serverTimestamp(), lastBatchCount: batch.docs.length }, { merge: true });
     return { checked: batch.docs.length, results };
   }
-  return { acknowledge, protect, cleanIncident, sweep };
+  return { acknowledge, protect, cleanIncident, cleanAttempt, sweep };
 }
 module.exports = { createDiagnosticRetention };
