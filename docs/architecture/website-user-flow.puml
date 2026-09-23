@@ -1,0 +1,184 @@
+@startuml
+title PoseTek website — literal user flow and route map
+
+!pragma layout smetana
+left to right direction
+skinparam backgroundColor #FCFDFB
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam ArrowColor #335C4A
+skinparam ArrowThickness 1
+skinparam rectangleBorderColor #537363
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBorderColor #9AA8A0
+skinparam noteBackgroundColor #FFFDEB
+
+actor "User" as User
+
+rectangle "Public marketing\n/  Players\n/coaches  Coaches\nsource: pages/home + pages/coaches" as Marketing #EAF4EC
+rectangle "Book a performance test\n/bookPerformanceTest.html\nlegacy/static page" as Booking #F4F4F4
+rectangle "Sign in / sign up\n/signin\nalias: /kickai.html\nsource: pages/landing/" as SignIn #EAF4EC
+rectangle "Shared profile or drill link\n/athlete?share=TOKEN\n/drills/*?share=TOKEN" as SharedLink #EAF4EC
+rectangle "Shared read-only results\nAthlete home + drills only\n(no login required)" as SharedView #EAF4EC
+
+User --> Marketing
+User --> SharedLink
+Marketing --> Booking : booking CTA
+Marketing --> SignIn : sign in
+SharedLink --> SharedView : valid token
+
+rectangle "Firebase sign-in succeeds?" as SignedIn #FFFDEB
+rectangle "Verified @posetek.net\nadmin identity?" as AdminCheck #FFFDEB
+rectangle "Unverified PoseTek-domain account\nverification message + sign out" as VerifyAdmin #FFF3CD
+rectangle "Canonical club role is\nmanager or coach?" as ClubCheck #FFFDEB
+rectangle "Independent coach\ndocument found?" as CoachCheck #FFFDEB
+rectangle "Owned player\ndocument found?" as PlayerCheck #FFFDEB
+rectangle "Safe same-origin\nreturnTo supplied?" as CoachReturn #FFFDEB
+rectangle "Safe same-origin\nreturnTo supplied?" as PlayerReturn #FFFDEB
+rectangle "Login error\nAccount not found in system" as LoginError #FDECEC
+
+rectangle "Allowlisted return target\nclean: /feed · /athlete · /roster · /drills/{three ported drills}\nlegacy: feed.html · profile.html · coachesview.html\nbroadJumpPage.html · changeOfDirectionPage.html · dribblingPage.html\nkickingview.html · sprintPage.html · StaticJumpPage.html · freeRecordPage.html" as ReturnTarget #EAF4EC
+note bottom of ReturnTarget
+  returnTo is honored only by the independent-coach
+  and player fallbacks. Admin and canonical club staff
+  are sent to their role homes first.
+end note
+
+package "Player flow" as PlayerFlow {
+  rectangle "Community home\n/feed?player={id}&userType=player\nsource: pages/feed/" as PlayerFeed #EAF4EC
+  rectangle "Athlete experience\n/athlete\nalias: /profile.html\nsource: pages/athlete-portal/" as Athlete #EAF4EC
+  rectangle "You / profile\nbenchmarks, testing profile,\ntechnique entry" as PlayerProfile
+  rectangle "Drills\nrecorded sessions, metrics, video\nnew capture stays in mobile app" as PlayerDrills
+  rectangle "Training\nplans, workouts, history" as PlayerTraining
+  rectangle "AI Coach\nchat → workout handoff" as PlayerCoach
+  rectangle "Leaderboards\nteam + standards" as PlayerBoards
+
+  PlayerFeed --> Athlete : bottom nav: You / Drills / Training / Leaderboards
+  Athlete --> PlayerFeed : Home tab
+  Athlete --> PlayerProfile : view=home
+  Athlete --> PlayerDrills : view=drills
+  Athlete --> PlayerTraining : view=training
+  Athlete --> PlayerBoards : view=leaderboards
+  PlayerProfile --> PlayerCoach : Ask your AI Coach
+  PlayerTraining --> PlayerCoach : Ask your AI Coach
+  PlayerCoach --> PlayerTraining : accepted workout handoff
+}
+
+package "Canonical club staff flow" as ClubFlow {
+  rectangle "Organization home\n/organization\nsource: pages/organization/" as OrgHome #EAF4EC
+  rectangle "Claim staff invitation\n/join\nsource: pages/staff-invite/" as Join
+  rectangle "Team dashboard\n/dashboard?orgId=&teamId=\nsource: pages/coach-dashboard/" as Dashboard
+  rectangle "Dashboard athlete detail\n/dashboard?athlete={id}\nprogram + stats tabs" as TeamAthleteDetail
+  rectangle "Roster\n/roster?team=\nsource: pages/roster/" as ClubRoster
+  rectangle "Personalized programs\n/programs?orgId=&teamId=\nsource: pages/programs/" as Programs
+  rectangle "Team Insights\n/insights?orgId=&teamId=\nsource: pages/insights/" as Insights
+  rectangle "Athlete profile / results\n/athlete?player={id}" as StaffAthlete
+  rectangle "Community feed\n/feed?organizationId={id}" as StaffFeed
+
+  OrgHome --> Join : claim invitation
+  OrgHome --> Dashboard : selected team (coach)
+  OrgHome --> Programs : selected team
+  OrgHome --> Insights : selected team
+  OrgHome --> StaffAthlete : selected player
+  OrgHome --> StaffFeed : community feed
+  ClubRoster --> Dashboard
+  ClubRoster --> StaffAthlete
+  Dashboard --> ClubRoster
+  Dashboard --> TeamAthleteDetail : select athlete
+  TeamAthleteDetail --> Dashboard : back
+  Dashboard --> Programs : create / edit plan
+  Dashboard --> Insights
+  StaffAthlete --> OrgHome : canonical club return
+  StaffFeed --> OrgHome
+}
+
+package "Independent coach flow" as CoachFlow {
+  rectangle "Coach roster home\n/roster?userType=coach\nsource: pages/roster/" as Roster #EAF4EC
+  rectangle "Coach analytics\n/dashboard\nsource: pages/coach-dashboard/" as SoloDashboard
+  rectangle "Dashboard athlete detail\n/dashboard?athlete={id}\nprogram + stats tabs" as SoloDashboardDetail
+  rectangle "Selected athlete\n/athlete?player={id}&userType=coach" as SoloAthlete
+  rectangle "Programs\n/programs?players={id}" as SoloPrograms
+  rectangle "Community feed\n/feed" as CoachFeed
+
+  Roster --> SoloDashboard
+  Roster --> SoloAthlete
+  Roster --> CoachFeed
+  SoloDashboard --> Roster
+  SoloDashboard --> SoloDashboardDetail : select athlete
+  SoloDashboardDetail --> SoloDashboard : back
+  SoloDashboard --> SoloPrograms
+  SoloAthlete --> Roster : independent-coach return
+}
+
+package "PoseTek admin flow" as AdminFlow {
+  rectangle "Admin home\n/admin\nsource: pages/admin/AdminPage.tsx" as AdminHome #EAF4EC
+  rectangle "Community feeds\n/admin/feeds → /feed" as AdminFeed
+  rectangle "Drill library\n/admin/drills\nnew · detail · edit" as AdminDrills
+  rectangle "Organizations\n/admin/organizations" as AdminOrganizations
+  rectangle "Accounts\n/admin/accounts\ncoach + player detail" as AdminAccounts
+  rectangle "Player results → rep tools\n/admin/accounts/player/:id/results/..." as AdminResults
+  rectangle "Personalized planner\n/admin/programs\n+ workout editor" as AdminPrograms
+  rectangle "Team Insights\n/insights?from=accounts" as AdminInsights
+  rectangle "Technique review\n/admin/analysis" as AdminAnalysis
+
+  AdminHome --> AdminFeed
+  AdminHome --> AdminDrills
+  AdminHome --> AdminOrganizations
+  AdminHome --> AdminAccounts
+  AdminHome --> AdminPrograms
+  AdminHome --> AdminInsights
+  AdminHome --> AdminAnalysis
+  AdminAccounts --> AdminResults
+  AdminResults --> AdminAccounts
+  AdminOrganizations --> AdminInsights
+  AdminOrganizations --> AdminPrograms
+}
+
+SignIn --> SignedIn : submit credentials
+SignedIn --> SignIn : no / auth error
+SignedIn --> AdminCheck : yes
+AdminCheck --> VerifyAdmin : PoseTek domain, not verified
+AdminCheck --> AdminHome : verified admin
+AdminCheck --> ClubCheck : not admin
+ClubCheck --> OrgHome : manager or club coach
+ClubCheck --> CoachCheck : neither
+CoachCheck --> CoachReturn : yes
+CoachCheck --> PlayerCheck : no
+PlayerCheck --> PlayerReturn : yes
+PlayerCheck --> LoginError : no
+CoachReturn --> ReturnTarget : yes
+CoachReturn --> Roster : no
+PlayerReturn --> ReturnTarget : yes
+PlayerReturn --> PlayerFeed : no
+
+rectangle "Sign out\n→ /signin (or auth observer redirects there)" as SignOut #F4F4F4
+PlayerFeed --> SignOut
+Athlete --> SignOut
+OrgHome --> SignOut
+Roster --> SignOut
+Dashboard --> SignOut
+Insights --> SignOut
+AdminHome --> SignOut
+SignOut --> SignIn
+
+note right of OrgHome
+  Manager: manage teams, staff access, players,
+  programs and insights.
+  Assigned coach: limited to current assigned teams.
+  Opening /roster as manager/admin redirects here.
+end note
+
+note bottom of Athlete
+  Authenticated access mode is resolved from the requested player:
+  athlete owner, assigned coach, manager, or admin.
+  Shared-token access bypasses auth but is read-only and reduced.
+end note
+
+legend bottom
+  Green nodes = primary entry/home surfaces
+  Gray nodes = supporting or nested destinations
+  Yellow nodes = identity decision / verification handling
+  Route aliases retain legacy links and query-string meanings.
+endlegend
+@enduml

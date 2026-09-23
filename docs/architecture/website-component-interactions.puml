@@ -1,0 +1,167 @@
+@startuml
+title PoseTek website — component interactions
+
+!pragma layout smetana
+left to right direction
+skinparam backgroundColor #FCFDFB
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam ArrowColor #335C4A
+skinparam ArrowThickness 1
+skinparam packageBorderColor #7C8C84
+skinparam packageBackgroundColor #F5F8F5
+skinparam componentBorderColor #537363
+skinparam componentBackgroundColor #FFFFFF
+skinparam databaseBorderColor #537363
+skinparam databaseBackgroundColor #F2F7F3
+skinparam noteBorderColor #9AA8A0
+skinparam noteBackgroundColor #FFFDEB
+
+actor "Visitor / signed-in user" as User
+
+package "Production delivery" as Delivery {
+  component "Netlify routing\nnetlify.toml" as Netlify
+  component "Players marketing entry\n/ + /index.html\nindex.html → home-entry.tsx" as PlayersEntry
+  component "Coaches marketing entry\n/coaches\ncoaches/index.html → coaches-entry.tsx" as CoachesEntry
+  component "Authenticated application shell\n/application.html\nmain.tsx → App.tsx" as AppEntry
+  component "Preserved legacy/static pages\nrepository-root *.html\n(e.g. booking + older analyses)" as LegacyPages
+}
+
+package "Public marketing UI" as Marketing {
+  component "HomePage\napp/src/pages/home/" as HomePage
+  component "CoachesPage\napp/src/pages/coaches/" as CoachesPage
+  component "MarketingHeader\nshared Players / Coaches / Sign in links" as MarketingHeader
+}
+
+package "React application router" as RouterLayer {
+  component "BrowserRouter + lazy route table\napp/src/App.tsx" as Router
+  component "UsageTracking\napp/src/lib/insight-usage/" as UsageTracking
+}
+
+package "Route-level surfaces — app/src/pages/" as Pages {
+  package "Identity" as IdentityPages {
+    component "LandingPage\n/signin (+ /kickai.html)" as Landing
+    component "StaffInvitePage\n/join" as Join
+  }
+
+  package "Community + staff" as StaffPages {
+    component "FeedPage\n/feed" as Feed
+    component "OrganizationPage\n/organization\n/admin/organizations" as Organization
+    component "RosterPage\n/roster" as Roster
+    component "CoachDashboardPage\n/dashboard" as Dashboard
+    component "ProgramsPage\n/programs" as Programs
+    component "InsightsPage\n/insights" as Insights
+  }
+
+  package "Athlete experience" as AthletePages {
+    component "AthletePortalPage\n/athlete (+ /profile.html)" as AthletePortal
+    component "PlayerExperience\nHome · Drills · Training\nLeaderboards · You · AI Coach" as PlayerExperience
+    component "DrillSharePage\n/drills/broad-jump\n/drills/change-of-direction\n/drills/dribbling" as DrillShare
+    component "AthleteStats + drill/session views\napp/src/components/athlete-stats/\napp/src/pages/athlete-portal/views/" as AthleteViews
+  }
+
+  package "Admin console — /admin/*" as AdminPages {
+    component "AdminPage + AdminHeader\nroute guard + nested router" as Admin
+    component "Drill library / editor" as AdminDrills
+    component "Accounts → coach/player\n→ results → rep tools" as AdminAccounts
+    component "Organizations + Insights" as AdminOrgs
+    component "Personalized planner\n+ workout editor" as AdminPrograms
+    component "Technique review" as AdminAnalysis
+  }
+}
+
+package "Shared client modules — app/src/lib/" as Shared {
+  component "Firebase compat facade\nfirebase.ts" as FirebaseFacade
+  component "UID-first identity\nidentity.ts" as IdentityResolver
+  component "Club membership + context\norganization.ts\norganization-data.ts" as ClubContext
+  component "Route/query contracts\npage-specific lib/ modules" as Contracts
+}
+
+package "Firebase / server services" as Backend {
+  database "Firebase Authentication" as Auth
+  database "Cloud Firestore\nplayers, reps, teams, organizations,\nplans, workouts, social + admin data" as Firestore
+  database "Cloud Storage\nrecordings, artifacts, scans, drill media" as Storage
+  component "Callable Cloud Functions\nfunctions/\nclub, social, shares, insights,\nleaderboards, revisions, invitations" as Functions
+  component "LLM gateway + llmJobs\nAI coach, plan generation, analysis" as LLM
+}
+
+User --> Netlify : requests URL
+Netlify --> PlayersEntry : / or /index.html
+Netlify --> CoachesEntry : /coaches
+Netlify --> LegacyPages : existing static file
+Netlify --> AppEntry : all other non-file routes
+
+PlayersEntry --> HomePage
+CoachesEntry --> CoachesPage
+HomePage --> MarketingHeader
+CoachesPage --> MarketingHeader
+MarketingHeader --> Landing : Sign in
+AppEntry --> Router
+Router --> UsageTracking
+Router --> IdentityPages : identity routes
+Router --> StaffPages : staff + community routes
+Router --> AthletePages : athlete + shared routes
+Router --> AdminPages : /admin/*
+
+AthletePortal --> PlayerExperience : athlete / preview access
+AthletePortal --> AthleteViews : staff, admin, shared access
+DrillShare --> AthleteViews
+
+Admin --> AdminDrills
+Admin --> AdminAccounts
+Admin --> AdminOrgs
+Admin --> AdminPrograms
+Admin --> AdminAnalysis
+AdminOrgs --> Organization : reuse with admin=true
+AdminOrgs --> Insights
+AdminPrograms ..> Programs : shared planner components
+
+IdentityPages --> IdentityResolver : coach / player lookup
+IdentityPages --> ClubContext : manager / club coach lookup
+StaffPages --> IdentityResolver
+StaffPages --> ClubContext
+AthletePages --> IdentityResolver
+AthletePages --> ClubContext
+AdminPages --> IdentityResolver : verified @posetek.net guard
+AdminPages --> ClubContext
+
+IdentityPages --> FirebaseFacade
+StaffPages --> FirebaseFacade
+AthletePages --> FirebaseFacade
+AdminPages --> FirebaseFacade
+UsageTracking --> FirebaseFacade
+IdentityResolver --> FirebaseFacade
+ClubContext --> FirebaseFacade
+Contracts ..> Pages : query, role, plan and data rules
+
+FirebaseFacade --> Auth
+FirebaseFacade --> Firestore
+FirebaseFacade --> Storage
+FirebaseFacade --> Functions
+Functions --> Firestore
+Functions --> Storage
+Functions --> LLM
+PlayerExperience --> LLM : coach chat / plan handoff
+AdminPrograms --> LLM : draft + review workflow
+AdminAnalysis --> LLM : technique analysis jobs
+
+note bottom of Netlify
+  Marketing is built as two isolated Vite entries.
+  The authenticated SPA is served from application.html.
+  Existing files win before the SPA fallback.
+end note
+
+note bottom of IdentityResolver
+  Client guards choose what to render.
+  Firebase rules and callable authorization
+  remain the actual security boundary.
+end note
+
+legend bottom
+  Solid arrows = runtime request, navigation, or data call
+  Dotted arrows = shared implementation or contract dependency
+endlegend
+@enduml
