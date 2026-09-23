@@ -35,6 +35,16 @@ def normalize(source,target,dest):
     params=f"loudnorm=I={target}:TP=-1.5:LRA=7:measured_I={x['input_i']}:measured_TP={x['input_tp']}:measured_LRA={x['input_lra']}:measured_thresh={x['input_thresh']}:offset={x['target_offset']}:linear=true"
     run(['-i',source,'-af',params,'-ar',SR,'-c:a','pcm_s24le',dest])
 
+def enforce_silence(path):
+    # Normalization/resampling may leave boundary ringing. Keep original-audio
+    # slots sample-exactly empty so another source can be added by the film.
+    if not SPEC.get('silent_intervals'):
+        return
+    audio, sr = sf.read(path)
+    for interval in SPEC['silent_intervals']:
+        audio[round(interval['start'] * sr):round(interval['end'] * sr)] = 0
+    sf.write(path, audio, sr, subtype='PCM_24')
+
 def resample_voice(p):
     dest=WORK/(p.stem+'-48k.wav')
     run(['-i',p,'-af','highpass=f=75,lowpass=f=10500,acompressor=threshold=0.16:ratio=2:attack=15:release=120:makeup=1','-ar',SR,'-c:a','pcm_s24le',dest])
@@ -91,6 +101,7 @@ for seg in TIMINGS:
             captions.append({'start':round(seg['start']+begin,3),'end':round(seg['start']+end,3),'text':group})
 sf.write(WORK/'narration-raw.wav',narration,SR,subtype='PCM_24')
 normalize(WORK/'narration-raw.wav',-17,OUT/'narration.wav')
+enforce_silence(OUT/'narration.wav')
 
 bed=np.zeros((N,2),dtype=np.float64)
 beat=60/SPEC['bpm']
@@ -187,12 +198,22 @@ for a,b in speech_ranges:
     gain[finish:release]=np.minimum(gain[finish:release],np.linspace(.6,.93,release-finish))
 gain[:int(.32*SR)]*=np.linspace(0,1,int(.32*SR))
 gain[-int(1.8*SR):]*=np.linspace(1,0,int(1.8*SR))
+for interval in SPEC.get('silent_intervals', []):
+    start, end = round(interval['start'] * SR), round(interval['end'] * SR)
+    fade = round(interval.get('fade_seconds', .35) * SR)
+    before, after = max(0, start - fade), min(N, end + fade)
+    if start > before:
+        gain[before:start] *= np.linspace(1, 0, start - before)
+    gain[start:end] = 0
+    if after > end:
+        gain[end:after] *= np.linspace(0, 1, after - end)
 bed*=gain[:,None]
 sf.write(OUT/'bed.wav',bed,SR,subtype='PCM_24')
 narration,_=sf.read(OUT/'narration.wav')
 mix=bed+np.column_stack([narration,narration])
 sf.write(WORK/'mix-raw.wav',mix,SR,subtype='PCM_24')
 normalize(WORK/'mix-raw.wav',-16,OUT/'master.wav')
+enforce_silence(OUT/'master.wav')
 (OUT/'captions.json').write_text(json.dumps(captions,indent=2)+'\n',encoding='utf-8')
 (OUT/'segments.json').write_text(json.dumps(TIMINGS,indent=2)+'\n',encoding='utf-8')
 def srt_time(t):
@@ -200,6 +221,9 @@ def srt_time(t):
     return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}'
 (OUT/'captions.srt').write_text('\n\n'.join(f"{i+1}\n{srt_time(c['start'])} --> {srt_time(c['end'])}\n{c['text']}" for i,c in enumerate(captions))+'\n',encoding='utf-8')
 report={'script':SCRIPT_PATH.name,'voice':SPEC['voice'],'model':'Kokoro-82M v1.0, Apache-2.0','runtime':'kokoro-onnx 0.6.1, MIT','bpm':SPEC['bpm'],'score':'Original procedural synthesis. No third-party music or audio samples.','sample_rate':SR,'duration_seconds':SPEC['duration'],'captions':'Sentence boundaries aligned to waveform silence runs on a 10 ms grid; long-caption subdivisions are provisional until speech QA.','audio':{}}
+if SPEC.get('silent_intervals'):
+    report['silent_intervals'] = SPEC['silent_intervals']
+    report['original_app_audio_included'] = False
 for name in ['narration.wav','bed.wav','master.wav']:
     p=OUT/name
     x,sr=sf.read(p)

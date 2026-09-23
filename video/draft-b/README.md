@@ -1,4 +1,4 @@
-# PoseTek Draft B — Clubs & Coaches
+# PoseTek video productions
 
 Editable PoseTek marketing films built from the approved
 September 21 storyboard and September 22 revision/investor plan. The user authorized production and email delivery on
@@ -8,9 +8,12 @@ September 21, 2026. This project does not modify or deploy the website.
 
 | Edition | Picture | Purpose |
 | --- | --- | --- |
+| `product` / `PoseTekProductV1` | 150s, 1920 × 1080, 30fps | Supplied app/field recordings, verified movement comparisons and the assessment-to-training cycle |
 | `v3` / `PoseTekCoachesV3` | 52s, 1080 × 1920, 30fps | Tighter six-test scene and brand-led closing |
 | `investor` / `PoseTekInvestorV1` | 90s, 1920 × 1080, 30fps | Mission, product, first club partner, model and expansion strategy |
 | `v2` / `PoseTekDraftBV2` | 55s, 1080 × 1920, 30fps | Preserved previous coaching cut |
+
+The product demonstration follows the approved Pitch Doc and has its own source, factual boundaries and production receipt in [PRODUCT_DEMONSTRATION.md](PRODUCT_DEMONSTRATION.md). It requires an authorized local asset package; the generic asset preparation command below does not retrieve the private comparison recordings.
 
 The September 22 investor film intentionally omits monetary amounts, financial
 forecasts and SAFE terms. Its source boundaries are in
@@ -38,6 +41,9 @@ node scripts/render.mjs final v3
 node scripts/render.mjs stills investor
 node scripts/render.mjs proof investor
 node scripts/render.mjs final investor
+node scripts/render.mjs stills product
+node scripts/render.mjs proof product
+node scripts/render.mjs final product
 ```
 
 Current masters are `output/v3/PoseTek-Coaches-V3.mp4` and
@@ -48,6 +54,7 @@ and captions read by the render script; Studio's default props are silent.
 
 ## Source and media
 
+- `src/ProductFilm.tsx` / `ProductPose.tsx` / `ProductScreens.tsx`: 150-second product demonstration, authentic app audio, source-derived comparison motion and labeled native UI reconstructions.
 - `src/FilmV3.tsx` / `RevisionScenesV3.tsx`: scoped 52-second coaching revision.
 - `src/InvestorFilm.tsx`: purpose-built landscape investor composition.
 - `src/Film.tsx`: seven timed scenes, brand treatment, coach sample, training

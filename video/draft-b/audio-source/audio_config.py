@@ -25,4 +25,13 @@ def load_config():
     for seg in spec['segments']:
         if not 0 <= seg['start'] < seg['latest_end'] <= spec['duration']:
             raise ValueError(f"Invalid timing for {seg['id']}")
+    for interval in spec.get('silent_intervals', []):
+        start, end = interval['start'], interval['end']
+        if not 0 <= start < end <= spec['duration']:
+            raise ValueError('Invalid silent interval')
+        if interval.get('fade_seconds', .35) < 0:
+            raise ValueError('Silent-interval fade must not be negative')
+        for seg in spec['segments']:
+            if seg['start'] < end and seg['latest_end'] > start:
+                raise ValueError(f"Narration {seg['id']} overlaps reserved original-audio interval")
     return script, spec, work, out

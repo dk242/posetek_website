@@ -1,5 +1,36 @@
 # Draft B audio
 
+## Product demonstration V1
+
+`product-demo.json` describes the approved 150-second landscape product film.
+It uses the same `af_heart` preset and original restrained 106 BPM score. Spoken
+company names use `Pose Tech`; captions retain `PoseTek`. The comparison narration
+refers to recorded performances and makes no measured D1 population claim.
+
+```powershell
+& .venv/Scripts/python.exe synthesize.py product-demo.json
+& .venv/Scripts/python.exe mix.py product-demo.json
+& .venv/Scripts/python.exe check_speech.py product-demo.json
+& .venv/Scripts/python.exe validate_audio.py product-demo.json
+```
+
+Generated narration, score, master, captions and QA reports are isolated under
+`../public/audio-product-v1/`, with reusable phrase caches under
+`work/product-demo/`. Earlier scripts and editions are preserved.
+
+The `silent_intervals` setting reserves **21.000–46.000 seconds** for original
+app audio. Narration windows and captions cannot overlap it. The score fades to
+silence during the preceding half-second and returns during the following
+half-second; all three output WAVs contain exact zero samples in the reserved
+interval. `master.wav` deliberately excludes original app audio: the film renderer
+adds the verified, synchronized source there. Its final combined soundtrack needs
+its own level check after that addition. Omitting `silent_intervals` preserves the
+existing mixer behavior for previous editions.
+
+The local source-audio transcription is stored privately in
+`../output/product/source-transcripts.json`. It provides recognition timestamps
+for edit planning, not an assertion of human listening or synchronization review.
+
 ## Coaching V3 and investor V1
 
 The optional script argument selects an isolated build without changing the

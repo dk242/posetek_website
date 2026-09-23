@@ -1,0 +1,160 @@
+{
+  "voice": "af_heart",
+  "language": "en-us",
+  "duration": 150,
+  "output_dir": "audio-product-v1",
+  "bpm": 106,
+  "default_speed": 0.96,
+  "max_speed": 1.13,
+  "max_caption_characters": 55,
+  "align_captions": true,
+  "cycle_score": true,
+  "silent_intervals": [
+    {
+      "start": 21,
+      "end": 46,
+      "fade_seconds": 0.5,
+      "reason": "Reserved for original app audio, added separately by the film renderer. No narration or score."
+    }
+  ],
+  "transition_swishes": [
+    12.66,
+    50.76,
+    66.76,
+    78.76,
+    93.76,
+    106.76,
+    122.76,
+    134.76
+  ],
+  "segments": [
+    {
+      "id": "product_01_open",
+      "start": 0.35,
+      "latest_end": 12.65,
+      "text": "Pose Tech combines smartphone technology, computer vision, and AI to bring advanced movement analysis, personalized training, and coaching guidance within reach of every ambitious soccer player.",
+      "display": "PoseTek combines smartphone technology, computer vision, and AI to bring advanced movement analysis, personalized training, and coaching guidance within reach of every ambitious soccer player.",
+      "caption_phrases": [
+        "PoseTek combines smartphone technology,",
+        "computer vision, and AI",
+        "to bring advanced movement analysis,",
+        "personalized training, and coaching guidance",
+        "within reach of every ambitious soccer player."
+      ]
+    },
+    {
+      "id": "product_02_setup",
+      "start": 13.25,
+      "latest_end": 20.55,
+      "text": "With a smartphone, our custom marker cones, and Pose Tech, players can capture the movements that shape their game.",
+      "display": "With a smartphone, our custom marker cones, and PoseTek, players can capture the movements that shape their game.",
+      "caption_phrases": [
+        "With a smartphone, our custom marker cones,",
+        "and PoseTek, players can capture",
+        "the movements that shape their game."
+      ]
+    },
+    {
+      "id": "product_03_six",
+      "start": 46.35,
+      "latest_end": 50.65,
+      "text": "Six tests connect recorded movement to a clearer development picture.",
+      "display": "Six tests connect recorded movement to a clearer development picture.",
+      "caption_phrases": [
+        "Six tests connect recorded movement",
+        "to a clearer development picture."
+      ]
+    },
+    {
+      "id": "product_04_comparison",
+      "start": 51.45,
+      "latest_end": 66.55,
+      "text": "See the movement behind the result. Compare recorded performances, understand the difference, and connect that evidence to a clear development focus.",
+      "display": "See the movement behind the result. Compare recorded performances, understand the difference, and connect that evidence to a clear development focus.",
+      "caption_phrases": [
+        "See the movement behind the result.",
+        "Compare recorded performances,",
+        "understand the difference,",
+        "and connect that evidence",
+        "to a clear development focus."
+      ]
+    },
+    {
+      "id": "product_05_profile",
+      "start": 67.45,
+      "latest_end": 78.55,
+      "text": "A connected player profile brings strengths, development priorities, and the evidence behind them into one place.",
+      "display": "A connected player profile brings strengths, development priorities, and the evidence behind them into one place.",
+      "caption_phrases": [
+        "A connected player profile brings strengths,",
+        "development priorities,",
+        "and the evidence behind them into one place."
+      ]
+    },
+    {
+      "id": "product_06_builder",
+      "start": 79.45,
+      "latest_end": 93.55,
+      "text": "Turn those priorities into a personalized plan. For today's session, choose your time, energy, and focus, then review a workout built around your needs.",
+      "display": "Turn those priorities into a personalized plan. For today’s session, choose your time, energy, and focus, then review a workout built around your needs.",
+      "caption_phrases": [
+        "Turn those priorities into a personalized plan.",
+        "For today’s session,",
+        "choose your time, energy, and focus,",
+        "then review a workout built around your needs."
+      ]
+    },
+    {
+      "id": "product_07_guided",
+      "start": 94.35,
+      "latest_end": 106.55,
+      "text": "Follow each session in the app, with demonstrations, clear instructions, and progress through every set. Support that stays with you between team sessions.",
+      "display": "Follow each session in the app, with demonstrations, clear instructions, and progress through every set. Support that stays with you between team sessions.",
+      "caption_phrases": [
+        "Follow each session in the app,",
+        "with demonstrations, clear instructions,",
+        "and progress through every set.",
+        "Support that stays with you between team sessions."
+      ]
+    },
+    {
+      "id": "product_08_technique",
+      "start": 107.45,
+      "latest_end": 122.55,
+      "text": "Review your technique, understand the differences between your kicks, and ask the coaching assistant to explain the next step.",
+      "display": "Review your technique, understand the differences between your kicks, and ask the coaching assistant to explain the next step.",
+      "caption_phrases": [
+        "Review your technique,",
+        "understand the differences between your kicks,",
+        "and ask the coaching assistant",
+        "to explain the next step."
+      ]
+    },
+    {
+      "id": "product_09_progress",
+      "start": 123.45,
+      "latest_end": 134.55,
+      "text": "Come back, retest, and review what has changed. New evidence helps players and coaches choose the next focus.",
+      "display": "Come back, retest, and review what has changed. New evidence helps players and coaches choose the next focus.",
+      "caption_phrases": [
+        "Come back, retest, and review what has changed.",
+        "New evidence helps players and coaches",
+        "choose the next focus."
+      ]
+    },
+    {
+      "id": "product_10_close",
+      "start": 135.45,
+      "latest_end": 149.1,
+      "text": "One connected system, making advanced development tools and coaching support accessible to more players. Pose Tech. Start with evidence. Train what's next.",
+      "display": "One connected system, making advanced development tools and coaching support accessible to more players. PoseTek. Start with evidence. Train what’s next.",
+      "caption_phrases": [
+        "One connected system,",
+        "making advanced development tools",
+        "and coaching support accessible to more players.",
+        "PoseTek. Start with evidence.",
+        "Train what’s next."
+      ]
+    }
+  ]
+}
