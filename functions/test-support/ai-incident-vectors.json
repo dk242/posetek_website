@@ -1,0 +1,81 @@
+{
+  "about": "Shared incident-redaction vectors. The gateway (tests/test_incidents.py) and posetek_website functions (functions/ai-incidents.test.js) both load an identical copy of this file; the patterns mirror KickAI DiagnosticIncidentEvidence.redacted (AI observability plan §4.6, contract §16). Change all copies together.",
+  "redact": [
+    {
+      "input": "Plain message with nothing to hide",
+      "expected": "Plain message with nothing to hide"
+    },
+    {
+      "input": "Upstream https://example.com/v1/models?key=abc failed",
+      "expected": "Upstream [redacted] failed"
+    },
+    {
+      "input": "Wrote to /Users/alex/Library/Caches/x.json and file:///private/var/mobile/y",
+      "expected": "Wrote to [redacted] and [redacted]"
+    },
+    {
+      "input": "Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.payload.sig was rejected",
+      "expected": "Authorization: [redacted] was rejected"
+    },
+    {
+      "input": "Contact coach.jane+ai@club.example.org about player@posetek.net",
+      "expected": "Contact [redacted] about [redacted]"
+    },
+    {
+      "input": "HTTP://UPPER.EXAMPLE.COM/path bearer TOKEN123",
+      "expected": "[redacted] [redacted]"
+    },
+    {
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "expected": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "validationSummary": [
+    {
+      "input": "Output in stage 'focus' failed validation after one retry: summary uses banned phrase 'guarantee': 'We guarantee Alex will be faster'; focusAreas[2].observationId 'obs-9' does not match any observation id from the observe stage",
+      "expected": "output_in_stage_failed: 2 violations: summary_uses_banned_phrase, focusareas_observationid_does_not"
+    },
+    {
+      "input": "Output failed validation after one retry: strengths has 5 items, exceeds the max of 3",
+      "expected": "output_failed_validation_after: 1 violation: strengths_has_items_exceeds"
+    },
+    {
+      "input": "W1S2 failed after one repair: The drill sequence ignores Jordan's weak left foot; Total time exceeds budget",
+      "expected": "w_failed_after_one: 2 violations: the_drill_sequence_ignores, total_time_exceeds_budget"
+    },
+    {
+      "input": "Coach memory changed. Refresh and try again.",
+      "expected": "validation_failed: 1 violation: coach_memory_changed_and"
+    },
+    {
+      "input": "Week 3 does not fit the weekly budget",
+      "expected": "validation_failed: 1 violation: week_does_not_fit"
+    },
+    {
+      "input": "Output failed validation after one retry: summary uses banned phrase 'elite': 'Alex is elite; Alex will win state'",
+      "expected": "output_failed_validation_after: 1 violation: summary_uses_banned_phrase"
+    }
+  ],
+  "violationCode": [
+    {
+      "input": "summary uses banned phrase 'guarantee': 'We guarantee Alex will be faster'",
+      "expected": "summary_uses_banned_phrase"
+    },
+    {
+      "input": "metricCallouts[0].band is 'low' but score 71 maps to 'high'",
+      "expected": "metriccallouts_band_is_but"
+    },
+    {
+      "input": "The drill sequence ignores Jordan's weak left foot",
+      "expected": "the_drill_sequence_ignores"
+    },
+    {
+      "input": "'quoted only'",
+      "expected": "unspecified"
+    }
+  ]
+}
