@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "productionBatchId": "whole-body-2026-09",
+  "manifestSha256": "9fafa61236befd9d3a0346d2022e04d479e4e010ff1cf0a2282d1df1f2db3fb6",
+  "importedAt": "2026-09-22T02:54:59.054Z",
+  "ids": [
+    {
+      "filmingWeek": 1,
+      "name": "Goblet squat",
+      "drillId": "STR-503",
+      "manifestId": "wb-001",
+      "category": "strength"
+    },
+    {
+      "manifestId": "wb-002",
+      "category": "strength",
+      "filmingWeek": 1,
+      "name": "Elevated kettlebell deadlift",
+      "drillId": "STR-504"
+    },
+    {
+      "category": "strength",
+      "filmingWeek": 1,
+      "drillId": "STR-505",
+      "name": "Dumbbell floor press",
+      "manifestId": "wb-003"
+    },
+    {
+      "category": "strength",
+      "name": "Chest-supported dumbbell row",
+      "filmingWeek": 1,
+      "drillId": "STR-506",
+      "manifestId": "wb-004"
+    },
+    {
+      "filmingWeek": 1,
+      "category": "strength",
+      "name": "Dumbbell reverse lunge",
+      "drillId": "STR-507",
+      "manifestId": "wb-005"
+    },
+    {
+      "category": "strength",
+      "filmingWeek": 1,
+      "drillId": "STR-508",
+      "manifestId": "wb-006",
+      "name": "Seated dumbbell calf raise"
+    },
+    {
+      "manifestId": "wb-007",
+      "filmingWeek": 1,
+      "drillId": "STR-509",
+      "category": "strength",
+      "name": "Standing cable anti-rotation press"
+    },
+    {
+      "manifestId": "wb-008",
+      "name": "Wall-supported squat hold",
+      "filmingWeek": 1,
+      "drillId": "STR-510",
+      "category": "isometric"
+    },
+    {
+      "drillId": "STR-511",
+      "manifestId": "wb-009",
+      "filmingWeek": 1,
+      "name": "Supported calf-raise hold",
+      "category": "isometric"
+    },
+    {
+      "manifestId": "wb-010",
+      "category": "isometric",
+      "filmingWeek": 1,
+      "name": "Quadruped bear-hover hold",
+      "drillId": "STR-512"
+    },
+    {
+      "drillId": "PLY-501",
+      "manifestId": "wb-011",
+      "name": "Two-foot jump-rope rebounds",
+      "category": "plyometric",
+      "filmingWeek": 1
+    },
+    {
+      "manifestId": "wb-012",
+      "name": "Lateral two-foot line hops",
+      "drillId": "PLY-502",
+      "filmingWeek": 1,
+      "category": "plyometric"
+    },
+    {
+      "drillId": "PLY-503",
+      "category": "plyometric",
+      "filmingWeek": 1,
+      "name": "Low-box jump with step-down",
+      "manifestId": "wb-013"
+    },
+    {
+      "filmingWeek": 1,
+      "category": "plyometric",
+      "name": "Wall plyometric push-off",
+      "drillId": "PLY-504",
+      "manifestId": "wb-014"
+    },
+    {
+      "filmingWeek": 1,
+      "manifestId": "wb-015",
+      "category": "speedCod",
+      "drillId": "SPD-502",
+      "name": "Two-point split-stance acceleration"
+    },
+    {
+      "name": "Lateral shuffle braking",
+      "manifestId": "wb-016",
+      "filmingWeek": 1,
+      "category": "speedCod",
+      "drillId": "AGL-501"
+    },
+    {
+      "drillId": "SPD-503",
+      "name": "Wide-arc curved acceleration",
+      "category": "speedCod",
+      "filmingWeek": 1,
+      "manifestId": "wb-017"
+    },
+    {
+      "manifestId": "wb-018",
+      "name": "Self-drop instep cushion receive",
+      "drillId": "RCV-501",
+      "category": "ball",
+      "filmingWeek": 1
+    },
+    {
+      "filmingWeek": 1,
+      "manifestId": "wb-019",
+      "category": "ball",
+      "drillId": "BMA-504",
+      "name": "Drop-bounce instep juggling"
+    },
+    {
+      "drillId": "PAS-501",
+      "manifestId": "wb-020",
+      "filmingWeek": 1,
+      "name": "Outside-foot ground pass",
+      "category": "ball"
+    },
+    {
+      "manifestId": "wb-021",
+      "name": "Dumbbell Romanian deadlift",
+      "category": "strength",
+      "filmingWeek": 2,
+      "drillId": "STR-513"
+    },
+    {
+      "name": "Low-box dumbbell step-up",
+      "manifestId": "wb-022",
+      "drillId": "STR-514",
+      "category": "strength",
+      "filmingWeek": 2
+    },
+    {
+      "manifestId": "wb-023",
+      "category": "strength",
+      "filmingWeek": 2,
+      "name": "Standing single-arm cable row",
+      "drillId": "STR-515"
+    },
+    {
+      "name": "Half-kneeling dumbbell overhead press",
+      "category": "strength",
+      "manifestId": "wb-024",
+      "drillId": "STR-516",
+      "filmingWeek": 2
+    },
+    {
+      "category": "strength",
+      "filmingWeek": 2,
+      "drillId": "STR-517",
+      "name": "Supine slider hamstring curl",
+      "manifestId": "wb-025"
+    },
+    {
+      "drillId": "STR-518",
+      "manifestId": "wb-026",
+      "category": "strength",
+      "name": "Standing cable hip adduction",
+      "filmingWeek": 2
+    },
+    {
+      "filmingWeek": 2,
+      "category": "strength",
+      "name": "Single-arm suitcase carry",
+      "drillId": "STR-519",
+      "manifestId": "wb-027"
+    },
+    {
+      "name": "Heel-dig long-lever bridge hold",
+      "category": "isometric",
+      "filmingWeek": 2,
+      "drillId": "STR-520",
+      "manifestId": "wb-028"
+    },
+    {
+      "category": "isometric",
+      "drillId": "STR-521",
+      "filmingWeek": 2,
+      "manifestId": "wb-029",
+      "name": "Tall-kneeling cable anti-rotation hold"
+    },
+    {
+      "filmingWeek": 2,
+      "manifestId": "wb-030",
+      "drillId": "STR-522",
+      "name": "Prone small-range trunk hold",
+      "category": "isometric"
+    },
+    {
+      "manifestId": "wb-031",
+      "category": "plyometric",
+      "name": "Alternating-foot jump-rope rhythm",
+      "drillId": "PLY-505",
+      "filmingWeek": 2
+    },
+    {
+      "category": "plyometric",
+      "drillId": "PLY-506",
+      "manifestId": "wb-032",
+      "filmingWeek": 2,
+      "name": "Single-leg forward-back line hops"
+    },
+    {
+      "category": "plyometric",
+      "filmingWeek": 2,
+      "name": "Hopscotch single-to-double landings",
+      "manifestId": "wb-033",
+      "drillId": "PLY-507"
+    },
+    {
+      "drillId": "PLY-508",
+      "filmingWeek": 2,
+      "name": "Medicine-ball rebound chest pass",
+      "category": "plyometric",
+      "manifestId": "wb-034"
+    },
+    {
+      "drillId": "SPD-504",
+      "filmingWeek": 2,
+      "manifestId": "wb-035",
+      "name": "Side-on crossover acceleration",
+      "category": "speedCod"
+    },
+    {
+      "manifestId": "wb-036",
+      "filmingWeek": 2,
+      "drillId": "AGL-502",
+      "category": "speedCod",
+      "name": "Planned 135-degree cut"
+    },
+    {
+      "category": "speedCod",
+      "drillId": "AGL-503",
+      "name": "Shuffle-to-crossover transition",
+      "filmingWeek": 2,
+      "manifestId": "wb-037"
+    },
+    {
+      "manifestId": "wb-038",
+      "name": "Thigh-to-foot aerial receive",
+      "filmingWeek": 2,
+      "category": "ball",
+      "drillId": "RCV-502"
+    },
+    {
+      "category": "ball",
+      "name": "Sole layoff to supporting partner",
+      "drillId": "PAS-502",
+      "filmingWeek": 2,
+      "manifestId": "wb-039"
+    },
+    {
+      "manifestId": "wb-040",
+      "drillId": "SHT-506",
+      "category": "ball",
+      "name": "Short-range toe-poke finish",
+      "filmingWeek": 2
+    },
+    {
+      "category": "strength",
+      "manifestId": "wb-041",
+      "drillId": "STR-523",
+      "filmingWeek": 3,
+      "name": "High-handle trap-bar deadlift"
+    },
+    {
+      "name": "Front-foot-elevated dumbbell split squat",
+      "drillId": "STR-524",
+      "filmingWeek": 3,
+      "manifestId": "wb-042",
+      "category": "strength"
+    },
+    {
+      "filmingWeek": 3,
+      "drillId": "STR-525",
+      "category": "strength",
+      "manifestId": "wb-043",
+      "name": "Cable lat pulldown"
+    },
+    {
+      "filmingWeek": 3,
+      "manifestId": "wb-044",
+      "drillId": "STR-526",
+      "category": "strength",
+      "name": "Incline dumbbell bench press"
+    },
+    {
+      "name": "Bench-supported dumbbell hip thrust",
+      "manifestId": "wb-045",
+      "category": "strength",
+      "filmingWeek": 3,
+      "drillId": "STR-527"
+    },
+    {
+      "filmingWeek": 3,
+      "manifestId": "wb-046",
+      "name": "Cable pull-through",
+      "category": "strength",
+      "drillId": "STR-528"
+    },
+    {
+      "filmingWeek": 3,
+      "category": "strength",
+      "manifestId": "wb-047",
+      "drillId": "STR-529",
+      "name": "Half-kneeling cable chop"
+    },
+    {
+      "name": "Incline push-up midpoint hold",
+      "manifestId": "wb-048",
+      "category": "isometric",
+      "filmingWeek": 3,
+      "drillId": "STR-530"
+    },
+    {
+      "name": "Supported single-leg hinge hold",
+      "filmingWeek": 3,
+      "category": "isometric",
+      "drillId": "STR-531",
+      "manifestId": "wb-049"
+    },
+    {
+      "drillId": "STR-532",
+      "filmingWeek": 3,
+      "name": "Seated ball-squeeze hold",
+      "manifestId": "wb-050",
+      "category": "isometric"
+    },
+    {
+      "filmingWeek": 3,
+      "drillId": "PLY-509",
+      "name": "Medicine-ball rotational rebound pass",
+      "manifestId": "wb-051",
+      "category": "plyometric"
+    },
+    {
+      "drillId": "PLY-510",
+      "category": "plyometric",
+      "name": "Quarter-turn jump and stick",
+      "filmingWeek": 3,
+      "manifestId": "wb-052"
+    },
+    {
+      "filmingWeek": 3,
+      "drillId": "PLY-511",
+      "category": "plyometric",
+      "name": "Split-stance switch jump",
+      "manifestId": "wb-053"
+    },
+    {
+      "name": "Two-step approach vertical jump",
+      "filmingWeek": 3,
+      "drillId": "PLY-512",
+      "manifestId": "wb-054",
+      "category": "plyometric"
+    },
+    {
+      "manifestId": "wb-055",
+      "category": "speedCod",
+      "name": "Half-kneeling acceleration start",
+      "drillId": "SPD-505",
+      "filmingWeek": 3
+    },
+    {
+      "manifestId": "wb-056",
+      "filmingWeek": 3,
+      "category": "speedCod",
+      "drillId": "AGL-504",
+      "name": "Backpedal drop-step acceleration"
+    },
+    {
+      "manifestId": "wb-057",
+      "drillId": "SPD-506",
+      "filmingWeek": 3,
+      "category": "speedCod",
+      "name": "Curve-to-straight acceleration"
+    },
+    {
+      "manifestId": "wb-058",
+      "drillId": "RCV-503",
+      "filmingWeek": 3,
+      "category": "ball",
+      "name": "Chest-to-foot aerial receive"
+    },
+    {
+      "manifestId": "wb-059",
+      "name": "Driven instep ground pass",
+      "category": "ball",
+      "filmingWeek": 3,
+      "drillId": "PAS-503"
+    },
+    {
+      "manifestId": "wb-060",
+      "filmingWeek": 3,
+      "category": "ball",
+      "drillId": "SHT-507",
+      "name": "Inside-foot curling finish"
+    },
+    {
+      "name": "Machine leg press",
+      "filmingWeek": 4,
+      "category": "strength",
+      "drillId": "STR-533",
+      "manifestId": "wb-061"
+    },
+    {
+      "manifestId": "wb-062",
+      "name": "Dumbbell lateral lunge",
+      "category": "strength",
+      "filmingWeek": 4,
+      "drillId": "STR-534"
+    },
+    {
+      "drillId": "STR-535",
+      "category": "strength",
+      "manifestId": "wb-063",
+      "filmingWeek": 4,
+      "name": "Seated leg-curl machine"
+    },
+    {
+      "category": "strength",
+      "drillId": "STR-536",
+      "filmingWeek": 4,
+      "name": "Band-assisted pull-up",
+      "manifestId": "wb-064"
+    },
+    {
+      "manifestId": "wb-065",
+      "category": "strength",
+      "filmingWeek": 4,
+      "drillId": "STR-537",
+      "name": "Single-arm dumbbell overhead carry"
+    },
+    {
+      "filmingWeek": 4,
+      "manifestId": "wb-066",
+      "category": "strength",
+      "drillId": "STR-538",
+      "name": "Incline-bench dumbbell Y raise"
+    },
+    {
+      "manifestId": "wb-067",
+      "name": "Split-stance single-arm cable press",
+      "category": "strength",
+      "drillId": "STR-539",
+      "filmingWeek": 4
+    },
+    {
+      "drillId": "STR-540",
+      "category": "isometric",
+      "manifestId": "wb-068",
+      "filmingWeek": 4,
+      "name": "Half-kneeling dumbbell overhead hold"
+    },
+    {
+      "manifestId": "wb-069",
+      "category": "isometric",
+      "name": "Seated cable-row hold",
+      "drillId": "STR-541",
+      "filmingWeek": 4
+    },
+    {
+      "manifestId": "wb-070",
+      "category": "isometric",
+      "name": "Seated hip-flexion self-resisted hold",
+      "drillId": "STR-542",
+      "filmingWeek": 4
+    },
+    {
+      "filmingWeek": 4,
+      "drillId": "PLY-513",
+      "category": "plyometric",
+      "name": "Lateral power skips",
+      "manifestId": "wb-071"
+    },
+    {
+      "filmingWeek": 4,
+      "category": "plyometric",
+      "name": "Backward two-foot hop and stick",
+      "drillId": "PLY-514",
+      "manifestId": "wb-072"
+    },
+    {
+      "name": "Incline plyometric push-up",
+      "manifestId": "wb-073",
+      "category": "plyometric",
+      "filmingWeek": 4,
+      "drillId": "PLY-515"
+    },
+    {
+      "category": "plyometric",
+      "drillId": "PLY-516",
+      "manifestId": "wb-074",
+      "name": "Alternating forward bounds",
+      "filmingWeek": 4
+    },
+    {
+      "drillId": "SPD-507",
+      "name": "Accelerate-float-accelerate run",
+      "manifestId": "wb-075",
+      "filmingWeek": 4,
+      "category": "speedCod"
+    },
+    {
+      "category": "speedCod",
+      "drillId": "AGL-505",
+      "manifestId": "wb-076",
+      "filmingWeek": 4,
+      "name": "Backward-running brake and hold"
+    },
+    {
+      "category": "speedCod",
+      "manifestId": "wb-077",
+      "name": "Lateral crossover brake and square",
+      "drillId": "AGL-506",
+      "filmingWeek": 4
+    },
+    {
+      "drillId": "PAS-504",
+      "manifestId": "wb-078",
+      "filmingWeek": 4,
+      "name": "Low half-volley wall return",
+      "category": "ball"
+    },
+    {
+      "drillId": "PAS-505",
+      "filmingWeek": 4,
+      "category": "ball",
+      "manifestId": "wb-079",
+      "name": "Checked-space backheel pass"
+    },
+    {
+      "name": "Self-drop inside-foot volley pass",
+      "category": "ball",
+      "filmingWeek": 4,
+      "drillId": "PAS-506",
+      "manifestId": "wb-080"
+    }
+  ]
+}

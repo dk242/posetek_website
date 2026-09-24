@@ -49,6 +49,7 @@ export interface WorkoutDraft {
   /** The revision this edit was made against — the transaction's compare-and-set. */
   baseRevision: number;
   basePlanRevision: number;
+  scheduledDate?: string;
 }
 
 function nextSequenceOf(workout: any): number {
@@ -85,6 +86,9 @@ function normalizeBlock(block: any, order: number): BlockV3 {
     familiarizationReps: Number(block?.familiarizationReps) || 0,
     estimatedMinutes: Number(block?.estimatedMinutes) || 0,
     whyIncluded: String(block?.whyIncluded ?? ""),
+    ...(block?.trainingPolicyVersion === "whole-body-v1" ? { trainingPolicyVersion: "whole-body-v1" } : {}),
+    ...(typeof block?.loadingInstructions === "string" ? { loadingInstructions: block.loadingInstructions } : {}),
+    ...(block?.trainingRationale && typeof block.trainingRationale === "object" ? { trainingRationale: block.trainingRationale } : {}),
   };
 }
 
@@ -110,6 +114,7 @@ export function draftFromWorkout(
     nextBlockSequence: nextSequenceOf(workout),
     baseRevision: Number(workout?.revision) || 1,
     basePlanRevision: planRevision,
+    ...(typeof workout?.scheduledDate === "string" ? { scheduledDate: workout.scheduledDate } : {}),
   };
 }
 

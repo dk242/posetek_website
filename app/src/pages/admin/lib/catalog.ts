@@ -9,7 +9,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import firebase, { auth, db, storage } from "../../../lib/firebase";
+import firebase, { auth, db, storage, cloud } from "../../../lib/firebase";
 import { normalizeCatalogDrill } from "../../../lib/contracts/drillV2";
 import type { CatalogDrill } from "../../../lib/contracts/drillV2";
 import { DOMAIN_CODES, MEDIA_SLOTS } from "../../../lib/contracts/types";
@@ -158,8 +158,14 @@ export async function createDrill(write: DrillWrite): Promise<string> {
  * 02's, and writing a v2 shape over half of one from here would make the
  * migration's "fill unresolved fields only" rerun ambiguous.
  */
-export async function updateDrill(drillId: string, write: DrillWrite): Promise<string> {
+export async function updateDrill(drillId: string, write: DrillWrite, expectedCatalogVersion?: string): Promise<string> {
   const uid = requireAdminUid();
+  const current = await db.collection(CATALOG).doc(drillId).get();
+  if (current.data()?.productionBatchId) {
+    if (!expectedCatalogVersion) throw new Error("Reload this drill before editing its reviewed content.");
+    const result = (await cloud.httpsCallable("trainingSaveDrill")({ drillId, write, expectedCatalogVersion })).data;
+    return String(result.catalogVersion);
+  }
   return db.runTransaction(async transaction => {
     const drillRef = db.collection(CATALOG).doc(drillId);
     const currentRef = db.collection(META).doc("current");
@@ -208,8 +214,8 @@ export function mediaFileErrors(slot: MediaSlot, file: File): string[] {
   return errors;
 }
 
-export function mediaStoragePath(drillId: string, slot: MediaSlot, file: File): string {
-  return `${MEDIA_PREFIX}/${drillId}/${slot}.${EXTENSIONS[file.type] ?? "mp4"}`;
+export function mediaStoragePath(drillId: string, slot: MediaSlot, file: File, uploadId?: string): string {
+  return `${MEDIA_PREFIX}/${drillId}/${slot}${uploadId ? `.${uploadId}` : ""}.${EXTENSIONS[file.type] ?? "mp4"}`;
 }
 
 export interface MediaUploadHandle {
@@ -228,9 +234,10 @@ export function uploadDrillMedia(
   slot: MediaSlot,
   file: File,
   onProgress: (fraction: number) => void,
+  managed = false,
 ): MediaUploadHandle {
   const uid = requireAdminUid();
-  const path = mediaStoragePath(drillId, slot, file);
+  const path = mediaStoragePath(drillId, slot, file, managed ? crypto.randomUUID() : undefined);
   const task = storage.ref(path).put(file, { contentType: file.type });
 
   const promise = new Promise<void>((resolve, reject) => {
@@ -242,13 +249,14 @@ export function uploadDrillMedia(
     );
   }).then(async () => {
     const metadata: any = await task.snapshot.ref.getMetadata();
+    const current = await db.collection(CATALOG).doc(drillId).get();
     await db.collection(CATALOG).doc(drillId).update({
       [`media.${slot}`]: {
         storagePath: path,
         contentType: file.type,
         bytes: file.size,
         generation: String(metadata?.generation ?? ""),
-        status: "approved",
+        status: current.data()?.productionBatchId ? "pending" : "approved",
         uploadedBy: uid,
         uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
       },

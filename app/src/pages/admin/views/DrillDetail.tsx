@@ -15,6 +15,7 @@ import type { CatalogDrill } from "../../../lib/contracts/drillV2";
 import { MEDIA_SLOTS, MEDIA_SLOT_LABELS, POSITION_LABELS, domainLabel, isPosition } from "../../../lib/contracts/types";
 import type { MediaSlot } from "../../../lib/contracts/types";
 import { loadDrill, mediaPlaybackUrl } from "../lib/catalog";
+import DrillProductionPanel from "./DrillProductionPanel";
 
 export default function DrillDetail() {
   const { drillId = "" } = useParams();
@@ -128,6 +129,7 @@ export default function DrillDetail() {
         </div>
       </section>
 
+      <DrillProductionPanel drill={drill} onChanged={() => void loadDrill(drillId).then(setDrill)} />
       <section className="admin-card">
         <h3>Provenance</h3>
         <p className="admin-note">

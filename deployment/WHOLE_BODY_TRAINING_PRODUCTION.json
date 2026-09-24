@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "release": "Whole-body training draft library and reviewed tailoring",
+  "status": "production-verified-drafts-unpublished",
+  "verifiedAt": "2026-09-22T02:56:15.387Z",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/whole-body-training",
+    "gatewayCommit": "bf35749a95d941e926d5896d05dc0a0a03e43e06",
+    "initialImplementationCommit": "f97d26d",
+    "archiveSha256": "64db60701c6e4aab8820b95ede89b6cdbaff918fc39e392cc1e3e4ac284d8e09",
+    "archiveGeneration": "1790044975957623"
+  },
+  "backend": {
+    "project": "kickai-69dd0",
+    "region": "us-west1",
+    "service": "agent-gateway",
+    "revision": "agent-gateway-web-64db60701c6e",
+    "image": "us-west1-docker.pkg.dev/kickai-69dd0/cloud-run-source-deploy/agent-gateway@sha256:c20fb9f49ae27a06284f0fd7ab1f3bb9a18cd08f8b77437707f1a823e19573b4",
+    "buildId": "ae90634a-35cd-4997-9227-0e3feb291328",
+    "buildStatus": "SUCCESS",
+    "trafficPercent": 100,
+    "previousRevision": "agent-gateway-web-62c05fa8fbde",
+    "mandatoryFullContainerSuitePassed": true,
+    "containerSummary": "Step #1: 1488 passed, 6 skipped, 2 warnings in 519.63s (0:08:39)",
+    "containerTestsPassed": 1488,
+    "containerTestsSkipped": 6,
+    "runtimeConfigurationPreserved": true,
+    "existingCapabilityPoliciesPreserved": true
+  },
+  "website": {
+    "deploymentId": "6ab1e8b84adb5788815542e4",
+    "url": "https://posetek.net",
+    "previewUrl": "https://6ab1e8b84adb5788815542e4--posetek.netlify.app",
+    "applicationSha1": "028116fe9e1e91b0c0c9687f36c3ae40446f35ae",
+    "checksPassed": 96,
+    "approvedMarketingDeploymentId": "6aab9fbaa73be75422324ba4",
+    "marketingBytesPreserved": true,
+    "baselineFiles": 673,
+    "previousDeploymentId": "6aac924a597bd46f15cf468a"
+  },
+  "functions": {
+    "count": 9,
+    "endpoints": [
+      {
+        "name": "trainingGetDrillAuthoring",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingSaveDrillAuthoring",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingSaveDrill",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingReviewDrill",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingApproveDrillMedia",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingPublishDrill",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingSetReviewer",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingGetReadiness",
+        "status": "ACTIVE",
+        "versionId": "1"
+      },
+      {
+        "name": "trainingSaveReadiness",
+        "status": "ACTIVE",
+        "versionId": "1"
+      }
+    ],
+    "unauthenticatedChecksPassed": 9,
+    "existingFunctionsNotDeployed": true,
+    "discoveryTimeoutSeconds": 120,
+    "cloudSchedulerApiEnabledByFirebasePreparation": true
+  },
+  "rules": {
+    "firestoreRuleset": "projects/kickai-69dd0/rulesets/983badc0-c82a-433c-86a0-eb89df65eb1b",
+    "firestoreSha256": "731bd18700647cc191f527a4f33b329b6fc54668b2e36daba5867d08e0e59a7f",
+    "source": "deployment/whole-body-firestore.rules",
+    "composition": "Exact live baseline plus training changes; separate native testing blocks excluded.",
+    "storageRuleset": "projects/kickai-69dd0/rulesets/d039228e-d2d8-41d6-91dd-0661d0eb60f8",
+    "storageSha256": "2c67d688fb51aea26216fd0d4ffea7ae3eb9240c86d1deca656044f1818508de",
+    "trainingAssertions": 37,
+    "mediaAssertions": 7,
+    "existingPlannerAssertions": 353
+  },
+  "catalog": {
+    "productionBatchId": "whole-body-2026-09",
+    "newDrafts": 80,
+    "authoringRecords": 80,
+    "existingRecordsPreserved": 128,
+    "versionBefore": "1.0.90",
+    "versionAfter": "1.0.91",
+    "manifestSha256": "9fafa61236befd9d3a0346d2022e04d479e4e010ff1cf0a2282d1df1f2db3fb6",
+    "idMap": "content/training-expansion/production-id-map.json",
+    "allocation": {
+      "strength": 28,
+      "isometric": 12,
+      "plyometric": 16,
+      "speedCod": 12,
+      "ball": 12
+    },
+    "weeklyAllocation": {
+      "strength": 7,
+      "isometric": 3,
+      "plyometric": 4,
+      "speedCod": 3,
+      "ball": 3
+    },
+    "filmingWeeks": 4,
+    "drillsPerWeek": 20,
+    "requiredClipsPerDrill": 3,
+    "totalRequiredClips": 240,
+    "publishedByRelease": 0,
+    "humanContentReviews": "pending",
+    "videosUploadedByRelease": 0
+  },
+  "delivery": {
+    "webPreviewEnabled": true,
+    "mobileVerified": false,
+    "expandedActivationHeld": true,
+    "nativeSourceOrRulesDeployed": false,
+    "reviewersDesignatedByRelease": 0,
+    "playerClearancesWrittenByRelease": 0,
+    "activePlansPreserved": 34,
+    "newCapabilities": {
+      "save_workout_edit": {
+        "enabled": true,
+        "dailyLimitPerUser": 30
+      },
+      "validate_workout_start": {
+        "enabled": true,
+        "dailyLimitPerUser": 50
+      }
+    }
+  },
+  "validation": {
+    "appFullSuitePassed": 1002,
+    "finalAppFocusedTestsPassed": 18,
+    "callableTestsPassed": 20,
+    "importVerificationTestsPassed": 4,
+    "contentTestsPassed": 6,
+    "releaseAndCompositionTestsPassed": 23,
+    "finalGatewayFocusedTestsPassed": 242,
+    "syntheticDesktopAndMobileVisualQaPassed": true,
+    "all80PassGatewayAndAuthoringSchema": true
+  },
+  "handoff": "docs/WHOLE_BODY_TRAINING.md",
+  "rollback": "Preserve imported drafts and private-collection rules. Keep mobileVerified false; coordinate prior gateway and website restoration without deleting plans/logs. Do not restore the old broad private-data fallback.",
+  "privacy": "No athlete identities, individual test values, private plan content or credentials are included."
+}

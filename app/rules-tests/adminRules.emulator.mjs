@@ -217,11 +217,11 @@ await check("an empty rationale is refused", () => {
   return assertFails(batch.commit());
 });
 
-await check("the two together, with a real rationale, are allowed", () => {
+await check("direct plan and journal writes are refused; edits require server validation", () => {
   const batch = admin.batch();
   planUpdate(batch);
   batch.set(admin.doc(`players/${PLAYER_ID}/planAdjustments/${adjustmentId}`), adjustment());
-  return assertSucceeds(batch.commit());
+  return assertFails(batch.commit());
 });
 
 await check("an adjustment record can never be rewritten", () =>

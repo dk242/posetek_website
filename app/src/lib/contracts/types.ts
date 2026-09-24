@@ -85,6 +85,9 @@ export function domainSortIndex(domain: string): number {
 export const EQUIPMENT = [
   "ball", "cones", "markers", "wall", "goal", "hurdles", "box",
   "sledOrBand", "timer", "bench", "mat", "kneePad", "tapeMeasure", "cueDevice",
+  "dumbbells", "barbell", "weightPlates", "squatRack", "trapBar", "kettlebell",
+  "cableMachine", "resistanceBand", "medicineBall", "pullUpBar", "legCurlMachine", "legPressMachine",
+  "jumpRope", "sliders",
 ] as const;
 
 export const REP_UNITS = [
@@ -247,6 +250,9 @@ export interface BlockV3 {
   familiarizationReps: number;
   estimatedMinutes: number;
   whyIncluded: string;
+  trainingPolicyVersion?: string;
+  loadingInstructions?: string;
+  trainingRationale?: Record<string, unknown>;
 }
 
 export interface WorkoutCheck {

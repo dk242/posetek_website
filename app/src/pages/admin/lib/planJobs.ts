@@ -13,6 +13,7 @@ import { buildStatsSnapshot, inferredLevel } from "../../coach-dashboard/lib/log
 import { buildProfile } from "../../../components/athlete-stats/profile";
 import { isPosition } from "../../../lib/contracts/types";
 import type { Position } from "../../../lib/contracts/types";
+import type { TrainingContext } from "./wholeBodyTraining";
 
 export const SESSIONS_PER_WEEK = [1, 2, 3, 4, 5, 6] as const;
 export const MINUTES_PER_SESSION = [15, 30, 45, 60, 75, 90] as const;
@@ -27,6 +28,7 @@ export interface PlanIntakeForm {
   setting: (typeof SETTINGS)[number];
   equipment: string[];
   painFlag: boolean;
+  trainingContext?: TrainingContext;
 }
 
 export const DEFAULT_INTAKE: PlanIntakeForm = {
@@ -61,6 +63,7 @@ export function planV3JobParams(
       equipment: intake.equipment,
       level: inferredLevel(profile.overall),
       painFlag: intake.painFlag,
+      ...(intake.trainingContext ? { trainingContext: intake.trainingContext } : {}),
     },
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
   };

@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validateManifest} from './validate-manifest.mjs';
+const here=path.dirname(fileURLToPath(import.meta.url));
+const load=name=>JSON.parse(fs.readFileSync(path.join(here,name),'utf8'));
+const manifest=load('manifest.json'),sources=load('sources.json'),reference=load('deduplication-reference.json');
+test('complete production manifest meets count, identity, source and draft requirements',()=>assert.deepEqual(validateManifest(manifest,sources,reference),[]));
+test('rejects a legacy-name duplicate even if given a new ID',()=>{const x=structuredClone(manifest);x.drills[0].drill.name=reference.live[0].name;assert.ok(validateManifest(x,sources,reference).some(e=>e.includes('existing name')));});
+test('rejects premature publication and fabricated review',()=>{const x=structuredClone(manifest);x.drills[0].drill.status='published';x.drills[0].authoring.review.qualifiedReviewer='claimed';const errors=validateManifest(x,sources,reference);assert.ok(errors.some(e=>e.includes('schema2 draft')));assert.ok(errors.some(e=>e.includes('human approval')));});
+test('rejects continuous holds with per-repetition rest and undercounted sides',()=>{const x=structuredClone(manifest);const r=x.drills.find(r=>r.category==='isometric'&&r.drill.dose.perSide);r.drill.dose.restScope='reps';r.drill.trainingPolicy.limits.holdSecondsPerSession/=2;const errors=validateManifest(x,sources,reference);assert.ok(errors.some(e=>e.includes('continuous effort')));assert.ok(errors.some(e=>e.includes('hold caps')));});
+test('rejects fabricated sources and a test claim on general development',()=>{const x=structuredClone(manifest);const r=x.drills.find(r=>r.authoring.evidence.testRelationship==='general');r.authoring.evidence.sourceIds=['invented'];r.drill.trainingPolicy.evidenceLinks=[{objectiveId:'shooting_speed',relationship:'direct',weight:1,sourceIds:['NSCA2009']}];const errors=validateManifest(x,sources,reference);assert.ok(errors.some(e=>e.includes('known primary')));assert.ok(errors.some(e=>e.includes('general support')));});
+test('rejects an incomplete weekly package and missing equipment/readiness',()=>{const x=structuredClone(manifest);const r=x.drills[0];r.authoring.filmingInstructions.errorCorrection='';r.drill.equipment=['rack'];r.drill.trainingPolicy.requiresClearance=false;const errors=validateManifest(x,sources,reference);assert.ok(errors.some(e=>e.includes('clip briefs')));assert.ok(errors.some(e=>e.includes('equipment token')));assert.ok(errors.some(e=>e.includes('coach clearance')));});

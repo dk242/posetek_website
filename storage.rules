@@ -98,11 +98,21 @@ service firebase.storage {
     //   version: "3.4" (portal, service-account only) | "app" (in-app / web uploads)
     //   slot:    primaryDemo | teachingDetail | errorCorrection | birdsEye
     match /drillCatalogMedia/{version}/{drillId}/{fileName} {
+      function managedDrill() {
+        return firestore.exists(/databases/(default)/documents/drillCatalog/$(drillId))
+          && firestore.get(/databases/(default)/documents/drillCatalog/$(drillId)).data.get('productionBatchId', '') == 'whole-body-2026-09';
+      }
+      function editableDrill() {
+        return !managedDrill()
+          || firestore.get(/databases/(default)/documents/drillCatalog/$(drillId)).data.get('status', '') in ['draft','archived'];
+      }
       allow read: if request.auth != null;
 
       allow write: if isPosetekAdmin()
         && version == 'app'
-        && fileName.matches('^(primaryDemo|teachingDetail|errorCorrection|birdsEye)\\.(mp4|mov|jpg|jpeg|png)$')
+        && editableDrill()
+        && (!managedDrill() || resource == null)
+        && fileName.matches('^(primaryDemo|teachingDetail|errorCorrection|birdsEye)\\.([A-Za-z0-9_-]+\\.)?(mp4|mov|jpg|jpeg|png)$')
         && request.resource != null
         && request.resource.size <= 300 * 1024 * 1024
         && (request.resource.contentType.matches('video/.*')
@@ -110,7 +120,7 @@ service firebase.storage {
       // Deleting an app upload is the same predicate with request.resource == null;
       // allowed so a failed/retried capture can be cleaned up. Portal objects
       // (`3.4`) are never client-deletable.
-      allow delete: if isPosetekAdmin() && version == 'app';
+      allow delete: if isPosetekAdmin() && version == 'app' && editableDrill();
     }
 
 

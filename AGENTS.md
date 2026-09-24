@@ -11,14 +11,30 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
-The latest recorded production release is `6aac924a597bd46f15cf468a`, published
-September 17, 2026 at 6:31:29 PM PDT. Player signup links prefill the current code;
+The latest recorded production release is `6ab25ae36de88d184cc9b2e1`, published
+September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo
+references in the private admin **Watch before filming** section. Read
+`deployment/DRILL_DEMO_REFERENCES_PRODUCTION.json` and
+`content/training-expansion/DEMO_REFERENCES.md`; component references list exact
+adaptations and verification limits. Reference links do not approve content or
+fill athlete media slots. All 208 catalog records, media and review states were
+preserved by this follow-up. Whole-body training adds 80 unpublished
+drafts in catalog version `1.0.91`, organized into four filming weeks of 20.
+All 128 prior catalog records and 34 active plans were preserved. Read
+`deployment/WHOLE_BODY_TRAINING_PRODUCTION.json`, `docs/WHOLE_BODY_TRAINING.md`
+and `content/training-expansion/production-id-map.json` before training changes.
+All new content and media reviews remain pending. The mobile acceptance gate
+remains false; activation and workout starts involving any of the 80 new exercises
+remain held until reviewed device acceptance. No reviewer or player clearance was
+created. Deploy only the composed `deployment/whole-body-firestore.rules` for
+this release; root rules also contain separate unreleased native testing work.
+Player signup links prefill the current code;
 staff can copy existing links or generate a code only when missing. Normal actions
 preserve valid codes. Read `deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json`
 and `docs/PLAYER_INVITATION_LINKS.md`; no real recipient accounts were claimed
 during verification. Evidence-linked personalized planning now
 serves the current admin planner and native schema-3 generation through shared
-gateway revision `agent-gateway-web-62c05fa8fbde`. Coaching goals are optional.
+gateway revision `agent-gateway-web-64db60701c6e`. Coaching goals are optional.
 Admin plans remain drafts until activated; native generation retains its existing
 permissions, schema and daily limit of one. The narrow request-rules update permits
 only an optional boolean estimate preference. Read
@@ -43,7 +59,7 @@ measured Sprint results while preserving the genuine Sprint attempt. Read
 historical checkpoint. The preceding testing audit adds canonical
 qualified results, proven duplicate suppression, exact capture media and truthful
 pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
-`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 612 files.
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 727 files.
 Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
 capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
 native repository rules. Preserve the 32-entry video archive guard in
@@ -78,7 +94,7 @@ At the initial September 15 review, GitHub main was older than the live homepage
 The user chose the deployed site as the reference. Recovered modules have provenance
 beside their code; the other computer's original authored source remains unavailable.
 The unchanged deployment `6aa9b6f0d8faf6177db8fd97` remains the tabbed comparison
-reference. The current application baseline instead pins the September 17 release
+reference. The current application baseline instead pins the September 22 release
 in `deployment/homepage-baseline.json`. On a fresh clone, run
 `node scripts/capture-deployed-reference.mjs` before using either preview server.
 The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd97/`.
@@ -86,7 +102,7 @@ The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 612 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves 727 application/public files byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 

@@ -1,0 +1,8 @@
+.pt-pose .training-load-instructions { display:block; margin:12px 0; line-height:1.6; overflow-wrap:anywhere; color:var(--text); }
+.pt-pose .training-start-confirmation fieldset { display:grid; gap:20px; border:0; padding:0; margin:0; min-width:0; }
+.pt-pose .training-start-confirmation label { display:grid; gap:8px; color:var(--text); line-height:1.5; }
+.pt-pose .training-start-confirmation label:has(input[type=checkbox]) { grid-template-columns:20px 1fr; align-items:start; }
+.pt-pose .training-start-confirmation input[type=checkbox] { width:18px; height:18px; margin-top:3px; accent-color:var(--lime); }
+.pt-pose .training-start-confirmation select { width:100%; min-height:48px; font:inherit; padding:12px; color:var(--text); background:var(--card); border:1px solid var(--line); border-radius:13px; }
+.pt-pose .training-start-confirmation :is(input,select,button):focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
+.pt-pose .training-start-confirmation p { color:var(--muted); margin:0; line-height:1.6; }

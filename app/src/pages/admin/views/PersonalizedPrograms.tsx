@@ -19,6 +19,10 @@ import AthleteEvidenceBadges from "./AthleteEvidenceBadges";
 import { activeProvisionalEstimates } from '../../../lib/provisional-estimates';
 import ProvisionalEstimateNote from '../../../components/athlete-stats/ProvisionalEstimateNote';
 import { PriorityCards, ExerciseReason } from "./PlanMethodology";
+import TrainingContextFields from "./TrainingContextFields";
+import TrainingReadinessPanel from "./TrainingReadinessPanel";
+import { emptyTrainingContext, trainingContextIssues, type TrainingContext } from "../lib/wholeBodyTraining";
+import TrainingLoadInstructions from "../../../components/TrainingLoadInstructions";
 
 const label = (value: string) => value.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
 const millis = (value: any) => value?.toMillis?.() ?? (typeof value === "string" ? Date.parse(value) : 0);
@@ -50,6 +54,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
   const [evidence, setEvidence] = useState<Record<string, AthleteLoad>>({});
   const [evidenceErrors, setEvidenceErrors] = useState<Record<string, string>>({});
   const [intake, setIntake] = useState({ ...DEFAULT_INTAKE, equipment: [...DEFAULT_INTAKE.equipment] });
+  const [trainingContexts, setTrainingContexts] = useState<Record<string, TrainingContext>>({});
   const [goals, setGoals] = useState<string[]>([]);
   const [freeTextGoals, setFreeTextGoals] = useState(initialText);
   const [config, setConfig] = useState<any>(null);
@@ -173,11 +178,17 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
   const ongoing = jobs.filter(j => !terminal(j.status));
   const inFlight = (playerId: string) => ongoing.some(j => j.playerId === playerId);
   const canGenerate = accessReady && previewEnabled(config) && !limited && !busy && !loading && !intake.painFlag && selected.size > 0
-    && freeTextGoals.trim().length <= contextLimit && [...selected].every(id => evidence[id] && !inFlight(id));
+    && freeTextGoals.trim().length <= contextLimit && [...selected].every(id => evidence[id] && !inFlight(id)
+      && (config?.wholeBodyTraining?.previewEnabled !== true || trainingContextIssues(trainingContexts[id] ?? emptyTrainingContext(), intake.sessionsPerWeek).length === 0));
   const today = draft?.plan?.timezone ? new Intl.DateTimeFormat("en-CA", { timeZone: draft.plan.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()) : "";
-  const stale = draft && (draft.plan.startDate !== today || !activePlansMatch(draft.expectedActivePlans, focusedPlans));
+  const stale = draft && ((draft.plan.trainingPolicyVersion === "whole-body-v1" ? draft.plan.startDate < today : draft.plan.startDate !== today) || !activePlansMatch(draft.expectedActivePlans, focusedPlans));
+  const deliveryHeld = (draft?.plan?.requiresTrainingStartAuthorization === true || draft?.plan?.weeks?.some((week: any) => week.workouts?.some((workout: any) => workout.blocks?.some((block: any) => block.trainingPolicyVersion === "whole-body-v1")))) && config?.wholeBodyTraining?.mobileVerified !== true;
 
   function toggle(id: string) { setSelected(old => { const next = new Set(old); if (next.has(id)) next.delete(id); else next.add(id); return next; }); }
+  function toggleEquipment(id: string) {
+    setIntake(old => ({ ...old, equipment: old.equipment.includes(id) ? old.equipment.filter(item => item !== id) : [...old.equipment, id] }));
+    setTrainingContexts(old => Object.fromEntries(Object.entries(old).map(([player, context]) => [player, { ...context, equipmentConfirmed: false }])));
+  }
   async function generate() {
     const token = access.capture();
     if (!canGenerate || !canOperate(token) || submitting.current) return;
@@ -190,7 +201,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         const load = await loadAthleteEvidence(player);
         if (!canOperate(token)) return;
         setEvidence(old => ({ ...old, [player.id]: load }));
-        await submitLlmJob(player.id, "generate_personalized_plan", personalizedParams(load.reps, player.raw, load.evidence.age, intake, goals, freeTextGoals, load.provisionalEstimates, load.allResultReps, useEstimates));
+        await submitLlmJob(player.id, "generate_personalized_plan", personalizedParams(load.reps, player.raw, load.evidence.age, { ...intake, ...(config?.wholeBodyTraining?.previewEnabled === true ? { trainingContext: trainingContexts[player.id] } : {}) }, goals, freeTextGoals, load.provisionalEstimates, load.allResultReps, useEstimates));
       }
       catch (e: any) { if (canOperate(token)) {
         if (isPlannerAuthorizationError(e)) failClosed(e);
@@ -203,7 +214,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
   async function act(action: "activate_personalized_plan" | "discard_personalized_plan") {
     const token = access.capture();
     if (!canOperate(token) || !previewEnabled(config, action) || !athlete || !draft || (draft.playerId && draft.playerId !== focused)
-      || submitting.current || busy || inFlight(focused) || (action === "activate_personalized_plan" && (!reviewed || stale))) return;
+      || submitting.current || busy || inFlight(focused) || (action === "activate_personalized_plan" && (!reviewed || stale || deliveryHeld))) return;
     submitting.current = true;
     setBusy(true); setMessage("");
     try { await submitLlmJob(focused, action, action === "activate_personalized_plan" ? activationParams(draft) : { engineVersion: PERSONALIZED_ENGINE, draftId: draft.draftId });
@@ -220,7 +231,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
       const load = await loadAthleteEvidence(athlete);
       if (canOperate(token)) {
         setEvidence(old => ({ ...old, [athlete.id]: load }));
-        await submitLlmJob(focused,"assess_personalized_plan",personalizedParams(load.reps,athlete.raw,load.evidence.age,intake,goals,freeTextGoals,load.provisionalEstimates,load.allResultReps,useEstimates));
+        await submitLlmJob(focused,"assess_personalized_plan",personalizedParams(load.reps,athlete.raw,load.evidence.age,{ ...intake, ...(config?.wholeBodyTraining?.previewEnabled === true ? { trainingContext: trainingContexts[focused] ?? emptyTrainingContext() } : {}) },goals,freeTextGoals,load.provisionalEstimates,load.allResultReps,useEstimates));
       }
     }
     catch(e:any) { if(canOperate(token)) { if (isPlannerAuthorizationError(e)) failClosed(e); else setMessage(e.message); } }
@@ -268,6 +279,7 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         })}</div>}
         <p className="personalized-meta">Measured tests, optional estimates and selected goals remain separate. A missing test is an evidence gap, never a zero score.</p>
         {useEstimates && focusedEstimates.map(entry => <ProvisionalEstimateNote key={entry.id} estimate={entry} planning />)}
+        {athlete && role === "admin" && <TrainingReadinessPanel key={athlete.id} playerId={athlete.id} playerName={athlete.name} />}
         {athlete && <div className="personalized-preflight"><h3>Proposed priorities · {athlete.name}</h3>
           <button type="button" className="quiet-button" disabled={!accessReady || !evidence[focused] || busy || inFlight(focused) || intake.painFlag || !previewEnabled(config,"assess_personalized_plan")} onClick={() => void assess()}>Preview priorities</button>
           {assessment && <><p className="personalized-meta">{millis(assessment.assessedAt) > 0 ? `Assessment from ${new Date(millis(assessment.assessedAt)).toLocaleString()}` : "Historical assessment date unavailable"} · {assessment.schedule ? `${assessment.schedule.sessionsPerWeek} × ${assessment.schedule.minutesPerSession} minutes/week · ${label(assessment.schedule.setting)}` : "Historical training schedule unavailable"}. Generation recalculates these priorities from current inputs.</p>
@@ -294,7 +306,13 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         <label>Sessions per week<select value={intake.sessionsPerWeek} onChange={e => setIntake({ ...intake, sessionsPerWeek: +e.target.value })}>{SESSIONS_PER_WEEK.map(n => <option key={n}>{n}</option>)}</select></label>
         <label>Minutes per session<select value={intake.minutesPerSession} onChange={e => setIntake({ ...intake, minutesPerSession: +e.target.value })}>{MINUTES_PER_SESSION.map(n => <option key={n}>{n}</option>)}</select></label>
         <label>Training setting<select value={intake.setting} onChange={e => setIntake({ ...intake, setting: e.target.value as typeof intake.setting })}>{SETTINGS.map(s => <option key={s} value={s}>{s === "halfAndHalf" ? "Half and half" : label(s)}</option>)}</select></label>
-      </div><fieldset><legend>Available equipment</legend><div className="personalized-equipment">{EQUIPMENT_OPTIONS.map(e => <label key={e.id}><input type="checkbox" checked={intake.equipment.includes(e.id)} onChange={() => setIntake({ ...intake, equipment: intake.equipment.includes(e.id) ? intake.equipment.filter(v => v !== e.id) : [...intake.equipment, e.id] })} />{e.label}</label>)}</div></fieldset>
+      </div><fieldset><legend>Available equipment</legend><div className="personalized-equipment">{EQUIPMENT_OPTIONS.map(e => <label key={e.id}><input type="checkbox" checked={intake.equipment.includes(e.id)} onChange={() => toggleEquipment(e.id)} />{e.label}</label>)}</div></fieldset>
+        {config?.wholeBodyTraining?.previewEnabled === true && athlete && <>
+          <TrainingContextFields value={trainingContexts[focused] ?? emptyTrainingContext()} playerName={athlete.name} disabled={busy} onChange={value => setTrainingContexts(old => ({ ...old, [focused]: value }))} />
+          {selected.size > 1 && <p className="personalized-meta">Training circumstances are individual. Select each player in the roster to complete their schedule before generating the batch.</p>}
+          {trainingContextIssues(trainingContexts[focused] ?? emptyTrainingContext(), intake.sessionsPerWeek).length > 0 && <ul className="personalized-meta">{trainingContextIssues(trainingContexts[focused] ?? emptyTrainingContext(), intake.sessionsPerWeek).map(issue => <li key={issue}>{issue}</li>)}</ul>}
+          {config?.wholeBodyTraining?.mobileVerified !== true && <p className="personalized-notice">Gym plans are preview only until mobile delivery is verified. Qualified readiness and equipment checks still apply.</p>}
+        </>}
         <label className="personalized-checkbox"><input type="checkbox" checked={intake.painFlag} onChange={e => setIntake({ ...intake, painFlag: e.target.checked })} />A selected player has pain requiring review</label>
         {intake.painFlag && <p className="personalized-notice">Automated generation is paused. Review this player individually before prescribing.</p>}
         <div className="personalized-time-budget"><strong>{intake.sessionsPerWeek * intake.minutesPerSession} minutes per week</strong><span>{intake.sessionsPerWeek} sessions × {intake.minutesPerSession} minutes · {intake.horizonWeeks} weeks</span><small>Exercise doses, rests and transitions must fit this time.</small></div>
@@ -331,8 +349,8 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
         <h3>Current and proposed workouts</h3><p>{!current ? "No active plan exists." : prescriptionSignature(current) === prescriptionSignature(draft.plan) ? "The executable workouts are identical. Similar needs can produce the same prescription; review the target coverage above." : "The proposed drills, doses or weekly schedule differ from the active plan."}</p>
         <div className="personalized-comparison"><WorkoutList title="Current plan" plan={current} /><WorkoutList title="Proposed draft" plan={draft.plan} /></div>
         {draft.status === "ready" && <div className="personalized-activation" id="planner-use"><h3>4. Use the reviewed plan</h3><p>Activation makes this plan available in the player’s training area on the website and through the existing mobile plan handoff. The server checks that the player’s plan and evidence are still current.</p>{stale && <p className="personalized-notice">The active plan or date has changed. Generate a fresh draft before activation.</p>}
-          <label className="personalized-checkbox"><input type="checkbox" checked={reviewed} disabled={!accessReady || !!stale || busy} onChange={e => setReviewed(e.target.checked)} />I reviewed the evidence, workouts and replacement policy for {athlete?.name}.</label>
-          <div className="personalized-row-actions"><button type="button" className="primary-cta" disabled={!accessReady || !reviewed || !!stale || busy || inFlight(focused) || !previewEnabled(config,"activate_personalized_plan")} onClick={() => void act("activate_personalized_plan")}>Use this plan for {athlete?.name}</button>
+          {deliveryHeld && <p className="personalized-notice">This gym plan is a preview. Activation is held until mobile delivery is verified.</p>}<label className="personalized-checkbox"><input type="checkbox" checked={reviewed} disabled={!accessReady || !!stale || busy} onChange={e => setReviewed(e.target.checked)} />I reviewed the evidence, workouts and replacement policy for {athlete?.name}.</label>
+          <div className="personalized-row-actions"><button type="button" className="primary-cta" disabled={!accessReady || !reviewed || !!stale || deliveryHeld || busy || inFlight(focused) || !previewEnabled(config,"activate_personalized_plan")} onClick={() => void act("activate_personalized_plan")}>Use this plan for {athlete?.name}</button>
             <button type="button" className="quiet-button" disabled={!accessReady || busy || inFlight(focused) || !previewEnabled(config,"discard_personalized_plan")} onClick={() => void act("discard_personalized_plan")}>Discard draft</button></div>
         </div>}
       </>}
@@ -343,6 +361,6 @@ function Planner({ role = "admin", playerId = "", initialText = "", onActivated,
 
 function WorkoutList({ title, plan }: { title: string; plan: any }) {
   return <div className="personalized-workouts"><h4>{title}</h4>{!plan ? <p>No active plan.</p> : plan.weeks?.map((week: any) => <details key={week.weekNumber} open={week.weekNumber === 1}><summary>Week {week.weekNumber} · {week.theme}</summary>{week.workouts?.map((workout: any) => <article key={workout.workoutId}>
-    <strong>{workout.order}. {workout.title}</strong><p>{workout.intent}</p><small>{workout.estimatedMinutes} minutes</small><ol>{workout.blocks?.map((block: any, i: number) => <li key={block.blockId || i}><strong>{block.drillName || block.name || block.drillId}</strong><span>{block.sets} × {block.reps} {block.repUnit}{block.perSide ? " per side" : ""} · {block.estimatedMinutes}m</span><small>Rest: {block.restSeconds}s {block.restScope || ""}{block.restBetweenSetsSeconds != null ? ` · ${block.restBetweenSetsSeconds}s between sets` : ""}</small><ExerciseReason block={block} /></li>)}</ol>
+    <strong>{workout.order}. {workout.title}</strong><p>{workout.intent}</p><small>{workout.estimatedMinutes} minutes</small><ol>{workout.blocks?.map((block: any, i: number) => <li key={block.blockId || i}><strong>{block.drillName || block.name || block.drillId}</strong><span>{block.sets} × {block.reps} {block.repUnit}{block.perSide ? " per side" : ""} · {block.estimatedMinutes}m</span><small>Rest: {block.restSeconds}s {block.restScope || ""}{block.restBetweenSetsSeconds != null ? ` · ${block.restBetweenSetsSeconds}s between sets` : ""}</small><TrainingLoadInstructions block={block} /><ExerciseReason block={block} /></li>)}</ol>
   </article>)}</details>)}</div>;
 }

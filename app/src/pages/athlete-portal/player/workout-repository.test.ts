@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const fake = vi.hoisted(() => ({ docs: new Map<string, any>(), writes: [] as any[], rejectCommit: false }));
+const fake = vi.hoisted(() => ({ docs: new Map<string, any>(), writes: [] as any[], rejectCommit: false, submit: vi.fn(), wait: vi.fn() }));
+vi.mock('../lib/loaders', () => ({ submitLlmJob: fake.submit, waitForJob: fake.wait }));
 vi.mock('../../../lib/firebase', () => {
-  const ref = (path: string): any => ({ path, id: path.split('/').at(-1), collection: (key: string) => ref(`${path}/${key}`), doc: (key: string) => ref(`${path}/${key}`) });
+  const ref = (path: string): any => ({ path, id: path.split('/').at(-1), collection: (key: string) => ref(`${path}/${key}`), doc: (key: string) => ref(`${path}/${key}`), get: async () => ({ id: path.split('/').at(-1), exists: fake.docs.has(path), data: () => fake.docs.get(path) }) });
   return {
     default: { firestore: { Timestamp: { now: () => 12345 }, FieldValue: { serverTimestamp: () => 'server-time' } } },
     db: {
@@ -33,11 +34,25 @@ const plan = { id: 'plan', schemaVersion: 3, status: 'active', weeks: [{ weekNum
 const reviewed = executable(plan, workout, 1);
 beforeEach(() => {
   fake.docs.clear(); fake.writes.length = 0; fake.rejectCommit = false;
+  fake.submit.mockReset(); fake.wait.mockReset(); fake.submit.mockResolvedValue({ id: 'start-job' });
+  fake.wait.mockResolvedValue({ result: { ready: true, planRevision: 1, workoutRevision: 1, scheduleRevision: 7 } });
   fake.docs.set('players/player-doc/trainingPlans/plan', plan);
   fake.docs.set('players/player-doc/workoutSchedule/current', { revision: 7 });
 });
 
 describe('acknowledged player workout transactions', () => {
+  it('requires today’s confirmation for restricted workouts before any log writes', async () => {
+    await expect(startPlayerWorkout('player-doc', { ...reviewed, requiresTrainingStartAuthorization: true })).rejects.toThrow('Confirm today');
+    expect(fake.submit).not.toHaveBeenCalled(); expect(fake.writes).toEqual([]);
+  });
+  it('checks current clearance before starting and refuses schedule drift after validation', async () => {
+    const restricted = { ...reviewed, requiresTrainingStartAuthorization: true, startConfirmation: { equipmentConfirmed: true, supervision: 'qualifiedCoach', painFlag: false } };
+    fake.docs.set('players/player-doc/trainingPlans/plan', { ...plan, requiresTrainingStartAuthorization: true });
+    await startPlayerWorkout('player-doc', restricted);
+    expect(fake.submit).toHaveBeenCalledWith('player-doc', 'validate_workout_start', expect.objectContaining({ expectedScheduleRevision: 7, equipmentConfirmed: true, supervision: 'qualifiedCoach', painFlag: false }));
+    fake.writes.length = 0; fake.wait.mockResolvedValue({ result: { ready: true, planRevision: 1, workoutRevision: 1, scheduleRevision: 6 } });
+    await expect(startPlayerWorkout('player-doc', restricted)).rejects.toThrow('clearance or schedule changed'); expect(fake.writes).toEqual([]);
+  });
   it('creates a snapshot and increments the shared schedule together under the player document ID', async () => {
     const log = await startPlayerWorkout('player-doc', reviewed);
     expect(log.workoutSnapshot.blocks).toEqual([block]);
