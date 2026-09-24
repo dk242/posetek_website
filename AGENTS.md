@@ -11,6 +11,26 @@ for collaborators. Preserve teammates' commits, include required source and asse
 and update the handoff docs with confirmed project decisions. Keep generated output,
 local reference captures, dependencies, and credentials out of Git.
 
+## Agent gateway
+
+**The agent-gateway lives only in `python-video-processor/Services/agent-gateway`.**
+This repository's `services/agent-gateway/` copy was retired and deleted; do not
+re-add it, and do not edit or deploy a gateway from here. Gateway changes go to
+that repository.
+
+**The gateway is released only through
+`python-video-processor/Services/agent-gateway/scripts/release.sh`, from a pushed
+commit on its `main`.** No `gcloud run deploy --source`, no `git archive` of a
+website directory, no branch or dirty-tree deploys. `scripts/release-training-expansion.cjs`,
+which deployed `git archive HEAD:services/agent-gateway` to Cloud Run, was deleted
+with the copy; a website script or doc that deploys the gateway is a defect.
+
+The website's half of the contract — the capabilities it calls, the server-written
+public projection, and the delivery/recovery guarantees — is in
+`docs/PERSONALIZED_PLANNER_WEB_CONTRACT.md`. Gateway revision names in the release
+notes below and in `deployment/*.json` are historical records of what was serving
+at the time, not instructions or a current source pointer.
+
 The latest recorded production release is `6ab25ae36de88d184cc9b2e1`, published
 September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo
 references in the private admin **Watch before filming** section. Read

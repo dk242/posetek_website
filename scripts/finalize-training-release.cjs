@@ -1,4 +1,8 @@
 // Sanitized handoff only after live delivery and create-only import verification.
+// HISTORICAL: this wrote deployment/WHOLE_BODY_TRAINING_PRODUCTION.json from the
+// release stages in scripts/release-training-expansion.cjs, which was deleted with
+// this repository's retired gateway copy. It cannot run again; the gateway is
+// released only from python-video-processor/Services/agent-gateway (see AGENTS.md).
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const {cloud,DOCUMENTS,decode}=require('./training-cloud.cjs');
 const DIR='.netlify/training-expansion/release';
