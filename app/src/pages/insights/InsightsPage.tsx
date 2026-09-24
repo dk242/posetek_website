@@ -9,9 +9,11 @@ import { clearPlayerFilters, dateInZone, expandedQuery, expandedRequest, INSIGHT
 import type { ExpandedRequest } from "./lib/expandedQuery";
 import { createInsightsRequestGuard, insightsPlayerLink, insightsReturnLink, isInsightsStaff } from "./lib/navigation";
 import "../../styles/pose-portal.css";
+import "../../styles/admin-theme.scss";
 import "./insights.scss";
 
 const Preview = import.meta.env.DEV ? lazy(() => import("./InsightsPreview")) : null;
+
 export default function InsightsPage() {
   const navigate = useNavigate(), location = useLocation();
   const preview = !!Preview && new URLSearchParams(location.search).get("preview") === "1";
@@ -31,28 +33,52 @@ export function InsightTabs({ request, onChange }: { request: ExpandedRequest; o
   return <nav className="insights-tabs" aria-label="Insights views" role="tablist">{INSIGHT_VIEWS.map(view => <button key={view} type="button" role="tab" aria-selected={request.view === view} aria-controls="insights-report" id={`insights-tab-${view}`} onClick={() => onChange({ view })}>{view[0].toUpperCase() + view.slice(1)}</button>)}</nav>;
 }
 
-export function InsightsControls({ choices, request, scope, loading, onChange, onRefresh }: { choices: InsightChoices; request: ExpandedRequest; scope: InsightScope; loading: boolean; onChange: (patch: Partial<ExpandedRequest>) => void; onRefresh: () => void }) {
+export function InsightsControls({ choices, request, scope, loading, hideScope = false, onChange, onRefresh }: {
+  choices: InsightChoices;
+  request: ExpandedRequest;
+  scope: InsightScope;
+  loading: boolean;
+  hideScope?: boolean;
+  onChange: (patch: Partial<ExpandedRequest>) => void;
+  onRefresh: () => void;
+}) {
   const orgId = scope.kind === "global" ? "" : scope.organizationId, teamId = scope.kind === "team" ? scope.teamId : "";
   const organization = choices.organizations.find(org => org.id === orgId);
   const [dates, setDates] = useState({ start: request.startDate, end: request.endDate });
   const [dateError, setDateError] = useState("");
   useEffect(() => setDates({ start: request.startDate, end: request.endDate }), [request.startDate, request.endDate]);
   const today = dateInZone(new Date(), request.timezone);
-  return <section className="insights-card" aria-label="Report scope and dates">
-    <div className="insights-filters">
-      <label>Organization<select value={orgId} onChange={event => onChange({ orgId: event.target.value || undefined, teamId: undefined, coachId: undefined, ...clearPlayerFilters() })}>{choices.global && <option value="">All organizations</option>}{choices.organizations.map(org => <option key={org.id} value={org.id}>{org.name}</option>)}</select></label>
-      <label>Team<select value={teamId} disabled={!organization} onChange={event => onChange({ teamId: event.target.value || undefined, teamAssignment: "" })}><option value="">{organization?.role === "coach" ? "All assigned teams" : "All teams + unassigned"}</option>{organization?.teams.map(team => <option key={team.id} value={team.id}>{team.name}</option>)}</select></label>
-      <label>Period<select value={request.startDate === shiftDate(request.endDate, 1 - request.weeks * 7) ? String(request.weeks) : "custom"} onChange={event => { const weeks = Number(event.target.value); if (weeks) onChange({ weeks, startDate: shiftDate(today, 1 - weeks * 7), endDate: today }); }}><option value="custom">Custom dates</option>{[4,8,12,26].map(weeks => <option key={weeks} value={weeks}>Last {weeks} weeks</option>)}</select></label>
-      <button className="quiet-button" type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+  const preset = request.startDate === shiftDate(request.endDate, 1 - request.weeks * 7) ? request.weeks : 0;
+
+  return <section className="insights-controls" aria-label="Report scope and dates">
+    <div className="insights-control-row">
+      {!hideScope && <>
+        <label>Organization<select value={orgId} onChange={event => onChange({ orgId: event.target.value || undefined, teamId: undefined, coachId: undefined, ...clearPlayerFilters() })}>{choices.global && <option value="">All organizations</option>}{choices.organizations.map(org => <option key={org.id} value={org.id}>{org.name}</option>)}</select></label>
+        <label>Team<select value={teamId} disabled={!organization} onChange={event => onChange({ teamId: event.target.value || undefined, teamAssignment: "" })}><option value="">{organization?.role === "coach" ? "All assigned teams" : "All teams + unassigned"}</option>{organization?.teams.map(team => <option key={team.id} value={team.id}>{team.name}</option>)}</select></label>
+      </>}
+      <label>Timezone<select value={request.timezone} onChange={event => onChange({ timezone: event.target.value })}>{TIMEZONES.map(zone => <option key={zone} value={zone}>{zone.replace("America/", "").replaceAll("_", " ")}</option>)}</select></label>
+      <fieldset className="insights-period-presets"><legend>Period</legend><div>{[4, 8, 12, 26].map(weeks => <button key={weeks} type="button" aria-pressed={preset === weeks} onClick={() => onChange({ weeks, startDate: shiftDate(today, 1 - weeks * 7), endDate: today })}>{weeks}w</button>)}</div></fieldset>
+      <details className="insights-custom-period">
+        <summary>Custom</summary>
+        <form onSubmit={event => {
+          event.preventDefault();
+          if (!dates.start || !dates.end || dates.start > dates.end || dates.end > today || dates.start < shiftDate(dates.end, -365)) {
+            setDateError("Choose a valid date range of up to one year ending today or earlier."); return;
+          }
+          setDateError(""); onChange({ startDate: dates.start, endDate: dates.end });
+        }}>
+          <label>From<input type="date" value={dates.start} max={dates.end} onChange={event => setDates(value => ({ ...value, start: event.target.value }))} /></label>
+          <label>Through<input type="date" value={dates.end} min={dates.start} max={today} onChange={event => setDates(value => ({ ...value, end: event.target.value }))} /></label>
+          <button className="quiet-button" type="submit">Apply dates</button>
+          {dateError && <p className="insights-note" role="alert">{dateError}</p>}
+        </form>
+      </details>
+      <button className="insights-refresh" type="button" disabled={loading} onClick={onRefresh} aria-label="Refresh Insights" title="Refresh Insights"><span className="material-symbols-outlined" aria-hidden="true">refresh</span></button>
     </div>
-    <form className="insights-period" onSubmit={event => { event.preventDefault(); if (!dates.start || !dates.end || dates.start > dates.end || dates.end > today || dates.start < shiftDate(dates.end, -365)) { setDateError("Choose a valid date range of up to one year ending today or earlier."); return; } setDateError(""); onChange({ startDate: dates.start, endDate: dates.end }); }}>
-      <label>From<input type="date" value={dates.start} max={dates.end} onChange={event => setDates(value => ({ ...value, start: event.target.value }))} /></label><label>Through<input type="date" value={dates.end} min={dates.start} max={today} onChange={event => setDates(value => ({ ...value, end: event.target.value }))} /></label>
-      <label>Timezone<select value={request.timezone} onChange={event => onChange({ timezone: event.target.value })}>{TIMEZONES.map(zone => <option key={zone} value={zone}>{zone.replace("America/", "").replaceAll("_", " ")}</option>)}</select></label><button className="quiet-button" type="submit">Apply dates</button>
-    </form>{dateError && <p className="insights-note" role="alert">{dateError}</p>}
   </section>;
 }
 
-function InsightsWorkspace({ uid }: { uid: string }) {
+export function InsightsWorkspace({ uid, embedded = false }: { uid: string; embedded?: boolean }) {
   const [query, setQuery] = useSearchParams(), request = expandedRequest(query.toString());
   const [report, setReport] = useState<ExpandedInsights | null>(null), [choices, setChoices] = useState<InsightChoices | null>(null);
   const [scope, setScope] = useState<InsightScope | null>(null), [role, setRole] = useState<InsightAccess | null>(null);
@@ -60,8 +86,9 @@ function InsightsWorkspace({ uid }: { uid: string }) {
   const [retry, setRetry] = useState(0), [cursors, setCursors] = useState<string[]>([""]), [page, setPage] = useState(0);
   const guard = useRef(createInsightsRequestGuard(() => auth.currentUser?.uid)).current;
   const cursor = cursors[page];
+
   useEffect(() => {
-    document.title = "Insights | PoseTek";
+    document.title = embedded ? "Admin overview | PoseTek" : "Insights | PoseTek";
     const isCurrent = guard.begin(uid);
     setReport(null); setError(""); setLoading(true); setAccessDenied(false);
     void (async () => {
@@ -90,7 +117,7 @@ function InsightsWorkspace({ uid }: { uid: string }) {
       } finally { if (isCurrent()) setLoading(false); }
     })();
     return () => guard.cancel();
-  }, [uid, request.orgId, request.teamId, request.startDate, request.endDate, request.timezone, request.testingWindow, request.division, request.ageBand, request.testingStatus, request.workoutStatus, request.usageStatus, request.usagePlatform, request.usageFeature, request.teamAssignment, cursor, retry, guard, setQuery]);
+  }, [uid, embedded, request.orgId, request.teamId, request.startDate, request.endDate, request.timezone, request.testingWindow, request.division, request.ageBand, request.testingStatus, request.workoutStatus, request.usageStatus, request.usagePlatform, request.usageFeature, request.teamAssignment, cursor, retry, guard, setQuery]);
 
   function change(patch: Partial<ExpandedRequest>) {
     const next = expandedQuery(request, patch);
@@ -100,17 +127,24 @@ function InsightsWorkspace({ uid }: { uid: string }) {
   function refresh() { guard.cancel(); setPage(0); setCursors([""]); setRetry(value => value + 1); }
   const current = { orgId: scope && scope.kind !== "global" ? scope.organizationId : undefined, teamId: scope?.kind === "team" ? scope.teamId : undefined, coachId: request.coachId };
   const back = insightsReturnLink(role || undefined, current, request.from);
+  const content = <>
+    <section className={`insights-heading${embedded ? " admin-overview-heading" : ""}`}>
+      {!embedded && <p className="eyebrow">Insights</p>}
+      <h1>{embedded ? "Overview" : report?.scope.label || (scope?.kind === "global" ? "All organizations" : "Team and player insights")}</h1>
+      <p>{embedded && (report?.scope.label || (scope?.kind === "global" ? "All organizations · " : ""))} Understand your roster, successful testing, completed workouts and estimated active use.</p>
+    </section>
+    {choices && scope && <InsightsControls choices={choices} request={request} scope={scope} loading={loading} hideScope={embedded} onChange={change} onRefresh={refresh} />}
+    <InsightTabs request={request} onChange={change} />
+    {(request.view === "overview" || request.view === "testing") && <div className="insights-toolbar"><p className="insights-note">Testing coverage</p><div className="insights-toggle" aria-label="Testing coverage period"><button type="button" aria-pressed={request.testingWindow === "cumulative"} onClick={() => change({ testingWindow: "cumulative" })}>Through selected end</button><button type="button" aria-pressed={request.testingWindow === "period"} onClick={() => change({ testingWindow: "period" })}>Selected period only</button></div></div>}
+    {error && <div className="insights-message error" role="alert"><p>{error}</p><button className="quiet-button" type="button" onClick={refresh}>Retry Insights</button></div>}
+    {accessDenied && <section className="insights-card"><h2>Insights are for club staff</h2><p>Access requires a current manager or assigned coach membership.</p><Link className="quiet-button" to="/organization">Open organization</Link></section>}
+    {loading && <p role="status">Loading complete Insights…</p>}
+    {report && !loading && <div id="insights-report" role="tabpanel" aria-labelledby={`insights-tab-${request.view}`}><ExpandedReport data={report} request={request} onChange={change} adminOverview={embedded && role === "admin"} page={page} onPrevious={() => { guard.cancel(); setReport(null); setLoading(true); setPage(value => Math.max(0, value - 1)); }} onNext={() => { if (report.pagination.nextCursor) { guard.cancel(); setReport(null); setLoading(true); setCursors(values => [...values.slice(0, page + 1), report.pagination.nextCursor!]); setPage(value => value + 1); } }} playerLink={player => insightsPlayerLink(role || undefined, player.id, { orgId: player.organizationId, teamId: player.teamId || undefined, coachId: request.orgId === player.organizationId ? request.coachId : undefined })} /></div>}
+  </>;
+
+  if (embedded) return <div className="pt-insights admin-insights">{content}</div>;
   return <div className="pt-pose portal-body pt-insights">
     <header className="portal-header"><Link className="portal-brand" to={back}><span className="portal-brand-mark">P</span>POSETEK</Link><Link className="quiet-button" to={back}>{role === "admin" ? request.from === "organization" ? "Organizations" : "Accounts" : role === "coach" && request.from === "dashboard" ? "Team dashboard" : "Organization"}</Link><button className="quiet-button" onClick={() => { void auth.signOut().catch(() => setError("Sign out failed. Try again.")); }}>Sign out</button></header>
-    <main className="insights-shell"><section className="insights-heading"><p className="eyebrow">Insights</p><h1>{report?.scope.label || (scope?.kind === "global" ? "All organizations" : "Team and player insights")}</h1><p>Understand your roster, successful testing, completed workouts and estimated active use.</p></section>
-      {choices && scope && <InsightsControls choices={choices} request={request} scope={scope} loading={loading} onChange={change} onRefresh={refresh} />}
-      <InsightTabs request={request} onChange={change} />
-      {(request.view === "overview" || request.view === "testing") && <div className="insights-toolbar"><p className="insights-note">Testing coverage</p><div className="insights-toggle" aria-label="Testing coverage period"><button type="button" aria-pressed={request.testingWindow === "cumulative"} onClick={() => change({ testingWindow: "cumulative" })}>Through selected end</button><button type="button" aria-pressed={request.testingWindow === "period"} onClick={() => change({ testingWindow: "period" })}>Selected period only</button></div></div>}
-      {error && <div className="insights-message error" role="alert"><p>{error}</p><button className="quiet-button" type="button" onClick={refresh}>Retry Insights</button></div>}
-      {accessDenied && <section className="insights-card"><h2>Insights are for club staff</h2><p>Access requires a current manager or assigned coach membership.</p><Link className="quiet-button" to="/organization">Open organization</Link></section>}
-      {loading && <p role="status">Loading complete Insights…</p>}
-      {report && !loading && <div id="insights-report" role="tabpanel" aria-labelledby={`insights-tab-${request.view}`}><ExpandedReport data={report} request={request} onChange={change} page={page} onPrevious={() => { guard.cancel(); setReport(null); setLoading(true); setPage(value => Math.max(0, value - 1)); }} onNext={() => { if (report.pagination.nextCursor) { guard.cancel(); setReport(null); setLoading(true); setCursors(values => [...values.slice(0, page + 1), report.pagination.nextCursor!]); setPage(value => value + 1); } }} playerLink={player => insightsPlayerLink(role || undefined, player.id, { orgId: player.organizationId, teamId: player.teamId || undefined, coachId: request.orgId === player.organizationId ? request.coachId : undefined })} />
-      </div>}
-    </main>
+    <main className="insights-shell">{content}</main>
   </div>;
 }

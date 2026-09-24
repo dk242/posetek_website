@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { ActivityChart, BreakdownChart } from "./BreakdownChart";
 
 describe("expanded Insights charts", () => {
-  it("exposes every donut category as a keyboard-operable filter with count and state", () => {
+  it("exposes every bar category as a keyboard-operable filter with count and state", () => {
     const html = renderToStaticMarkup(<BreakdownChart title="Testing coverage" slices={[{ key: "full", label: "Fully tested", value: 10 }, { key: "partial", label: "Partially tested", value: 24 }, { key: "none", label: "No recorded tests", value: 2 }]} selected="full" onSelect={() => {}} />);
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain("Clear filter");

@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 import ExpandedReport from "./ExpandedReport";
 import { expandedRequest } from "./lib/expandedQuery";
 import { previewInsights } from "./lib/preview";
@@ -75,5 +76,17 @@ describe("four-view Insights report", () => {
     const html = renderToStaticMarkup(<ExpandedReport data={data} request={base} onChange={() => {}} onPrevious={() => {}} onNext={() => {}} playerLink={() => "#player"} />);
     expect(html).toContain("5/84 players"); expect(html).toContain("The combined count includes each player once");
     expect(html).toContain("Boys/Girls divisions"); expect(html).toContain("Estimated active use");
+  });
+  it("adds the admin overview triage panel and daily KPI trends without changing report totals", () => {
+    const data = previewInsights(base);
+    const html = renderToStaticMarkup(<MemoryRouter><ExpandedReport data={data} request={base} adminOverview onChange={() => {}} onPrevious={() => {}} onNext={() => {}} playerLink={() => "#player"} /></MemoryRouter>);
+    expect(html).toContain("Needs attention");
+    expect(html).toContain("reps need review");
+    expect(html).toContain("unmatched failure reports");
+    expect(html).toContain("players not tested");
+    expect(html).toContain('href="/admin/analysis"');
+    expect(html).toContain('aria-label="Daily completed workouts"');
+    expect(html).toContain("Players by team");
+    expect(html).toContain("84 matching players");
   });
 });

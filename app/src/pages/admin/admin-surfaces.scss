@@ -13,7 +13,7 @@
   font-size: 15px;
   line-height: 1.5;
 
-  &.portal-body { background: linear-gradient(135deg, #041610, #092a20, #082417); }
+  &.portal-body { background: var(--admin-bg); }
   &.portal-body::before { display: none; }
   *, *::before, *::after { box-sizing: border-box; }
   :where(button, a, input, select, textarea):focus-visible {
@@ -46,7 +46,7 @@
   .portal-brand { flex: 0 0 auto; gap: 10px; }
   .portal-brand-mark {
     width: 34px; height: 34px; border-radius: 8px;
-    box-shadow: none; background: linear-gradient(145deg, #7cff18, #8dfd2e);
+    box-shadow: none; background: var(--admin-accent);
   }
   .admin-wordmark { font-size: 17px; letter-spacing: 0.18em; }
   .admin-header .portal-brand .admin-badge {
@@ -56,14 +56,14 @@
   }
   .admin-header-right { margin-left: auto; gap: 12px; }
   .admin-technique-link { gap: 6px; }
-  .admin-technique-link[aria-current="page"] { color: var(--admin-accent); background: rgba(124, 255, 24, 0.12); border-color: rgba(124, 255, 24, 0.25); }
+  .admin-technique-link[aria-current="page"] { color: var(--admin-accent); background: rgba(183, 243, 74, 0.12); border-color: rgba(183, 243, 74, 0.25); }
   .admin-who { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .admin-nav { align-items: center; gap: 6px; flex-wrap: wrap; }
   .admin-nav-short { display: none; }
   .admin-nav-link {
     padding: 0 12px; font-size: 13px; white-space: nowrap;
     border-color: transparent; background: transparent;
-    &.active { background: rgba(124, 255, 24, 0.12); border-color: rgba(124, 255, 24, 0.25); color: var(--admin-accent); }
+    &.active { background: rgba(183, 243, 74, 0.12); border-color: rgba(183, 243, 74, 0.25); color: var(--admin-accent); }
   }
   .admin-shell { width: 100%; padding: 32px 24px 80px; position: relative; }
   .admin-heading { flex-wrap: wrap; }
@@ -87,7 +87,7 @@
   .quiet-button:hover:not(:disabled), .icon-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.10); border-color: rgba(255, 255, 255, 0.24); }
   .quiet-button.active:not(.admin-nav-link) { color: #041610; background: var(--admin-accent); border-color: var(--admin-accent); }
   .quiet-button.small, .primary-cta.small { min-height: 36px; }
-  .admin-nav-link.active:hover { background: rgba(124, 255, 24, 0.18); color: var(--admin-accent); }
+  .admin-nav-link.active:hover { background: rgba(183, 243, 74, 0.18); color: var(--admin-accent); }
   .search-field { min-height: 44px; height: auto; margin: 0; padding: 10px 14px; border-radius: var(--admin-field-radius); }
   .search-field input { min-width: 0; font-size: 15px; }
   .search-field:focus-within { border-color: var(--admin-accent); }
@@ -100,7 +100,7 @@
   .admin-form, .admin-field-row { gap: 16px; }
   .admin-list-row, .admin-field, .admin-field-row > * { min-width: 0; }
   .admin-chip { padding: 4px 9px; font-size: 12px; letter-spacing: 0; }
-  .admin-chip.accent { background: rgba(124, 255, 24, 0.09); border-color: rgba(124, 255, 24, 0.25); }
+  .admin-chip.accent { background: rgba(183, 243, 74, 0.09); border-color: rgba(183, 243, 74, 0.25); }
   .admin-chip.warn { background: rgba(255, 184, 71, 0.09); border-color: rgba(255, 184, 71, 0.25); }
   .admin-chip.danger { background: rgba(248, 113, 113, 0.09); border-color: rgba(248, 113, 113, 0.3); }
 
@@ -114,7 +114,7 @@
   .admin-avatar {
     display: grid; place-items: center; flex: 0 0 42px;
     width: 42px; height: 42px; border-radius: 50%;
-    background: rgba(124, 255, 24, 0.12); border: 1px solid rgba(124, 255, 24, 0.2);
+    background: rgba(183, 243, 74, 0.12); border: 1px solid rgba(183, 243, 74, 0.2);
     color: var(--admin-accent); font-size: 14px; font-weight: 750; letter-spacing: 0.03em;
   }
   .admin-org-logo {
@@ -124,7 +124,7 @@
   }
   .admin-org-head h3 { font-size: 19px; }
   .admin-team-players { padding: 12px; gap: 12px; border-radius: 0 0 18px 18px; }
-  .admin-team.open .admin-team-toggle, .admin-team-players { border-color: rgba(124, 255, 24, 0.3); }
+  .admin-team.open .admin-team-toggle, .admin-team-players { border-color: rgba(183, 243, 74, 0.3); }
   .admin-player-row.compact { padding: 16px; }
   .admin-player-copy { flex: 1; min-width: 0; display: grid; gap: 8px; }
   .admin-player-row .admin-row-link { border-radius: 4px; }
@@ -172,7 +172,7 @@
     input:focus, select:focus, button:focus-visible, a:focus-visible { outline-color: var(--admin-accent); }
     .club-staff, .club-player, .club-team-checks { border-color: var(--admin-line); }
     .club-code code, .club-inline-link { color: var(--admin-accent); }
-    .club-message { background: rgba(124, 255, 24, 0.1); }
+    .club-message { background: rgba(183, 243, 74, 0.1); }
     .club-message.error { background: rgba(248, 113, 113, 0.14); }
   }
 

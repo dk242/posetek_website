@@ -1,0 +1,51 @@
+.pt-admin,
+.pt-insights {
+  --surface-0: #071510;
+  --surface-1: #0c1d16;
+  --surface-2: #12271e;
+  --surface-border: #294339;
+  --text-primary: #f3f8f5;
+  --text-muted: #9db1a7;
+  --accent: #b7f34a;
+  --status-good: #63d88b;
+  --status-warning: #e8b85f;
+  --status-danger: #ef7d7d;
+  --status-neutral: #8ca19a;
+
+  --admin-bg: var(--surface-0);
+  --admin-bar: var(--surface-0);
+  --admin-panel: var(--surface-1);
+  --admin-panel-strong: var(--surface-2);
+  --admin-line: var(--surface-border);
+  --admin-text: var(--text-primary);
+  --admin-dim: var(--text-muted);
+  --admin-accent: var(--accent);
+  --admin-warn: var(--status-warning);
+  --admin-danger: var(--status-danger);
+  --lime: var(--accent);
+  --green: var(--status-good);
+  --amber: var(--status-warning);
+  --danger: var(--status-danger);
+  --text: var(--text-primary);
+  --muted: var(--text-muted);
+  --line: var(--surface-border);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius: var(--radius-lg);
+
+  color: var(--text-primary);
+  background: var(--surface-0);
+  color-scheme: dark;
+  font-variant-numeric: tabular-nums;
+}
+
+.pt-admin.portal-body,
+.pt-insights.portal-body {
+  background: var(--surface-0);
+}
+
+.pt-admin.portal-body::before,
+.pt-insights.portal-body::before {
+  display: none;
+}
