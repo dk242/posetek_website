@@ -20,6 +20,8 @@ exports.cleanupDiagnosticArtifacts = functions.runWith({ timeoutSeconds: 120, me
 // Additive reporting and engagement endpoints; existing callables stay intact.
 const insightEntrypoints = require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller);
 Object.assign(exports, insightEntrypoints);
+// AI observability Phase 1: projectFailedLlmJobs + foldAiIncidents (aiIncidents).
+Object.assign(exports, require("./ai-incidents").createAiIncidentEntrypoints(functions, admin));
 const { createPlayerInvitations } = require("./player-invitations");
 const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const { createPlayerInvitationChecks } = require("./player-invitation-checks");
@@ -923,7 +925,7 @@ exports.aiCoachStreamProxy = functions
     res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.set(
       "Access-Control-Allow-Headers",
-      "Authorization, Content-Type, Accept, X-Firebase-AppCheck"
+      "Authorization, Content-Type, Accept, X-Firebase-AppCheck, X-PoseTek-Request-Id, X-PoseTek-Client"
     );
     res.set("Access-Control-Expose-Headers", "Content-Type");
 
@@ -964,6 +966,16 @@ exports.aiCoachStreamProxy = functions
     };
     const appCheck = req.get("x-firebase-appcheck");
     if (appCheck) headers["X-Firebase-AppCheck"] = appCheck;
+    // Contract §16: the gateway keys its aiIncidents doc on this id. Only a
+    // lowercase UUID v4 is forwarded (the gateway mints one otherwise), and
+    // the client tag is always web/... so a browser cannot label itself as
+    // smoke/test traffic through the proxy.
+    const requestId = req.get("x-posetek-request-id") || "";
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(requestId)) {
+      headers["X-PoseTek-Request-Id"] = requestId;
+    }
+    const clientTag = String(req.get("x-posetek-client") || "").slice(0, 64);
+    headers["X-PoseTek-Client"] = clientTag.startsWith("web/") ? clientTag : "web/proxy";
 
     try {
       const upstream = await fetch(AI_COACH_GATEWAY_URL, {
