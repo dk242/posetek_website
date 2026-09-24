@@ -65,8 +65,8 @@ Nine new training callables and their access rules are deployed. No reviewers,
 player clearances, video approvals or publications were created. Activation and
 workout starts involving any of the new 80 exercises remain held until mobile
 acceptance; ordinary existing plans retain their current behavior.
-Deploy only the composed `deployment/whole-body-firestore.rules`; the root rules
-file also includes separate, unreleased native testing work. Preserve existing
+Its rules were re-expressed in the canonical `PoseTek-mobile-app/firebase/`
+rules (2026-09-23/24); this repo no longer holds or publishes rules. Preserve existing
 plans, logs, all prior catalog content and approved marketing bytes.
 
 ### September 21 Draft B video planning

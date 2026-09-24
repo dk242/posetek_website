@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { firestoreEmulator } from './canonicalRules.mjs';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { deleteDoc, doc, getDoc, runTransaction, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 const projectId = 'demo-posetek-testing-events';
 const env = await initializeTestEnvironment({
   projectId,
-  firestore: { rules: fs.readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8197 },
+  firestore: firestoreEmulator(),
 });
 const eventId = 'event-a';
 const playerId = 'player-a';

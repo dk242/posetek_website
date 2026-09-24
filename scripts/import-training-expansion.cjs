@@ -1,5 +1,6 @@
 // Explicit operator-only, create-only import. Default is read-only preflight.
 const fs=require('node:fs');
+const path=require('node:path');
 const crypto=require('node:crypto');
 const assert=require('node:assert/strict');
 const {cloud,DOCUMENTS,decode,encode}=require('./training-cloud.cjs');
@@ -62,7 +63,7 @@ async function main(){
   // Import can only follow deployment of the private-sidecar access rules.
   const release=await c.api('https://firebaserules.googleapis.com/v1/projects/kickai-69dd0/releases/cloud.firestore');
   const ruleset=await c.api(`https://firebaserules.googleapis.com/v1/${release.rulesetName}`);
-  assert.equal(ruleset.source.files[0].content.replace(/\r\n/g,'\n'),fs.readFileSync('deployment/whole-body-firestore.rules','utf8').replace(/\r\n/g,'\n'),'Tested rules must be live before private authoring import.');
+  assert.equal(ruleset.source.files[0].content.replace(/\r\n/g,'\n'),fs.readFileSync(process.env.RULES_PATH||path.resolve(__dirname,'../../PoseTek-mobile-app/firebase/firestore.rules'),'utf8').replace(/\r\n/g,'\n'),'Tested rules must be live before private authoring import.');
   const root='projects/kickai-69dd0/databases/(default)/documents/';
   writes.push({update:{name:root+'drillCatalogMeta/idCounters',fields:fields(counters)},currentDocument:counterDoc?{updateTime:counterDoc.updateTime}:{exists:false}});
   writes.push({update:{name:metaDoc.name,fields:fields({...meta,catalogVersion:version,updatedBy:'operator:whole-body-import',lastChange:{kind:'draft-batch-import',productionBatchId:manifest.productionBatchId,count:80}})},currentDocument:{updateTime:metaDoc.updateTime},updateTransforms:[{fieldPath:'updatedAt',setToServerValue:'REQUEST_TIME'}]});

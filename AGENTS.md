@@ -31,6 +31,23 @@ public projection, and the delivery/recovery guarantees — is in
 notes below and in `deployment/*.json` are historical records of what was serving
 at the time, not instructions or a current source pointer.
 
+## Firebase rules
+
+**Firestore and Storage rules live only in `PoseTek-mobile-app/firebase/`**
+(`firestore.rules`, `storage.rules`). They are published only by
+`python firebase/operations.py publish` in that repo, and never from here.
+This repository has no rules files, and `firebase.json` carries Firestore
+*indexes* only, so no form of `firebase deploy` from this checkout can publish
+rules. Do not re-add a `rules` key to `firebase.json` or to any other config here,
+and do not add a rules file. A rules change is a change to the mobile repo.
+
+The suites in `app/rules-tests/` test the canonical files. Run them with
+`node scripts/run-rules-tests.mjs` (see `app/rules-tests/README.md`). They
+default to a sibling `../PoseTek-mobile-app` checkout, and `RULES_PATH` /
+`STORAGE_RULES_PATH` override that. Rules, receipts and releases in
+`deployment/*.json`, including the composed `whole-body-firestore.rules`
+(deleted), are historical records of past publishes, not instructions.
+
 The latest recorded production release is `6ab25ae36de88d184cc9b2e1`, published
 September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo
 references in the private admin **Watch before filming** section. Read
@@ -46,8 +63,8 @@ and `content/training-expansion/production-id-map.json` before training changes.
 All new content and media reviews remain pending. The mobile acceptance gate
 remains false; activation and workout starts involving any of the 80 new exercises
 remain held until reviewed device acceptance. No reviewer or player clearance was
-created. Deploy only the composed `deployment/whole-body-firestore.rules` for
-this release; root rules also contain separate unreleased native testing work.
+created. Rules for this release are now part of the canonical mobile rules
+(see § Firebase rules); nothing here publishes them.
 Player signup links prefill the current code;
 staff can copy existing links or generate a code only when missing. Normal actions
 preserve valid codes. Read `deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json`

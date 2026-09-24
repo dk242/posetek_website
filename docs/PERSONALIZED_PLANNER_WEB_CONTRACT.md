@@ -90,7 +90,7 @@ The website-side rules suite for these capabilities runs here, against the local
 Firestore emulator:
 
 ```text
-firebase --config firebase.planner-test.json emulators:exec --only firestore --project demo-personalized-planner "node app/rules-tests/personalizedRules.emulator.mjs"
+node scripts/run-rules-tests.mjs personalizedRules
 ```
 
 That suite covers all four capabilities, scoped view queries, private context

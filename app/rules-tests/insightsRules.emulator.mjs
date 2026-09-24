@@ -1,8 +1,8 @@
-import fs from 'node:fs';
+import { firestoreEmulator } from './canonicalRules.mjs';
 import { initializeTestEnvironment, assertFails } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc, collection, getDocs, setLogLevel } from 'firebase/firestore';
 setLogLevel('silent');
-const env = await initializeTestEnvironment({ projectId: 'demo-expanded-insights', firestore: { rules: fs.readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8189 } });
+const env = await initializeTestEnvironment({ projectId: 'demo-expanded-insights', firestore: firestoreEmulator() });
 const paths = ['insightSettings/usage', 'insightUsageDays/player', 'insightUsageDays/player/insightUsageDaily/2026-09-17', 'insightUsageDays/player/insightUsageDetailDays/2026-09-17', 'insightUsageIntervals/private', 'insightUsageActors/athlete',
   ...['player', 'legacy'].flatMap(p => ['insightMetadata/reporting', 'insightSummaries/current', 'insightSummaryDays/2026-09-17'].map(s => `players/${p}/${s}`))];
 let checks = 0;
