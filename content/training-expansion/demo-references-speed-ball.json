@@ -1,0 +1,388 @@
+{
+  "references": [
+    {
+      "manifestId": "wb-015",
+      "drillId": "SPD-502",
+      "name": "Two-point split-stance acceleration",
+      "videos": [
+        {
+          "title": "Split & Rip Sprint Drill with Tony Holler",
+          "url": "https://coachesinsider.com/track-x-country/split-rip-sprint-drill-with-tony-holler-plainfield-north-high-school-il/",
+          "publisher": "Tony Holler / Championship Productions, hosted by Coaches Insider",
+          "matchType": "component",
+          "matchNotes": "Use the two-point standing start portion for stance and first-step reference. The page also covers three- and four-point starts and a specific arm drill; PoseTek films a static split stance, controlled 10 m acceleration and clear slowing area, with no floor start.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-016",
+      "drillId": "AGL-501",
+      "name": "Lateral shuffle braking",
+      "videos": [
+        {
+          "title": "Playing in the Tunnel — Teaching Lateral Shuffle",
+          "url": "https://leetaft.com/playing-in-the-tunnel/",
+          "publisher": "Lee Taft Athletic Consulting",
+          "matchType": "component",
+          "matchNotes": "Open the linked Teaching Lateral Shuffle video. It illustrates lateral posture and controlled recovery with resistance. PoseTek uses no resistance: shuffle 3 m without crossing the feet, shorten the final steps and stop balanced. Film that braking finish separately.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-017",
+      "drillId": "SPD-503",
+      "name": "Wide-arc curved acceleration",
+      "videos": [
+        {
+          "title": "Curved sprint with a lower load of centrifugal force — Video 1",
+          "url": "https://www.sportsmith.co/articles/testing-and-training-curvilinear-sprinting-in-team-sports/",
+          "publisher": "Alberto Filter / Sportsmith",
+          "matchType": "component",
+          "matchNotes": "Use Video 1, the introductory larger-radius curved sprint, as the movement reference. PoseTek specifies a gentle 15 m arc, gradual speed build and clear runoff. Do not copy the smaller-radius, weighted-vest or ball-reaction progressions later on the page.",
+          "verification": "Publisher video description checked; linked Vimeo player played publicly without sign-in and a curved-running frame was inspected. Full playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-018",
+      "drillId": "RCV-501",
+      "name": "Self-drop instep cushion receive",
+      "videos": [
+        {
+          "title": "How to Control the Soccer Ball out of the Air",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/how-to-control-the-soccer-ball-out-of-the-air",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the laces/instep cushioning demonstration and low solo toss progression. PoseTek drops from around waist height, softens the receiving leg and settles the ball within one step; it does not require a high toss, foot stall or partner service.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-019",
+      "drillId": "BMA-504",
+      "name": "Drop-bounce instep juggling",
+      "videos": [
+        {
+          "title": "How to Juggle a Soccer Ball",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-juggle-a-soccer-ball",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "exact",
+          "matchNotes": "Use the second exercise: drop, allow a bounce, lift with the instep and allow another bounce between touches. This matches the drill's movement; film low, controlled touches below waist height and the catch/reset option, not the later continuous juggling progression.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-020",
+      "drillId": "PAS-501",
+      "name": "Outside-foot ground pass",
+      "videos": [
+        {
+          "title": "1 Touch Technique - Right Outside Foot",
+          "url": "https://blayze.io/blog/soccer/drills/1-touch-technique---right-outside-foot",
+          "publisher": "Mike Semenza / Blayze",
+          "matchType": "component",
+          "matchNotes": "Reference the outside-foot contact and controlled pass through the cones. This example uses one-touch right-foot passing; PoseTek starts with a stationary ball, uses a wide gate 3–5 m away and repeats on both feet.",
+          "verification": "Video player, coach attribution and instructions checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-035",
+      "drillId": "SPD-504",
+      "name": "Side-on crossover acceleration",
+      "videos": [
+        {
+          "title": "Hip turn to crossover step — Video 21",
+          "url": "https://simplifaster.com/articles/deconstructing-preformance-training-basketball-defense/",
+          "publisher": "Justin Ochoa / SimpliFaster",
+          "matchType": "component",
+          "matchNotes": "Go to Video 21, Hip turn to crossover step. Use the hip opening and crossover as the reference. PoseTek begins side-on and then accelerates forward for 8 m on a planned signal; it does not add the article's reactive basketball task.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-036",
+      "drillId": "AGL-502",
+      "name": "Planned 135-degree cut",
+      "videos": [
+        {
+          "title": "Cutting tree - 135 degree cut",
+          "url": "https://www.youtube.com/watch?v=Se_9___oVY8",
+          "publisher": "LMU Strength and Conditioning",
+          "matchType": "component",
+          "matchNotes": "Use this explicitly labeled 135-degree cutting-tree demonstration for the sharper direction change. The coach demonstrates on grass using cones. PoseTek uses a short controlled approach and one planned cut back toward the start-side diagonal, then a short exit and reset. Confirm the 135-degree travel-direction change in the filming layout; do not substitute a shallow 45-degree turn or copy a faster approach.",
+          "verification": "Video title and publisher checked in browser; playback access and sampled demonstration frames checked. No published description; not reviewed frame by frame.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-037",
+      "drillId": "AGL-503",
+      "name": "Shuffle-to-crossover transition",
+      "videos": [
+        {
+          "title": "Crossover Step (Videos) — movement combinations",
+          "url": "https://www.breakthroughbasketball.com/defense/defense-crossover-step",
+          "publisher": "Joe Haefner / Breakthrough Basketball",
+          "matchType": "component",
+          "matchNotes": "Use the training example identified on the page as Sandra's movement combinations, particularly the shuffle/crossover changes. The page distinguishes these from turning fully to run. PoseTek films a planned 3 m shuffle into 5 m of lateral crossover travel while facing forward, without an opponent or basketball.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-038",
+      "drillId": "RCV-502",
+      "name": "Thigh-to-foot aerial receive",
+      "videos": [
+        {
+          "title": "Control a Soccer Ball with your Thigh",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/control-a-ball-with-your-thigh",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the low solo-toss thigh cushioning demonstration. PoseTek raises the thigh early, lowers it on contact and adds a settling foot touch; keep the toss just above thigh height and omit harder partner service.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-039",
+      "drillId": "PAS-502",
+      "name": "Sole layoff to supporting partner",
+      "videos": [
+        {
+          "title": "Soccer Skills: The Drag-Back",
+          "url": "https://www.sikana.tv/en/sport/football/soccer-skills-the-drag-back",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Use only the initial sole-on-ball backward roll as a contact reference. The demonstrated move keeps possession and exits in a V; PoseTek instead releases the roll as a gentle layoff to a partner 2–3 m diagonally behind. Film the rear-space check, pass release and movement for the return; do not copy the V-turn.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-040",
+      "drillId": "SHT-506",
+      "name": "Short-range toe-poke finish",
+      "videos": [
+        {
+          "title": "The Art of the Futsal Toe Poke: Full Guide with Tips and Training Drills",
+          "url": "https://www.carofutsal.com.au/post/mastering-futsal-toe-poke-technique",
+          "publisher": "Andre Caro / Caro Futsal",
+          "matchType": "component",
+          "matchNotes": "Open Andre Caro's linked tutorial for toe-contact technique. It covers several futsal situations; PoseTek films a short, low-power toe poke from close range into a wide target, no goalkeeper, resetting after each shot rather than copying the full combinations.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-055",
+      "drillId": "SPD-505",
+      "name": "Half-kneeling acceleration start",
+      "videos": [
+        {
+          "title": "Speed drill: Half Kneeling Sprint Start",
+          "url": "https://www.youtube.com/watch?v=14TzuI0l7Ug",
+          "publisher": "Academy of Sport Speed Australia",
+          "matchType": "exact",
+          "matchNotes": "Matches the half-kneeling start, forward lean and drive through the front foot. Retain PoseTek's comfortable knee pad, controlled first steps, 8 m lane and clear slowing area; the example does not establish the athlete's prescribed volume.",
+          "verification": "Original academy's video listing, direct YouTube link and drill description checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-056",
+      "drillId": "AGL-504",
+      "name": "Backpedal drop-step acceleration",
+      "videos": [
+        {
+          "title": "Acceleration + Backpedal + Drop Step Sprint",
+          "url": "https://www.youtube.com/watch?v=FTH60Lvk6lc",
+          "publisher": "Champion Physical Therapy and Performance",
+          "matchType": "component",
+          "matchNotes": "Reference the backpedal-to-drop-step-to-forward-sprint portion. The title includes an initial acceleration that PoseTek omits: film a controlled 3 m backpedal followed by the planned diagonal 6 m exit and runoff.",
+          "verification": "Video title, publisher and indexed description checked; direct playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-057",
+      "drillId": "SPD-506",
+      "name": "Curve-to-straight acceleration",
+      "videos": [
+        {
+          "title": "Curved sprint with a lower load of centrifugal force — Video 1",
+          "url": "https://www.sportsmith.co/articles/testing-and-training-curvilinear-sprinting-in-team-sports/",
+          "publisher": "Alberto Filter / Sportsmith",
+          "matchType": "component",
+          "matchNotes": "Video 1 supplies the gentle-curve running component only. PoseTek adds a marked transition from an 8 m curve to an 8 m straight, gradually aligning the body without planting for a sharp cut. Film the transition clearly; omit the page's tighter curves and weighted variations.",
+          "verification": "Publisher video description checked; linked Vimeo player played publicly without sign-in and a curved-running frame was inspected. Full playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-058",
+      "drillId": "RCV-503",
+      "name": "Chest-to-foot aerial receive",
+      "videos": [
+        {
+          "title": "How to Chest a Soccer Ball",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/soccer-ball-control/chest-a-soccer-ball",
+          "publisher": "Online Soccer Academy / Emily Grant",
+          "matchType": "component",
+          "matchNotes": "Use the balanced chest contact and low forward control reference. This demonstration uses a partner toss; PoseTek uses a gentle self-toss below head height, soft chest contact and a ground-settling foot touch. No header or volley return is part of the PoseTek drill.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-059",
+      "drillId": "PAS-503",
+      "name": "Driven instep ground pass",
+      "videos": [
+        {
+          "title": "How to Kick a Ball: Soccer Shots",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-kick-a-ball-soccer-shots",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Reference the laces contact, firm ankle and body position for keeping the strike down. This is a shooting lesson; PoseTek applies those mechanics to a controlled 8–12 m ground pass through a wide gate, with a low follow-through and non-maximal force.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-060",
+      "drillId": "SHT-507",
+      "name": "Inside-foot curling finish",
+      "videos": [
+        {
+          "title": "How to Curl a Football",
+          "url": "https://www.sikana.tv/en/sport/football/how-to-curl-a-football",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "component",
+          "matchNotes": "Use the inside-foot contact and curved follow-through as the visual reference. The example is framed as a free kick around a wall; PoseTek films a short angled approach and comfortable close-range curling finish without a wall or goalkeeper, not a long free-kick attempt.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-075",
+      "drillId": "SPD-507",
+      "name": "Accelerate-float-accelerate run",
+      "videos": [
+        {
+          "title": "Sprint-float-sprint demonstration — The Harmony of Relaxation and Repetition in Sport: Part II",
+          "url": "https://www.just-fly-sports.com/the-harmony-of-relaxation-and-repetition-in-sport-part-ii/",
+          "publisher": "Joel Smith / Just Fly Sports",
+          "matchType": "component",
+          "matchNotes": "Use the embedded sprint-float-sprint video for the change from driving to relaxed running and back. The article discusses long, maximal track efforts; PoseTek uses three 8 m zones at controlled submaximal speed, maintaining relaxed motion in the middle zone and a smooth final increase.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-076",
+      "drillId": "AGL-505",
+      "name": "Backward-running brake and hold",
+      "videos": [
+        {
+          "title": "Finding the Gold in Backpedal Training for Performance — Videos 1–3",
+          "url": "https://simplifaster.com/articles/backpedal-training-athletic-performance/",
+          "publisher": "Lee Taft / SimpliFaster",
+          "matchType": "component",
+          "matchNotes": "Use Videos 1–3 for coordinated backward travel and balance. These demonstrate backpedal mechanics, not PoseTek's complete brake-and-hold sequence. PoseTek uses a short clear lane, progressively shorter steps into a balanced stop, then turns and walks back; omit the rotational/reactive progressions.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-077",
+      "drillId": "AGL-506",
+      "name": "Lateral crossover brake and square",
+      "videos": [
+        {
+          "title": "Crossover Step (Videos) — crossover and return to defensive stance",
+          "url": "https://www.breakthroughbasketball.com/defense/defense-crossover-step",
+          "publisher": "Joe Haefner / Breakthrough Basketball",
+          "matchType": "component",
+          "matchNotes": "Use the training movement-combination video for lateral crossovers and returning to a forward-facing stance. PoseTek adds its own controlled 5 m lane and uncrossing, progressively shorter braking steps before holding square. Do not copy a reactive opponent, hard reversal or the article's single-plant stopping progression.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-078",
+      "drillId": "PAS-504",
+      "name": "Low half-volley wall return",
+      "videos": [
+        {
+          "title": "#17 Soccer Training Session — wall volley / half-volley exercise",
+          "url": "https://www.onlinesocceracademy.com/soccer-training-videos/30-minute-training-sessions/soccer-training-session-17",
+          "publisher": "Online Soccer Academy",
+          "matchType": "component",
+          "matchNotes": "Use the wall exercise described in the session's 15–20 minute training block (not a video timestamp), especially its half-volley option just after the bounce. The lesson also uses side volleys. PoseTek films a low self-drop, one bounce and straight instep return to a low wall target, then controls and resets.",
+          "verification": "Video page and description checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-079",
+      "drillId": "PAS-505",
+      "name": "Checked-space backheel pass",
+      "videos": [
+        {
+          "title": "Soccer Techniques: Back Heel",
+          "url": "https://www.sikana.tv/en/sport/football/soccer-techniques-back-heel",
+          "publisher": "Sikana — How to Play Football",
+          "matchType": "exact",
+          "matchNotes": "Matches the basic stationary backheel contact. PoseTek adds an explicit check behind, a wide gate about 2 m back and slightly to the side, a gentle pass, and turning to inspect the outcome before retrieving.",
+          "verification": "Video page and published transcript checked; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    },
+    {
+      "manifestId": "wb-080",
+      "drillId": "PAS-506",
+      "name": "Self-drop inside-foot volley pass",
+      "videos": [
+        {
+          "title": "Footwork & Inside Foot Volley",
+          "url": "https://www.youtube.com/watch?v=R736Sa2_66c",
+          "publisher": "Christopher Cartlidge / New Mexico Rapids Soccer Club video library",
+          "matchType": "component",
+          "matchNotes": "The club labels this as right-and-left inside-foot volley work. Use the inside-foot contact component; PoseTek removes the footwork sequence and uses a self-drop below knee height, no bounce, to a wide gate 3–4 m away with a reset after each pass.",
+          "verification": "Club video-library description, embedded player title, publisher and direct YouTube link checked in browser; playback not reviewed.",
+          "checkedAt": "2026-09-22"
+        }
+      ]
+    }
+  ]
+}

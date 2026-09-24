@@ -1,0 +1,1 @@
+{"firestore":{"rules":"deployment/whole-body-firestore.rules"},"storage":{"rules":"storage.rules"},"emulators":{"firestore":{"port":8189},"storage":{"port":9299},"ui":{"enabled":false},"singleProjectMode":true}}

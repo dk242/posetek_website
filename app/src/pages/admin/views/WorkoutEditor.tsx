@@ -53,6 +53,7 @@ import type { FrequencyContext, GenerationContext } from "../lib/plans";
 import AdminDoseDialog from "./AdminDoseDialog";
 import DrillPickerPane, { DRAG_BLOCK_PREFIX, DRAG_DRILL_PREFIX } from "./DrillPickerPane";
 import RationaleDialog from "./RationaleDialog";
+import TrainingLoadInstructions from "../../../components/TrainingLoadInstructions";
 
 interface Loaded {
   player: PlayerRow;
@@ -387,6 +388,7 @@ export default function WorkoutEditor() {
                       {drill ? ` · L${drill.difficultyLevel}` : " · not in the catalog"}
                     </span>
                     {block.whyIncluded && <span className="admin-block-dose">{block.whyIncluded}</span>}
+                    <TrainingLoadInstructions block={block} />
                     {blockIssues.map((issue, position) => (
                       <span key={position} className={`admin-block-dose ${issue.severity}`}>{issue.message}</span>
                     ))}

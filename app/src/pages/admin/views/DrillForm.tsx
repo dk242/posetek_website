@@ -34,6 +34,7 @@ import {
   uploadDrillMedia,
 } from "../lib/catalog";
 import type { DrillWrite } from "../lib/catalog";
+import DrillProductionPanel from "./DrillProductionPanel";
 
 interface FormState {
   name: string;
@@ -225,7 +226,8 @@ export default function DrillForm({ mode }: { mode: "create" | "edit" }) {
         setMessage(`Created ${newId}. Add its clips below when you have them.`);
       } else {
         const { updateDrill } = await import("../lib/catalog");
-        const version = await updateDrill(drillId, writeFrom(form));
+        const version = await updateDrill(drillId, writeFrom(form), drill?.catalogVersion);
+        setDrill(await loadDrill(drillId));
         setMessage(`Saved. The catalog is now version ${version}, so every device refetches.`);
       }
     } catch (error: any) {
@@ -286,7 +288,7 @@ export default function DrillForm({ mode }: { mode: "create" | "edit" }) {
               <label className="admin-field">
                 <span>Status</span>
                 <select value={form.status} onChange={event => set("status")(event.target.value as DrillStatus)}>
-                  {DRILL_STATUSES.map(value => <option key={value} value={value}>{value}</option>)}
+                  {DRILL_STATUSES.map(value => <option key={value} value={value} disabled={value === "published" && Boolean(drill?.productionBatchId)}>{value}</option>)}
                 </select>
               </label>
             </div>
@@ -489,22 +491,24 @@ export default function DrillForm({ mode }: { mode: "create" | "edit" }) {
         <section className="admin-card">
           <h3>Media</h3>
           <p className="admin-note">
-            Uploads land at <code>drillCatalogMedia/app/{drillId}/&lt;slot&gt;</code> and are approved on
-            arrival — you are the approver. Existing portal clips stay where they are and keep playing.
+            {drill.productionBatchId ? "New clips await qualified review in the production panel. Uploading never publishes the drill." : "Uploaded clips are approved on arrival. Existing clips stay where they are and keep playing."}
           </p>
-          <div className="admin-media-grid">
+          {drill.productionBatchId && drill.status === "published" && <p className="admin-note">Archive this drill before replacing its reviewed media.</p>}
+          <fieldset className="admin-media-grid" disabled={Boolean(drill.productionBatchId) && drill.status === "published"}>
             {MEDIA_SLOTS.map(slot => (
               <MediaUploader
                 key={slot}
                 drillId={drillId}
                 slot={slot}
                 asset={(drill.media as any)?.[slot]}
+                managed={Boolean(drill.productionBatchId)}
                 onChanged={() => loadDrill(drillId).then(found => found && setDrill(found))}
               />
             ))}
-          </div>
+          </fieldset>
         </section>
       )}
+      {mode === "edit" && drill && <DrillProductionPanel drill={drill} onChanged={() => void loadDrill(drillId).then(found => found && setDrill(found))} />}
     </>
   );
 }
@@ -550,10 +554,11 @@ function ListEditor({ label, values, maxEntries, maxChars, onChange }: {
   );
 }
 
-function MediaUploader({ drillId, slot, asset, onChanged }: {
+function MediaUploader({ drillId, slot, asset, managed, onChanged }: {
   drillId: string;
   slot: MediaSlot;
   asset: any;
+  managed: boolean;
   onChanged: () => void;
 }) {
   const [progress, setProgress] = useState<number | null>(null);
@@ -566,7 +571,7 @@ function MediaUploader({ drillId, slot, asset, onChanged }: {
     setError(null);
     setProgress(0);
     try {
-      const handle = uploadDrillMedia(drillId, slot, file, setProgress);
+      const handle = uploadDrillMedia(drillId, slot, file, setProgress, managed);
       await handle.promise;
       onChanged();
     } catch (uploadError: any) {

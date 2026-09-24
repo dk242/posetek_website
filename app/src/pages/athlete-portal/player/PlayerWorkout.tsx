@@ -9,6 +9,7 @@ import DrillMedia from './DrillMedia';
 import CoachChat from './CoachChat';
 import { newClock, elapsed, restSeconds, pauseClock, resumeClock, reconcileClock, interactClock } from './clock';
 import type { Clock } from './clock';
+import TrainingLoadInstructions from '../../../components/TrainingLoadInstructions';
 
 export default function PlayerWorkout({ workout, store, playerId, preview, onExit }: {
   workout: Row; store: PlayerWorkoutStore; playerId: string; preview: boolean; onExit: () => void;
@@ -79,6 +80,7 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
       <nav className="player-block-strip" aria-label="Workout drills">{blocks.map((b, i) => <button key={b.blockId} aria-label={`Drill ${i + 1}: ${b.name}`} aria-current={i === index ? 'step' : undefined} onClick={() => { setIndex(i); setClock(c => ({ ...c, restUntil: null, frozenRest: null })); }}>{i + 1}{log?.blocks?.find((r: Row) => r.blockId === b.blockId)?.status === 'done' ? ' ✓' : ''}</button>)}</nav>
       <p className="eyebrow">{domainLabel(block.domain)} · Drill {index + 1} of {blocks.length}</p><h2>{block.name}</h2><p>{blockDoseLine({ ...block, sets: block.sets, reps: block.reps, repUnit: block.repUnit })}</p>
       <DrillMedia key={block.drillId} drillId={block.drillId} preview={preview} onChat={setChat} />
+      <TrainingLoadInstructions block={block} />
       <section className="portal-card"><p className="eyebrow">{rest > 0 ? 'Rest now' : done >= target ? 'Drill complete' : `Up next · Set ${done + 1} of ${target}`}</p>
         {rest > 0 && <div className="player-rest"><strong>{Math.floor(rest / 60)}:{String(rest % 60).padStart(2, '0')}</strong><button onClick={() => setClock(c => ({ ...c, restUntil: null, frozenRest: null }))}>Skip rest</button></div>}
         <div className="player-sets">{Array.from({ length: target }, (_, i) => i + 1).map(n => <button key={n} disabled={store.saving} aria-pressed={n <= done} aria-label={`Set ${n}${n <= done ? ', completed' : ''}`} onClick={() => void tick(n === done ? n - 1 : n)}>{n <= done ? '✓' : n}</button>)}</div>

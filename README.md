@@ -9,10 +9,11 @@ and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 17, 2026 at 6:31:29 PM PDT as
-`6aac924a597bd46f15cf468a`.
+The latest release was published September 22, 2026 at 3:48:45 AM PDT as
+`6ab25ae36de88d184cc9b2e1`. It adds external demo references to the private
+filming panel for all 80 new whole-body exercise drafts.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and
-[the website production receipt](deployment/PLAYER_INVITATION_LINKS_PRODUCTION.json).
+[the website production receipt](deployment/DRILL_DEMO_REFERENCES_PRODUCTION.json).
 Recovered homepage modules include provenance beside their source.
 
 **Player signup links live:** Admin account and organization rosters offer
@@ -153,8 +154,8 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 612 application/public
-files from deployment `6aac924a597bd46f15cf468a`. A fresh build downloads and
+`deployment/homepage-baseline.json`, and preserves all 727 application/public
+files from deployment `6ab25ae36de88d184cc9b2e1`. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.

@@ -1,43 +1,17 @@
-// The one admin write path to `trainingPlans`, and the frequency context it
-// needs. TRAINING_PROGRAM_V3_CONTRACT.md §6 (three writers, one document),
-// §8.3 (the ground-truth record) and §13 (transactions, frequency
-// serialization, size bounds); the coupled rules live in docs/rules/llm.rules.
-//
-// Two invariants make this file worth reading carefully:
-//
-//   1. The new `weeks` array is built from the snapshot read INSIDE the
-//      transaction, and only the target workout is spliced. Writing back the
-//      array the browser loaded would revert a sibling workout someone else
-//      edited meanwhile (01A F08).
-//   2. The plan update and the `planAdjustments` create are one transaction.
-//      The rules refuse either alone, in both directions, via `getAfter` — an
-//      edit without its rationale record cannot exist.
+// Admin workout edits are submitted to the deterministic gateway. The server
+// rereads eligibility, workload and current revisions and writes the plan and
+// its audit together. Browsers no longer write trainingPlans directly.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import firebase, { auth, db } from "../../../lib/firebase";
-import { normalizeCatalogDrill } from "../../../lib/contracts/drillV2";
-import type { CatalogDrill } from "../../../lib/contracts/drillV2";
+import { auth, db } from "../../../lib/firebase";
+import { submitLlmJob } from "../../athlete-portal/lib/loaders";
 import {
-  actualMinutesByDomain,
-  derivedTargets,
   localDayString,
-  weekTransitionMinutes,
   weekWindow,
 } from "../../../lib/contracts/planV3";
-import { ageBand, isPosition, resolveEligibility } from "../../../lib/contracts/types";
-import type { TechnicalEligibility, WorkoutSnapshot } from "../../../lib/contracts/types";
-import { resolvePlayerAge } from "./accounts";
-import {
-  diffWorkouts,
-  errorsOf,
-  snapshotOf,
-  snapshotOfDraft,
-  validateDraft,
-  workoutFromDraft,
-} from "./editor";
+import { draftMinutes } from "./editor";
 import type { Issue, WorkoutDraft } from "./editor";
-import { ADMIN_CLIENT_VERSION } from "./identity";
 import { workoutRationale } from "./rationale";
 
 export const MAX_DOCUMENT_BYTES = 900 * 1024;
@@ -192,216 +166,34 @@ export interface SaveResult {
 }
 
 export async function saveWorkoutEdit(input: SaveWorkoutEdit): Promise<SaveResult> {
-  const uid = auth.currentUser?.uid;
-  if (!uid) throw new SaveError("signedOut", "You are signed out. Sign in again to save.");
+  if (!auth.currentUser?.uid) throw new SaveError("signedOut", "You are signed out. Sign in again to save.");
   const rationale = workoutRationale(input.rationale, input.noFeedback === true);
-  if (rationale === null) {
-    throw new SaveError("validation", "Write 3–2000 characters of feedback or select “I have no feedback to provide here”.");
-  }
-
-  const playerRef = db.collection("players").doc(input.playerId);
-  const planRef = playerRef.collection("trainingPlans").doc(input.planId);
-  const counterRef = scheduleRef(input.playerId);
-
-  return db.runTransaction(async transaction => {
-    // --- reads (all before any write) ---
-    const [planDoc, counterDoc, playerDoc] = await Promise.all([
-      transaction.get(planRef),
-      transaction.get(counterRef),
-      transaction.get(playerRef),
-    ]);
-
-    if (!planDoc.exists) throw new SaveError("planMissing", "This plan no longer exists.");
-    const plan: any = planDoc.data();
-    if (Number(plan.schemaVersion) !== 3) {
-      throw new SaveError("planNotV3", "The web editor only edits schemaVersion 3 plans.");
-    }
-    if (String(plan.status ?? "") !== "active") {
-      throw new SaveError("planNotActive", "This plan is no longer active — it cannot be edited.");
-    }
-    if (!counterDoc.exists) {
-      throw new SaveError(
-        "scheduleMissing",
-        "This athlete has no workoutSchedule/current counter yet. The training engine writes it with the first v3 plan; a client cannot create it.",
-      );
-    }
-    if (Number(counterDoc.data()?.revision ?? 0) !== input.frequency.scheduleRevision) {
-      throw new SaveError("scheduleMoved", "This athlete's schedule changed while you were editing. Reload and re-apply.");
-    }
-
-    // Locate the target by IMMUTABLE workoutId in the freshly read snapshot.
-    const weeks: any[] = Array.isArray(plan.weeks) ? plan.weeks : [];
-    const weekIndex = weeks.findIndex((week: any) => Number(week?.weekNumber) === input.draft.weekNumber);
-    const week = weekIndex === -1 ? null : weeks[weekIndex];
-    const workoutIndex = week
-      ? (week.workouts || []).findIndex((workout: any) => String(workout?.workoutId) === input.draft.workoutId)
-      : -1;
-    if (!week || workoutIndex === -1) {
-      throw new SaveError("workoutMissing", "That workout is no longer in the plan.");
-    }
-    const current = week.workouts[workoutIndex];
-    if (Number(current?.revision ?? 1) !== input.draft.baseRevision) {
-      throw new SaveError(
-        "workoutChanged",
-        "This workout changed since you opened it — review the current version and save again.",
-      );
-    }
-
-    // The athlete's technical eligibility, re-resolved from live documents.
-    const player: any = playerDoc.data() || {};
-    let coach: any = null;
-    let coachId: string | null =
-      (typeof player.coach?.id === "string" ? player.coach.id : null)
-      ?? (player.coachUID ? String(player.coachUID) : null);
-    if (coachId) {
-      const coachDoc = await transaction.get(db.collection("coaches").doc(coachId));
-      coach = coachDoc.exists ? coachDoc.data() : null;
-      if (!coach) coachId = null;
-    }
-    const eligibility: TechnicalEligibility = resolveEligibility(player, coach, coachId);
-
-    // Every referenced catalog row, read fresh: a rating downgrade or a drill
-    // pulled from `published` since the draft was made must be caught here.
-    const drillIds = [...new Set(input.draft.blocks.map(block => block.drillId))];
-    const drills = new Map<string, CatalogDrill>();
-    const catalogRows: Record<string, firebase.firestore.DocumentData> = {};
-    for (const drillId of drillIds) {
-      const doc = await transaction.get(db.collection("drillCatalog").doc(drillId));
-      if (doc.exists) {
-        const raw = doc.data()!;
-        drills.set(drillId, normalizeCatalogDrill(doc.id, raw));
-        // Keep the exact evidence validated by this transaction. Normalized UI
-        // rows introduce undefined optional fields, which Firestore rejects.
-        catalogRows[drillId] = raw;
-      }
-    }
-
-    const issues = validateDraft(input.draft, {
-      drills,
-      athlete: {
-        age: resolvePlayerAge(player).age,
-        maxDrillDifficulty: eligibility.maxDrillDifficulty,
-        setting: input.setting,
-        equipment: input.equipment,
-        position: isPosition(player.position) ? player.position : null,
-      },
-      week,
-      extraExposures: input.frequency.extraExposures,
-    });
-    const blocking = errorsOf(issues);
-    if (blocking.length) {
-      throw new SaveError("validation", blocking[0].message, blocking);
-    }
-
-    // --- the new document bodies ---
-    const editedAt = firebase.firestore.Timestamp.now(); // serverTimestamp() is not allowed inside an array
-    const nextWorkout = workoutFromDraft(input.draft, current, uid, editedAt);
-    const nextWorkouts = [...week.workouts];
-    nextWorkouts[workoutIndex] = nextWorkout;
-    const nextWeek = {
-      ...week,
-      workouts: nextWorkouts,
-      targets: derivedTargets({ ...week, workouts: nextWorkouts }),
-      actualMinutesByDomain: actualMinutesByDomain({ ...week, workouts: nextWorkouts }),
-      transitionMinutes: weekTransitionMinutes({ ...week, workouts: nextWorkouts }),
-    };
-    const nextWeeks = [...weeks];
-    nextWeeks[weekIndex] = nextWeek;
-
-    const basePlanRevision = Number(plan.planRevision) || 1;
-    const newPlanRevision = basePlanRevision + 1;
-    const adjustmentId = `${input.planId}_r${newPlanRevision}`;
-    const adjustmentRef = playerRef.collection("planAdjustments").doc(adjustmentId);
-
-    const before: WorkoutSnapshot = snapshotOf(current);
-    const after: WorkoutSnapshot = snapshotOfDraft(input.draft);
-    const diff = diffWorkouts(before, after);
-
-    const planUpdate = {
-      weeks: nextWeeks,
-      planRevision: newPlanRevision,
-      lastEdit: {
-        workoutId: input.draft.workoutId,
-        weekNumber: input.draft.weekNumber,
-        revision: nextWorkout.revision,
-        editedBy: "admin",
-        editedAt,
-        editorUid: uid,
-        adjustmentId,
-      },
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    };
-
-    const assessmentInputs = plan.assessment?.inputs || {};
-    const adjustment = {
-      schemaVersion: 1,
-      planId: input.planId,
-      planSchemaVersion: 3,
-      weekNumber: input.draft.weekNumber,
-      workoutId: input.draft.workoutId,
-      editor: { uid, role: "admin", surface: "web" },
-      baseRevision: input.draft.baseRevision,
-      newRevision: nextWorkout.revision,
-      basePlanRevision,
-      newPlanRevision,
-      before,
-      after,
-      diff,
-      rationale,
-      feedbackProvided: input.noFeedback !== true,
-      conversationId: null,
-      // Never the CURRENT intent: after one edit that is the editor's, not the
-      // generator's (01A F14). Absent context is recorded as absent.
-      generatorIntent: input.generatorIntent,
-      generatorIntentSource: input.generationContextRef ? "generationContext" : "unavailable",
-      generationContextRef: input.generationContextRef,
-      generatorCheck: input.generatorCheck,
-      priorCheck: current?.check ?? null,
-      warningsOverridden: input.warningsOverridden.map(issue => ({
-        code: issue.code,
-        drillId: issue.drillId ?? null,
-        blockId: issue.blockId ?? null,
-        message: issue.message,
-      })),
-      catalogRows,
-      profileSnapshot: {
-        position: player.position ?? assessmentInputs.position ?? null,
-        ageBand: ageBand(resolvePlayerAge(player).age) ?? assessmentInputs.ageBand ?? null,
-        level: assessmentInputs.level ?? plan.intake?.level ?? null,
-        stats: assessmentInputs.stats ?? null,
-        peer: assessmentInputs.peer ?? null,
-        // Presence and the generation-time hash only — raw coach text never
-        // leaves players/{id}/privateProfile (01A F04).
-        coachFeedbackPresent: Boolean(assessmentInputs.coachFeedback?.present),
-        coachFeedbackSha256: assessmentInputs.coachFeedback?.textSha256 ?? null,
-        focusSplitFinal: plan.assessment?.focusSplit?.final ?? null,
-        technicalEligibility: eligibility,
-      },
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      clientVersion: ADMIN_CLIENT_VERSION,
-    };
-
-    const planBytes = byteLength({ ...plan, ...planUpdate });
-    if (planBytes > MAX_DOCUMENT_BYTES) {
-      throw new SaveError("tooLarge", `This plan would be about ${Math.round(planBytes / 1024)} KB — over the 900 KB limit. Shorten the workout copy.`);
-    }
-    const adjustmentBytes = byteLength(adjustment);
-    if (adjustmentBytes > MAX_DOCUMENT_BYTES) {
-      throw new SaveError("tooLarge", `The adjustment record would be about ${Math.round(adjustmentBytes / 1024)} KB — over the 900 KB limit.`);
-    }
-
-    // --- writes: the plan, its audit record and the counter, together ---
-    transaction.update(planRef, planUpdate);
-    transaction.set(adjustmentRef, adjustment);
-    transaction.update(counterRef, {
-      revision: input.frequency.scheduleRevision + 1,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    return { adjustmentId, newPlanRevision, newWorkoutRevision: nextWorkout.revision };
+  if (rationale === null) throw new SaveError("validation", "Write 3–2000 characters of feedback or select “I have no feedback to provide here”.");
+  const draft = input.draft;
+  const workout = {
+    workoutId: draft.workoutId, order: draft.order, title: draft.title, intent: draft.intent,
+    focusDomains: draft.focusDomains, budgetMinutes: draft.budgetMinutes,
+    estimatedMinutes: draftMinutes(draft), blocks: draft.blocks, nextBlockSequence: draft.nextBlockSequence,
+    ...(draft.scheduledDate ? { scheduledDate: draft.scheduledDate } : {}),
+  };
+  if (byteLength(workout) > MAX_DOCUMENT_BYTES) throw new SaveError("tooLarge", "This workout is too large. Shorten its copy before saving.");
+  const ref = await submitLlmJob(input.playerId, "save_workout_edit", {
+    planId: input.planId, workoutId: draft.workoutId, expectedPlanRevision: draft.basePlanRevision,
+    expectedWorkoutRevision: draft.baseRevision, expectedScheduleRevision: input.frequency.scheduleRevision,
+    workout, rationale,
+  });
+  // This deterministic gateway operation validates the current catalog, clearance,
+  // equipment and shared workload before committing the edit and audit atomically.
+  return new Promise((resolve, reject) => {
+    let stop = () => {};
+    const timeout = setTimeout(() => { stop(); reject(new Error("The save is still processing. Check the workout before retrying; the server job continues.")); }, 120000);
+    stop = ref.onSnapshot((snapshot: any) => {
+      const job = snapshot.data() || {};
+      if (job.status === "complete") { clearTimeout(timeout); stop(); resolve(job.result as SaveResult); }
+      else if (job.status === "failed") { clearTimeout(timeout); stop(); reject(new SaveError("validation", job.error?.detail || job.error?.message || "The server could not save this edit.")); }
+    }, (error: Error) => { clearTimeout(timeout); stop(); reject(error); });
   });
 }
-
 // MARK: - The immutable generation context (§13)
 
 export interface GenerationContext {

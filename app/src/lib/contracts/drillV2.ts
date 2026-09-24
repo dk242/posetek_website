@@ -48,6 +48,8 @@ export interface CatalogDrill {
   updatedAt?: unknown;
   updatedBy?: unknown;
   mediaPublishedAt?: unknown;
+  productionBatchId?: string;
+  trainingPolicy?: Record<string, unknown>;
 }
 
 // MARK: - Legacy domain mapping (§2)
@@ -207,6 +209,8 @@ export function normalizeCatalogDrill(id: string, raw: any): CatalogDrill {
     updatedAt: raw?.updatedAt,
     updatedBy: raw?.updatedBy,
     mediaPublishedAt: raw?.mediaPublishedAt,
+    productionBatchId: typeof raw?.productionBatchId === "string" ? raw.productionBatchId : undefined,
+    trainingPolicy: raw?.trainingPolicy && typeof raw.trainingPolicy === "object" ? raw.trainingPolicy : undefined,
   };
 }
 

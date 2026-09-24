@@ -5,6 +5,7 @@
 // batch is described, and how many jobs run at once.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { GYM_EQUIPMENT } from "./wholeBodyTraining";
 
 /** The six measured drills, keyed the way the stats component tags reps (`_statsDrill`). */
 export const MEASURED_DRILL_KEYS = ["shooting", "sprint", "jump", "broadJump", "dribbling", "changeOfDirection"] as const;
@@ -35,6 +36,7 @@ export const EQUIPMENT_OPTIONS: ReadonlyArray<{ id: string; label: string }> = [
   { id: "kneePad", label: "Knee pad" },
   { id: "tapeMeasure", label: "Tape measure" },
   { id: "cueDevice", label: "Cue device" },
+  ...GYM_EQUIPMENT,
 ];
 
 /** `auto` keeps the level the single-athlete form derives from the stats profile. */

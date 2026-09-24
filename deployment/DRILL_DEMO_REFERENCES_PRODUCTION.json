@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "release": "External demo references for filming the 80 whole-body drills",
+  "status": "production-verified",
+  "verifiedAt": "2026-09-22T10:51:17.765Z",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "codex/whole-body-training",
+    "uiCommit": "748c7bd",
+    "referenceCommit": "be3e804"
+  },
+  "website": {
+    "deploymentId": "6ab25ae36de88d184cc9b2e1",
+    "publishedAt": "2026-09-22T10:48:45.161Z",
+    "url": "https://posetek.net/admin/drills",
+    "applicationSha1": "32227c2dc3214587a9376c5372412b7e3457e396",
+    "verifiedChecks": 89,
+    "previousDeploymentId": "6ab1e8b84adb5788815542e4",
+    "preservedApplicationFiles": 672,
+    "addedAssets": 54,
+    "baselineFiles": 727,
+    "marketingBytesPreserved": true,
+    "marketingDeploymentId": "6aab9fbaa73be75422324ba4"
+  },
+  "references": {
+    "drills": 80,
+    "links": 81,
+    "movementReferences": 21,
+    "componentReferences": 60,
+    "weeks": [
+      {
+        "week": 1,
+        "drills": 20
+      },
+      {
+        "week": 2,
+        "drills": 20
+      },
+      {
+        "week": 3,
+        "drills": 20
+      },
+      {
+        "week": 4,
+        "drills": 20
+      }
+    ],
+    "sha256": "03736a438c03087865299f5c26469f4d6ffad92cf59e1f3285823e5322ad7dad",
+    "source": "content/training-expansion/demo-references.json",
+    "guide": "content/training-expansion/DEMO_REFERENCES.md",
+    "verification": "Each link records its own method and limitations. Most checks were publisher pages, indexed descriptions or transcripts; selected clips received sampled playback checks. Full viewing or qualified technique review is not claimed.",
+    "externalVideosCopiedOrRehosted": 0
+  },
+  "dataUpdate": {
+    "collection": "drillCatalogAuthoring",
+    "updatedFields": [
+      "demoReferences",
+      "revision",
+      "updatedAt",
+      "updatedBy"
+    ],
+    "records": 80,
+    "transactionalUpdateTimeGuards": true,
+    "idempotencyJournal": "trainingImports/whole-body-demo-references-2026-09-22",
+    "readbackVerified": true,
+    "catalogRecordsPreserved": 208,
+    "catalogVersion": "1.0.91",
+    "catalogMediaAndReviewStatesUnchanged": true,
+    "athletePlanWrites": 0,
+    "originalManifestUnchanged": true
+  },
+  "preservation": {
+    "all80RemainDrafts": true,
+    "mobileVerified": false,
+    "gatewayRevision": "agent-gateway-web-64db60701c6e",
+    "gatewayAndRulesUnchanged": true,
+    "functionsNotDeployed": true,
+    "configurationUnchanged": true
+  },
+  "validation": {
+    "typescriptPassed": true,
+    "focusedUiTestsPassed": 5,
+    "desktopAnd390pxVisualChecksPassed": true,
+    "privateFieldMaskAndRevisionChecksPassed": true,
+    "all80MappingChecksPassed": true
+  },
+  "handoff": "docs/WHOLE_BODY_TRAINING.md",
+  "recovery": "Restore the previous website deployment if necessary; private reference fields are harmless to the older panel. Use saved before-images and fresh update-time guards for any metadata correction. Do not re-import the original drill manifest or replace athlete media."
+}

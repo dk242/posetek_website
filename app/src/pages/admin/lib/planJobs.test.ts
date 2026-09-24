@@ -1,11 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_INTAKE, planV3JobParams } from "./planJobs";
+import { emptyTrainingContext } from "./wholeBodyTraining";
 
 // Test the outgoing request without connecting to Firebase or creating a plan.
 vi.mock("../../../lib/firebase", () => ({ db: {} }));
 vi.mock("../../athlete-portal/lib/loaders", () => ({ submitLlmJob: vi.fn() }));
 
 describe("admin plan generation request", () => {
+  it("sends individual versioned training context only when explicitly supplied", () => {
+    const context = { ...emptyTrainingContext(), startDate: "2026-09-21", sessionDays: [1, 3], scheduleConfirmed: true };
+    expect(planV3JobParams([], {}, 15, { ...DEFAULT_INTAKE, trainingContext: context }).intake.trainingContext).toEqual(context);
+    expect(planV3JobParams([], {}, 15, DEFAULT_INTAKE).intake).not.toHaveProperty("trainingContext");
+  });
   it.each(["shooting", "side_kick", "deadballShot"])(
     "sends normalized %s results under the gateway's kick identifier",
     repType => {

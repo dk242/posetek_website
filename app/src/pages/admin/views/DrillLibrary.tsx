@@ -13,6 +13,9 @@ import { DOMAINS, domainLabel, domainSortIndex } from "../../../lib/contracts/ty
 import { formatDoseText } from "../../../lib/contracts/drillV2";
 import type { CatalogDrill } from "../../../lib/contracts/drillV2";
 import { loadCatalog, loadCatalogVersion, presentSlots } from "../lib/catalog";
+import { loadDrillAuthoring } from "../lib/trainingAuthoring";
+import { filmingProgress, type DrillAuthoring } from "../lib/wholeBodyTraining";
+import { TrainingReviewerDesignation } from "./TrainingReadinessPanel";
 
 // A stable empty array: a fresh `[]` per render would make every memo below
 // recompute on every keystroke.
@@ -28,12 +31,16 @@ export default function DrillLibrary() {
   const [search, setSearch] = useState("");
   const [domain, setDomain] = useState("all");
   const [status, setStatus] = useState("all");
+  const [filmingWeek, setFilmingWeek] = useState("all");
+  const [authoring, setAuthoring] = useState<Record<string, DrillAuthoring>>({});
+  const [authoringError, setAuthoringError] = useState("");
 
   useEffect(() => {
     document.title = "Drill library | PoseTek admin";
     Promise.all([loadCatalog(), loadCatalogVersion()])
       .then(([drills, version]) => setLoad({ kind: "ready", drills, version }))
       .catch(error => setLoad({ kind: "error", message: error?.message || "The drill catalog could not be loaded." }));
+    void loadDrillAuthoring().then(result => setAuthoring(result.records)).catch(error => setAuthoringError(error?.message || "The filming queue could not be loaded."));
   }, []);
 
   const drills = load.kind === "ready" ? load.drills : NO_DRILLS;
@@ -49,13 +56,14 @@ export default function DrillLibrary() {
     return drills
       .filter(drill => domain === "all" || drill.domain === domain)
       .filter(drill => status === "all" || drill.status === status)
+      .filter(drill => filmingWeek === "all" || String(authoring[drill.drillId]?.filmingWeek) === filmingWeek)
       .filter(drill => !term
         || drill.name.toLowerCase().includes(term)
         || drill.drillId.toLowerCase().includes(term))
       // Domain first, in the contract's table order, then name — "sort by domain".
       .sort((a, b) =>
         domainSortIndex(a.domain) - domainSortIndex(b.domain) || a.name.localeCompare(b.name));
-  }, [drills, search, domain, status]);
+  }, [drills, search, domain, status, filmingWeek, authoring]);
 
   const unmigrated = drills.filter(drill => drill.needsMigration).length;
 
@@ -85,7 +93,7 @@ export default function DrillLibrary() {
         </div>
       )}
 
-      <div className="admin-toolbar">
+      <div className="admin-toolbar training-library-toolbar">
         <label className="search-field">
           <span className="material-symbols-outlined">search</span>
           <input
@@ -118,7 +126,12 @@ export default function DrillLibrary() {
           <option value="draft">Draft</option>
           <option value="archived">Archived</option>
         </select>
+        <select value={filmingWeek} onChange={event => setFilmingWeek(event.target.value)} aria-label="Filter by filming week">
+          <option value="all">All filming weeks</option>{[1, 2, 3, 4].map(week => <option key={week} value={week}>Filming week {week}</option>)}
+        </select>
       </div>
+      {authoringError && <p className="form-message" role="status">Filming queue unavailable: {authoringError}</p>}
+      {Object.keys(authoring).length > 0 && <p className="admin-note">Four-week filming queue · 20 drills and 60 clips per week. Drafts stay unpublished until reviewed content and all three clips are approved.</p>}
 
       {load.kind === "loading" && (
         <div className="portal-loading"><span className="spinner" /><p>Loading the catalog…</p></div>
@@ -129,7 +142,7 @@ export default function DrillLibrary() {
         <div className="admin-rows">
           {shown.length === 0 && <p className="admin-empty">No drills match that search.</p>}
           {shown.map(drill => (
-            <Link key={drill.drillId} className="admin-row" to={`/admin/drills/${drill.drillId}`}>
+            <Link key={drill.drillId} className="admin-row training-library-row" to={`/admin/drills/${drill.drillId}`}>
               <div className="admin-row-copy">
                 <strong>{drill.name}</strong>
                 <span className="admin-row-meta">
@@ -142,6 +155,7 @@ export default function DrillLibrary() {
               </div>
               <div className="admin-row-actions">
                 {drill.requiresPartner && <span className="admin-chip">Partner</span>}
+                {authoring[drill.drillId] && <span className="admin-chip">Film week {authoring[drill.drillId].filmingWeek} · {filmingProgress(drill.media).approved}/3 clips approved</span>}
                 {drill.positionSpecific && <span className="admin-chip">{drill.positionSpecific} only</span>}
                 {presentSlots(drill.media).length > 0 && (
                   <span className="admin-chip">
@@ -159,6 +173,7 @@ export default function DrillLibrary() {
           ))}
         </div>
       )}
+      <TrainingReviewerDesignation />
     </>
   );
 }

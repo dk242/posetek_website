@@ -1,6 +1,6 @@
 # PoseTek website project context
 
-Reviewed on September 17, 2026. This guide summarizes the available repository and
+Reviewed on September 22, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
@@ -23,9 +23,85 @@ This source change does not update the recorded production baseline below.
 
 ## Readiness and source provenance
 
-### Current website release: protected player signup links
+### September 22 filming demo references
 
-Deployment `6aac924a597bd46f15cf468a` is live at https://posetek.net, published
+All 80 whole-body drafts now have external filming references: 81 links grouped
+into the same four weeks. Admin drill details display **Watch before filming**
+above the three original-video slots. Links carry source attribution, matching
+notes, component adaptations and accurate verification limits. Most checks use
+publisher pages/descriptions/transcripts; they do not claim a full technique review.
+The portable guide is `content/training-expansion/DEMO_REFERENCES.md`.
+
+Website deployment `6ab25ae36de88d184cc9b2e1` was published September 22 at
+3:48:45 AM PDT. The references were added only to private authoring metadata with
+revision checks; all 208 catalog records, media and review states were preserved.
+Catalog version remains `1.0.91`; every new exercise remains a draft. Gateway,
+functions, access rules and the false mobile acceptance gate were not changed.
+Read `deployment/DRILL_DEMO_REFERENCES_PRODUCTION.json` for the verified receipt.
+
+### September 21 whole-body training expansion
+
+The approved implementation adds 80 entirely new exercise drafts for ages 10–18:
+28 strength, 12 isometric, 16 plyometric, 12 speed/change-of-direction and 12 ball
+packages, filmed as 20 three-clip packages per week from September 21 to October 18.
+Read [the whole-body handoff](docs/WHOLE_BODY_TRAINING.md) and
+[`content/training-expansion/README.md`](content/training-expansion/README.md).
+The six measured tests guide performance priorities; they do not diagnose muscle
+weakness or determine an external weight. Current qualified review, actual equipment,
+experience, supervision and the full outside schedule constrain expanded training.
+No exercise, video, reviewer qualification or player readiness is auto-approved.
+The mobile compatibility gate stays false pending Taiyo's device acceptance.
+
+The release is live and verified. Website deployment `6ab1e8b84adb5788815542e4`
+was published September 21 at 7:54:47 PM PDT; gateway revision
+`agent-gateway-web-64db60701c6e` serves all traffic after 1,488 container tests
+passed (six private-history tests skipped). Catalog version `1.0.91` contains
+the 80 new unpublished drafts and preserves all 128 prior records. All 34 observed
+active plans remain unchanged. The reconciled baseline protects 673 application
+files; approved Players and Coaches marketing bytes remain exact. Read
+`deployment/WHOLE_BODY_TRAINING_PRODUCTION.json` for the verified receipt and
+`content/training-expansion/production-id-map.json` for actual catalog IDs.
+Nine new training callables and their access rules are deployed. No reviewers,
+player clearances, video approvals or publications were created. Activation and
+workout starts involving any of the new 80 exercises remain held until mobile
+acceptance; ordinary existing plans retain their current behavior.
+Deploy only the composed `deployment/whole-body-firestore.rules`; the root rules
+file also includes separate, unreleased native testing work. Preserve existing
+plans, logs, all prior catalog content and approved marketing bytes.
+
+### September 21 Draft B video planning
+
+Local `main` was fast-forwarded to GitHub `main` at
+`62aa39791bb03293b0e6159142d75f9623ef4505`; the recent source is available in the
+shared repository. A scoped check of the live home/Coaches pages and eight directly
+referenced marketing assets found no relevant source/live drift. This did not
+repeat a full application inventory or backend audit and did not deploy changes.
+
+Dylan confirmed club directors and coaches as the primary audience for the
+Draft B video revision. The proposed visual direction, timed storyboard, source
+map and production approach are in
+[the Draft B video plan](docs/DRAFT_B_VIDEO_PLAN_2026-09-21.md). The user subsequently
+authorized building the video and emailing the finished result. Editable production
+source and reproduction notes are in [`video/draft-b/`](video/draft-b/README.md).
+The video uses source-grounded pose geometry, a single illustrative coach sample,
+original high-resolution Figure-8 footage, local neural narration and an original
+score. Private reference media and delivery links stay outside Git; sample
+players/results remain illustrative.
+
+### September 21 Draft B V2 implementation
+
+The user approved and received a 55-second revision for club directors and coaches.
+Six recorded test demonstrations play together before their containers form. The
+club overview leads into a U13 roster and Alex's focus; the guided session shows
+elapsed time, set completion and a transition from Figure-8 to Wall pass rhythm.
+Live admin and native app references informed the visual behavior; all pictured
+club/player data is illustrative. V1 is preserved. See
+[`video/draft-b/PRODUCTION_V2.md`](video/draft-b/PRODUCTION_V2.md) for export,
+validation and delivery records. This work did not deploy or change the website.
+
+### September 17 website release: protected player signup links
+
+Deployment `6aac924a597bd46f15cf468a` was published at https://posetek.net on
 September 17, 2026 at 6:31:29 PM PDT (`2026-09-18T01:31:29.567Z`). Feature source
 `c00b031c8a0011297f8357c1a6c028377b5c30e0` is on `codex/player-invitation-flow`.
 The branch also preserves the concurrent gateway source and September 16 cohort

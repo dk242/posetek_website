@@ -53,4 +53,20 @@
 }
 .pt-personalized .personalized-shell { max-width:1440px; margin:auto; padding:32px clamp(16px,4vw,56px); }
 .pt-personalized .portal-header nav { display:flex; gap:12px; flex-wrap:wrap; }
+
+.training-context, .training-readiness { margin:24px 0; padding:16px; border:1px solid #ffffff24; border-radius:14px; min-width:0; }
+.training-readiness summary { cursor:pointer; min-height:32px; line-height:1.5; }
+.training-schedule-row { display:grid; grid-template-columns:1fr 1.2fr .7fr 1fr auto; gap:12px; align-items:end; padding:12px 0; border-bottom:1px solid #ffffff20; }
+.training-schedule-row input, .training-schedule-row select { width:100%; min-width:0; }
+.training-production fieldset, .training-reviewer-designation fieldset { border:0; padding:0; margin:20px 0; min-width:0; }
+.training-production textarea, .training-reviewer-designation textarea { width:100%; box-sizing:border-box; }
+.training-evidence-list details { border-bottom:1px solid #ffffff24; padding:12px 0; overflow-wrap:anywhere; }
+.training-demo-references { margin:24px 0; }
+.training-demo-references article { border-bottom:1px solid #ffffff24; padding:12px 0; overflow-wrap:anywhere; }
+.training-demo-references article p { line-height:1.6; }
+.training-demo-references article > p:first-of-type a { display:inline-block; padding:8px 0; font-weight:600; }
+.training-demo-references summary { cursor:pointer; min-height:32px; line-height:1.5; }
+.training-evidence-list summary, .training-reviewer-designation summary { cursor:pointer; min-height:32px; line-height:1.5; }
+@media(max-width:760px) { .training-schedule-row { grid-template-columns:1fr 1fr; } .training-schedule-row button { justify-self:start; } }
+@media(max-width:600px) { .pt-pose .personalized-planner :is(.training-context,.training-readiness) .personalized-fields, .training-schedule-row { grid-template-columns:1fr; } }
 .pt-admin .planner-switch { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; a,span { padding:12px 16px; border:1px solid #ffffff24; border-radius:12px; } [aria-current] { color:var(--admin-accent); background:rgba(183,243,74,.09); } }

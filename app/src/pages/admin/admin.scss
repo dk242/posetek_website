@@ -227,6 +227,16 @@
   .admin-row-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--admin-dim); font-size: 13px; }
   .admin-row-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
+  @media(max-width:700px) {
+    .training-library-row { flex-wrap:wrap; }
+    .training-library-row .admin-row-copy { flex:1 1 100%; }
+    .training-library-row .admin-row-actions { margin-left:0; flex-wrap:wrap; }
+    .training-library-toolbar { display:grid; grid-template-columns:minmax(0,1fr); }
+    .training-library-toolbar .search-field { min-width:0; width:100%; }
+    .training-library-toolbar > label:not(.search-field) { display:flex; align-items:center; gap:8px; min-width:0; }
+    .training-library-toolbar > select, .training-library-toolbar > label select { width:100%; min-width:0; }
+  }
+
   .admin-empty { color: var(--admin-dim); padding: 24px; text-align: center; }
 
   // MARK: - Forms
