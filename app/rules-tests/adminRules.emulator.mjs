@@ -1,35 +1,26 @@
 // Allow/deny tests for the admin console's writes, against the Firestore
-// emulator. **This has never been executed in the environment it was written
-// in** — that machine has no Firebase CLI and no Java runtime, so the emulator
-// cannot start. It encodes the matrix that must pass before the lockdown
-// ruleset is deployed; treat a failure here as a finding, not as gospel.
-//
-// Run it where the tooling exists:
-//
-//   npm i -D @firebase/rules-unit-testing firebase-tools
-//   npx firebase emulators:exec --only firestore \
-//     "node app/rules-tests/adminRules.emulator.mjs"
-//
-// It expects a firestore.rules containing the composed lockdown ruleset — the
-// blocks from PoseTek-mobile-app/docs/rules/{admin,drill_catalog,llm}.rules
-// pasted into one file (see Agentic Work/reports/05-report.md §"Rules").
+// emulator and the canonical PoseTek-mobile-app/firebase/firestore.rules.
+// Run it with the other suites: `node scripts/run-rules-tests.mjs adminRules`
+// (see app/rules-tests/README.md).
 //
 // The claims under test, in the order they appear below:
 //   1. admin-ness comes from a VERIFIED @posetek.net token, nothing else
 //   2. an admin may author the catalog and may never delete from it
 //   3. a plan edit and its rationale record exist together or not at all
-//   4. an admin may not touch athlete evidence
+//   4. an admin may not touch athlete evidence, except staff test recording
+//      of a rep into an existing athlete (2026-09-16)
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import { firestoreEmulator } from "./canonicalRules.mjs";
 import {
   assertFails,
   assertSucceeds,
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
 
-const PROJECT_ID = "posetek-rules-test";
-const RULES_PATH = process.env.RULES_PATH ?? "firestore.rules";
+const PROJECT_ID = "demo-posetek-admin";
 
 const ADMIN = { sub: "admin1", email: "nolan@posetek.net", email_verified: true };
 const ADMIN_MIXED_CASE = { sub: "admin2", email: "Nolan@PoseTek.net", email_verified: true };
@@ -39,6 +30,9 @@ const ATHLETE = { sub: "player1", email: "kid@example.com", email_verified: true
 
 const PLAYER_ID = "p1";
 const PLAN_ID = "plan1";
+// The catalog rule pins createdAt/updatedAt to request.time, which only a
+// server timestamp satisfies; a client Date would be refused for that alone.
+const serverTime = () => firebase.firestore.FieldValue.serverTimestamp();
 
 const V3_PLAN = {
   schemaVersion: 3,
@@ -73,7 +67,7 @@ const V2_DRILL = {
 
 const testEnv = await initializeTestEnvironment({
   projectId: PROJECT_ID,
-  firestore: { rules: readFileSync(RULES_PATH, "utf8") },
+  firestore: firestoreEmulator(),
 });
 
 async function seed() {
@@ -143,13 +137,13 @@ await check("an admin creates a v2 drill", () =>
   assertSucceeds(admin.doc("drillCatalog/DRB-501").set({
     ...V2_DRILL,
     updatedBy: ADMIN.sub,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: serverTime(),
+    updatedAt: serverTime(),
   })));
 
 await check("a non-admin cannot write the catalog", () =>
   assertFails(athlete.doc("drillCatalog/DRB-502").set({
-    ...V2_DRILL, drillId: "DRB-502", updatedBy: ATHLETE.sub, createdAt: new Date(), updatedAt: new Date(),
+    ...V2_DRILL, drillId: "DRB-502", updatedBy: ATHLETE.sub, createdAt: serverTime(), updatedAt: serverTime(),
   })));
 
 await check("nobody deletes a drill — ids are permanent", () =>
@@ -157,7 +151,7 @@ await check("nobody deletes a drill — ids are permanent", () =>
 
 await check("a drill whose id disagrees with its document id is refused", () =>
   assertFails(admin.doc("drillCatalog/DRB-503").set({
-    ...V2_DRILL, drillId: "DRB-501", updatedBy: ADMIN.sub, createdAt: new Date(), updatedAt: new Date(),
+    ...V2_DRILL, drillId: "DRB-501", updatedBy: ADMIN.sub, createdAt: serverTime(), updatedAt: serverTime(),
   })));
 
 // 3 — the plan edit and its rationale record --------------------------------
@@ -239,8 +233,19 @@ await check("an admin cannot write a workout log", () =>
     workoutSnapshot: {}, source: "plan", blocks: [], startedAt: new Date(),
   })));
 
-await check("an admin cannot write a rep", () =>
-  assertFails(admin.doc(`players/${PLAYER_ID}/reps/r1`).set({ repType: "sprint" })));
+// Staff test recording (decided 2026-09-16, `adminRecorder` in the canonical
+// rules): a verified admin may record a rep into an EXISTING athlete. The live
+// ruleset before the cutover still denies this and the website revises reps
+// through the adminReviseRep callable, so the canonical rules are wider here;
+// confirm at the cutover publish (mobile GATEWAY_CONSOLIDATION plan §4.8).
+await check("an admin records a rep into an existing athlete", () =>
+  assertSucceeds(admin.doc(`players/${PLAYER_ID}/reps/r1`).set({ repType: "sprint" })));
+
+await check("an admin cannot write a rep for a player that does not exist", () =>
+  assertFails(admin.doc("players/no-such-player/reps/r1").set({ repType: "sprint" })));
+
+await check("an unverified @posetek.net address cannot write a rep", () =>
+  assertFails(unverified.doc(`players/${PLAYER_ID}/reps/r2`).set({ repType: "sprint" })));
 
 await check("an admin CAN read the athlete's records", () =>
   assertSucceeds(admin.doc(`players/${PLAYER_ID}/trainingPlans/${PLAN_ID}`).get()));

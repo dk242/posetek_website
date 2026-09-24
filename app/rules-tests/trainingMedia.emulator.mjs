@@ -1,8 +1,8 @@
-import fs from 'node:fs';
+import { firestoreEmulator, storageEmulator } from './canonicalRules.mjs';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import { doc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, deleteObject } from 'firebase/storage';
-const env=await initializeTestEnvironment({projectId:'demo-personalized-planner',firestore:{rules:fs.readFileSync(process.env.RULES_PATH||'firestore.rules','utf8'),host:'127.0.0.1',port:8189},storage:{rules:fs.readFileSync('storage.rules','utf8'),host:'127.0.0.1',port:9299}});
+const env=await initializeTestEnvironment({projectId:'demo-personalized-planner',firestore:firestoreEmulator(),storage:storageEmulator()});
 const admin=env.authenticatedContext('admin',{email:'reviewer@posetek.net',email_verified:true}),athlete=env.authenticatedContext('athlete',{email:'athlete@example.test',email_verified:true});
 const seed=status=>env.withSecurityRulesDisabled(ctx=>setDoc(doc(ctx.firestore(),'drillCatalog/STR-999'),{productionBatchId:'whole-body-2026-09',status}));
 const path='drillCatalogMedia/app/STR-999/primaryDemo.unique-1.mp4';

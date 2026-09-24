@@ -1,7 +1,7 @@
 // Recovered production feed collections are server-only. Exercise real rules
 // against isolated emulators; no production credentials or athlete data needed.
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { firestoreEmulator, storageEmulator } from './canonicalRules.mjs';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getBytes } from 'firebase/storage';
@@ -9,8 +9,8 @@ import { ref, uploadBytes, getBytes } from 'firebase/storage';
 const projectId = 'demo-posetek-feed';
 const env = await initializeTestEnvironment({
   projectId,
-  firestore: { rules: fs.readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8194 },
-  storage: { rules: fs.readFileSync('storage.rules', 'utf8'), host: '127.0.0.1', port: 9298 },
+  firestore: firestoreEmulator(),
+  storage: storageEmulator(),
 });
 const contexts = [
   env.unauthenticatedContext(),
@@ -54,8 +54,11 @@ try {
   await allowed(getBytes(media(contexts[1])));
   await denied(getBytes(media(contexts[2])));
   await allowed(getBytes(media(contexts[3])));
-  await denied(uploadBytes(media(contexts[3]), new Uint8Array([4]), { contentType: 'video/mp4' }));
-  assert.equal(checks, 250);
+  // Staff test recording (2026-09-16): a verified admin may record into an
+  // existing athlete's prefix; an unverified @posetek.net token may not.
+  await allowed(uploadBytes(media(contexts[3]), new Uint8Array([4]), { contentType: 'video/mp4' }));
+  await denied(uploadBytes(media(contexts[4]), new Uint8Array([4]), { contentType: 'video/mp4' }));
+  assert.equal(checks, 251);
   console.log(`${checks} feed and recording access assertions passed against isolated emulators.`);
 } finally {
   await env.cleanup();

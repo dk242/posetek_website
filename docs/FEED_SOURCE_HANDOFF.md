@@ -58,7 +58,8 @@ to emulators. Do not use real account mutations to test local changes.
 | Activity projection, units, deterministic IDs and benchmarks | [`social-projection.js`](../functions/social-projection.js), [`social-benchmarks.json`](../functions/social-benchmarks.json) |
 | Callable and trigger exports | [`functions/index.js`](../functions/index.js) |
 | Protected player invitation helpers restored with deployment source | [`player-invitations.js`](../functions/player-invitations.js), `admission.js`, `clubs.js` |
-| Access rules and indexes | Root `firestore.rules`, `storage.rules`, `firestore.indexes.json`, `firebase.json` |
+| Access rules | `PoseTek-mobile-app/firebase/firestore.rules`, `storage.rules` (canonical; published only from that repo) |
+| Indexes | `firestore.indexes.json`, `firebase.json` |
 
 Player sign-in/signup, player bottom navigation, coach/roster/organization
 links, and the admin Community feeds tab lead to the feed. The existing
@@ -101,10 +102,10 @@ node --test functions/*.test.js
 ```
 
 For the real Firestore/Storage rule tests, install the Firebase CLI and Java 21,
-then run with Java on PATH:
+then run with Java on PATH (see `app/rules-tests/README.md`):
 
-```powershell
-firebase emulators:exec --only 'firestore,storage' --project demo-posetek-feed --config firebase.feed-test.json 'node app/rules-tests/socialRules.emulator.mjs'
+```sh
+node scripts/run-rules-tests.mjs socialRules
 ```
 
 The explicit `demo-posetek-feed` project and loopback-only emulator ports keep

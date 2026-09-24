@@ -1,8 +1,8 @@
-import fs from 'node:fs';
+import { firestoreEmulator } from './canonicalRules.mjs';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp, setLogLevel, writeBatch, Timestamp } from 'firebase/firestore';
 setLogLevel('silent');
-const env=await initializeTestEnvironment({projectId:'demo-personalized-planner',firestore:{rules:fs.readFileSync(process.env.RULES_PATH||'firestore.rules','utf8'),host:'127.0.0.1',port:8189}});
+const env=await initializeTestEnvironment({projectId:'demo-personalized-planner',firestore:firestoreEmulator()});
 const admin=env.authenticatedContext('training-admin',{email:'reviewer@posetek.net',email_verified:true}).firestore();
 const athlete=env.authenticatedContext('training-athlete',{email:'player@example.test',email_verified:true}).firestore();
 const outsider=env.unauthenticatedContext().firestore();

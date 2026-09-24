@@ -146,12 +146,15 @@ copy; nothing in this repository deploys the gateway. The website release preser
 approved Players and Coaches marketing bytes. Only the new training callables are
 deployed from here.
 
-`firestore.rules` also contains previously committed native testing work that is
-not part of this release. `scripts/compose-training-rules.cjs` verifies the exact
-pre-task source against the captured live boundary, removes only those unchanged
-native blocks and emits `deployment/whole-body-firestore.rules`. The production
-candidate and storage rules must pass their emulators before publication. Never
-deploy the uncomposed root rules file as a shortcut.
+This release's rules were composed here and published from this repo. That path
+is retired. The whole-body blocks now live in the canonical
+`PoseTek-mobile-app/firebase/firestore.rules` and `storage.rules`, which are
+published only by that repo's `operations.py`. This repo's rules files,
+`scripts/compose-training-rules.cjs` and the composed
+`deployment/whole-body-firestore.rules` were deleted (2026-09-24). The training
+suites (`trainingExpansion`, `trainingMedia`) run against the canonical files
+through `node scripts/run-rules-tests.mjs`. The import's live-rules check compares
+against the same canonical file (`RULES_PATH` overrides it).
 
 `scripts/import-training-expansion.cjs` defaults to read-only preflight. Its explicit
 apply creates catalog and private authoring records together, advances counters and
