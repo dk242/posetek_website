@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "source": "authored-tool-tape",
-  "note": "Explicitly authored legal tool actions and independent-check responses. Not recorded model behavior; zero token spend.",
-  "profileId": "xballonly",
-  "calls": []
-}

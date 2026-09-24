@@ -104,7 +104,10 @@ Production configuration readback is recorded in the production receipt.
 
 ## Backend and privacy boundaries
 
-The gateway source is maintained under [`services/agent-gateway/`](../services/agent-gateway/).
+The gateway source is maintained only in `python-video-processor/Services/agent-gateway`
+and released only through its `scripts/release.sh`; the `services/agent-gateway/` copy
+this document originally pointed at has been deleted. The website's half of the
+contract is in [`PERSONALIZED_PLANNER_WEB_CONTRACT.md`](PERSONALIZED_PLANNER_WEB_CONTRACT.md).
 Personalized authorization permits the bound athlete, current assigned coach,
 current organization manager or verified PoseTek admin. Current ownership and
 membership are checked again when work executes and when draft lifecycle changes

@@ -136,9 +136,15 @@ clear training. PoseTek-scoped designated reviewers can perform the admin review
 
 ## Release and recovery
 
-The gateway uses a committed immutable source archive and mandatory full-container
-tests before traffic promotion. The website release preserves approved Players and
-Coaches marketing bytes. Only the new training callables are deployed.
+The gateway that served this release was built from a committed immutable source
+archive with mandatory full-container tests before traffic promotion. That path is
+retired: the gateway now lives only in `python-video-processor/Services/agent-gateway`
+and is released only through its `scripts/release.sh` (see `AGENTS.md`
+§ Agent gateway). `scripts/release-training-expansion.cjs`, which staged and promoted
+a `git archive` of this repository's gateway copy, has been deleted along with that
+copy; nothing in this repository deploys the gateway. The website release preserves
+approved Players and Coaches marketing bytes. Only the new training callables are
+deployed from here.
 
 `firestore.rules` also contains previously committed native testing work that is
 not part of this release. `scripts/compose-training-rules.cjs` verifies the exact

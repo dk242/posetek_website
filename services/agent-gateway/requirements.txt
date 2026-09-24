@@ -1,9 +1,0 @@
-flask
-google-cloud-firestore
-google-cloud-storage
-firebase-admin
-google-genai
-anthropic[vertex]
-jsonschema
-scipy==1.15.3
-tzdata; sys_platform == "win32"
