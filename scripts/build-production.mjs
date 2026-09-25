@@ -53,6 +53,25 @@ function contained(directory, file) {
   return target;
 }
 
+// The archive holds the exact uploaded bytes of the pinned deploy. Hosts rewrite
+// served HTML, so a deploy URL cannot reproduce them. The bucket is private, so
+// reads use the current gcloud login when one is available.
+let archiveToken;
+function downloadBaselineFile(path) {
+  if (!manifest.archive) return fetch(new URL(path, manifest.url), { signal: AbortSignal.timeout(60000) });
+  const [, bucket, prefix] = manifest.archive.match(/^gs:\/\/([^/]+)\/(.*?)\/?$/) ?? [];
+  if (!bucket) throw new Error("Invalid baseline archive: " + manifest.archive);
+  if (archiveToken === undefined) {
+    const login = spawnSync("gcloud", ["auth", "print-access-token"], { encoding: "utf8", windowsHide: true, shell: process.platform === "win32" });
+    archiveToken = login.status === 0 ? login.stdout.trim() : "";
+  }
+  const object = encodeURIComponent(prefix + path);
+  return fetch(`https://storage.googleapis.com/storage/v1/b/${bucket}/o/${object}?alt=media`, {
+    headers: archiveToken ? { Authorization: `Bearer ${archiveToken}` } : {},
+    signal: AbortSignal.timeout(60000),
+  });
+}
+
 let index = 0;
 await Promise.all(Array.from({ length: 6 }, async () => {
   while (index < manifest.files.length) {
@@ -61,17 +80,17 @@ await Promise.all(Array.from({ length: 6 }, async () => {
     let bytes;
     try { bytes = await readFile(cached); } catch { /* First release downloads the pinned deploy. */ }
     // Netlify pretty-URL processing rewrites served HTML. Prefer matching
-    // original source bytes, allowing only Git's Windows line-ending conversion.
+    // original source bytes, allowing only Git's line-ending conversion in
+    // either direction (the pinned deploys were uploaded from a CRLF checkout).
     if ((!bytes || hash(bytes) !== file.sha) && file.localPath) {
       try {
         const local = await readFile(contained(root, "/" + file.localPath));
-        const normalized = Buffer.from(local.toString("utf8").replace(/\r\n/g, "\n"));
-        if (hash(local) === file.sha) bytes = local;
-        else if (hash(normalized) === file.sha) bytes = normalized;
+        const lf = local.toString("utf8").replace(/\r\n/g, "\n");
+        bytes = [local, Buffer.from(lf), Buffer.from(lf.replace(/\n/g, "\r\n"))].find(candidate => hash(candidate) === file.sha);
       } catch { /* Download when the original source is unavailable. */ }
     }
     if (!bytes || hash(bytes) !== file.sha) {
-      const response = await fetch(new URL(file.path, manifest.url), { signal: AbortSignal.timeout(60000) });
+      const response = await downloadBaselineFile(file.path);
       if (!response.ok) throw new Error(`Baseline download failed: ${file.path} (${response.status})`);
       bytes = Buffer.from(await response.arrayBuffer());
       if (hash(bytes) !== file.sha || bytes.length !== file.size) throw new Error("Baseline checksum mismatch: " + file.path);

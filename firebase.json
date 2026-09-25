@@ -4,8 +4,7 @@
     "runtime": "nodejs22"
   },
   "hosting": {
-    "public": "dist",
-    "predeploy": ["npm --prefix app ci", "npm --prefix app run build"],
+    "public": "production-dist",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -13,13 +12,153 @@
       "backfill-session-summaries.html",
       "images/logo-export.html"
     ],
+    "cleanUrls": true,
+    "redirects": [
+      {
+        "regex": "^/sidekickview(\\.html)?$",
+        "destination": "/SideKickView",
+        "type": 301
+      },
+      {
+        "regex": "^/staticjumppage(\\.html)?$",
+        "destination": "/StaticJumpPage",
+        "type": 301
+      },
+      {
+        "regex": "^/backkickview(\\.html)?$",
+        "destination": "/backKickView",
+        "type": 301
+      },
+      {
+        "regex": "^/bookperformancetest(\\.html)?$",
+        "destination": "/bookPerformanceTest",
+        "type": 301
+      },
+      {
+        "regex": "^/drilllist(\\.html)?$",
+        "destination": "/drillList",
+        "type": 301
+      },
+      {
+        "regex": "^/feedbackform(\\.html)?$",
+        "destination": "/feedbackForm",
+        "type": 301
+      },
+      {
+        "regex": "^/freerecordpage(\\.html)?$",
+        "destination": "/freeRecordPage",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_athleticismsubscription(\\.html)?$",
+        "destination": "/hypothesis_athleticismSubscription",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_athleticismsubscription_signup(\\.html)?$",
+        "destination": "/hypothesis_athleticismSubscription_signup",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_kickinganalysis(\\.html)?$",
+        "destination": "/hypothesis_kickingAnalysis",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_kickinganalysissubscription(\\.html)?$",
+        "destination": "/hypothesis_kickingAnalysisSubscription",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_kickinganalysissubscription_signup(\\.html)?$",
+        "destination": "/hypothesis_kickingAnalysisSubscription_signup",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_performancetesting(\\.html)?$",
+        "destination": "/hypothesis_performanceTesting",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_trainingsession(\\.html)?$",
+        "destination": "/hypothesis_trainingSession",
+        "type": 301
+      },
+      {
+        "regex": "^/hypothesis_trainingsessionkick(\\.html)?$",
+        "destination": "/hypothesis_trainingSessionKick",
+        "type": 301
+      },
+      {
+        "regex": "^/kickinganalysis_upload(\\.html)?$",
+        "destination": "/kickingAnalysis_upload",
+        "type": 301
+      },
+      {
+        "regex": "^/questaddplayer(\\.html)?$",
+        "destination": "/questAddPlayer",
+        "type": 301
+      },
+      {
+        "regex": "^/questleaderboardresultspage(\\.html)?$",
+        "destination": "/questLeaderboardResultsPage",
+        "type": 301
+      },
+      {
+        "regex": "^/questsearchplayer(\\.html)?$",
+        "destination": "/questSearchPlayer",
+        "type": 301
+      },
+      {
+        "regex": "^/questviewbiomechanics(\\.html)?$",
+        "destination": "/questViewBiomechanics",
+        "type": 301
+      },
+      {
+        "regex": "^/signupform(\\.html)?$",
+        "destination": "/signupForm",
+        "type": 301
+      },
+      {
+        "regex": "^/sprintpage(\\.html)?$",
+        "destination": "/sprintPage",
+        "type": 301
+      },
+      {
+        "regex": "^/subscriptionwaitlist(\\.html)?$",
+        "destination": "/subscriptionWaitlist",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
+        "source": "/coaches",
+        "destination": "/coaches/index.html"
+      },
+      {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "/application.html"
       }
     ],
     "headers": [
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/!(*.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
       {
         "source": "**/*.html",
         "headers": [
@@ -40,6 +179,15 @@
       },
       {
         "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/marketing/assets/**",
         "headers": [
           {
             "key": "Cache-Control",
