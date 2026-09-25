@@ -23,7 +23,7 @@ export async function loadAdminResults(playerId: string): Promise<AdminResults> 
   const playerDoc = await db.collection("players").doc(playerId).get();
   if (!playerDoc.exists) throw new Error("That athlete could not be found.");
   const response = await cloud.httpsCallable("getAthleteEffectiveResults")({ playerId });
-  const all = visibleAttempts(((response.data as any).reps || []).map(normalizeRep));
+  const all = visibleAttempts(((response.data as any).reps || []).map(normalizeRep), { includeFailedAttempts: true });
   const reps: Record<string, any[]> = Object.fromEntries(DRILLS.map(drill => [drill.key, []]));
   DRILLS.forEach(drill => { reps[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
   reps.freeRecord = await loadFreeRecordReps(playerId);
