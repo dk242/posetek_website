@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "release": "AI incidents admin view (observability Phase 2) with the admin dashboard redesign already on main",
+  "status": "production-http-verified-signed-in-pass-pending",
+  "verifiedAt": "2026-09-25T01:53:30Z",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "main",
+    "commit": "74d31d3",
+    "applicationChangesSinceLiveSource": {
+      "liveSourceCommit": "748c7bd",
+      "commits": [
+        { "commit": "97c25e9", "author": "taiyyoson", "subject": "Redesign admin dashboard around Insights", "firstProductionRelease": true },
+        { "commit": "8e62976", "author": "nolanj", "subject": "Admin: AI incidents view, athlete-page section and triage (AI observability Phase 2)" }
+      ],
+      "decision": "Nolan chose to release all of main (2026-09-24), including the redesign that had not been in production."
+    },
+    "plan": "PoseTek-mobile-app docs/plans/AI_OBSERVABILITY_AND_IMPROVEMENT_PLAN.md §3.4, §6 Phase 2"
+  },
+  "build": {
+    "commands": [
+      "node app/node_modules/typescript/bin/tsc -b app",
+      "npm --prefix app test",
+      "node --test scripts/application-release.test.mjs",
+      "node scripts/build-application-release.mjs"
+    ],
+    "frontendTests": 1036,
+    "releaseScriptTests": 11,
+    "preservedFiles": 726,
+    "addedAssets": 60,
+    "application": { "path": "/application.html", "sha": "9c7a812e9100e90733f1ba1ffc7d75bc7217fbf9", "size": 1285 },
+    "baselineCacheSeeding": "The first build stopped at 'Baseline checksum mismatch: /drillcreation.html': 23 legacy pages in the pinned baseline were hashed as a Windows (CRLF) checkout and this Mac checks them out LF. The builder's cache was seeded with the LF->CRLF form of each tracked source only where the SHA-1 and size equalled the pinned entry (23 seeded, 0 unmatched); the builder re-verifies every cached hash. No code or baseline entry changed for this."
+  },
+  "marketing": {
+    "homepageAndCoachesRebuiltFromSource": true,
+    "functionallyIdenticalToLive": true,
+    "evidence": "All 18 live marketing JS/CSS assets are identical to the new build after normalizing content-hash file names and Svelte scoped-class hashes (svelte-d8pdcj live vs svelte-clyidt here: Svelte hashes the component path, and the live marketing was built on Windows). The 5 referenced binary assets have identical names. The Coaches page is byte-identical; the homepage differs only in the bundle name and Netlify's pretty-URL rewrite of one link."
+  },
+  "website": {
+    "deploymentId": "6ab5d32baaaf04518a1dda05",
+    "method": "Draft upload (netlify deploy --dir production-dist --no-build), HTTP checks on the draft URL, then that exact deploy published with netlify api restoreSiteDeploy.",
+    "previewUrl": "https://6ab5d32baaaf04518a1dda05--posetek.netlify.app",
+    "publishedAt": "2026-09-25T01:52:23.791Z",
+    "url": "https://posetek.net/admin/ai-incidents",
+    "previousDeploymentId": "6ab25ae36de88d184cc9b2e1",
+    "rollback": "netlify api restoreSiteDeploy --data '{\"site_id\":\"b1ccf990-286c-4367-bb67-ca0d9ea2a020\",\"deploy_id\":\"6ab25ae36de88d184cc9b2e1\"}', then reconcile deployment/homepage-baseline.json back to that deploy",
+    "httpChecks": {
+      "runner": "scripts/test-production-entry.cjs --http-only, with /application.html checked against the release build instead of the old baseline and /admin/ai-incidents (plus a deep link) added to the routes",
+      "draft": "passed",
+      "production": "passed",
+      "preservedFiles": 727,
+      "homepageRoutes": 2,
+      "coachesRoutes": 3,
+      "applicationRoutes": 27,
+      "byteIdenticalAssets": 686
+    },
+    "baselineReconciled": {
+      "script": "node scripts/reconcile-homepage-baseline.mjs 6ab5d32baaaf04518a1dda05",
+      "inventoryFiles": 820,
+      "preservedFiles": 787,
+      "guardedBuild": "node scripts/build-production.mjs verified 787 preserved files against live",
+      "tests": "node --test scripts/production-baseline.test.mjs scripts/application-release.test.mjs: 19/19"
+    }
+  },
+  "alerting": {
+    "logMetric": "ai_incidents (config PoseTek-mobile-app tools/monitoring/ai-incidents-metric.json)",
+    "notificationChannel": "projects/kickai-69dd0/notificationChannels/13952378452960206658 (email, PoseTek AI alerts)",
+    "alertPolicy": "projects/kickai-69dd0/alertPolicies/8160202395539646326 (PoseTek AI incidents, 3 conditions)",
+    "probe": {
+      "job": "llmJobs/alert-probe-20260925, written already failed (error.code internal) with the synthetic requestedByUid alert-probe and no playerId",
+      "incident": "aiIncidents/job-alert-probe-20260925: source projection, kind failure, isTest false, backfill false; triaged wontfix",
+      "logLine": "2026-09-25T01:43:55Z ERROR, labels kind=failure code=internal isTest=false backfill=false",
+      "metricPoint": "2026-09-25T01:43:55Z value 1 on cloud_function",
+      "alertOpened": "2026-09-25T01:50:13Z (6 min 22 s after the probe)",
+      "emailReceipt": "not observed by the agent; Nolan to confirm"
+    },
+    "testLabelledProbe": "not run: config/llm.testUids does not exist"
+  },
+  "notDone": [
+    "Signed-in browser pass as an @posetek.net admin, for the AI incidents view and for the admin redesign (97c25e9), which reaches production here for the first time",
+    "Netlify's automatic builds from main still fail on the same CRLF baseline entries (Linux checkout, no cache); every main push since 2026-09-24 03:40Z has failed to build, and production changes only through deliberate releases like this one"
+  ]
+}
