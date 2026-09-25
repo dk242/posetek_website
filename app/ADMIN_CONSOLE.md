@@ -133,10 +133,14 @@ breaks on a `schemaVersion: 3` plan.
 
 20. `coach-dashboard/lib/planEdit.ts` + `data.ts` + `views/AthleteDetail.tsx`: the legacy
     whole-week writer (`withEditedWeek` → `savePlanWeeks`) **must never touch a v3 document**
-    (01A F19, program §13). `savePlanWeeks` refuses a v3 plan at the write, `AthleteDetail`
-    renders a v3 plan read-only with a pointer to the admin console, and `isRetestWeek` is
-    scoped to legacy plans (v3 has no retest week). There is **one** editor and **one** admin
-    write path to `trainingPlans`; the coach dashboard keeps its v1/v2 editor unchanged.
+    (01A F19, program §13). `AthleteDetail` renders a v3 plan read-only with a pointer to the
+    admin console, and `isRetestWeek` is scoped to legacy plans (v3 has no retest week). There is
+    **one** editor and **one** admin write path to `trainingPlans`. **Since 2026-09-25 the
+    browser writes no plan at all:** `savePlanWeeks` files a `save_plan_weeks` gateway job and
+    waits for it. The gateway checks that the user is the athlete's coach (not the athlete, not
+    an admin: the same audience the old direct-write rule allowed), refuses a v3 plan, and stamps
+    `coachAdjustedAt` / `coachAdjustedByUid` in one transaction. The rules cutover removes the
+    direct write.
 21. `athlete-portal/views/TrainingView.tsx` branches on `schemaVersion` and renders a v3 plan
     through a new read-only `TrainingViewV3` (weekly blocks, the week's goal, the next workout
     with its blocks and doses, this week's drills, the week's targets). The v1 hub, the
