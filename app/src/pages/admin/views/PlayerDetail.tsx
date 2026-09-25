@@ -46,6 +46,7 @@ import {
 import type { CoachNote, CoachRow, PlayerRow } from "../lib/accounts";
 import { accountContext, accountPlayerPath, accountQuery, accountReturnPath } from "../lib/accountHierarchy";
 import { RESULT_DRILLS, resultsPath } from "../lib/results";
+import PlayerAiIncidents from "./PlayerAiIncidents";
 
 export default function PlayerDetail() {
   const { playerId = "" } = useParams();
@@ -140,6 +141,8 @@ export default function PlayerDetail() {
       />
 
       {plan && isV3Plan(plan) && <AdjustmentHistory adjustments={adjustments} />}
+
+      <PlayerAiIncidents key={player.id} playerId={player.id} />
     </>
   );
 }

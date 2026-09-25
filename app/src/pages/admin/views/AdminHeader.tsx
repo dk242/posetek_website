@@ -11,6 +11,7 @@ const SECTIONS = [
   { path: "/admin/programs", icon: "tune", label: "Planner" },
   { path: "/admin/analysis", icon: "edit_note", label: "Technique review" },
   { path: "/admin/drills", icon: "library_books", label: "Drill library" },
+  { path: "/admin/ai-incidents", icon: "report", label: "AI incidents" },
 ];
 
 export default function AdminHeader({ ready, email, preview = false, onSignOut }: {

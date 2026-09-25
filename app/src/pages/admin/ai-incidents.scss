@@ -1,0 +1,189 @@
+// AI incidents (views/AiIncidents.tsx) and the athlete page's AI section.
+// Admin theme tokens only, so it follows the console's light and dark themes.
+
+.pt-admin {
+  .ai-toolbar {
+    flex-wrap: wrap;
+
+    .search-field { flex: 1 1 320px; min-width: 0; }
+  }
+
+  .ai-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--admin-dim);
+
+    input { min-width: 0; }
+  }
+
+  .ai-breakdown { margin-bottom: 16px; }
+
+  .ai-breakdown-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+
+    h2 { margin: 0; }
+    label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--admin-dim); }
+  }
+
+  .ai-bars { display: flex; flex-direction: column; gap: 4px; }
+
+  .ai-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(60px, 3fr) 40px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 5px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--admin-text);
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  button.ai-bar { cursor: pointer; }
+  button.ai-bar:hover, button.ai-bar:focus-visible { background: var(--admin-panel-strong); }
+
+  .ai-bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ai-bar-track { height: 8px; border-radius: 4px; background: var(--admin-panel-strong); overflow: hidden; }
+  .ai-bar-fill { display: block; height: 100%; background: var(--admin-accent); }
+  .ai-bar-count { text-align: right; font-variant-numeric: tabular-nums; color: var(--admin-dim); }
+
+  .ai-incident-row {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ai-row-time { font-size: 13px; color: var(--admin-dim); font-variant-numeric: tabular-nums; }
+  .ai-row-capability { font-weight: 400; color: var(--admin-dim); }
+  .ai-row-message {
+    max-width: 48ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-stuck { margin-top: 20px; }
+
+  .ai-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; }
+
+  // MARK: drawer
+
+  .ai-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(3, 12, 9, 0.6);
+  }
+
+  .ai-drawer {
+    width: min(920px, 100%);
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px 24px 40px;
+    background: var(--admin-bg);
+    border-left: 1px solid var(--admin-line);
+    color: var(--admin-text);
+  }
+
+  .ai-drawer-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 { margin: 0; font-size: 20px; overflow-wrap: anywhere; }
+  }
+
+  .ai-drawer-chips { margin: 10px 0 4px; }
+  .ai-drawer-when { margin: 4px 0 12px; color: var(--admin-dim); font-size: 13px; }
+
+  .ai-message {
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    border-left: 2px solid var(--admin-accent);
+    background: var(--admin-panel);
+    border-radius: 0 10px 10px 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .ai-section {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--admin-line);
+    border-radius: 14px;
+    background: var(--admin-panel);
+    min-width: 0;
+
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    h4 { margin: 12px 0 6px; font-size: 13px; }
+  }
+
+  .ai-halves {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    .ai-section { margin-top: 14px; }
+  }
+
+  .ai-fields {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+
+    > div { display: grid; grid-template-columns: minmax(96px, 36%) minmax(0, 1fr); gap: 10px; font-size: 13px; }
+    dt { color: var(--admin-dim); overflow-wrap: anywhere; }
+    dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+  }
+
+  .ai-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+  .ai-list { margin: 0; padding-left: 18px; font-size: 13px; }
+
+  .ai-breadcrumbs {
+    margin-top: 10px;
+    font-size: 13px;
+
+    pre {
+      max-height: 280px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 8px;
+      background: var(--admin-panel-strong);
+      font-size: 11px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .ai-triage textarea { min-height: 70px; }
+
+  // MARK: athlete page section
+
+  .ai-player-incidents .admin-rows { gap: 8px; }
+
+  @media (max-width: 720px) {
+    .ai-incident-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .ai-incident-row .admin-row-actions { flex-wrap: wrap; justify-content: flex-start; }
+    .ai-row-message { max-width: 100%; }
+    .ai-halves { grid-template-columns: minmax(0, 1fr); }
+    .ai-drawer { padding: 16px 16px 32px; border-left: 0; }
+    .ai-fields > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .ai-bar { grid-template-columns: minmax(0, 1fr) 60px 32px; }
+  }
+}

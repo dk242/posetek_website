@@ -348,3 +348,39 @@ shared plan contracts, and legacy plan editing. Isolated browser fixtures (no
 live database writes) exercised 12 admin routes at 1440px, 820px, and 390px, plus
 clipboard success/failure, search results, keyboard navigation, dose/rationale
 dialogs, batch/tab clearance, and standalone organization style isolation.
+
+
+## AI incidents (2026-09-24)
+
+`/admin/ai-incidents` (`views/AiIncidents.tsx`, data layer `lib/aiIncidents.ts`) is Phase 2 of the
+mobile repo's `docs/plans/AI_OBSERVABILITY_AND_IMPROVEMENT_PLAN.md` (§3.4). It follows the Drill
+library's shape: one bounded read of the newest 500 `aiIncidents` documents, with filters, search and
+a group-by breakdown done client-side. The filters are capability, code, kind, source, test traffic,
+triage state and a Pacific date range. The search box takes an athlete name, a requestId or its
+8-character reference code, a jobId, a conversationId, a playerId or a uid. A drawer shows the
+gateway and phone halves side by side, plus the allowance snapshot, the trace path, a Cloud Logging
+link and an allowlisted `llmJobs` summary. That summary leaves out parameter values, the result and
+the error text, because any of them can carry athlete input or model output. The same drawer holds
+the triage form, which requires `fixRef` for fixed and `replayNote` for verified, as the canonical
+rules do. A phone half the fold merged into its gateway document is not counted as a second
+incident.
+
+- **Names** come from `loadPlayerIndex` (a 501-document read that searches 500 athletes). An athlete
+  on a loaded incident but outside that index is looked up with `loadPlayer`, so name search still
+  finds them. The page says so.
+- **Times** are rendered in `America/Los_Angeles` throughout. The UTC `day` field is never shown.
+- **Escaping**: every writer-supplied string is a JSX text node. `AiIncidents.test.tsx` renders
+  fixtures carrying `<script>` and `onerror` markup through the drawer, the row, the triage form and
+  the athlete section, and asserts none of it survives as markup.
+- **Athlete page**: `PlayerAiIncidents.tsx` lists the athlete's newest ten incidents on PlayerDetail,
+  with links into the view.
+- **Stuck jobs**: `llmJobs` still pending or running after 30 minutes, checked on demand.
+- **Access**: live rules (`74abf177`) leave `aiIncidents` open under the catch-all, so reads and
+  triage work today without rules validation. The `llmJobs` reads (the job panel and the stuck-jobs
+  check) are denied until the rules cutover publishes the admin read, and the page says so.
+
+Verification: `npm --prefix app test` (1036), `tsc -b`, lint (no findings in the new files),
+`npm --prefix app run build`. **Not in production**: a push rebuilds only the marketing pages, so the
+page ships with the next `node scripts/build-application-release.mjs`. No signed-in browser pass has
+been run.
+
