@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "release": "Coach dashboard v1/v2 week editor through the gateway's save_plan_weeks job (rules-cutover prerequisite)",
+  "status": "production-http-verified-signed-in-pass-pending",
+  "verifiedAt": "2026-09-25T03:05:30Z",
+  "source": {
+    "repository": "https://github.com/dk242/posetek_website",
+    "branch": "main",
+    "commit": "865753d",
+    "applicationChangesSinceLiveSource": {
+      "liveSourceCommit": "74d31d3",
+      "commits": [
+        { "commit": "47dc6c3", "subject": "Coach dashboard: save v1/v2 plan weeks through the gateway's save_plan_weeks job" }
+      ]
+    },
+    "gateway": "agent-gateway-sha-0450e3ba59e2 (serving 100% since 2026-09-25T03:00:40Z; registers save_plan_weeks)",
+    "plan": "PoseTek-mobile-app docs/plans/GATEWAY_CONSOLIDATION_AND_RELEASE_PLAN.md §4.10"
+  },
+  "build": {
+    "commands": [
+      "node app/node_modules/typescript/bin/tsc -b app",
+      "npm --prefix app test",
+      "node --test scripts/application-release.test.mjs scripts/production-baseline.test.mjs",
+      "node scripts/build-application-release.mjs"
+    ],
+    "frontendTests": 1039,
+    "releaseScriptTests": 19,
+    "preservedFiles": 786,
+    "addedAssets": 55,
+    "application": { "path": "/application.html", "sha": "09bf967e166c02bc01c340a12abbf108163e410e", "size": 1285 },
+    "bundleContainsSavePlanWeeks": "assets/data-C0V8yWXL.js"
+  },
+  "website": {
+    "deploymentId": "6ab5e409d3ca5da40c5c01d2",
+    "method": "Draft upload (netlify deploy --dir production-dist --no-build), HTTP checks on the draft, then that exact deploy published with netlify api restoreSiteDeploy.",
+    "publishedAt": "2026-09-25T03:04:50.857Z",
+    "previousDeploymentId": "6ab5d32baaaf04518a1dda05",
+    "rollback": "netlify api restoreSiteDeploy --data '{\"site_id\":\"b1ccf990-286c-4367-bb67-ca0d9ea2a020\",\"deploy_id\":\"6ab5d32baaaf04518a1dda05\"}', then reconcile deployment/homepage-baseline.json back to it",
+    "httpChecks": {
+      "runner": "scripts/test-production-entry.cjs --http-only, with /application.html held to the release build and /admin/ai-incidents and /coach-dashboard added",
+      "draft": "passed",
+      "production": "passed",
+      "preservedFiles": 787,
+      "applicationRoutes": 27,
+      "byteIdenticalAssets": 741,
+      "marketing": "homepage and Coaches page byte-identical to the previous production deploy"
+    },
+    "baselineReconciled": {
+      "script": "node scripts/reconcile-homepage-baseline.mjs 6ab5e409d3ca5da40c5c01d2",
+      "inventoryFiles": 932,
+      "preservedFiles": 899,
+      "guardedBuild": "node scripts/build-production.mjs verified 899 preserved files against live"
+    }
+  },
+  "notDone": [
+    "Signed-in coach pass: edit a dose on an athlete's v1/v2 plan on the coach dashboard and confirm it saves (the gateway half was verified with a staged job on the demo athlete's superseded v1 plan)"
+  ]
+}
