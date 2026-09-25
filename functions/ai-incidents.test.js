@@ -199,3 +199,137 @@ test("every client doc gets the 180-day retention the phone may not set, from it
   await already.incidents.foldIncident(CLIENT_ID, { ...standalone, expiresAt: kept });
   assert.equal(already.db.snapshot(`aiIncidents/${CLIENT_ID}`).expiresAt.toMillis(), NOW + 1);
 });
+
+// -- Reopen on recurrence (plan §5, Phase 4) ---------------------------------
+
+const verifiedClass = (overrides = {}) => ({
+  source: "gateway", transport: "job", kind: "refusal", capability: "generate_training_plan",
+  code: "context_unavailable", stage: "assemble", requestedByUid: "athlete", jobId: "JobOld", requestId: "JobOld",
+  triage: { state: "verified", owner: "nolan", note: "Catalog republished.", fixRef: "gateway abc1234",
+    replayNote: "Replayed 2026-09-20: no incident.", updatedBy: "admin-uid" },
+  ...overrides,
+});
+const recurrence = (overrides = {}) => ({
+  source: "gateway", transport: "job", kind: "refusal", capability: "generate_training_plan",
+  code: "context_unavailable", stage: "assemble", requestedByUid: "athlete", jobId: "JobNew", requestId: "JobNew",
+  isTest: false, backfill: false, ...overrides,
+});
+
+test("a synthetic incident of a verified class reopens it and names where it came from", async () => {
+  const { db, lines, incidents } = setup({
+    "aiIncidents/job-JobOld": verifiedClass(), "aiIncidents/job-JobNew": recurrence(),
+  });
+  assert.deepEqual(await incidents.foldIncident("job-JobNew", recurrence()), { reopened: ["job-JobOld"] });
+  const fresh = db.snapshot("aiIncidents/job-JobNew");
+  assert.equal(fresh.reopenedFrom, "job-JobOld");
+  assert.deepEqual(fresh.reopenedFromIds, ["job-JobOld"]);
+  const old = db.snapshot("aiIncidents/job-JobOld");
+  assert.equal(old.triage.state, "new");
+  assert.match(old.triage.note, /^Reopened 2026-09-24: job-JobNew recurred with the same capability, code and stage\. Earlier note: Catalog republished\.$/);
+  // History stays: the fix and the replay that verified it.
+  assert.equal(old.triage.fixRef, "gateway abc1234");
+  assert.equal(old.triage.replayNote, "Replayed 2026-09-20: no incident.");
+  assert.equal(old.triage.owner, "nolan");
+  assert.equal(old.triage.updatedBy, "foldAiIncidents");
+  assert.equal(old.reopenedBy, "job-JobNew");
+  assert.equal(old.reopenCount, 1);
+  // Every triage key is one the rules accept, so an admin can save it again.
+  assert.deepEqual(Object.keys(old.triage).sort(),
+    ["fixRef", "note", "owner", "replayNote", "state", "updatedAt", "updatedBy"]);
+  const line = lines.find(entry => entry.message === "ai_incident_reopened");
+  assert.equal(line.severity, "WARNING");
+  assert.deepEqual(line["logging.googleapis.com/labels"], {
+    event: "ai_incident_reopened", incidentId: "job-JobNew", reopenedFrom: "job-JobOld",
+    capability: "generate_training_plan", code: "context_unavailable", stage: "assemble",
+  });
+  // Reopened once: the next recurrence finds nothing verified.
+  db.docs.set("aiIncidents/job-JobNext", recurrence({ jobId: "JobNext", requestId: "JobNext" }));
+  assert.deepEqual(await incidents.foldIncident("job-JobNext", recurrence({ jobId: "JobNext", requestId: "JobNext" })), {});
+});
+
+test("recurrence matches capability, code and stage exactly, and only verified classes", async () => {
+  const seed = {
+    "aiIncidents/job-OtherStage": verifiedClass({ stage: "policy" }),
+    "aiIncidents/job-OtherCode": verifiedClass({ code: "invalid_request" }),
+    "aiIncidents/job-OtherCapability": verifiedClass({ capability: "build_workout" }),
+    "aiIncidents/job-Fixed": verifiedClass({ triage: { state: "fixed", fixRef: "gateway abc1234" } }),
+    "aiIncidents/job-Wontfix": verifiedClass({ triage: { state: "wontfix" } }),
+    "aiIncidents/job-JobNew": recurrence(),
+  };
+  const { db, incidents } = setup(seed);
+  assert.deepEqual(await incidents.foldIncident("job-JobNew", recurrence()), {});
+  for (const id of ["OtherStage", "OtherCode", "OtherCapability"]) {
+    assert.equal(db.snapshot(`aiIncidents/job-${id}`).triage.state, "verified", id);
+  }
+  assert.equal(db.snapshot("aiIncidents/job-Fixed").triage.state, "fixed");
+  assert.equal(db.snapshot("aiIncidents/job-JobNew").reopenedFrom, undefined);
+});
+
+test("a class with a null stage (a projected job) matches another null stage only", async () => {
+  const { db, incidents } = setup({
+    "aiIncidents/job-JobOld": verifiedClass({ source: "projection", stage: null }),
+    "aiIncidents/job-JobNew": recurrence({ source: "projection", stage: null }),
+  });
+  assert.deepEqual(await incidents.foldIncident("job-JobNew", recurrence({ source: "projection", stage: null })),
+    { reopened: ["job-JobOld"] });
+  assert.equal(db.snapshot("aiIncidents/job-JobOld").triage.state, "new");
+});
+
+test("test, backfill and user-report documents and client halves never reopen a class", async () => {
+  const cases = [
+    ["job-JobNew", recurrence({ isTest: true })],
+    ["job-JobNew", recurrence({ backfill: true })],
+    [CLIENT_ID, clientHalf({ capability: "generate_training_plan", code: "context_unavailable", stage: "assemble" })],
+    [CLIENT_ID, { ...clientHalf({ capability: "generate_training_plan", code: "user_report", stage: "user_report" }),
+      requestId: CLIENT_ID.slice("client-".length) }],
+  ];
+  for (const [id, doc] of cases) {
+    const { db, incidents } = setup({ "aiIncidents/job-JobOld": verifiedClass(), [`aiIncidents/${id}`]: doc });
+    const result = await incidents.foldIncident(id, doc);
+    assert.equal(result.reopened, undefined, id);
+    assert.equal(db.snapshot("aiIncidents/job-JobOld").triage.state, "verified", JSON.stringify(doc));
+  }
+});
+
+test("a standalone phone incident reopens its class unless the account is a test account", async () => {
+  const own = CLIENT_ID.slice("client-".length);
+  const phone = clientHalf({ requestId: own, capability: "workout_chat", code: "recovery_failed",
+    stage: "workout_chat_recover", transport: "client_read" });
+  const verified = verifiedClass({ capability: "workout_chat", code: "recovery_failed", stage: "workout_chat_recover" });
+  const live = setup({ "aiIncidents/job-JobOld": verified, [`aiIncidents/${CLIENT_ID}`]: phone });
+  assert.deepEqual((await live.incidents.foldIncident(CLIENT_ID, phone)).reopened, ["job-JobOld"]);
+  assert.equal(live.db.snapshot(`aiIncidents/${CLIENT_ID}`).reopenedFrom, "job-JobOld");
+
+  const test = setup({ "config/llm": { testUids: ["athlete"] }, "aiIncidents/job-JobOld": verified,
+    [`aiIncidents/${CLIENT_ID}`]: phone });
+  assert.equal((await test.incidents.foldIncident(CLIENT_ID, phone)).reopened, undefined);
+  assert.equal(test.db.snapshot("aiIncidents/job-JobOld").triage.state, "verified");
+});
+
+test("two recurrences at once reopen the class once", async () => {
+  const second = recurrence({ jobId: "JobTwo", requestId: "JobTwo" });
+  const { db, incidents } = setup({
+    "aiIncidents/job-JobOld": verifiedClass(), "aiIncidents/job-JobNew": recurrence(), "aiIncidents/job-JobTwo": second,
+  });
+  const [a, b] = await Promise.all([incidents.foldIncident("job-JobNew", recurrence()), incidents.foldIncident("job-JobTwo", second)]);
+  assert.equal([a.reopened, b.reopened].filter(Boolean).length, 1);
+  assert.equal(db.snapshot("aiIncidents/job-JobOld").reopenCount, 1);
+});
+
+test("a long earlier note is cut to the 1000 characters the rules allow", async () => {
+  const { db, incidents } = setup({
+    "aiIncidents/job-JobOld": verifiedClass({ triage: { ...verifiedClass().triage, note: "n".repeat(1000) } }),
+    "aiIncidents/job-JobNew": recurrence(),
+  });
+  await incidents.foldIncident("job-JobNew", recurrence());
+  assert.equal(Array.from(db.snapshot("aiIncidents/job-JobOld").triage.note).length, 1000);
+});
+
+test("a projected context_unavailable job keeps the gateway's reason; other codes carry none", () => {
+  const catalog = projectionFor("JobC", failedJob({ error: { code: "context_unavailable", reason: "catalog",
+    message: "No published eligible catalog curriculum" } }), { Timestamp: FakeTimestamp, FieldValue, nowMillis: NOW });
+  assert.equal(catalog.doc.reason, "catalog");
+  const other = projectionFor("JobI", failedJob({ error: { code: "invalid_request", reason: "catalog", message: "x" } }),
+    { Timestamp: FakeTimestamp, FieldValue, nowMillis: NOW });
+  assert.equal(other.doc.reason, null);
+});
