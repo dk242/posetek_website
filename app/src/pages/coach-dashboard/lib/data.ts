@@ -8,13 +8,12 @@ import { getClubContext } from "../../../lib/organization-data";
 import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import { selectedTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
-import firebase, { auth, cloud, db } from "../../../lib/firebase";
+import { auth, cloud, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
 import { DRILLS } from "../../athlete-portal/lib/drills";
 import { submitLlmJob } from "../../athlete-portal/lib/loaders";
 import { planJobParams } from "./logic";
-import { planSchemaVersion } from "../../../lib/contracts/types";
 
 // UID-first coach resolution shared with the roster page (firebase-identity.js).
 export async function findCoach(uid: string): Promise<any> {
@@ -105,31 +104,32 @@ export async function loadDrillCatalog(): Promise<any[]> {
 
 // MARK: - Plan writes
 
-// Writes back an edited weeks array, stamping coach provenance. Additive
-// fields only — the doc stays shaped like a gateway-written TrainingPlanV1.
-//
-// This is the LEGACY whole-week writer. It must never touch a schemaVersion-3
-// plan: v3 weeks hold predefined workouts with per-workout revisions, and
-// replacing the whole array here would revert a concurrent admin or athlete
-// edit and skip the required `planAdjustments` record
-// (TRAINING_PROGRAM_V3_CONTRACT.md §6/§13, 01A F08/F19). v3 plans are edited in
-// the admin console's workout editor, which is the one authorized write path.
-// The guard lives at the write, in a transaction, so no caller can bypass it.
+export const PLAN_WEEKS_TIMEOUT_MS = 60000;
+
+// Replaces an edited weeks array on an older (schemaVersion 1/2) plan through the
+// gateway's deterministic `save_plan_weeks` job. The browser no longer writes
+// `trainingPlans`: the rules cutover closes that path (gateway consolidation plan
+// §4.6). The gateway re-checks that the signed-in user is the athlete's coach,
+// refuses a v3 plan — whose workouts are edited one at a time in the admin
+// console's workout editor, with the required `planAdjustments` record — and
+// stamps `coachAdjustedAt` / `coachAdjustedByUid` itself, in one transaction.
 export async function savePlanWeeks(playerId: string, planId: string, weeks: any[]): Promise<void> {
-  const ref = db.collection("players").doc(playerId).collection("trainingPlans").doc(planId);
-  await db.runTransaction(async transaction => {
-    const doc = await transaction.get(ref);
-    if (!doc.exists) throw new Error("That training plan no longer exists.");
-    if (planSchemaVersion(doc.data()) === 3) {
-      throw new Error(
-        "This athlete is on a version 3 plan. Its workouts are edited one at a time in the PoseTek admin console, which records why each change was made.",
-      );
-    }
-    transaction.update(ref, {
-      weeks,
-      coachAdjustedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      coachAdjustedByUid: auth.currentUser?.uid ?? null,
-    });
+  if (!auth.currentUser?.uid) throw new Error("You are signed out. Sign in again to save.");
+  const ref = await submitLlmJob(playerId, "save_plan_weeks", { planId, weeks });
+  await new Promise<void>((resolve, reject) => {
+    let stop = () => {};
+    const timeout = setTimeout(() => {
+      stop();
+      reject(new Error("The save is still processing. Reload the plan before editing again; the server job continues."));
+    }, PLAN_WEEKS_TIMEOUT_MS);
+    stop = ref.onSnapshot((snapshot: any) => {
+      const job = snapshot.data() || {};
+      if (job.status === "complete") { clearTimeout(timeout); stop(); resolve(); }
+      else if (job.status === "failed") {
+        clearTimeout(timeout); stop();
+        reject(new Error(job.error?.detail || job.error?.message || "The change could not be saved."));
+      }
+    }, (error: Error) => { clearTimeout(timeout); stop(); reject(error); });
   });
 }
 

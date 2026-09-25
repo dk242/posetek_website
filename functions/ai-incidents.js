@@ -17,6 +17,8 @@
 //   canonical `req-`/`job-` doc. It runs on create of either half, so arrival
 //   order does not matter, and it merges only when both halves name the same
 //   `requestedByUid` (otherwise the client doc is marked `foldRejected`).
+//   It also stamps every client doc's `expiresAt` (createdAt + 180 days),
+//   which the rules do not let the phone set.
 //
 // The redaction helpers mirror gateway/incidents.py exactly; both repos pin
 // them with an identical copy of test-support/ai-incident-vectors.json.
@@ -229,10 +231,28 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
     });
   }
 
+  /**
+   * A phone may not choose its own retention: the rules refuse `expiresAt` on a
+   * client create (a client clock cannot equal server time + 180 days), so its
+   * documents get the same 180 days as every other writer's, from the
+   * server-pinned `createdAt`. `update` never creates; a document already gone
+   * has nothing to retain.
+   */
+  async function stampClientRetention(incidentId, doc) {
+    if (doc.expiresAt) return;
+    const created = millisOf(doc.createdAt) ?? now();
+    try {
+      await incidents.doc(incidentId).update({ expiresAt: Timestamp.fromMillis(created + RETENTION_DAYS * DAY_MS) });
+    } catch (error) {
+      if (!(error && (error.code === 5 || error.code === "not-found" || /NOT_FOUND/.test(String(error.message))))) throw error;
+    }
+  }
+
   /** onCreate of any incident doc; order-independent. */
   async function foldIncident(incidentId, data) {
     const doc = data || {};
     if (incidentId.startsWith("client-")) {
+      await stampClientRetention(incidentId, doc);
       const canonicalId = text(doc.requestId) ? incidentIdForRequest(doc.requestId)
         : text(doc.jobId) ? incidentIdForJob(doc.jobId) : null;
       if (!canonicalId) return { standalone: true };

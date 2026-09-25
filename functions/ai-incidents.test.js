@@ -178,3 +178,24 @@ test("a client-only incident with no request or job id stands alone", async () =
   assert.deepEqual(await incidents.foldIncident(CLIENT_ID, alone), { standalone: true });
   assert.equal(db.docs.size, 0);
 });
+
+test("every client doc gets the 180-day retention the phone may not set, from its server createdAt", async () => {
+  const created = FakeTimestamp.fromMillis(NOW - 5000);
+  const half = clientHalf({ createdAt: created });
+  const { db, incidents } = setup({ [`aiIncidents/req-${REQUEST_ID}`]: canonicalStream(), [`aiIncidents/${CLIENT_ID}`]: half });
+  assert.deepEqual(await incidents.foldIncident(CLIENT_ID, half), { [`req-${REQUEST_ID}`]: "folded" });
+  assert.equal(db.snapshot(`aiIncidents/${CLIENT_ID}`).expiresAt.toMillis(), NOW - 5000 + 180 * 24 * 60 * 60 * 1000);
+  // The canonical doc keeps its own writer's retention.
+  assert.equal(db.snapshot(`aiIncidents/req-${REQUEST_ID}`).expiresAt, undefined);
+
+  const standalone = clientHalf({ createdAt: created });
+  delete standalone.requestId;
+  const alone = setup({ [`aiIncidents/${CLIENT_ID}`]: standalone });
+  assert.deepEqual(await alone.incidents.foldIncident(CLIENT_ID, standalone), { standalone: true });
+  assert.equal(alone.db.snapshot(`aiIncidents/${CLIENT_ID}`).expiresAt.toMillis(), NOW - 5000 + 180 * 24 * 60 * 60 * 1000);
+
+  const kept = FakeTimestamp.fromMillis(NOW + 1);
+  const already = setup({ [`aiIncidents/${CLIENT_ID}`]: { ...standalone, expiresAt: kept } });
+  await already.incidents.foldIncident(CLIENT_ID, { ...standalone, expiresAt: kept });
+  assert.equal(already.db.snapshot(`aiIncidents/${CLIENT_ID}`).expiresAt.toMillis(), NOW + 1);
+});
