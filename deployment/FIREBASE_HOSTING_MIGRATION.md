@@ -49,8 +49,8 @@ and would reintroduce lowercase paths. Do not reconcile from Netlify again befor
 - HTML, extensionless routes, and unhashed JS/CSS are `no-cache`. `/assets/**` and
   `/marketing/assets/**` are immutable.
 
-The Hosting ignore list still excludes `backfill-session-summaries.html` and
-`images/logo-export.html`. Both are live on Netlify today.
+The Hosting ignore list no longer excludes `backfill-session-summaries.html` and
+`images/logo-export.html`, so both stay served as they are on Netlify.
 `deployments/club-organization/hosting_release.py` requires `public: "dist"` and rejects
 redirects; it was written for the earlier non-production site and does not apply to this
 configuration.
@@ -72,9 +72,8 @@ Firebase console for a disabled or suspended site before continuing.
 ## Remaining steps
 
 1. Resolve the "Site Not Found" state, then repeat the crawl against the preview channel.
-2. Decide whether the backfill and logo-export pages should be served.
-3. Lower Cloudflare TTLs; add `posetek.net` and `www.posetek.net` as custom domains on site
+2. Lower Cloudflare TTLs; add `posetek.net` and `www.posetek.net` as custom domains on site
    `kickai-69dd0`; switch the A/CNAME records (DNS only while the certificate provisions).
    Leave MX, SPF and verification TXT records unchanged.
-4. Keep Netlify available for one week as rollback, then update README, AGENTS.md and the
+3. Keep Netlify available for one week as rollback, then update README, AGENTS.md and the
    release documents, and retire `netlify.toml`.

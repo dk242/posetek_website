@@ -8,9 +8,7 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "backfill-session-summaries.html",
-      "images/logo-export.html"
+      "**/node_modules/**"
     ],
     "cleanUrls": true,
     "redirects": [
