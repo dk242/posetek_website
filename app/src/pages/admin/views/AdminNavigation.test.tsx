@@ -4,11 +4,11 @@ import { MemoryRouter } from "react-router-dom";
 import AdminHeader from "./AdminHeader";
 
 describe("admin navigation", () => {
-  it("uses six regular admin tabs and moves Community feed into the account menu", () => {
+  it("uses seven regular admin tabs and moves Community feed into the account menu", () => {
     const html = renderToStaticMarkup(<MemoryRouter><AdminHeader ready email="admin@example.test" onSignOut={() => {}} /></MemoryRouter>);
-    for (const path of ["accounts", "organizations", "programs", "analysis", "drills"]) expect(html).toContain(`href="/admin/${path}"`);
+    for (const path of ["accounts", "organizations", "programs", "analysis", "drills", "ai-incidents"]) expect(html).toContain(`href="/admin/${path}"`);
     expect(html).toContain('href="/admin"');
-    expect((html.match(/class="admin-nav-link/g) ?? []).length).toBe(6);
+    expect((html.match(/class="admin-nav-link/g) ?? []).length).toBe(7);
     expect(html).toContain('href="/feed"');
     expect(html).toContain("Community feed");
     expect(html).toContain("Technique review");

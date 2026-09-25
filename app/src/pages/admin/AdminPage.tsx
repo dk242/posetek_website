@@ -36,6 +36,7 @@ const RepTools = lazy(() => import("./views/RepTools"));
 const PlannerRedirect = lazy(() => import("./views/PlannerRedirect"));
 const AnalysisWorkspace = lazy(() => import("./views/AnalysisWorkspace"));
 const PersonalizedPrograms = lazy(() => import("./views/PersonalizedPrograms"));
+const AiIncidents = lazy(() => import("./views/AiIncidents"));
 
 export default function AdminPage() {
   const location = useLocation();
@@ -120,6 +121,7 @@ function AdminConsole({ session, preview = false }: { session: AdminSession; pre
           <Route path="accounts/player/:playerId/results/:drillKey/:repId" element={<RepTools />} />
           <Route path="programs" element={<PersonalizedPrograms />} />
           <Route path="analysis" element={<AnalysisWorkspace />} />
+          <Route path="ai-incidents" element={<AiIncidents />} />
           <Route path="programs/personalized" element={<PlannerRedirect />} />
           <Route
             path="accounts/player/:playerId/plan/:planId/workout/:workoutId"
