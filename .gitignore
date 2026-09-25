@@ -9,6 +9,7 @@ __pycache__/
 /marketing-dist/
 /artifacts/
 .DS_Store
+.claude/
 
 firestore-debug.log*
 storage-debug.log*
