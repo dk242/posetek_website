@@ -64,7 +64,7 @@
   },
   "alerting": {
     "logMetric": "ai_incidents (config PoseTek-mobile-app tools/monitoring/ai-incidents-metric.json)",
-    "notificationChannel": "projects/kickai-69dd0/notificationChannels/13952378452960206658 (email, PoseTek AI alerts)",
+    "notificationChannel": "projects/kickai-69dd0/notificationChannels/13952378452960206658 (email, PoseTek AI alerts; nolanj@posetek.net for the probe, changed to taiyow@posetek.net at Nolan's request 2026-09-25)",
     "alertPolicy": "projects/kickai-69dd0/alertPolicies/8160202395539646326 (PoseTek AI incidents, 3 conditions)",
     "probe": {
       "job": "llmJobs/alert-probe-20260925, written already failed (error.code internal) with the synthetic requestedByUid alert-probe and no playerId",
@@ -72,7 +72,7 @@
       "logLine": "2026-09-25T01:43:55Z ERROR, labels kind=failure code=internal isTest=false backfill=false",
       "metricPoint": "2026-09-25T01:43:55Z value 1 on cloud_function",
       "alertOpened": "2026-09-25T01:50:13Z (6 min 22 s after the probe)",
-      "emailReceipt": "not observed by the agent; Nolan to confirm"
+      "emailReceipt": "confirmed by Nolan 2026-09-25 (nolanj@posetek.net)"
     },
     "testLabelledProbe": "not run: config/llm.testUids does not exist"
   },
