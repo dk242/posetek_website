@@ -90,7 +90,8 @@ class Query {
   count() { const query = this; return { async get() { const result = await query.get(); return { data: () => ({ count: result.size }) }; } }; }
   matches(data) {
     return this.filters.every(([field, op, value]) => {
-      const actual = data[field];
+      // Dotted paths reach into maps, as Firestore's do (`triage.state`).
+      const actual = field.split(".").reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), data);
       if (op === "==") return actual === value;
       if (op === "array-contains-any") return Array.isArray(actual) && value.some(v => actual.includes(v));
       if (op === "array-contains") return Array.isArray(actual) && actual.includes(value);

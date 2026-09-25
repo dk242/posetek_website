@@ -20,6 +20,13 @@
 //   It also stamps every client doc's `expiresAt` (createdAt + 180 days),
 //   which the rules do not let the phone set.
 //
+//   Reopen on recurrence (plan §5, Phase 4): when a new incident has the same
+//   capability, code and stage as one whose `triage.state` is `verified`, the
+//   class has come back. The new incident gets `reopenedFrom`, and the verified
+//   one moves back to `new` with a note naming the recurrence (its fixRef and
+//   replayNote stay as history). Test, backfill and user-report documents and
+//   client halves never reopen anything: only a countable incident is evidence.
+//
 // The redaction helpers mirror gateway/incidents.py exactly; both repos pin
 // them with an identical copy of test-support/ai-incident-vectors.json.
 
@@ -52,6 +59,11 @@ const REDACTIONS = [
 ];
 const QUOTED = /'[^']*'|"[^"]*"/g;
 const DOC_ID_PART = /^[A-Za-z0-9_-]{1,128}$/;
+// The rules cap a triage note at 1000 characters; a reopened incident must stay
+// saveable from the admin view.
+const TRIAGE_NOTE_LIMIT = 1000;
+// Verified incidents are a short list (a handful per weekly look, 180-day TTL).
+const VERIFIED_SCAN_LIMIT = 500;
 
 // Python slices by code point; so do these.
 const codePoints = (value, limit) => Array.from(value).slice(0, limit).join("");
@@ -130,6 +142,8 @@ function projectionFor(jobId, job, { Timestamp, FieldValue, nowMillis, backfill 
     traceRef: text(job.traceRef),
     code,
     stage: null,
+    // Contract §7: only context_unavailable carries a reason.
+    reason: code === "context_unavailable" ? text(error.reason) : null,
     message: safeMessage(code, error.message ?? error.detail),
     httpStatus: HTTP_STATUS[code] ?? 500,
     providerStatus: null,
@@ -162,7 +176,8 @@ function incidentLine(incidentId, doc) {
       backfill: String(Boolean(doc.backfill)), incidentId,
     },
     aiIncident: {
-      incidentId, kind: doc.kind, severity: doc.severity, code: doc.code, stage: doc.stage, source: doc.source,
+      incidentId, kind: doc.kind, severity: doc.severity, code: doc.code, stage: doc.stage, reason: doc.reason ?? null,
+      source: doc.source,
       transport: doc.transport, capability: doc.capability, playerId: doc.playerId, requestId: doc.requestId,
       jobId: doc.jobId, isTest: doc.isTest, backfill: doc.backfill, httpStatus: doc.httpStatus, message: doc.message,
     },
@@ -248,9 +263,71 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
     }
   }
 
+  /**
+   * Whether a newly created doc is a countable incident, and so evidence that
+   * its class recurred. A client doc counts only when it stands alone: it has
+   * no request or job, or its `requestId` is its own UUID (the phone's id for
+   * a failure that never reached the gateway, contract §16.5). A client doc
+   * naming another request is a half of that request's incident.
+   */
+  async function countsAsRecurrence(incidentId, doc) {
+    if (doc.isTest === true || doc.backfill === true || doc.stage === "user_report") return false;
+    if (incidentId.startsWith("client-")) {
+      const own = incidentId.slice("client-".length);
+      const standalone = !text(doc.jobId) && (!text(doc.requestId) || doc.requestId === own);
+      if (!standalone) return false;
+      // A phone cannot label itself test traffic; its account can be listed.
+      return !(text(doc.requestedByUid) && (await testUids()).has(doc.requestedByUid));
+    }
+    return incidentId.startsWith("req-") || incidentId.startsWith("job-");
+  }
+
+  /** Moves each verified incident of the new one's class back to `new`. */
+  async function reopenVerifiedClass(incidentId, doc) {
+    if (!(await countsAsRecurrence(incidentId, doc))) return [];
+    const same = (a, b) => (a ?? null) === (b ?? null);
+    const verified = await incidents.where("triage.state", "==", "verified").limit(VERIFIED_SCAN_LIMIT).get();
+    const matches = verified.docs.filter(snap => snap.id !== incidentId && same(snap.data().capability, doc.capability)
+      && same(snap.data().code, doc.code) && same(snap.data().stage, doc.stage));
+    const day = new Date(now()).toISOString().slice(0, 10);
+    const reopened = [];
+    for (const match of matches) {
+      const ref = incidents.doc(match.id);
+      const done = await db.runTransaction(async tx => {
+        const snap = await tx.get(ref);
+        const triage = snap.exists ? snap.data().triage : null;
+        if (!triage || triage.state !== "verified") return false;  // another recurrence got there first
+        const earlier = text(triage.note) ? ` Earlier note: ${triage.note}` : "";
+        const note = codePoints(`Reopened ${day}: ${incidentId} recurred with the same capability, code and stage.${earlier}`,
+          TRIAGE_NOTE_LIMIT);
+        tx.update(ref, {
+          triage: { ...triage, state: "new", note, updatedAt: FieldValue.serverTimestamp(), updatedBy: "foldAiIncidents" },
+          reopenedBy: incidentId, reopenedAt: FieldValue.serverTimestamp(), reopenCount: FieldValue.increment(1),
+        });
+        return true;
+      });
+      if (done) reopened.push(match.id);
+    }
+    if (reopened.length) {
+      await incidents.doc(incidentId).update({ reopenedFrom: reopened[0], reopenedFromIds: reopened });
+      logger.write({
+        severity: "WARNING", message: "ai_incident_reopened",
+        "logging.googleapis.com/labels": { event: "ai_incident_reopened", incidentId, reopenedFrom: reopened[0],
+          capability: doc.capability || "", code: doc.code || "", stage: doc.stage || "" },
+      });
+    }
+    return reopened;
+  }
+
   /** onCreate of any incident doc; order-independent. */
   async function foldIncident(incidentId, data) {
     const doc = data || {};
+    const results = await foldHalves(incidentId, doc);
+    const reopened = await reopenVerifiedClass(incidentId, doc);
+    return reopened.length ? { ...results, reopened } : results;
+  }
+
+  async function foldHalves(incidentId, doc) {
     if (incidentId.startsWith("client-")) {
       await stampClientRetention(incidentId, doc);
       const canonicalId = text(doc.requestId) ? incidentIdForRequest(doc.requestId)
@@ -272,7 +349,7 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
     return results;
   }
 
-  return { projectFailedJob, foldIncident, foldPair, createIfAbsent, testUids };
+  return { projectFailedJob, foldIncident, foldPair, createIfAbsent, testUids, reopenVerifiedClass };
 }
 
 function createAiIncidentEntrypoints(functions, admin) {
