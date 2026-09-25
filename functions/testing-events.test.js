@@ -294,6 +294,33 @@ test("a committed rep repairs station progress after the app dies before its com
   assert.equal(progress.status, "inProgress");
 });
 
+test("an invalid rep never repairs station progress", async () => {
+  const eventId = "event-invalid";
+  const progressPath = `testingEvents/${eventId}/progress/station-1_player-a`;
+  const before = {
+    stationId: "station-1", playerDocId: "player-a", status: "inProgress",
+    currentDrillIndex: 0, completedByDrill: {}, completedByProtocolSide: {},
+    repIds: [], pendingUploadCount: 0, revision: 1, deviceId: "phone-a",
+  };
+  const { db, testing } = harness({
+    [`testingEvents/${eventId}`]: { organizationId: "club", operatorUids: ["manager"], status: "live" },
+    [progressPath]: before,
+  });
+  const data = {
+    testingEventId: eventId, testingStationId: "station-1", testingParticipantId: "player-a",
+    testingDrillType: "jump", absoluteRepNumber: 1, processingStatus: "failed", resultsValid: false,
+  };
+  await testing.onRepWrite(
+    { before: { data: () => undefined }, after: { data: () => data } },
+    { params: { playerId: "player-a", repId: "failed-rep" } }
+  );
+  const progress = db.snapshot(progressPath);
+  assert.deepEqual(progress.repIds, []);
+  assert.deepEqual(progress.completedByDrill, {});
+  assert.equal(progress.revision, 1);
+  assert.equal(progress.status, "inProgress");
+});
+
 async function liveStation(testing, playerIds = ["player-a"], actor = auth("manager")) {
   const event = await draft(testing, playerIds, actor);
   await testing.startTestingEvent({ eventId: event.eventId }, actor);
