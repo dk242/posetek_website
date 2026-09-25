@@ -1,7 +1,7 @@
 {
-  "deploymentId": "6ab5d32baaaf04518a1dda05",
+  "deploymentId": "6ab5e409d3ca5da40c5c01d2",
   "sourceCommit": null,
-  "url": "https://6ab5d32baaaf04518a1dda05--posetek.netlify.app",
+  "url": "https://6ab5e409d3ca5da40c5c01d2--posetek.netlify.app",
   "applicationPath": "/application.html",
   "platformConfig": {
     "path": "/netlify.toml",
@@ -11,8 +11,13 @@
   },
   "files": [
     {
-      "path": "/application.html",
+      "path": "/application 3.html",
       "sha": "9c7a812e9100e90733f1ba1ffc7d75bc7217fbf9",
+      "size": 1285
+    },
+    {
+      "path": "/application.html",
+      "sha": "09bf967e166c02bc01c340a12abbf108163e410e",
       "size": 1285
     },
     {
@@ -74,6 +79,11 @@
       "path": "/assets/accounts-czq-blhy.js",
       "sha": "8aacb92df54ffc7e705ae2dbe60e404c791a4928",
       "size": 8820
+    },
+    {
+      "path": "/assets/accounts-dedfc4uh.js",
+      "sha": "d9447ab84f1ce02a3c657e15473151575ac1d059",
+      "size": 8638
     },
     {
       "path": "/assets/accounts-dxxgztq_.js",
@@ -153,6 +163,11 @@
     {
       "path": "/assets/adminoverview-cclvgjyn.js",
       "sha": "4df6603ad9c26ee66ef08b13d1f6a9a354a91bfe",
+      "size": 229
+    },
+    {
+      "path": "/assets/adminoverview-enk69dyw.js",
+      "sha": "d5b8fa3bde3364846bd92dfeaee34306453517ee",
       "size": 229
     },
     {
@@ -246,6 +261,11 @@
       "size": 33095
     },
     {
+      "path": "/assets/adminpage-rikspope.js",
+      "sha": "468c3c230ef7c27511b5e45b3e38c7de0fa50931",
+      "size": 13944
+    },
+    {
       "path": "/assets/adminpage-xlvkioy-.js",
       "sha": "fb8ae25414ba26f24dd7e1a4da11ae455cb9ce76",
       "size": 10248
@@ -263,6 +283,11 @@
     {
       "path": "/assets/adminresults-bjpp03oh.js",
       "sha": "0d148b1551706ff0f763ba7975013f4d032a7003",
+      "size": 2281
+    },
+    {
+      "path": "/assets/adminresults-bopnmo0e.js",
+      "sha": "11174de306629a3c083ffd6c6fe3dc67cf13a55f",
       "size": 2281
     },
     {
@@ -326,6 +351,16 @@
       "size": 9849
     },
     {
+      "path": "/assets/ai-incidents-cpwrrapc.js",
+      "sha": "baa2c1955f6d7c01493a09e84cb3b524814a1e2f",
+      "size": 9849
+    },
+    {
+      "path": "/assets/aiincidents-4xom5aio.js",
+      "sha": "dacfba3f1795f154a36fbcccb55eebb43e594049",
+      "size": 22349
+    },
+    {
       "path": "/assets/aiincidents-bmwkam63.js",
       "sha": "9bda56a960515c21d036e2ff88d0ff2e74e598b9",
       "size": 22349
@@ -359,6 +394,11 @@
       "path": "/assets/analysisworkspace-c7kkck8s.js",
       "sha": "895c6f7518e26417c22d4800210722bd2ded0679",
       "size": 31167
+    },
+    {
+      "path": "/assets/analysisworkspace-ciqyth92.js",
+      "sha": "f98616a7cc3bbe2e57b23733c4c478164916a5a4",
+      "size": 31103
     },
     {
       "path": "/assets/analysisworkspace-co5wanel.js",
@@ -476,6 +516,11 @@
       "size": 230044
     },
     {
+      "path": "/assets/athleteportalpage-gvt7_hww.js",
+      "sha": "8c948227f219d90246e025eb53cfcf3977d879a8",
+      "size": 222967
+    },
+    {
       "path": "/assets/athleteportalpage-h3t0lx8f.js",
       "sha": "83572d24e8e776795bacc4d98ab8720344b1b594",
       "size": 219381
@@ -551,6 +596,11 @@
       "size": 16795
     },
     {
+      "path": "/assets/athletestats-l9nn9ofv.js",
+      "sha": "d979c891d7b8c386ed35e32dc11bf131d6b9a32b",
+      "size": 16795
+    },
+    {
       "path": "/assets/athletestats-wjchym1q.js",
       "sha": "729c6ade1b6793535159ea406e13b3c61f15933c",
       "size": 13941
@@ -574,6 +624,11 @@
       "path": "/assets/catalog-4r4fbgx7.js",
       "sha": "f970b5336def1f03ea66d371b55a8e66eca1ac89",
       "size": 5025
+    },
+    {
+      "path": "/assets/catalog-baoozxw9.js",
+      "sha": "00aa1ab595ae605edb45f403ceaee6d449036151",
+      "size": 5447
     },
     {
       "path": "/assets/catalog-bca-kicn.js",
@@ -691,6 +746,11 @@
       "size": 37395
     },
     {
+      "path": "/assets/coachdashboardpage-l-lxpehx.js",
+      "sha": "6a9919252d7f46926ad3c72e45d35a627317b6d8",
+      "size": 37401
+    },
+    {
       "path": "/assets/coachdashboardpage-vrzxdrqe.js",
       "sha": "2d6416b9d31ceff822aad3401ea360068de69476",
       "size": 37401
@@ -698,6 +758,11 @@
     {
       "path": "/assets/coachdemo-b4rdpc3u.js",
       "sha": "6f3815c098073388b756c068e9548f70ef9ad9e4",
+      "size": 6696
+    },
+    {
+      "path": "/assets/coachdemo-blef8uhk.js",
+      "sha": "1b4365d6b65b20943e0f9f707a828fe6836d859c",
       "size": 6696
     },
     {
@@ -791,6 +856,11 @@
       "size": 3668
     },
     {
+      "path": "/assets/coachdetail-dgdx0d9m.js",
+      "sha": "6670342ae82963c83f0d722a04fe2dc0aeccc1c9",
+      "size": 4476
+    },
+    {
       "path": "/assets/coachdetail-dzjxykd5.js",
       "sha": "f45f127cdcd51da60605f7420ec017418c5fc391",
       "size": 4476
@@ -839,6 +909,11 @@
       "path": "/assets/data-bmkge1jk.js",
       "sha": "6f76d6811eccab843e7a76b58aee3228be1aa5c8",
       "size": 17742
+    },
+    {
+      "path": "/assets/data-c0v8ywxl.js",
+      "sha": "aeae05c85ce2851c90789d8d76e418ac79778fac",
+      "size": 17769
     },
     {
       "path": "/assets/data-cgw1ygoz.js",
@@ -976,6 +1051,11 @@
       "size": 4660
     },
     {
+      "path": "/assets/drilldashboard-dz7ainw6.js",
+      "sha": "602a02458f7e78ffb5cba6c12b047e629e1391ff",
+      "size": 4665
+    },
+    {
       "path": "/assets/drilldashboard-papyqety.js",
       "sha": "07dc6d07067da1194dd088c0e74a82ec51806753",
       "size": 4652
@@ -1036,6 +1116,11 @@
       "size": 5690
     },
     {
+      "path": "/assets/drilldetail-cxbqfrbs.js",
+      "sha": "2983be5766e584399aa6855001ea9acaafe33adf",
+      "size": 5756
+    },
+    {
       "path": "/assets/drilldetail-dn3bhi-_.js",
       "sha": "e633174596ef31ec8ec63ae47bf2c35c0cbc3caa",
       "size": 5756
@@ -1054,6 +1139,11 @@
       "path": "/assets/drillform-bjuwdcmw.js",
       "sha": "47bef9b84356ff577df26020162396a6952390b0",
       "size": 17545
+    },
+    {
+      "path": "/assets/drillform-bmvwebz6.js",
+      "sha": "11031b8596775b3a77bb4a26638677cb9ef9c10d",
+      "size": 17961
     },
     {
       "path": "/assets/drillform-bxwciubo.js",
@@ -1121,6 +1211,11 @@
       "size": 5016
     },
     {
+      "path": "/assets/drilllibrary-br_tonfs.js",
+      "sha": "76206a125d11ccd02ec0d7df3f1262d9856802c1",
+      "size": 6116
+    },
+    {
       "path": "/assets/drilllibrary-btvsgwft.js",
       "sha": "9d0e86d844b5b9c140a7fd6142052eb2d40f265e",
       "size": 4977
@@ -1179,6 +1274,11 @@
       "path": "/assets/drillproductionpanel-b7atdzr5.js",
       "sha": "b91d699d11124423cdfce8bc696c125ef1ce9524",
       "size": 7080
+    },
+    {
+      "path": "/assets/drillproductionpanel-be57ll34.js",
+      "sha": "ee841c674fb1e6727b22d4cffb947b9c8095524b",
+      "size": 8348
     },
     {
       "path": "/assets/drillproductionpanel-cxnbcmjt.js",
@@ -1261,6 +1361,11 @@
       "size": 33638
     },
     {
+      "path": "/assets/drillsharepage-n3li2iif.js",
+      "sha": "67d335c115c03caa2049b657d1254fc259e5f311",
+      "size": 33653
+    },
+    {
       "path": "/assets/drillv2-bqua48bu.js",
       "sha": "c41af70c0bae1a9f010246b91baf9d2be9bb87e2",
       "size": 4715
@@ -1304,6 +1409,11 @@
       "path": "/assets/feedpage-cm50ztlq.js",
       "sha": "266213d3fc559c2a8859e92a276f49c00bb591b4",
       "size": 26670
+    },
+    {
+      "path": "/assets/feedpage-dlxagaw0.js",
+      "sha": "868d33777b5ebe08fa1fd4b995652cf63a4f1d95",
+      "size": 26732
     },
     {
       "path": "/assets/feedpage-dqnycje5.js",
@@ -1401,6 +1511,11 @@
       "size": 180922
     },
     {
+      "path": "/assets/homepage-compnyqb.js",
+      "sha": "f66234b02491ac851f17e20a148b9eba2b9eea5d",
+      "size": 180922
+    },
+    {
       "path": "/assets/homepage-dazxvcw2.js",
       "sha": "abbe232713076463d5c2f3a7be2e2b967701241f",
       "size": 180922
@@ -1491,6 +1606,11 @@
       "size": 1357
     },
     {
+      "path": "/assets/identity-dx4mmojp.js",
+      "sha": "8c28fce8a7a6d7d09f88c10ad63cfbcad3c66fbe",
+      "size": 1347
+    },
+    {
       "path": "/assets/identity-dz1go1zs.js",
       "sha": "8e81ebbd67404206324490292a86ca687a0460ff",
       "size": 1347
@@ -1524,6 +1644,11 @@
       "path": "/assets/index-bzj64jmh.js",
       "sha": "956cb7cc9a481c92da7b759b415ae6afd983ec2a",
       "size": 1010241
+    },
+    {
+      "path": "/assets/index-c0ny0aki.js",
+      "sha": "df2c369539e7f2ccdb0e870c5fea53736b2fec85",
+      "size": 1013615
     },
     {
       "path": "/assets/index-cfr3vwdy.js",
@@ -1626,6 +1751,11 @@
       "size": 45189
     },
     {
+      "path": "/assets/insightspage-dwogctko.js",
+      "sha": "cb148c54c13cf5702b53e27f2f072f89e07de0a6",
+      "size": 48768
+    },
+    {
       "path": "/assets/insightspage-kgjtxnif.js",
       "sha": "97bd64317a86d86a0995925054a445df6401732c",
       "size": 16059
@@ -1701,6 +1831,11 @@
       "size": 25189
     },
     {
+      "path": "/assets/landingpage-dqpclvgy.js",
+      "sha": "8a4be63a300f266fdb14688557630454cebafd5e",
+      "size": 27799
+    },
+    {
       "path": "/assets/landingpage-dz1gdn3k.js",
       "sha": "e2d5e3218186b575a05bf06f86b29e364eb8afaf",
       "size": 27799
@@ -1723,6 +1858,11 @@
     {
       "path": "/assets/loaders-bdd9olmx.js",
       "sha": "922ffa2649c39468c4b63f3544618e4e4f3a47d8",
+      "size": 17775
+    },
+    {
+      "path": "/assets/loaders-c3n9dyki.js",
+      "sha": "66fcb19c9c52880d23dc42d9a7fe9e107fbe308f",
       "size": 17775
     },
     {
@@ -1811,6 +1951,11 @@
       "size": 14295
     },
     {
+      "path": "/assets/monitoraccounts-cbff9bzf.js",
+      "sha": "8d9fb360ab2c6101f872d1a2921065a03a26c4fb",
+      "size": 12844
+    },
+    {
       "path": "/assets/monitoraccounts-ctxtenkv.js",
       "sha": "9dac2905b63beca3cc625c0d47a3520c6d1a21fd",
       "size": 14010
@@ -1848,6 +1993,11 @@
     {
       "path": "/assets/mount-beylwlr4.js",
       "sha": "82e72594ca0f8be0475714114bc8139d2e96f74f",
+      "size": 851667
+    },
+    {
+      "path": "/assets/mount-br5-m4bz.js",
+      "sha": "8c481de7fb7848e0295152444e9ac6e2453f4cce",
       "size": 851667
     },
     {
@@ -1976,6 +2126,11 @@
       "size": 443665
     },
     {
+      "path": "/assets/movementdemo-lgw_xche.js",
+      "sha": "8a09d253d479c185e0aea41d474f603ce4f0d057",
+      "size": 443621
+    },
+    {
       "path": "/assets/movementdemo-nkhkh8d9.js",
       "sha": "3e9a2fd5f7b07d7014f1438af80cb9c207df563c",
       "size": 443621
@@ -1998,6 +2153,11 @@
     {
       "path": "/assets/notfoundpage-bfzagyie.js",
       "sha": "b75f7b44b4ce2bfc591c0db36e581a483956269b",
+      "size": 1306
+    },
+    {
+      "path": "/assets/notfoundpage-bgmreeto.js",
+      "sha": "8229f9173f74709c6b4db96ae54ec024bf6e51ad",
       "size": 1306
     },
     {
@@ -2081,6 +2241,11 @@
       "size": 1532
     },
     {
+      "path": "/assets/organization-data-burdttmq.js",
+      "sha": "8d344b7e02ed1fbf59e932da842b174b64fb7cde",
+      "size": 1532
+    },
+    {
       "path": "/assets/organization-data-by4n67de.js",
       "sha": "ea3e84bdf77a1f837fd409a5a2417cbe5138cf16",
       "size": 1532
@@ -2129,6 +2294,11 @@
       "path": "/assets/organization-data-z5j2s0z8.js",
       "sha": "3ed17177075c6977499314216afa345dd36a88d9",
       "size": 1532
+    },
+    {
+      "path": "/assets/organizationpage-bjmd6wka.js",
+      "sha": "8e8f59a6a60c2fc258659c456af262aa3cab131a",
+      "size": 17705
     },
     {
       "path": "/assets/organizationpage-bku2w9jk.js",
@@ -2246,6 +2416,11 @@
       "size": 34471
     },
     {
+      "path": "/assets/personalizedprograms-bum8a40z.js",
+      "sha": "acf60382c3c83e75c4aa8f1769818af42c2c21a5",
+      "size": 49616
+    },
+    {
       "path": "/assets/personalizedprograms-c52vs7md.js",
       "sha": "2f85d19e96e4158fee96b08503dae0f0de96465c",
       "size": 36183
@@ -2336,6 +2511,11 @@
       "size": 240
     },
     {
+      "path": "/assets/plannerredirect-dxuavltu.js",
+      "sha": "bde24cc893e80d834014095e8f0217dc994d13a4",
+      "size": 196
+    },
+    {
       "path": "/assets/plannerredirect-dxwf-_qv.js",
       "sha": "f61fb3842f3097c86aeeff2942fba9df33ddfffe",
       "size": 196
@@ -2359,6 +2539,11 @@
       "path": "/assets/planv3-nohkhj0d.js",
       "sha": "b4b7facde0fe0341add56287f8098e9a89c305c5",
       "size": 6507
+    },
+    {
+      "path": "/assets/playerdetail-b6qhcvc0.js",
+      "sha": "c5bcecede1ad6d1c2d4b98b5e098f50e03c3a69d",
+      "size": 17771
     },
     {
       "path": "/assets/playerdetail-bglogg7i.js",
@@ -2501,6 +2686,11 @@
       "size": 5793
     },
     {
+      "path": "/assets/poseplayback-tcain2mp.js",
+      "sha": "f969ccf6ecd3d4b2c7dcbe445f1fe182a325c636",
+      "size": 5793
+    },
+    {
       "path": "/assets/privacypage-b6rvw5uw.js",
       "sha": "5c988cf75696db74adc6600e7fcc1a454e14ea88",
       "size": 9229
@@ -2566,6 +2756,11 @@
       "size": 20550
     },
     {
+      "path": "/assets/privacypage-dhag0dlf.js",
+      "sha": "46140c8edbad8613d096a6f30640155d566fe852",
+      "size": 20550
+    },
+    {
       "path": "/assets/privacypage-dscoihqb.js",
       "sha": "aaf85c7caa1d6dbf0b3e4488b041d06280591e06",
       "size": 8588
@@ -2623,6 +2818,11 @@
     {
       "path": "/assets/programspage-dcdgpnmu.js",
       "sha": "61353374ba670c1cb118f63954c6a20e837bbc92",
+      "size": 1144
+    },
+    {
+      "path": "/assets/programspage-du6hmeg6.js",
+      "sha": "c4d21ca2c23bf3de8a534f428f535be379a7da7e",
       "size": 1144
     },
     {
@@ -2721,6 +2921,11 @@
       "size": 36208
     },
     {
+      "path": "/assets/reptools-u7gcddqr.js",
+      "sha": "36df59ebe00d0a12bd5a48b72f7d0c6a740df5f8",
+      "size": 36208
+    },
+    {
       "path": "/assets/reptoolsdata-bintbvlu.js",
       "sha": "084b94601249bdcbebdd6bc41c36c501ab964885",
       "size": 18087
@@ -2766,6 +2971,11 @@
       "size": 18087
     },
     {
+      "path": "/assets/reptoolsdata-duqg-khz.js",
+      "sha": "35f374a0b5cf5c13102d04f53e2d5f205cc3c5dc",
+      "size": 18087
+    },
+    {
       "path": "/assets/reptoolsdata-kyof0ipt.js",
       "sha": "22213369fb5d0e136323866ea260a2a685bf4278",
       "size": 18087
@@ -2793,6 +3003,11 @@
     {
       "path": "/assets/results-balrujsl.js",
       "sha": "7e3ce511448c79c3524e3bc4d87b88f24084035b",
+      "size": 913
+    },
+    {
+      "path": "/assets/results-bbza8hv7.js",
+      "sha": "9676c771a9810e55a3cf65b27fba785f62aa41d7",
       "size": 913
     },
     {
@@ -2886,6 +3101,11 @@
       "size": 12489
     },
     {
+      "path": "/assets/rosterpage-cxpvmvfa.js",
+      "sha": "df1724029a6c778f7e936014dd1bd887a1b47595",
+      "size": 12409
+    },
+    {
       "path": "/assets/rosterpage-d6agcmxd.js",
       "sha": "f3078e965604d1c1095fb2e0e602badcf6bf9f86",
       "size": 12404
@@ -2933,6 +3153,11 @@
     {
       "path": "/assets/signupstatus-dr1kwsys.js",
       "sha": "d9796350920a26038d2e156c58d4a9dc9f102a1b",
+      "size": 4874
+    },
+    {
+      "path": "/assets/signupstatus-yiqsgo3h.js",
+      "sha": "a47c325ef5384cfe862e69e01f5271d290472933",
       "size": 4874
     },
     {
@@ -2986,6 +3211,11 @@
       "size": 4700
     },
     {
+      "path": "/assets/staffinvitepage-dle7qnq8.js",
+      "sha": "6965ba5b2e6b4686c1b2cc9bfd1d1a71e2c27584",
+      "size": 4625
+    },
+    {
       "path": "/assets/staffinvitepage-dxfmwoqp.js",
       "sha": "78956e6ec98470a52b9c5f5f7d116a717a4d07de",
       "size": 4625
@@ -3008,6 +3238,11 @@
     {
       "path": "/assets/supportpage-bdnqfdxs.js",
       "sha": "66990be0a2cbc5fc0640252a58975fb4ef5047f4",
+      "size": 6992
+    },
+    {
+      "path": "/assets/supportpage-ccr0f5o_.js",
+      "sha": "013fef176e7b2c6e7f5c40e124c8d92f3a98d82c",
       "size": 6992
     },
     {
@@ -3049,6 +3284,11 @@
       "path": "/assets/techniquedemo-c-pv0cfz.js",
       "sha": "b2e805bb0888b263392925289443b7655848fd2b",
       "size": 55593
+    },
+    {
+      "path": "/assets/techniquedemo-cct5y2nj.js",
+      "sha": "d37bac917d915cb2862cb17c82afc28df62176bb",
+      "size": 55598
     },
     {
       "path": "/assets/techniquedemo-cg2llajb.js",
@@ -3106,9 +3346,19 @@
       "size": 969
     },
     {
+      "path": "/assets/trainingloadinstructions-by43tgfu.js",
+      "sha": "e57f08b5ee50a1199b297ec08b113393701248dd",
+      "size": 329
+    },
+    {
       "path": "/assets/trainingloadinstructions-rayqxr_z.js",
       "sha": "00234427e5fd4ba5be1a43142f760833b0038715",
       "size": 329
+    },
+    {
+      "path": "/assets/trainingreadinesspanel-beygwh31.js",
+      "sha": "3934cd946562f3addcb2ea2ba0f94cee695ae5d3",
+      "size": 7852
     },
     {
       "path": "/assets/trainingreadinesspanel-bkywh1pj.js",
@@ -3168,6 +3418,11 @@
     {
       "path": "/assets/use-body-background-crimudal.js",
       "sha": "b50e923bd95b9b8e86c1260c3efc6f037cd954f4",
+      "size": 234
+    },
+    {
+      "path": "/assets/use-body-background-cyr8u2rb.js",
+      "sha": "d2c7bc2b5c936f3d6f42995b7dbcf98d8d3d907a",
       "size": 234
     },
     {
@@ -3231,6 +3486,11 @@
       "size": 365
     },
     {
+      "path": "/assets/use-theme-color-bvdwycol.js",
+      "sha": "9343921e958ed2978cabc1f51acd2274040e2012",
+      "size": 365
+    },
+    {
       "path": "/assets/use-theme-color-c3onclpb.js",
       "sha": "2541f506499db4792c5afe0a665469120a22ddff",
       "size": 365
@@ -3278,6 +3538,11 @@
     {
       "path": "/assets/useaccountload-c0fy6o_c.js",
       "sha": "71d1af8d4d593a8d3c580a01604d9b7298fc2852",
+      "size": 658
+    },
+    {
+      "path": "/assets/useaccountload-c7ipjy1l.js",
+      "sha": "7b6566e15b7304269bc24b7e82fcb02a3afeffec",
       "size": 658
     },
     {
@@ -3341,6 +3606,11 @@
       "size": 2470
     },
     {
+      "path": "/assets/wholebodytraining-bctbni0k.js",
+      "sha": "d689ed4449495bfa44afc2df33f4b118d4f73f2d",
+      "size": 2470
+    },
+    {
       "path": "/assets/wholebodytraining-c5zdebt0.js",
       "sha": "53008dc5cfb6aab5dcbc27938b58f271f1462c08",
       "size": 2470
@@ -3364,6 +3634,11 @@
       "path": "/assets/workoutdemo-bt49u0yr.css",
       "sha": "9b29b66504c4463f1fa6fbb68a5e2f2e27cace4b",
       "size": 1923
+    },
+    {
+      "path": "/assets/workoutdemo-bva71jj9.js",
+      "sha": "33c3ea5fdeea1b9a630957ca92fe92a649036bdb",
+      "size": 47770
     },
     {
       "path": "/assets/workoutdemo-c8bhrlj0.js",
@@ -3431,6 +3706,11 @@
       "size": 40061
     },
     {
+      "path": "/assets/workouteditor-b5gcsvwt.js",
+      "sha": "e95ea1f90c89d67ce2a6becf12632d180d721404",
+      "size": 38950
+    },
+    {
       "path": "/assets/workouteditor-bdayxewn.js",
       "sha": "b440b121f5b27f84f6a989b83ca15aa0c62e6018",
       "size": 40056
@@ -3481,9 +3761,24 @@
       "size": 40125
     },
     {
+      "path": "/athlete-benchmarks 3.js",
+      "sha": "fdeb9a99bec54840cf904633e86a6ba0c01d72b2",
+      "size": 2611
+    },
+    {
       "path": "/athlete-benchmarks.js",
       "sha": "fdeb9a99bec54840cf904633e86a6ba0c01d72b2",
       "size": 2611
+    },
+    {
+      "path": "/athlete-drill-view 3.css",
+      "sha": "e85ee98379c288bf4528f63133f6d6fc8dd433e8",
+      "size": 17864
+    },
+    {
+      "path": "/athlete-drill-view 3.js",
+      "sha": "ee4ae74eec3e79c3e8247c0934ed37dfc7e1d554",
+      "size": 60400
     },
     {
       "path": "/athlete-drill-view.css",
@@ -3496,14 +3791,34 @@
       "size": 60400
     },
     {
+      "path": "/athlete-mobile-pages 3.js",
+      "sha": "5feb093e0560a4f51e64a2c8a203088b13769647",
+      "size": 53379
+    },
+    {
       "path": "/athlete-mobile-pages.js",
       "sha": "5feb093e0560a4f51e64a2c8a203088b13769647",
       "size": 53379
     },
     {
+      "path": "/athlete-portal 3.js",
+      "sha": "0f405d496ecf7f716ea529ce6520068fa0a580c7",
+      "size": 33130
+    },
+    {
       "path": "/athlete-portal.js",
       "sha": "0f405d496ecf7f716ea529ce6520068fa0a580c7",
       "size": 33130
+    },
+    {
+      "path": "/athlete-stats-view 3.css",
+      "sha": "58121b65f71b5edfd5d63f76a3a3a3f0824e68c9",
+      "size": 12117
+    },
+    {
+      "path": "/athlete-stats-view 3.js",
+      "sha": "2c21df7c6ca3dce2905d349e62bdee7e539df6f3",
+      "size": 20759
     },
     {
       "path": "/athlete-stats-view.css",
@@ -3516,9 +3831,19 @@
       "size": 20759
     },
     {
+      "path": "/backfill-session-summaries 3.html",
+      "sha": "152247adec12c59735e02c1dd0813d5a1bc03098",
+      "size": 31504
+    },
+    {
       "path": "/backfill-session-summaries.html",
       "sha": "152247adec12c59735e02c1dd0813d5a1bc03098",
       "size": 31504
+    },
+    {
+      "path": "/backkickview 2.html",
+      "sha": "d8e6bba8c55538462cac7ee59197e390cd4528dd",
+      "size": 124769
     },
     {
       "path": "/backkickview.html",
@@ -3526,9 +3851,19 @@
       "size": 124769
     },
     {
+      "path": "/banner-6x3 3.html",
+      "sha": "46340bad8c824c6dc25b142abd36ad1ed44776cb",
+      "size": 11419
+    },
+    {
       "path": "/banner-6x3.html",
       "sha": "46340bad8c824c6dc25b142abd36ad1ed44776cb",
       "size": 11419
+    },
+    {
+      "path": "/bookperformancetest 3.html",
+      "sha": "c1a74047a07c95b869c9b250784aca8d12c8c162",
+      "size": 31406
     },
     {
       "path": "/bookperformancetest.html",
@@ -3536,14 +3871,29 @@
       "size": 31406
     },
     {
+      "path": "/coach-roster 3.js",
+      "sha": "63b68a032750b3aa05c0ab4278b24b8c2cab6ecf",
+      "size": 9781
+    },
+    {
       "path": "/coach-roster.js",
       "sha": "63b68a032750b3aa05c0ab4278b24b8c2cab6ecf",
       "size": 9781
     },
     {
+      "path": "/convention-qr 3.html",
+      "sha": "ff0120870219f5af9a08f1bbabd6f8d0084d3813",
+      "size": 14873
+    },
+    {
       "path": "/convention-qr.html",
       "sha": "ff0120870219f5af9a08f1bbabd6f8d0084d3813",
       "size": 14873
+    },
+    {
+      "path": "/drillcreation 2.html",
+      "sha": "1aea46bb035974a1adf4a90bb8c789126d656631",
+      "size": 36092
     },
     {
       "path": "/drillcreation.html",
@@ -3552,10 +3902,20 @@
       "localPath": "drillcreation.html"
     },
     {
+      "path": "/drilllist 2.html",
+      "sha": "0d383953675964f45da5928126ebb8b1423ab9c1",
+      "size": 25780
+    },
+    {
       "path": "/drilllist.html",
       "sha": "0d383953675964f45da5928126ebb8b1423ab9c1",
       "size": 25780,
       "localPath": "drillList.html"
+    },
+    {
+      "path": "/edge-session-posetek-carousel 2.html",
+      "sha": "c7cc6b7f69505cd0c1daa7016ac15f4b6223b782",
+      "size": 45006
     },
     {
       "path": "/edge-session-posetek-carousel.html",
@@ -3564,14 +3924,29 @@
       "localPath": "edge-session-posetek-carousel.html"
     },
     {
+      "path": "/failuredashboard 2.html",
+      "sha": "8e755b41f281c90dd79cd1ba7e58b2e411ed800d",
+      "size": 35935
+    },
+    {
       "path": "/failuredashboard.html",
       "sha": "8e755b41f281c90dd79cd1ba7e58b2e411ed800d",
       "size": 35935
     },
     {
+      "path": "/favicon 2.svg",
+      "sha": "3f5bb8f3a6a05b7ca68a62581d2dd5bc88812caf",
+      "size": 9522
+    },
+    {
       "path": "/favicon.svg",
       "sha": "3f5bb8f3a6a05b7ca68a62581d2dd5bc88812caf",
       "size": 9522
+    },
+    {
+      "path": "/feedbackform 2.html",
+      "sha": "9a18fe4c02b022e8742e4183e0ef1d13cd88a982",
+      "size": 57595
     },
     {
       "path": "/feedbackform.html",
@@ -3580,9 +3955,19 @@
       "localPath": "feedbackForm.html"
     },
     {
+      "path": "/firebase-identity 2.js",
+      "sha": "06e087a1e8a0a0c76cba0ad9b929885dc462d583",
+      "size": 2151
+    },
+    {
       "path": "/firebase-identity.js",
       "sha": "06e087a1e8a0a0c76cba0ad9b929885dc462d583",
       "size": 2151
+    },
+    {
+      "path": "/freerecordpage 2.html",
+      "sha": "9cdb9ed1e5ec46aa9be20d4ca6c80a973e71169c",
+      "size": 152703
     },
     {
       "path": "/freerecordpage.html",
@@ -3590,10 +3975,25 @@
       "size": 152703
     },
     {
+      "path": "/fusionclinic 2.html",
+      "sha": "2aedfe61a47e8af14421cc2d53f915cf0492b66e",
+      "size": 93225
+    },
+    {
       "path": "/fusionclinic.html",
       "sha": "2aedfe61a47e8af14421cc2d53f915cf0492b66e",
       "size": 93225,
       "localPath": "fusionclinic.html"
+    },
+    {
+      "path": "/hypothesis_athleticismsubscription 2.html",
+      "sha": "e43dcd1c1abb62b28f0802c3829917f01ba74b04",
+      "size": 71244
+    },
+    {
+      "path": "/hypothesis_athleticismsubscription_signup 2.html",
+      "sha": "0b44c62d0dcdc69bef9f6a5b786b357a9dbcb993",
+      "size": 37734
     },
     {
       "path": "/hypothesis_athleticismsubscription_signup.html",
@@ -3608,10 +4008,25 @@
       "localPath": "hypothesis_athleticismSubscription.html"
     },
     {
+      "path": "/hypothesis_kickinganalysis 2.html",
+      "sha": "1b923290996ddb847c56986787a060c4eda7db0e",
+      "size": 72448
+    },
+    {
       "path": "/hypothesis_kickinganalysis.html",
       "sha": "1b923290996ddb847c56986787a060c4eda7db0e",
       "size": 72448,
       "localPath": "hypothesis_kickingAnalysis.html"
+    },
+    {
+      "path": "/hypothesis_kickinganalysissubscription 2.html",
+      "sha": "6ae74347e456767f66517af41f6af228e16b2d8c",
+      "size": 78787
+    },
+    {
+      "path": "/hypothesis_kickinganalysissubscription_signup 2.html",
+      "sha": "ad6d55bf73efa5cae9471595c06337f165710496",
+      "size": 37777
     },
     {
       "path": "/hypothesis_kickinganalysissubscription_signup.html",
@@ -3626,9 +4041,19 @@
       "localPath": "hypothesis_kickingAnalysisSubscription.html"
     },
     {
+      "path": "/hypothesis_kickingcoach 2.html",
+      "sha": "81b9e32908950da5c37f58a8383b2014eb71ae3e",
+      "size": 60786
+    },
+    {
       "path": "/hypothesis_kickingcoach.html",
       "sha": "81b9e32908950da5c37f58a8383b2014eb71ae3e",
       "size": 60786
+    },
+    {
+      "path": "/hypothesis_performancetesting 2.html",
+      "sha": "1aac2fd1f47fb78846ec57d38d4a848752611fca",
+      "size": 63562
     },
     {
       "path": "/hypothesis_performancetesting.html",
@@ -3637,9 +4062,19 @@
       "localPath": "hypothesis_performanceTesting.html"
     },
     {
+      "path": "/hypothesis_quantificationtracking 2.html",
+      "sha": "56a0e5c729d9efc74214ac1f483c1325660c56ff",
+      "size": 58894
+    },
+    {
       "path": "/hypothesis_quantificationtracking.html",
       "sha": "56a0e5c729d9efc74214ac1f483c1325660c56ff",
       "size": 58894
+    },
+    {
+      "path": "/hypothesis_trainingsession 2.html",
+      "sha": "9446b82d34e3c7b9972e0347060a6c53b0dcb750",
+      "size": 77481
     },
     {
       "path": "/hypothesis_trainingsession.html",
@@ -3648,10 +4083,20 @@
       "localPath": "hypothesis_trainingSession.html"
     },
     {
+      "path": "/hypothesis_trainingsessionkick 2.html",
+      "sha": "50a45980eb78010cf3aaa7acd710262771917aec",
+      "size": 87042
+    },
+    {
       "path": "/hypothesis_trainingsessionkick.html",
       "sha": "50a45980eb78010cf3aaa7acd710262771917aec",
       "size": 87042,
       "localPath": "hypothesis_trainingSessionKick.html"
+    },
+    {
+      "path": "/icons 2.svg",
+      "sha": "338549eae25bfaaf4b52a004811c913c8b1915a2",
+      "size": 5055
     },
     {
       "path": "/icons.svg",
@@ -3844,9 +4289,24 @@
       "size": 26184
     },
     {
+      "path": "/index 2.html",
+      "sha": "e4d2dfc372f5554ba31be85fefffac6f1b467847",
+      "size": 2530
+    },
+    {
+      "path": "/kickai-theme 2.css",
+      "sha": "79a6f5c9fe5224d083bc5526d5b851593fa670d9",
+      "size": 21512
+    },
+    {
       "path": "/kickai-theme.css",
       "sha": "79a6f5c9fe5224d083bc5526d5b851593fa670d9",
       "size": 21512
+    },
+    {
+      "path": "/kickinganalysis_upload 2.html",
+      "sha": "ae521313b4359782d1ddcc5b5ee238ad1b156993",
+      "size": 60536
     },
     {
       "path": "/kickinganalysis_upload.html",
@@ -3855,10 +4315,25 @@
       "localPath": "kickingAnalysis_upload.html"
     },
     {
+      "path": "/kickingview 2.html",
+      "sha": "bfebdbb99754fc39ccabc94e37433f87fa38ae32",
+      "size": 205982
+    },
+    {
       "path": "/kickingview.html",
       "sha": "bfebdbb99754fc39ccabc94e37433f87fa38ae32",
       "size": 205982,
       "localPath": "kickingview.html"
+    },
+    {
+      "path": "/landing-pose-demo 2.js",
+      "sha": "a0eeb020c9d8a4b01f8a3b1936a11235109be7f1",
+      "size": 15957
+    },
+    {
+      "path": "/landing-pose-demo-data 2.js",
+      "sha": "3ae35cdc0ae73294b52c858b9044278d4adb0385",
+      "size": 218512
     },
     {
       "path": "/landing-pose-demo-data.js",
@@ -3871,6 +4346,11 @@
       "size": 15957
     },
     {
+      "path": "/leaderboard 2.html",
+      "sha": "14fa1af63513188c9534df6382d70be128e1e075",
+      "size": 66391
+    },
+    {
       "path": "/leaderboard.html",
       "sha": "14fa1af63513188c9534df6382d70be128e1e075",
       "size": 66391
@@ -3881,9 +4361,19 @@
       "size": 1402
     },
     {
+      "path": "/pose-portal 2.css",
+      "sha": "1666b789422e01ba5ceffe0112023ad778d77605",
+      "size": 31442
+    },
+    {
       "path": "/pose-portal.css",
       "sha": "1666b789422e01ba5ceffe0112023ad778d77605",
       "size": 31442
+    },
+    {
+      "path": "/premiumcheckout 2.js",
+      "sha": "ebbc328856fa71c9bd846a26f7b86dd3b946c331",
+      "size": 1772
     },
     {
       "path": "/premiumcheckout.js",
@@ -3891,9 +4381,19 @@
       "size": 1772
     },
     {
+      "path": "/premiuminfo 2.html",
+      "sha": "534c93f3de82e1c3f1fef42ed2ec9c928eac0454",
+      "size": 17924
+    },
+    {
       "path": "/premiuminfo.html",
       "sha": "534c93f3de82e1c3f1fef42ed2ec9c928eac0454",
       "size": 17924
+    },
+    {
+      "path": "/questaddplayer 2.html",
+      "sha": "3480f9b64e6e220319668a07c9599e701a0576e8",
+      "size": 29842
     },
     {
       "path": "/questaddplayer.html",
@@ -3902,10 +4402,20 @@
       "localPath": "questAddPlayer.html"
     },
     {
+      "path": "/questleaderboardresultspage 2.html",
+      "sha": "dc343adb10f460f2165f8e7bd35c43c544e1dcc1",
+      "size": 61127
+    },
+    {
       "path": "/questleaderboardresultspage.html",
       "sha": "dc343adb10f460f2165f8e7bd35c43c544e1dcc1",
       "size": 61127,
       "localPath": "questLeaderboardResultsPage.html"
+    },
+    {
+      "path": "/questsearchplayer 2.html",
+      "sha": "245a607b1a2e8569c4a6ed1be13b2487e133570e",
+      "size": 34950
     },
     {
       "path": "/questsearchplayer.html",
@@ -3914,15 +4424,30 @@
       "localPath": "questSearchPlayer.html"
     },
     {
+      "path": "/questviewbiomechanics 2.html",
+      "sha": "575004d5b41f1b623b23f65554c60be52b8af2e0",
+      "size": 338338
+    },
+    {
       "path": "/questviewbiomechanics.html",
       "sha": "575004d5b41f1b623b23f65554c60be52b8af2e0",
       "size": 338338,
       "localPath": "questViewBiomechanics.html"
     },
     {
+      "path": "/sessions 2.html",
+      "sha": "adb56184dbe8862442b5cda22dc4283abfee8002",
+      "size": 63867
+    },
+    {
       "path": "/sessions.html",
       "sha": "adb56184dbe8862442b5cda22dc4283abfee8002",
       "size": 63867
+    },
+    {
+      "path": "/sessionsexpanded 2.html",
+      "sha": "85f7d4cc98fa55911cc22e94736eae316774dfe5",
+      "size": 34023
     },
     {
       "path": "/sessionsexpanded.html",
@@ -3931,10 +4456,20 @@
       "localPath": "sessionsexpanded.html"
     },
     {
+      "path": "/sidekickview 2.html",
+      "sha": "cc5cacea9ecd01dfdc1e90bb3846c54862b68843",
+      "size": 332219
+    },
+    {
       "path": "/sidekickview.html",
       "sha": "cc5cacea9ecd01dfdc1e90bb3846c54862b68843",
       "size": 332219,
       "localPath": "SideKickView.html"
+    },
+    {
+      "path": "/signupform 2.html",
+      "sha": "454437fd1d56097abe0e70daa1cc28657562a610",
+      "size": 22608
     },
     {
       "path": "/signupform.html",
@@ -3943,10 +4478,20 @@
       "localPath": "signupForm.html"
     },
     {
+      "path": "/sprintpage 2.html",
+      "sha": "8a1754f25e46556dcd52548b632f118123fa0922",
+      "size": 198388
+    },
+    {
       "path": "/sprintpage.html",
       "sha": "8a1754f25e46556dcd52548b632f118123fa0922",
       "size": 198388,
       "localPath": "sprintPage.html"
+    },
+    {
+      "path": "/staticjumppage 2.html",
+      "sha": "4644fb45cda161915a3ba428a619dd904161c5f5",
+      "size": 315350
     },
     {
       "path": "/staticjumppage.html",
@@ -3955,15 +4500,30 @@
       "localPath": "StaticJumpPage.html"
     },
     {
+      "path": "/subscriptionwaitlist 2.html",
+      "sha": "c8961f951ecf8bcd7390f281c9a062a58944e194",
+      "size": 153773
+    },
+    {
       "path": "/subscriptionwaitlist.html",
       "sha": "c8961f951ecf8bcd7390f281c9a062a58944e194",
       "size": 153773,
       "localPath": "subscriptionWaitlist.html"
     },
     {
+      "path": "/user-badge 2.js",
+      "sha": "6a6856802c5be746acffa0d8a0d33e0203c6c1c1",
+      "size": 5900
+    },
+    {
       "path": "/user-badge.js",
       "sha": "6a6856802c5be746acffa0d8a0d33e0203c6c1c1",
       "size": 5900
+    },
+    {
+      "path": "/videopage 2.html",
+      "sha": "ec290b4fb6208f9b3c9ab62ec4c1261dbdbc10a0",
+      "size": 66248
     },
     {
       "path": "/videopage.html",
