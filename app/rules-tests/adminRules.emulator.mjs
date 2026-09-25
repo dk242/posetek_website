@@ -234,10 +234,10 @@ await check("an admin cannot write a workout log", () =>
   })));
 
 // Staff test recording (decided 2026-09-16, `adminRecorder` in the canonical
-// rules): a verified admin may record a rep into an EXISTING athlete. The live
-// ruleset before the cutover still denies this and the website revises reps
-// through the adminReviseRep callable, so the canonical rules are wider here;
-// confirm at the cutover publish (mobile GATEWAY_CONSOLIDATION plan §4.8).
+// rules): a verified admin may write reps directly into an EXISTING athlete.
+// Confirmed by Nolan 2026-09-25 as the policy everywhere: admins write reps
+// directly. The live ruleset before the cutover still denies it, which is why the
+// website's rep tools go through the adminReviseRep callable; that path stays.
 await check("an admin records a rep into an existing athlete", () =>
   assertSucceeds(admin.doc(`players/${PLAYER_ID}/reps/r1`).set({ repType: "sprint" })));
 
