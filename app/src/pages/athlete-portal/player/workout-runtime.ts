@@ -1,10 +1,10 @@
-import { reconcileClock, validClock } from './clock';
+import { elapsed, reconcileClock, validClock } from './clock';
 import type { Clock } from './clock';
 import type { Row } from './execution';
 
-export type RuntimeOwner = { uid: string; playerId: string; logId: string; planId: string; workoutRevision: number };
+export type RuntimeOwner = { uid: string; playerId: string; logId: string; planId: string; workoutRevision: number; kind?: 'personal' };
 export type WorkoutRuntime = RuntimeOwner & { schemaVersion: 1; blockId: string; clock: Clock; timerStartedHere: boolean; tabId?: string };
-export function runtimeKey(owner: RuntimeOwner) { return `posetek:workout-runtime:${[owner.uid, owner.playerId, owner.logId].map(encodeURIComponent).join(':')}`; }
+export function runtimeKey(owner: RuntimeOwner) { return `posetek:${owner.kind === 'personal' ? 'personal-' : ''}workout-runtime:${[owner.uid, owner.playerId, owner.logId].map(encodeURIComponent).join(':')}`; }
 export function resumeIndex(blocks: Row[], log: Row | null): number {
   const next = blocks.findIndex(b => !log?.blocks?.some((r: Row) => r.blockId === b.blockId && ['done', 'skipped'].includes(r.status)));
   return next < 0 ? Math.max(0, blocks.length - 1) : next;
@@ -16,7 +16,7 @@ export function restoreRuntime(value: unknown, owner: RuntimeOwner, blocks: Row[
   if (!value || typeof value !== 'object' || log?.endedAt) return null;
   const saved = value as WorkoutRuntime;
   if (saved.schemaVersion !== 1 || !validClock(saved.clock) || !owner.uid || !owner.playerId || !owner.logId || !owner.planId || !Number.isInteger(owner.workoutRevision) || owner.workoutRevision < 1 ||
-      !(['uid', 'playerId', 'logId', 'planId', 'workoutRevision'] as const).every(k => saved[k] === owner[k])) return null;
+      !(['uid', 'playerId', 'logId', 'planId', 'workoutRevision', 'kind'] as const).every(k => saved[k] === owner[k])) return null;
   const index = blocks.findIndex(b => b.blockId === saved.blockId);
   return index < 0 ? null : { clock: reconcileClock(saved.clock, now), index, timerStartedHere: saved.timerStartedHere === true };
 }
@@ -27,6 +27,12 @@ export function canMutateWorkout(clock: Clock, saving: boolean, ended: boolean, 
 export function shouldYieldRuntime(value: unknown, tabId: string, owner: RuntimeOwner, blocks: Row[], now: number): boolean {
   if (value === null) return true; // Another tab finished and removed its runtime.
   return !!restoreRuntime(value, owner, blocks, null, now) && (value as WorkoutRuntime).tabId !== tabId;
+}
+
+export function applyConfirmedElapsed(clock: Clock, confirmed: unknown, now: number): Clock {
+  if (typeof confirmed !== 'number' || !Number.isFinite(confirmed) || confirmed < 0) return clock;
+  const missing = Math.max(0, confirmed - elapsed(clock, now));
+  return missing ? { ...clock, seconds: clock.seconds + missing } : clock;
 }
 
 export function watchWorkoutLifecycle(page: EventTarget, document: EventTarget, sync: () => void, leave: () => void) {

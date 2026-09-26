@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 vi.mock('../../../lib/firebase', () => ({ default: {}, auth: { currentUser: { uid: 'athlete-auth' } }, db: {}, cloud: {}, storage: {} }));
-import { canMutateWorkout, restoreRuntime, resumeIndex, runtimeKey, runtimeSnapshot, shouldYieldRuntime, watchWorkoutLifecycle } from './workout-runtime';
+import { applyConfirmedElapsed, canMutateWorkout, restoreRuntime, resumeIndex, runtimeKey, runtimeSnapshot, shouldYieldRuntime, watchWorkoutLifecycle } from './workout-runtime';
 import { elapsed, IDLE_MS, interactClock, newClock, pauseClock, reconcileClock, restSeconds, resumeClock, validClock } from './clock';
 import { createWorkoutWakeLock } from './use-workout-wake-lock';
 import type { ScreenLock, WakeLockState } from './use-workout-wake-lock';
@@ -69,6 +69,14 @@ describe('workout clock recovery', () => {
   });
   it('does not turn device-only timing into full coverage of a resumed session', () => {
     expect(restoreRuntime(runtimeSnapshot(owner, blocks, 0, newClock(1000)), owner, blocks, log(), 2000)?.timerStartedHere).toBe(false);
+  });
+  it('adds new active time to the confirmed personal baseline without double-adding after reload', () => {
+    const resumed = applyConfirmedElapsed(newClock(1000), 120, 1000);
+    expect(elapsed(resumed, 31000)).toBe(150);
+    const saved = runtimeSnapshot({ ...owner, kind: 'personal' }, blocks, 0, resumed, true);
+    const restored = restoreRuntime(saved, { ...owner, kind: 'personal' }, blocks, log(), 31000)!;
+    expect(elapsed(applyConfirmedElapsed(restored.clock, 150, 31000), 41000)).toBe(160);
+    expect(runtimeKey({ ...owner, kind: 'personal' })).not.toBe(runtimeKey(owner));
   });
   it('does not extend rest or subtract accumulated time after a backward clock change', () => {
     const c = { ...newClock(1000), seconds: 7, restUntil: 61000, restTotal: 60 };

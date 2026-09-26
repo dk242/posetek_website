@@ -9,7 +9,7 @@ import DrillMedia from './DrillMedia';
 import CoachChat from './CoachChat';
 import { newClock, elapsed, restSeconds, pauseClock, resumeClock, reconcileClock, interactClock, stopRest, validClock } from './clock';
 import type { Clock } from './clock';
-import { canMutateWorkout, restoreRuntime, resumeIndex, runtimeKey, runtimeSnapshot, shouldYieldRuntime, watchWorkoutLifecycle } from './workout-runtime';
+import { applyConfirmedElapsed, canMutateWorkout, restoreRuntime, resumeIndex, runtimeKey, runtimeSnapshot, shouldYieldRuntime, watchWorkoutLifecycle } from './workout-runtime';
 import TrainingLoadInstructions from '../../../components/TrainingLoadInstructions';
 import { useWorkoutWakeLock } from './use-workout-wake-lock';
 import './workout-experience.css';
@@ -19,20 +19,21 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
 }) {
   const log = store.logFor(workout.id);
   const [blocks] = useState<Row[]>(() => workout.blocks || []);
-  const [owner] = useState(() => ({ uid: auth.currentUser?.uid || 'preview', playerId, logId: String(workout.id), planId: String(workout.planId), workoutRevision: Number(workout.workoutRevision) }));
+  const [owner] = useState(() => ({ uid: auth.currentUser?.uid || 'preview', playerId, logId: String(workout.id), planId: String(workout.planId), workoutRevision: Number(workout.workoutRevision), ...(workout.source === 'personal' ? { kind: 'personal' as const } : {}) }));
   const [tabId] = useState(() => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`);
   const tabActive = useRef(true);
   const [anotherTab, setAnotherTab] = useState(false), [localRecovery, setLocalRecovery] = useState(true);
   const key = runtimeKey(owner), legacyKey = `posetek:workout-clock:${owner.uid}:${playerId}:${workout.id}`;
   const [initial] = useState(() => {
+    const recovered = (value: { clock: Clock; index: number; timerStartedHere: boolean }) => ({ ...value, clock: applyConfirmedElapsed(value.clock, workout.recoveredActiveSeconds, Date.now()), timerStartedHere: value.timerStartedHere || Number.isFinite(workout.recoveredActiveSeconds) });
     if (!preview) try {
       const raw = localStorage.getItem(key);
       const saved = restoreRuntime(JSON.parse(raw || 'null'), owner, blocks, log, Date.now());
-      if (saved) return saved;
-      const legacy = !raw && JSON.parse(localStorage.getItem(legacyKey) || 'null');
-      if (validClock(legacy)) return { clock: reconcileClock(legacy, Date.now()), index: resumeIndex(blocks, log), timerStartedHere: false };
+      if (saved) return recovered(saved);
+      const legacy = workout.source !== 'personal' && !raw && JSON.parse(localStorage.getItem(legacyKey) || 'null');
+      if (validClock(legacy)) return recovered({ clock: reconcileClock(legacy, Date.now()), index: resumeIndex(blocks, log), timerStartedHere: false });
     } catch { /* Corrupt or unavailable device storage cannot prevent server-log recovery. */ }
-    return { clock: newClock(Date.now()), index: resumeIndex(blocks, log), timerStartedHere: workout.timerStartedHere === true };
+    return recovered({ clock: newClock(Date.now()), index: resumeIndex(blocks, log), timerStartedHere: workout.timerStartedHere === true });
   });
   const [clock, updateClock] = useState<Clock>(initial.clock), clockRef = useRef(clock);
   const setClock = useCallback((change: Clock | ((old: Clock) => Clock)) => { const next = typeof change === 'function' ? change(clockRef.current) : change; clockRef.current = next; updateClock(next); }, []);
@@ -102,7 +103,7 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
     try {
       const next = Math.max(0, Math.min(target, count));
       const r = next ? { ...blockLogRow(block, next), estimatedMinutes: block.estimatedMinutes || 0 } : null;
-      await store.saveBlock(workout.id, block.blockId, r);
+      await store.saveBlock(workout.id, block.blockId, r, initial.timerStartedHere ? Math.floor(elapsed(clockRef.current, Date.now())) : undefined);
       const restSeconds = block.restScope === 'reps' ? Number(block.restBetweenSetsSeconds || 0) : Number(block.restSeconds || 0);
       setClock(c => next > done && next < target && restSeconds > 0 ? { ...c, restTotal: restSeconds, restUntil: c.runningSince !== null ? Date.now() + restSeconds * 1000 : null, frozenRest: c.runningSince === null ? restSeconds : null } : stopRest(c));
     } catch { /* store surfaces the retryable error */ }
@@ -110,7 +111,7 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
   const skipBlock = async (reason: string) => {
     if (!allowed()) return;
     try {
-      await store.saveBlock(workout.id, block.blockId, { ...skippedLogRow(block, done, reason), estimatedMinutes: block.estimatedMinutes || 0 });
+      await store.saveBlock(workout.id, block.blockId, { ...skippedLogRow(block, done, reason), estimatedMinutes: block.estimatedMinutes || 0 }, initial.timerStartedHere ? Math.floor(elapsed(clockRef.current, Date.now())) : undefined);
       setSkip(false); setClock(c => stopRest(c));
       if (reason === 'pain') { pause(); setPain(true); }
       else if (index + 1 < blocks.length) setIndex(index + 1); else { pause(); setSummary(true); }
@@ -139,9 +140,9 @@ export default function PlayerWorkout({ workout, store, playerId, preview, onExi
     {!summary && !painStopped && <details className="workout-screen-options"><summary>Screen and timer options</summary><label><input type="checkbox" checked={wakeLock.enabled} disabled={wakeLock.state === 'unsupported'} onChange={e => wakeLock.setEnabled(e.target.checked)} />Keep screen awake</label><p className="muted-copy" role="status">{wakeLock.state === 'unsupported' ? 'This browser does not support keeping the screen awake.' : wakeLock.state === 'active' ? 'Screen stays awake while this workout is open and running.' : wakeLock.state === 'unavailable' ? 'Your device could not keep the screen awake. You can continue training.' : wakeLock.enabled ? 'Screen stays awake when the workout is visible and running.' : 'Optional while training. You can turn it off at any time.'}</p>{wakeLock.state === 'unavailable' && wakeLock.enabled && <button onClick={wakeLock.retry}>Try again</button>}<p className="muted-copy">After unlocking, return here to see the updated timer. The website cannot show a live lock-screen timer. It pauses after 30 minutes without activity.</p></details>}
     {painStopped && !summary && <section className="portal-card"><h2>Stop here</h2><p>Tell a parent or coach about the pain and get it checked before training that area again.</p><button className="primary-cta" disabled={store.saving || anotherTab || !accountValid} onClick={() => void finish()}>End workout</button><button onClick={() => setSummary(true)}>Review what I completed</button></section>}
     {summary ? <>
-      <section className="portal-card"><p className="eyebrow">Session summary</p><h2>{endReasonFor(blocks, log) === 'completed' ? 'Nice work.' : 'Your work counts.'}</h2><p>{Math.floor(seconds / 60)} minutes on this timer{!initial.timerStartedHere ? ' · Earlier timing was not collected here' : ''}</p>
+      <section className="portal-card"><p className="eyebrow">{workout.source === 'personal' ? 'Personal session summary' : 'Session summary'}</p><h2>{endReasonFor(blocks, log) === 'completed' ? 'Nice work.' : 'Your work counts.'}</h2><p>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')} active on this timer{!initial.timerStartedHere ? ' · Earlier timing was not collected here' : ''}</p>
         {blocks.map(b => { const r = log?.blocks?.find((v: Row) => v.blockId === b.blockId); return <div className="player-history-row" key={b.blockId}><strong>{b.name}</strong><span>{r?.status === 'skipped' ? `Skipped · ${r.skipReason}` : `${r?.setsCompleted || 0}/${b.sets || 1} sets`}</span></div>; })}
-        <p>{domainExposures(blocks, log).map(e => `${domainLabel(e.domain)} +${e.count}`).join(' · ')}</p>
+        <p>{domainExposures(blocks, log).map(e => `${domainLabel(e.domain)}: ${e.count} ${e.count === 1 ? 'drill' : 'drills'} with completed work`).join(' · ')}</p>
       </section><button className="primary-cta" disabled={store.saving || !accountValid || anotherTab} onClick={() => void finish()}>Save and finish</button><button className="hub-secondary" disabled={store.saving || !accountValid || anotherTab || painStopped} onClick={() => { setSummary(false); setClock(c => resumeClock(c, Date.now())); }}>Keep training</button>
     </> : block && !painStopped && <>
       <nav className="player-block-strip" aria-label="Workout drills">{blocks.map((b, i) => <button key={b.blockId} disabled={!enabled} aria-label={`Drill ${i + 1}: ${b.name}`} aria-current={i === index ? 'step' : undefined} onClick={() => move(i)}>{i + 1}{log?.blocks?.find((r: Row) => r.blockId === b.blockId)?.status === 'done' ? ' ✓' : ''}</button>)}</nav>
