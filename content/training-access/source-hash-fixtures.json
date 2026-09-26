@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "sha256-canonical-utf8-v1",
+  "payloadFields": [
+    "coachComments",
+    "cues",
+    "drillId",
+    "equipment",
+    "execution",
+    "howTo",
+    "name",
+    "playersMax",
+    "playersMin",
+    "progression",
+    "regression",
+    "requiresPartner",
+    "safetyNote",
+    "schemaVersion",
+    "setup"
+  ],
+  "fixtures": [
+    {
+      "name": "BMA-501-before",
+      "drillId": "BMA-501",
+      "raw": {
+        "drillId": "BMA-501",
+        "schemaVersion": 2,
+        "name": "Standing on the ball",
+        "equipment": [],
+        "requiresPartner": false,
+        "playersMin": null,
+        "playersMax": null,
+        "setup": null,
+        "execution": null,
+        "safetyNote": null,
+        "howTo": {
+          "setup": "Step up two cones 6 feet apart from one another and pass the ball in between them from 15 yards out. Stand on the ball then proceed to one side then pull the ball back and repeat with the other side. ",
+          "steps": [
+            "Pass the ball in between the two cones",
+            "Receive then stand",
+            "Proceed to push to one side then pull the ball back and repeat"
+          ]
+        },
+        "coachComments": [],
+        "regression": null,
+        "progression": null,
+        "cues": null
+      },
+      "expectedSourceHash": "53c8dc618eba0631b80be47e00d7f5930a6405284a70e7a3100be4f65c20ef1b"
+    },
+    {
+      "name": "BMA-501-equipment-corrected",
+      "drillId": "BMA-501",
+      "raw": {
+        "drillId": "BMA-501",
+        "schemaVersion": 2,
+        "name": "Standing on the ball",
+        "equipment": [
+          "ball",
+          "cones"
+        ],
+        "requiresPartner": false,
+        "playersMin": null,
+        "playersMax": null,
+        "setup": null,
+        "execution": null,
+        "safetyNote": null,
+        "howTo": {
+          "setup": "Step up two cones 6 feet apart from one another and pass the ball in between them from 15 yards out. Stand on the ball then proceed to one side then pull the ball back and repeat with the other side. ",
+          "steps": [
+            "Pass the ball in between the two cones",
+            "Receive then stand",
+            "Proceed to push to one side then pull the ball back and repeat"
+          ]
+        },
+        "coachComments": [],
+        "regression": null,
+        "progression": null,
+        "cues": null
+      },
+      "expectedSourceHash": "ca5c33e46b118f6419c37c9b191b0cfeab180e4fa00d03c1fb0dc333e2ab2de9"
+    },
+    {
+      "name": "SHT-502-before",
+      "drillId": "SHT-502",
+      "raw": {
+        "drillId": "SHT-502",
+        "schemaVersion": 2,
+        "name": "Finishing far post outside the box angled",
+        "equipment": [],
+        "requiresPartner": false,
+        "playersMin": null,
+        "playersMax": null,
+        "setup": null,
+        "execution": null,
+        "safetyNote": null,
+        "howTo": {
+          "setup": "A cone to signal a defender, a goal, and ball ",
+          "steps": [
+            "Just outside of the 18 push the ball across",
+            "Just before the d finish into the far post",
+            "Both sides"
+          ]
+        },
+        "coachComments": [],
+        "regression": null,
+        "progression": null,
+        "cues": null
+      },
+      "expectedSourceHash": "c4fe05d021882d5190409846da56de831d5886f258b686d8ac21db69b199166e"
+    },
+    {
+      "name": "SHT-502-equipment-corrected",
+      "drillId": "SHT-502",
+      "raw": {
+        "drillId": "SHT-502",
+        "schemaVersion": 2,
+        "name": "Finishing far post outside the box angled",
+        "equipment": [
+          "ball",
+          "cones",
+          "goal"
+        ],
+        "requiresPartner": false,
+        "playersMin": null,
+        "playersMax": null,
+        "setup": null,
+        "execution": null,
+        "safetyNote": null,
+        "howTo": {
+          "setup": "A cone to signal a defender, a goal, and ball ",
+          "steps": [
+            "Just outside of the 18 push the ball across",
+            "Just before the d finish into the far post",
+            "Both sides"
+          ]
+        },
+        "coachComments": [],
+        "regression": null,
+        "progression": null,
+        "cues": null
+      },
+      "expectedSourceHash": "029a3e66f2ae78edbb31bd46527ee1cf4115e57415e113766d3b0b7e6969e2a7"
+    },
+    {
+      "name": "STR-008-before",
+      "drillId": "STR-008",
+      "raw": {
+        "drillId": "STR-008",
+        "schemaVersion": 2,
+        "name": "Short-lever Copenhagen hold",
+        "equipment": [
+          "bench",
+          "mat"
+        ],
+        "requiresPartner": true,
+        "playersMin": 1,
+        "playersMax": 2,
+        "setup": "Top knee supported; body aligned.",
+        "execution": "Hold side plank with top knee support, bottom leg relaxed/lifted by level.",
+        "safetyNote": "Stop for groin pain; progressive program, not one-off maximal test.",
+        "howTo": {
+          "setup": "Top knee supported; body aligned.",
+          "steps": [
+            "Hold side plank with top knee support, bottom leg relaxed/lifted by level."
+          ]
+        },
+        "coachComments": [
+          "Hips forward",
+          "ribs stacked",
+          "pain-free",
+          "You've got it when: Controlled holds both sides.",
+          "Safety: Stop for groin pain; progressive program, not one-off maximal test."
+        ],
+        "regression": "Side-lying adduction/shorter lever.",
+        "progression": "Long-lever only after progression.",
+        "cues": [
+          "Hips forward",
+          "ribs stacked",
+          "pain-free"
+        ]
+      },
+      "expectedSourceHash": "6279a5d1b79acdbc40d2d936da8aac7512b7a68d6591683a37b832de5f52c344"
+    },
+    {
+      "name": "PAS-001-before",
+      "drillId": "PAS-001",
+      "raw": {
+        "drillId": "PAS-001",
+        "schemaVersion": 1,
+        "name": "Wall pass rhythm",
+        "equipment": [
+          "ball",
+          "wall",
+          "markers"
+        ],
+        "requiresPartner": null,
+        "playersMin": 1,
+        "playersMax": 1,
+        "setup": "3-8 m from wall with target.",
+        "execution": "Pass and receive repeatedly; alternate feet/one- or two-touch by level.",
+        "safetyNote": "Safe rebound surface and clear area.",
+        "howTo": null,
+        "coachComments": null,
+        "regression": "Closer distance, trap then pass.",
+        "progression": "One-touch, scan cue, or moving feet.",
+        "cues": [
+          "Plant beside ball",
+          "firm ankle",
+          "first touch sets next pass"
+        ]
+      },
+      "expectedSourceHash": "587302a3ed4d7977cea0218f84095cf2da6b5df458cb9b1f7be4e600c0cd89f5"
+    },
+    {
+      "name": "unicode-and-missing-fields",
+      "drillId": "FIXTURE-001",
+      "raw": {
+        "name": "Passé — 空間",
+        "equipment": [],
+        "playersMin": 1,
+        "howTo": {
+          "setup": "6 feet = 1.8288 m",
+          "steps": [
+            "Control → return"
+          ]
+        }
+      },
+      "expectedSourceHash": "d733753818faa7390b21c043a70a1856976b235e7b5d4ad99c4d626bb4b23eac"
+    }
+  ]
+}

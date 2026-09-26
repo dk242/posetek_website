@@ -157,7 +157,7 @@ describe('personal workout review screens', () => {
     const source = { workout: addPersonalDrill(personalDraft(), drill), reference: { planId: 'assigned', workoutId: 'slot', revision: 3 } };
     const html = renderToStaticMarkup(<PersonalWorkoutHub store={store} playerId="player-doc" athlete={{ age: 15 }} config={config} source={source} preview onBack={() => {}} />);
     expect(html).toContain('Your assigned workout stays as prescribed.');
-    expect(html.match(/<button[^>]*>Send request<\/button>/)?.[0]).toContain('disabled');
+    expect(html.match(/<button[^>]*>Create my workout<\/button>/)?.[0]).toContain('disabled');
     expect(html).toContain('how much time you have');
   });
 });

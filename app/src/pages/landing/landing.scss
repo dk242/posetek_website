@@ -1933,4 +1933,17 @@
   &.modal-open {
     overflow: hidden;
   }
+
+  .account-entry-options { display: grid; gap: 10px; }
+  .account-entry-options .secondary-action { display: flex; flex-direction: column; align-items: start; gap: 5px; text-align: left; white-space: normal; min-height: 52px; padding: 14px 16px; text-decoration: none; }
+  .account-entry-options strong { font-size: 14px; }
+  .account-entry-options span { color: var(--auth-muted); font-size: 12px; font-weight: 400; }
+  .account-entry-legacy { margin-top: 18px; text-align: left; font-size: 13px; color: var(--auth-muted); }
+  .account-entry-legacy summary { min-height: 44px; padding: 12px 0; cursor: pointer; color: var(--auth-text); }
+  .account-entry-legacy p { margin: 8px 0 12px; line-height: 1.5; }
+  .activation-pending { display: flex; justify-content: center; align-items: center; min-height: 44px; margin-top: 16px; }
+  .account-modal-invite { margin-bottom: 20px; }
+  .account-signup-tabs .tab { min-height: 48px; }
+  .close-btn { min-width: 44px; min-height: 44px; }
+  :is(button, a, summary, input, select):focus-visible { outline: 2px solid var(--auth-accent, #b7f34a); outline-offset: 4px; }
 }

@@ -1,8 +1,5 @@
-// Port of kickai.html — the PoseTek sign-in page (the auth target of the whole
-// site; React routes /signin and /kickai.html). Behavior parity with the legacy
-// page: same markup/classes and copy, the same PoseTekIdentity lookups on sign-in,
-// the same admission callables on signup, the same error/success messages, and
-// identical ?returnTo= handling (landing-helpers.ts).
+// Shared account entry, retaining the legacy admission callables and identity
+// resolution. Managed staff activate server-assigned access separately at /join.
 //
 // Navigation: the role destinations (coachesview.html / profile.html) are ported,
 // so they become client-side navigations to /roster and /athlete with the legacy
@@ -19,12 +16,13 @@ import { findCoach, findPlayer } from "../../lib/identity";
 import { useThemeColor } from "../../lib/use-theme-color";
 import { refreshAdminIdentity, sendAdminVerification, upsertAdminProfile } from "../admin/lib/identity";
 import { capturePlayerInvitationLink, createInvitedPlayer, forgetPlayerInvitationLink, initialPlayerInvitationLink, readPlayerInvitationLink, unavailablePlayerInvitation } from "./player-invitation-link";
+import { accountDestination, accountError } from "./account-entry";
+import type { AccountRole } from "./account-entry";
 import {
   coachHomeRoute,
   coachOrgInputError,
   coachOrgStep2Copy,
   getSafeReturnToUrl,
-  playerHomeRoute,
   playerSignupRoute,
   validateIndependentSignup,
   validateOrgSignup,
@@ -54,6 +52,9 @@ export default function LandingPage() {
   const [coachOrgOpen, setCoachOrgOpen] = useState(false);
   const loginPanelRef = useRef<HTMLElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const signupDialogRef = useRef<HTMLDivElement>(null);
+  const loginFocusTimerRef = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(loginFocusTimerRef.current), []);
 
   // Signup tabs
   const [activeTab, setActiveTab] = useState<SignupTab>("playerCode");
@@ -64,6 +65,9 @@ export default function LandingPage() {
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [pendingActivation, setPendingActivation] = useState(false);
+  const loginMounted = useRef(false);
+  const authEpoch = useRef(0);
 
   // Player-code signup form
   const [playerCode, setPlayerCode] = useState(invitationLink.code);
@@ -153,11 +157,14 @@ export default function LandingPage() {
   // Check auth state to update UI (legacy: a signed-out visitor carrying a safe
   // returnTo gets the login panel brought into view)
   useEffect(() => {
+    loginMounted.current = true;
     const unsubscribe = auth.onAuthStateChanged((user: any) => {
+      ++authEpoch.current;
       setSignedIn(Boolean(user));
+      setPendingActivation(false);
       if (!user && getSafeReturnToUrl()) showLoginPanel();
     });
-    return unsubscribe;
+    return () => { loginMounted.current = false; ++authEpoch.current; unsubscribe(); };
   }, []);
 
   // Close every open overlay with Escape (legacy: all `.modal-overlay.active`).
@@ -175,16 +182,39 @@ export default function LandingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signupOpen, forgotOpen, coachOrgOpen]);
 
+  useEffect(() => {
+    if (!signupOpen || coachOrgOpen) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = signupDialogRef.current;
+    // The overlay changes CSS visibility in this render. Wait for that style
+    // to apply before moving focus away from the button that opened it.
+    const focusFrame = window.requestAnimationFrame(() => dialog?.focus());
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || !dialog) return;
+      const controls = Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex="0"]')).filter(control => control.getClientRects().length > 0);
+      const first = controls[0]; const last = controls.at(-1);
+      if (!first || !last) { event.preventDefault(); return; }
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog || !dialog.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog || !dialog.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", trapFocus);
+    return () => { window.cancelAnimationFrame(focusFrame); document.removeEventListener("keydown", trapFocus); previous?.focus(); };
+  }, [signupOpen, coachOrgOpen]);
+
   // legacy showModal(loginModal)
   function showLoginPanel() {
-    loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    window.setTimeout(() => emailInputRef.current?.focus(), 220);
+    window.clearTimeout(loginFocusTimerRef.current);
+    loginFocusTimerRef.current = window.setTimeout(() => {
+      // Signup can be closing in the current render; check the committed UI.
+      if (document.querySelector('.modal-overlay.active')) return;
+      loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      emailInputRef.current?.focus();
+    }, 220);
   }
 
-  function openSignupModal() {
+  function openSignupModal(tab: SignupTab = "playerCode") {
     setSignupOpen(true);
-    // Reset to first tab when opening modal (legacy clicked the first .tab)
-    setActiveTab("playerCode");
+    setActiveTab(tab);
   }
   function closeSignupModal() {
     setSignupOpen(false);
@@ -245,11 +275,10 @@ export default function LandingPage() {
     finishCoachOrgModal({ action: coachOrgAction as CoachOrgAction, value: val });
   }
 
-  // legacy redirectAfterAuth(fallback): a safe returnTo wins over the role home
-  function redirectAfterAuth(fallbackRoute: string) {
-    const returnTo = getSafeReturnToUrl();
-    if (returnTo) window.location.href = returnTo;
-    else navigate(fallbackRoute);
+  function redirectAfterAuth(role: AccountRole, playerId: string | null = null) {
+    const destination = accountDestination(role, playerId, window.location.search, window.location.href, window.location.origin);
+    if (destination.startsWith("http") || destination === "/admin") window.location.href = destination;
+    else navigate(destination);
   }
 
   // Login handler (legacy loginForm submit)
@@ -257,16 +286,23 @@ export default function LandingPage() {
     const email = loginEmail;
     const password = loginPassword;
 
+    const initialRevision = authEpoch.current;
+    let isCurrent = () => loginMounted.current && authEpoch.current === initialRevision;
     try {
       setLoginLoading(true);
+      setLoginError(""); setLoginSuccess(""); setPendingActivation(false);
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user: any = userCredential.user;
+      if (!user || !loginMounted.current || auth.currentUser?.uid !== user.uid) return;
+      const revision = authEpoch.current;
+      isCurrent = () => loginMounted.current && authEpoch.current === revision && auth.currentUser?.uid === user.uid;
 
       // PoseTek admin branch — FIRST, before any coach/player query
       // (ADMIN_IDENTITY_CONTRACT.md §2.2). An @posetek.net address must never
       // fall through to the cascade below: its Auth-UID fallback would resolve
       // a staff account as a player and point every upload at players/{adminUid}.
       const identity = await refreshAdminIdentity(user);
+      if (!isCurrent()) return;
       if (identity.adminDomain) {
         if (!identity.isAdmin) {
           // A domain match on an UNVERIFIED address is not admin (§1.3): send
@@ -277,7 +313,9 @@ export default function LandingPage() {
           } catch {
             sent = false;
           }
+          if (!isCurrent()) return;
           await auth.signOut();
+          if (!loginMounted.current) return;
           setLoginError(
             sent
               ? "Verify your PoseTek email, then sign in again — we just sent you a link."
@@ -286,30 +324,41 @@ export default function LandingPage() {
           return;
         }
         await upsertAdminProfile(identity);
-        window.location.href = "/admin";
+        if (isCurrent()) redirectAfterAuth("admin");
         return;
       }
 
       const club = await getClubContext();
+      if (!isCurrent()) return;
       if (club.role === "manager" || club.role === "coach") {
-        navigate("/organization");
+        redirectAfterAuth(club.role);
         return;
       }
 
       const coachDoc = await findCoach(db, user.uid);
+      if (!isCurrent()) return;
       if (coachDoc) {
         await coachDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
-        redirectAfterAuth(coachHomeRoute());
+        if (isCurrent()) redirectAfterAuth("independent");
       } else {
         const playerDoc = await findPlayer(db, user.uid);
-        if (!playerDoc) throw new Error("Account not found in system");
+        if (!isCurrent()) return;
+        if (!playerDoc) {
+          const returnTo = getSafeReturnToUrl();
+          if (returnTo && new URL(returnTo).pathname === "/join") redirectAfterAuth("pending");
+          else {
+            setPendingActivation(true);
+            setLoginSuccess("You are signed in. Have a staff invitation? Finish activation to connect your account. If you expected a player profile, ask your coach to check your account link.");
+          }
+          return;
+        }
         await playerDoc.ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
-        redirectAfterAuth(playerHomeRoute(playerDoc.id));
+        if (isCurrent()) redirectAfterAuth("player", playerDoc.id);
       }
     } catch (error: any) {
-      setLoginError(error.message);
+      if (isCurrent()) setLoginError(accountError(error, "We could not load your account access. Your sign-in has been kept; try again, or use your staff invitation to finish activation."));
     } finally {
-      setLoginLoading(false);
+      if (loginMounted.current) setLoginLoading(false);
     }
   }
 
@@ -395,7 +444,7 @@ export default function LandingPage() {
     } catch (error: any) {
       console.error("Signup error:", error);
       await discardFailedSignup(user);
-      setOrgSignupError(error.message);
+      setOrgSignupError(accountError(error, error.message));
     } finally {
       setOrgSignupLoading(false);
     }
@@ -450,7 +499,7 @@ export default function LandingPage() {
         navigate(invitationLink.present ? `/athlete?player=${encodeURIComponent(playerId)}` : playerSignupRoute(playerId));
       }, 1500);
     } catch (error: any) {
-      setPlayerCodeError(error?.message || "Your account could not be created. Please try again.");
+      setPlayerCodeError(accountError(error, error?.message || "Your account could not be created. Please try again."));
     } finally {
       setPlayerCodeLoading(false);
     }
@@ -486,7 +535,7 @@ export default function LandingPage() {
       navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
     } catch (error: any) {
       console.error("Signup error:", error);
-      setIndependentError(error.message);
+      setIndependentError(accountError(error, error.message));
     } finally {
       setIndependentLoading(false);
     }
@@ -533,10 +582,9 @@ export default function LandingPage() {
               <p className="login-kicker">Secure account access</p>
               <div className="modal-header">
                 <h2 className="modal-title" id="login-title">
-                  Welcome back
+                  Sign in to PoseTek
                 </h2>
-                <p className="login-support"><Link to="/join">Have a coach or manager invitation? Claim your account.</Link></p>
-                <p className="login-support">PoseTek opens your organization, coach or athlete view after sign-in.</p>
+                <p className="login-support">One sign-in for players, coaches and organization admins.</p>
                 {/* legacy: hidden by CSS; its click handler (hideModal(loginModal)) is a no-op */}
                 <button className="close-btn" id="closeModal" type="button" tabIndex={-1} aria-hidden="true">
                   &times;
@@ -630,11 +678,17 @@ export default function LandingPage() {
                   ></span>
                 </button>
               </form>
+              {pendingActivation && <Link className="secondary-action activation-pending" to="/join">Finish staff activation</Link>}
               <div className="signup-prompt">
-                <p>New to PoseTek?</p>
-                <button type="button" className="secondary-action" id="getStartedBtn" onClick={openSignupModal}>
-                  Create an Account
-                </button>
+                <p>Joining PoseTek?</p>
+                <div className="account-entry-options">
+                  <button type="button" className="secondary-action" id="getStartedBtn" onClick={() => openSignupModal()}><strong>Player</strong><span>Use your player signup code</span></button>
+                  <Link className="secondary-action" to="/join"><strong>Invited coach or organization admin</strong><span>Activate your staff invitation</span></Link>
+                </div>
+                <details className="account-entry-legacy"><summary>Independent coach or organization code</summary><p>Existing independent coaching and organization-code signup remain available.</p><div className="account-entry-options">
+                  <button type="button" className="secondary-action" onClick={() => openSignupModal("independent")}>Create an independent coach account</button>
+                  <button type="button" className="secondary-action" onClick={() => openSignupModal("organization")}>Organization-code signup</button>
+                </div></details>
               </div>
               <p className="access-note">
                 Your account permissions determine which athlete and team data you can access.
@@ -646,10 +700,10 @@ export default function LandingPage() {
 
       {/* Signup Modal */}
       <div className={`modal-overlay${signupOpen ? " active" : ""}`} id="signupModal" data-clarity-mask="true">
-        <div className="auth-modal">
+        <div className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="signup-title" tabIndex={-1} ref={signupDialogRef}>
           <div className="modal-content-wrapper">
             <div className="modal-header">
-              <h3 className="modal-title">Create Account</h3>
+              <h3 className="modal-title" id="signup-title">{activeTab === "playerCode" ? "Create your player account" : activeTab === "independent" ? "Independent coach signup" : "Organization-code signup"}</h3>
               <button
                 className="close-btn"
                 id="closeSignupModal"
@@ -661,40 +715,45 @@ export default function LandingPage() {
               </button>
             </div>
 
-            <div className="tab-container">
+            <p className="login-support account-modal-invite">Invited as a coach or organization admin? <Link to="/join">Activate staff access</Link> using your staff invitation.</p>
+            <div className="tab-container account-signup-tabs" aria-label="Signup options">
               <button
                 className={`tab${activeTab === "playerCode" ? " active" : ""}`}
                 type="button"
                 data-tab="playerCode"
+                aria-pressed={activeTab === "playerCode"}
                 onClick={() => setActiveTab("playerCode")}
               >
-                Player
+                Player code
               </button>
               <button
                 className={`tab${activeTab === "organization" ? " active" : ""}`}
                 type="button"
                 data-tab="organization"
+                aria-pressed={activeTab === "organization"}
                 onClick={() => setActiveTab("organization")}
               >
-                Organization
+                Organization code
               </button>
               <button
                 className={`tab${activeTab === "independent" ? " active" : ""}`}
                 type="button"
                 data-tab="independent"
+                aria-pressed={activeTab === "independent"}
                 onClick={() => setActiveTab("independent")}
               >
-                Coach
+                Independent coach
               </button>
             </div>
 
             {/* Player Tab */}
             <div className={`tab-content${activeTab === "playerCode" ? " active" : ""}`} id="playerCodeTab">
+              <p className="login-support">Use the player signup code your coach or organization shared with you. It connects this login to your existing player profile.</p>
               {invitationLink.present && <p className="login-support" role="status">
                 {invitationCheck === "checking" ? "Checking your player invitation…" : invitationCheck === "ready" ? "Your player code is filled in. Enter your email and choose a password to open your existing profile." : invitationCheck === "error" ? "We could not check your invitation. Try Create Account again when your connection is available." : unavailablePlayerInvitation}
               </p>}
               {signedIn && !pendingPlayerSignup.current && <p className="login-support">You are already signed in. <button type="button" className="secondary-action" onClick={() => { void auth.signOut().catch(() => setPlayerCodeError("Could not sign out. Please try again.")); }}>Sign out to create another account</button></p>}
-              {invitationLink.present && <p className="login-support"><button type="button" className="secondary-action" onClick={() => { closeSignupModal(); showLoginPanel(); }}>Already have an account? Sign in</button></p>}
+              <p className="login-support"><button type="button" className="secondary-action" onClick={() => { closeSignupModal(); showLoginPanel(); }}>Already have an account? Sign in</button></p>
               <form
                 id="playerCodeForm"
                 onSubmit={(e) => {
@@ -703,7 +762,7 @@ export default function LandingPage() {
                 }}
               >
                 <div className="form-group">
-                  <label htmlFor="playerCode">Player Code</label>
+                  <label htmlFor="playerCode">Player signup code</label>
                   <input
                     type="text"
                     id="playerCode"
@@ -789,6 +848,7 @@ export default function LandingPage() {
 
             {/* Organization Tab */}
             <div className={`tab-content${activeTab === "organization" ? " active" : ""}`} id="organizationTab">
+              <p className="login-support">For existing organization-code access. Coaches can join or create an independent organization. Organization admin access is assigned separately through a staff invitation.</p>
               <form
                 id="orgSignupForm"
                 onSubmit={(e) => {
@@ -917,6 +977,7 @@ export default function LandingPage() {
 
             {/* Coach Tab */}
             <div className={`tab-content${activeTab === "independent" ? " active" : ""}`} id="independentTab">
+              <p className="login-support">Create your own coaching roster. To join a managed organization, use its staff invitation instead.</p>
               <form
                 id="independentSignupForm"
                 onSubmit={(e) => {

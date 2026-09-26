@@ -4,10 +4,11 @@ import { blockFromDrill, doseBoundsFor } from '../../admin/lib/editor';
 import { EQUIPMENT } from '../../../lib/contracts/types';
 import type { BlockV3 } from '../../../lib/contracts/types';
 import type { Row } from './execution';
+import type { TrainingAccess } from './training-access';
 
 export const PERSONAL_CAPABILITIES = ['save_personal_workout', 'generate_personal_workout', 'start_personal_workout', 'update_personal_workout_log'] as const;
 export type PersonalCapability = typeof PERSONAL_CAPABILITIES[number];
-export type PersonalIntake = { age?: number; equipment: string[]; setting: 'solo' | 'partner'; painFlag: boolean };
+export type PersonalIntake = { age?: number; equipment: string[]; setting: 'solo' | 'partner'; painFlag: boolean; access?: TrainingAccess };
 export type PersonalDraft = { workoutId: string; order: number; title: string; intent: string; focusDomains: string[]; budgetMinutes: number; estimatedMinutes: number; blocks: BlockV3[]; nextBlockSequence: number };
 export type SourceWorkout = { planId: string; workoutId: string; revision: number };
 export type PendingPersonalJob = { schemaVersion: 1; uid: string; playerId: string; capability: PersonalCapability; jobId: string; params: Row; signature: string; terminalFailed?: boolean };
