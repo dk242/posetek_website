@@ -2,8 +2,7 @@
 // player name and a rough local time, or in one lookup from a reference code
 // the athlete quotes" (AI_OBSERVABILITY_AND_IMPROVEMENT_PLAN §2, §3.4).
 //
-// The DrillLibrary shape: one bounded read (newest 500), filters and a
-// group-by breakdown client-side, a row per incident, and a drawer with the
+// Server-paged filters and breakdowns, a row per incident, and a drawer with the
 // gateway and phone halves side by side plus the triage form. Every string a
 // client or a model could have influenced is rendered as a JSX text node —
 // never innerHTML — which is what AiIncidents.test.tsx pins.
@@ -21,7 +20,7 @@ import {
   EMPTY_FILTERS,
   GROUP_LABELS,
   GROUP_MODES,
-  INCIDENT_LIMIT,
+  INCIDENT_PAGE_SIZE,
   STUCK_JOB_LIMIT,
   STUCK_JOB_MINUTES,
   TRIAGE_FIX_REF_MAX,
@@ -29,10 +28,7 @@ import {
   TRIAGE_NOTE_MAX,
   TRIAGE_REPLAY_NOTE_MAX,
   TRIAGE_STATES,
-  applyFilters,
-  countable,
   draftOf,
-  facetValues,
   fieldRows,
   groupBreakdown,
   loadIncident,
@@ -49,7 +45,7 @@ import {
   whenOf,
 } from "../lib/aiIncidents";
 import type {
-  AiIncident, GroupMode, IncidentFilters, JobSummary, PlayerNames, TriageDraft, TriageState,
+  AiIncident, GroupMode, IncidentFilters, IncidentPage, JobSummary, PlayerNames, TriageDraft, TriageState,
 } from "../lib/aiIncidents";
 import "../ai-incidents.scss";
 
@@ -58,7 +54,7 @@ const NAME_LOOKUP_LIMIT = 100;
 
 type Load =
   | { kind: "loading" }
-  | { kind: "ready"; incidents: AiIncident[] }
+  | { kind: "ready"; page: IncidentPage }
   | { kind: "error"; message: string };
 
 export default function AiIncidents() {
@@ -68,29 +64,40 @@ export default function AiIncidents() {
   const [indexState, setIndexState] = useState<{ truncated: boolean; error: string } | null>(null);
   const [lookedUp, setLookedUp] = useState<PlayerNames>(new Map());
   const [filters, setFilters] = useState<IncidentFilters>(() => ({ ...EMPTY_FILTERS, search: query.get("q") ?? "" }));
+  const [searchDraft, setSearchDraft] = useState(query.get("q") ?? "");
   const [group, setGroup] = useState<GroupMode>("code");
+  const [cursors, setCursors] = useState<string[]>([""]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [retry, setRetry] = useState(0);
+  const requestNumber = useRef(0);
   const [deepLinked, setDeepLinked] = useState<{ id: string; incident: AiIncident | null } | null>(null);
   const selectedId = query.get("incident") ?? "";
   const searchParam = query.get("q");
 
-  const read = useCallback(() => loadIncidents()
-    .then(incidents => setLoad({ kind: "ready", incidents }))
-    .catch(error => setLoad({ kind: "error", message: readError(error, "The incident log") })), []);
-  function refresh() {
+  const read = useCallback(() => {
+    const current = ++requestNumber.current;
     setLoad({ kind: "loading" });
-    void read();
+    return loadIncidents(filters, group, cursors[pageIndex] || undefined)
+      .then(page => { if (requestNumber.current === current) setLoad({ kind: "ready", page }); })
+      .catch(error => { if (requestNumber.current === current) setLoad({ kind: "error", message: readError(error, "The incident log") }); });
+  }, [filters, group, cursors, pageIndex]);
+  function refresh() {
+    setPageIndex(0); setCursors([""]); setRetry(value => value + 1);
   }
 
   useEffect(() => {
     document.title = "AI incidents | PoseTek admin";
-    void read();
     loadPlayerIndex()
       .then(index => {
         setIndexNames(new Map(index.players.map(player => [player.id, player.name])));
         setIndexState({ truncated: index.truncated, error: "" });
       })
       .catch(error => setIndexState({ truncated: false, error: error?.message || "The player index could not be loaded." }));
-  }, [read]);
+  }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void read(); }, filters.search ? 250 : 0);
+    return () => { window.clearTimeout(timer); requestNumber.current++; };
+  }, [read, retry]);
 
   // A PlayerDetail link (`?q=<playerId>`) arriving while the page is open
   // replaces the search — adjusted during render, React's pattern for state
@@ -98,10 +105,10 @@ export default function AiIncidents() {
   const [appliedSearch, setAppliedSearch] = useState(searchParam);
   if (searchParam !== appliedSearch) {
     setAppliedSearch(searchParam);
-    if (searchParam !== null) setFilters(current => ({ ...current, search: searchParam }));
+    if (searchParam !== null) { setFilters(current => ({ ...current, search: searchParam })); setSearchDraft(searchParam); setPageIndex(0); setCursors([""]); }
   }
 
-  const incidents = load.kind === "ready" ? load.incidents : NO_INCIDENTS;
+  const incidents = load.kind === "ready" ? load.page.rows : NO_INCIDENTS;
 
   // Athletes on an incident but outside the bounded index are named one by
   // one — the §3.4 per-row fallback — so name search still finds them.
@@ -119,16 +126,14 @@ export default function AiIncidents() {
   const names = useMemo<PlayerNames>(() => {
     const merged = new Map(indexNames);
     for (const [id, name] of lookedUp) if (name) merged.set(id, name);
+    if (load.kind === "ready") for (const [id, name] of load.page.names) merged.set(id, name);
     return merged;
-  }, [indexNames, lookedUp]);
+  }, [indexNames, lookedUp, load]);
 
-  const all = useMemo(() => countable(incidents), [incidents]);
-  const shown = useMemo(() => applyFilters(all, filters, names), [all, filters, names]);
-  const breakdown = useMemo(() => groupBreakdown(shown, group), [shown, group]);
-  const facets = useMemo(() => ({
-    capability: facetValues(all, "capability"), code: facetValues(all, "code"),
-    kind: facetValues(all, "kind"), source: facetValues(all, "source"),
-  }), [all]);
+  const shown = incidents;
+  const total = load.kind === "ready" ? load.page.total : 0;
+  const breakdown = load.kind === "ready" ? load.page.breakdown : [];
+  const facets = load.kind === "ready" ? load.page.facets : { capability: [], code: [], kind: [], source: [] };
 
   // A deep link to an incident outside the loaded window is read on its own.
   const loaded = selectedId ? incidents.find(incident => incident.id === selectedId) ?? null : null;
@@ -144,6 +149,8 @@ export default function AiIncidents() {
   const selected = loaded ?? lookup?.incident ?? null;
 
   function setFilter<K extends keyof IncidentFilters>(key: K, value: IncidentFilters[K]) {
+    setLoad({ kind: "loading" });
+    setPageIndex(0); setCursors([""]);
     setFilters(current => ({ ...current, [key]: value }));
   }
   function withIncident(id: string | null): string {
@@ -158,17 +165,16 @@ export default function AiIncidents() {
   }
   function onSaved(updated: AiIncident) {
     setLoad(current => current.kind === "ready"
-      ? { kind: "ready", incidents: current.incidents.map(incident => (incident.id === updated.id ? updated : incident)) }
+      ? { kind: "ready", page: { ...current.page, rows: current.page.rows.map(incident => (incident.id === updated.id ? updated : incident)) } }
       : current);
     setDeepLinked(current => (current?.id === updated.id ? { id: updated.id, incident: updated } : current));
   }
   function applyBar(value: string) {
     if (!value) return;
-    if (group === "day") setFilters(current => ({ ...current, from: value, to: value }));
+    if (group === "day") { setLoad({ kind: "loading" }); setPageIndex(0); setCursors([""]); setFilters(current => ({ ...current, from: value, to: value })); }
     else if (group === "code" || group === "capability" || group === "kind" || group === "source") setFilter(group, value);
   }
 
-  const hiddenTests = filters.test === "athletes" ? all.filter(incident => incident.isTest).length : 0;
   const filtering = JSON.stringify(filters) !== JSON.stringify(EMPTY_FILTERS);
 
   return (
@@ -176,10 +182,10 @@ export default function AiIncidents() {
       <section className="admin-heading">
         <div>
           <p className="eyebrow">AI incidents</p>
-          <h1>{load.kind === "ready" ? `${shown.length} of ${all.length} incidents` : "AI incidents"}</h1>
+          <h1>{load.kind === "ready" ? `${total} matching incidents` : "AI incidents"}</h1>
           <p>
             Every AI failure, refusal and degradation the gateway, the failed-job projection or the phone recorded,
-            newest first (the latest {INCIDENT_LIMIT}). All times are Pacific.
+            newest first, {INCIDENT_PAGE_SIZE} per page. Counts and filters cover the complete retained history. All times are Pacific.
           </p>
         </div>
         <div className="admin-heading-actions">
@@ -190,17 +196,19 @@ export default function AiIncidents() {
       </section>
 
       <div className="admin-toolbar ai-toolbar">
-        <label className="search-field">
+        <form className="search-field" onSubmit={event => { event.preventDefault(); setFilter("search", searchDraft); }}>
           <span className="material-symbols-outlined" aria-hidden="true">search</span>
-          <span className="admin-sr-only">Search incidents</span>
+          <label className="admin-sr-only" htmlFor="admin-incident-search">Search incidents</label>
           <input
+            id="admin-incident-search"
             type="search"
             placeholder="Athlete name, ref code, requestId, jobId, conversationId, playerId or uid"
             autoComplete="off"
-            value={filters.search}
-            onChange={event => setFilter("search", event.target.value)}
+            value={searchDraft}
+            onChange={event => setSearchDraft(event.target.value)}
           />
-        </label>
+          <button type="submit" className="quiet-button small">Search</button>
+        </form>
         <FacetSelect label="Capability" value={filters.capability} options={facets.capability} onChange={value => setFilter("capability", value)} />
         <FacetSelect label="Code" value={filters.code} options={facets.code} onChange={value => setFilter("code", value)} />
         <FacetSelect label="Kind" value={filters.kind} options={facets.kind} onChange={value => setFilter("kind", value)} />
@@ -222,16 +230,13 @@ export default function AiIncidents() {
           <span>To (Pacific)</span>
           <input type="date" value={filters.to} min={filters.from || undefined} onChange={event => setFilter("to", event.target.value)} />
         </label>
-        {filtering && <button className="quiet-button small" type="button" onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>}
+        {filtering && <button className="quiet-button small" type="button" onClick={() => { setLoad({ kind: "loading" }); setPageIndex(0); setCursors([""]); setFilters(EMPTY_FILTERS); setSearchDraft(""); }}>Clear filters</button>}
       </div>
 
       <p className="admin-note">
-        Names come from the same player index Monitor accounts searches: a bounded read of {PLAYER_INDEX_LIMIT + 1} documents
-        that covers the first {PLAYER_INDEX_LIMIT} athletes. An athlete on an incident but outside it is looked up by id,
-        so searching their name still works once their row has loaded.
-        {indexState?.truncated ? ` The index is full right now, so ${PLAYER_INDEX_LIMIT} is not every athlete.` : ""}
+        Search and counts cover all retained incidents. Names on displayed rows come from the player index or an individual lookup.
+        {indexState?.truncated ? ` The display index covers its first ${PLAYER_INDEX_LIMIT} athletes; server search still checks names across incident records.` : ""}
         {indexState?.error ? ` The index did not load (${indexState.error}); rows show player ids.` : ""}
-        {hiddenTests > 0 ? ` ${hiddenTests} test-labelled ${hiddenTests === 1 ? "incident is" : "incidents are"} hidden.` : ""}
       </p>
 
       {load.kind === "loading" && <div className="portal-loading"><span className="spinner" /><p>Loading incidents…</p></div>}
@@ -239,13 +244,14 @@ export default function AiIncidents() {
         <button className="quiet-button" type="button" onClick={refresh}>Try again</button></div>}
 
       {load.kind === "ready" && <>
-        <Breakdown rows={breakdown} group={group} onGroup={setGroup} onPick={applyBar} />
+        <Breakdown rows={breakdown} group={group} onGroup={value => { setLoad({ kind: "loading" }); setPageIndex(0); setCursors([""]); setGroup(value); }} onPick={applyBar} />
         <div className="admin-rows">
-          {shown.length === 0 && <p className="admin-empty">{all.length ? "No incidents match these filters." : "No incidents recorded yet."}</p>}
+          {shown.length === 0 && <p className="admin-empty">No incidents match these filters.</p>}
           {shown.map(incident => (
             <IncidentRow key={incident.id} incident={incident} name={names.get(incident.playerId)} to={withIncident(incident.id)} />
           ))}
         </div>
+        <div className="insights-pagination"><span>{total ? `${pageIndex * INCIDENT_PAGE_SIZE + 1}–${Math.min((pageIndex + 1) * INCIDENT_PAGE_SIZE, total)} of ${total}` : "0 incidents"}</span><div><button type="button" className="quiet-button" disabled={pageIndex === 0} onClick={() => { setLoad({ kind: "loading" }); setPageIndex(value => value - 1); }}>Previous</button><button type="button" className="quiet-button" disabled={!load.page.nextCursor} onClick={() => { if (load.page.nextCursor) { setLoad({ kind: "loading" }); setCursors(current => [...current.slice(0, pageIndex + 1), load.page.nextCursor!]); setPageIndex(value => value + 1); } }}>Next</button></div></div>
         <StuckJobs names={names} />
       </>}
 

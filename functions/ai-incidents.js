@@ -387,13 +387,15 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
   return { projectFailedJob, foldIncident, foldPair, createIfAbsent, testUids, reopenVerifiedClass };
 }
 
-function createAiIncidentEntrypoints(functions, admin) {
+function createAiIncidentEntrypoints(functions, admin, caller) {
   const incidents = createAiIncidents({
     db: admin.firestore(), FieldValue: admin.firestore.FieldValue, Timestamp: admin.firestore.Timestamp,
     logger: functions.logger,
   });
   const events = functions.runWith({ timeoutSeconds: 60, memory: "256MB", maxInstances: 5, failurePolicy: true });
+  const listing = require("./ai-incidents-list").createAiIncidentList({ db: admin.firestore(), HttpsError: functions.https.HttpsError });
   return {
+    listAiIncidents: functions.runWith({ timeoutSeconds: 120, memory: "512MB", maxInstances: 5 }).https.onCall((data, context) => listing.list(data || {}, caller(context))),
     projectFailedLlmJobs: events.firestore.document("llmJobs/{jobId}").onWrite((change, context) =>
       incidents.projectFailedJob(context.params.jobId, change.before?.data?.(), change.after?.data?.())),
     foldAiIncidents: events.firestore.document(`${COLLECTION}/{incidentId}`).onCreate((snap, context) =>
