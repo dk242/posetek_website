@@ -4,7 +4,7 @@ This isolated website branch retires the legacy schema 1/2 week editor. Existing
 
 Roster loads now apply only if their request generation and signed-in UID still match. Loading and error clear old rows and actions; search filters a successfully loaded roster only. Club roster URLs retain `orgId` and `teamId` through team selection, dashboard and athlete navigation. Coach progress switches use labelled pressed-button semantics. Dormant drill and dose dialogs have accessible names and the drill filter uses button-group semantics.
 
-This branch does not add a new legacy editor or expose schema 3 adjustment controls. Review-plan generation keeps its existing explicit draft/review flow. The current implementation still loads full athlete history before first coach overview; a lightweight overview and lazy history need a separate data contract and were not claimed here.
+This branch does not add a new legacy editor or expose schema 3 adjustment controls. Review-plan generation keeps its existing explicit draft/review flow.
 
 ## Coach overview and follow-ups candidate
 

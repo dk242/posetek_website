@@ -54,6 +54,7 @@ async function fixture(mode, options, run) {
     }
     await put('deployment/homepage-baseline.json', JSON.stringify(manifest));
     await put('deployment/home-navigation.js', '// local legacy-only bridge\n');
+    await put('bookPerformanceTest.html', files.get('/bookperformancetest.html'));
     await put('marketing-dist/index.html', marketing);
     await put('marketing-dist/coaches/index.html', options.missingMarker ? coaches.replace('<!-- posetek-coaches-entry -->', '') : coaches);
     await put('marketing-dist/assets/new.js', '/* new isolated homepage */');
