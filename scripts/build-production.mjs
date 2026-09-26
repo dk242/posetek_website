@@ -83,11 +83,12 @@ await Promise.all(Array.from({ length: 6 }, async () => {
       if (!response.ok) throw new Error(`Baseline download failed: ${file.path} (${response.status})`);
       bytes = Buffer.from(await response.arrayBuffer());
       // Historical duplicate marketing entries can be served through Netlify's
-      // pretty-URL rewrite. Recover only the committed noscript block, and only
-      // accept it if it reproduces the pinned original in full.
+      // pretty-URL rewrite. The current homepage may have changed since this
+      // baseline, so recover its original noscript block from a pinned snapshot.
+      // Only accept the complete reconstructed file on exact size + SHA-1.
       if (hash(bytes) !== file.sha && /^\/index \d+\.html$/.test(file.path)) {
-        const source = await readFile(join(root, 'index.html'), 'utf8');
-        const originalNoscript = source.match(/<noscript>.*<\/noscript>/)?.[0];
+        const source = await readFile(join(root, 'deployment/pinned-index-noscript.html'), 'utf8');
+        const originalNoscript = source.match(/^<noscript>.*<\/noscript>$/)?.[0];
         if (originalNoscript) {
           const candidate = Buffer.from(bytes.toString('utf8').replace(/<noscript>.*<\/noscript>/, originalNoscript));
           if (hash(candidate) === file.sha && candidate.length === file.size) bytes = candidate;
