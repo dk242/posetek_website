@@ -34,12 +34,22 @@ historical coach mirrors do not override a migrated roster.
 | --- | --- |
 | Website player, coach and reporting UI | `dk242/posetek_website`, `codex/player-coach-experience` |
 | Job validation, personal workouts, AI, shared workload | `posetek/posetek-backend`, `codex/personal-workouts-experience`, `Services/agent-gateway/` |
-| Native follow-up and canonical access rules | `athelyticsOG/posetek-mobile-app`, `personal-workouts-experience` |
+| Native follow-up and canonical access rules | `posetek/posetek-mobile-app`, `personal-workouts-experience` |
 
 The former `Athelytics/python-video-processor` repository redirects to
 `posetek/posetek-backend` (confirmed by GitHub during the candidate push).
+The former `athelyticsOG/posetek-mobile-app` similarly redirects to
+`posetek/posetek-mobile-app` (confirmed during its feature-branch push).
 `Services/agent-gateway/PERSONAL_WORKOUTS.md` in that repository is the shared
 personal-workout wire contract. The website does not carry a gateway/rules copy.
+
+Reviewed source checkpoints: backend `f70b00d` and native `bc492aa` (including
+canonical rules `4aec5c1`). Native handoff lives at
+`docs/plans/personal-workouts-experience.md` in its repository. Thirteen new
+XCTest cases are authored but have not run on this Windows host. Swift structural
+parsing and independent contract review passed; Xcode compilation and current
+device acceptance remain outstanding. New native personal sessions do not yet
+emit Live Activities; the existing assigned-workout support is unchanged.
 
 ## Player flow
 
@@ -110,6 +120,20 @@ within the current product, with no new decorative imagery.
 
 ## Validation and rollout
 
+The website suite passed **94 files / 1,116 tests**. Subsequent personal-workout
+recovery fixes passed 64 focused tests; the final coach workspace passed 82 tests.
+TypeScript passed on the final frontend source. Lint completed without errors,
+with existing and React optimization advisories remaining. Release composition,
+navigation and baseline preservation checks passed **28 tests**.
+
+The guarded application release build passed from website code `dd613fe`.
+It verified all 899 baseline entries, then replaced only the application entry,
+retaining 898 protected files (107,423,919 bytes) and all 32 current marketing
+files (6,082,347 bytes), with 58 added application assets. Independent output
+verification matched all 930 preserved entries. The new `/application.html` is
+1,309 bytes, SHA-1 `504fe1b0fe49be8a28a1814b1e02dae3f54d35c9`. Generated output and
+build receipts remain ignored; this is a local build, not a publication receipt.
+
 The paired canonical rules passed **1,051 emulator tests**; all seven website
 rules suites passed against those exact files. Firestore SHA-256:
 `19575e5cf2be607e848d4259325af91500f45c1549ddb4f7ed1e7975cec4730b`.
@@ -123,6 +147,14 @@ Browser checks use clearly labeled synthetic local previews. Verified flows
 include phone-width coach roster/history, AI suggestion editing and Training
 handoff, and manual create → dose review → save → start → set → pause → early
 finish. They do not claim a real account was exercised or a physical phone locked.
+Responsive review covered 360, 390 and 430 pixels and desktop. Training, builder
+and coach history did not overflow horizontally. Opening a player resets the
+dashboard scroll position. Local screenshots are kept outside Git under
+`.netlify/player-coach-review/`: `player-training-430.png`,
+`player-builder-430.png`, `player-ai-coach-390.png`, `coach-roster-430.png` and
+`coach-history-430.png`, plus `coach-roster-desktop.png` at the normal desktop
+viewport. Local review tabs are `/athlete?preview=1&view=training` and
+`/dashboard?preview=1` on the Vite server; they are not hosted production pages.
 
 The legacy mobile parity receipt is updated to `b980de4` after reviewing the
 WorkoutStore listener recovery changes and additive gateway contract amendments.
@@ -155,6 +187,18 @@ identified current release `6ab5e409d3ca5da40c5c01d2` (published September 24 at
 8:04:50 PM PDT), with 899 protected application/public entries. This candidate
 does not replace that production record. The local Netlify CLI is signed out;
 no deploy was attempted through a different publishing route.
+
+The older September 16 marketing snapshot fails the current live-page check and
+must not be reused. Current marketing was captured from the immutable September
+24 deployment and compared with the live site: 32 files, 6,082,347 bytes. Original
+homepage bytes match the protected filename alias at SHA-1
+`e4d2dfc372f5554ba31be85fefffac6f1b467847` (2,530 bytes); Coaches remains
+`0581430222a96caf034d1d6099adff7d4c68236d` (2,489 bytes). Netlify's served homepage
+rewrites the noscript link, so its served checksum is recorded separately. The
+local manifest and verification receipt are ignored
+`.netlify/current-marketing-snapshot.json` and
+`.netlify/current-marketing-verification.json`. Refresh against the then-current
+approved release on a fresh publishing checkout; never disable the guard.
 
 Browser capability references: [Apple ActivityKit](https://developer.apple.com/documentation/ActivityKit)
 and [Screen Wake Lock](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API).

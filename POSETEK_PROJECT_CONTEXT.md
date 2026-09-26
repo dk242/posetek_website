@@ -25,7 +25,8 @@ the current live-application guard and approved marketing bytes.
 
 Gateway source is only `Services/agent-gateway` in the backend repository;
 GitHub now redirects `Athelytics/python-video-processor` to
-`posetek/posetek-backend`. Rules are only in `PoseTek-mobile-app/firebase/`.
+`posetek/posetek-backend`. GitHub also redirects `athelyticsOG/posetek-mobile-app`
+to `posetek/posetek-mobile-app`. Rules are only in `PoseTek-mobile-app/firebase/`.
 Their respective canonical release commands in `AGENTS.md` remain binding.
 
 ## Station recovery and ending follow-up (2026-09-22, not deployed)
