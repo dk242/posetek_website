@@ -53,6 +53,8 @@ export default function LandingPage() {
   const loginPanelRef = useRef<HTMLElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const signupDialogRef = useRef<HTMLDivElement>(null);
+  const loginFocusTimerRef = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(loginFocusTimerRef.current), []);
 
   // Signup tabs
   const [activeTab, setActiveTab] = useState<SignupTab>("playerCode");
@@ -201,8 +203,12 @@ export default function LandingPage() {
 
   // legacy showModal(loginModal)
   function showLoginPanel() {
+    window.clearTimeout(loginFocusTimerRef.current);
+    if (document.querySelector('.modal-overlay.active')) return;
     loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    window.setTimeout(() => emailInputRef.current?.focus(), 220);
+    loginFocusTimerRef.current = window.setTimeout(() => {
+      if (!document.querySelector('.modal-overlay.active')) emailInputRef.current?.focus();
+    }, 220);
   }
 
   function openSignupModal(tab: SignupTab = "playerCode") {
