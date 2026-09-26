@@ -204,10 +204,11 @@ export default function LandingPage() {
   // legacy showModal(loginModal)
   function showLoginPanel() {
     window.clearTimeout(loginFocusTimerRef.current);
-    if (document.querySelector('.modal-overlay.active')) return;
-    loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     loginFocusTimerRef.current = window.setTimeout(() => {
-      if (!document.querySelector('.modal-overlay.active')) emailInputRef.current?.focus();
+      // Signup can be closing in the current render; check the committed UI.
+      if (document.querySelector('.modal-overlay.active')) return;
+      loginPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      emailInputRef.current?.focus();
     }, 220);
   }
 
