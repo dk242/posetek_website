@@ -56,7 +56,7 @@ export default function PersonalWorkoutHub({ store, playerId, athlete, config, p
   const begin = (workout?: Row, asCopy = false) => {
     const isPersonal = !!workout?.workoutId && workout?.source === 'personal';
     setDraft(personalDraft(workout, isPersonal && !asCopy)); setEditing(isPersonal && !asCopy ? workout! : null);
-    setSourceRef(workout?.sourceWorkout || undefined); setProposalId(undefined); store.clearProposal();
+    setSourceRef(isPersonal && asCopy ? undefined : workout?.sourceWorkout || undefined); setProposalId(undefined); store.clearProposal();
     if (workout?.intake) setIntake({ ...workout.intake });
     setScheduledDate(today); setPainAnswer(''); setMode('edit');
   };
