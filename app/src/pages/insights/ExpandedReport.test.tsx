@@ -84,7 +84,8 @@ describe("four-view Insights report", () => {
     expect(html).toContain("reps need review");
     expect(html).toContain("unmatched failure reports");
     expect(html).toContain("players not tested");
-    expect(html).toContain('href="/admin/analysis"');
+    expect(html).toContain('view=testing');
+    expect(html).toContain('testingStatus=noRecordedTests');
     expect(html).toContain('aria-label="Daily completed workouts"');
     expect(html).toContain("Players by team");
     expect(html).toContain("84 matching players");
