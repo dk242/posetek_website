@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalPublishParams, personalRefinementParams, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
+import { checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalProposalWithPublication, personalPublishParams, personalRefinementParams, publishedPersonalWorkoutId, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
 
 const expiry = new Date('2026-10-01T12:00:00Z');
 const proposal = () => ({ schemaVersion: 1, proposalId: 'proposal_2', conversationId: 'conversation_1', proposalRevision: 2,
@@ -94,5 +94,15 @@ describe('refine and publish the reviewed proposal', () => {
     const old = { ...proposal(), conversationId: undefined };
     expect(personalPublishParams(old, null, expiry.getTime() - 1000).proposalId).toBe('proposal_2');
     expect(() => personalRefinementParams(old, 'Another drill')).toThrow('older proposal');
+  });
+  it('marks only the exact current published proposal as saved', () => {
+    const current = { ...conversation(), publishedWorkoutId: 'personal_saved', publishedProposalId: 'proposal_2' };
+    expect(publishedPersonalWorkoutId(proposal(), current)).toBe('personal_saved');
+    expect(personalProposalWithPublication(proposal(), current)?.publishedWorkoutId).toBe('personal_saved');
+  });
+  it('does not short-circuit publication of a revised head because an earlier draft was published', () => {
+    const current = { ...conversation(), publishedWorkoutId: 'personal_saved', publishedProposalId: 'proposal_1' };
+    expect(publishedPersonalWorkoutId(proposal(), current)).toBeNull();
+    expect(personalProposalWithPublication({ ...proposal(), publishedWorkoutId: 'stale' }, current)).not.toHaveProperty('publishedWorkoutId');
   });
 });

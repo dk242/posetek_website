@@ -6,7 +6,7 @@ export type PersonalConversationPort = {
   proposal: (id: string) => Promise<Row | null>;
   messages: (id: string) => Promise<Row[]>;
 };
-const validId = (v: unknown): v is string => typeof v === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(v);
+const validId = (v: unknown): v is string => typeof v === 'string' && /^[A-Za-z0-9_-]{1,180}$/.test(v);
 export function personalTimestamp(value: any): number {
   if (typeof value?.toMillis === 'function') return value.toMillis();
   if (typeof value?.seconds === 'number') return value.seconds * 1000;
@@ -61,6 +61,19 @@ export function personalProposalParams(proposal: Row): Row {
     expectedRevision: proposal.expectedRevision, expectedScheduleRevision: proposal.expectedScheduleRevision,
     scheduledDate: proposal.scheduledDate, timezone: proposal.timezone, intake: proposal.intake,
     ...(proposal.sourceWorkout ? { sourceWorkout: proposal.sourceWorkout } : {}) };
+}
+
+export function publishedPersonalWorkoutId(proposal: Row | null, conversation: Row | null): string | null {
+  return proposal && conversation && conversation.publishedProposalId === proposal.proposalId &&
+    conversation.latestProposalId === proposal.proposalId && typeof conversation.publishedWorkoutId === 'string'
+    ? conversation.publishedWorkoutId : null;
+}
+
+export function personalProposalWithPublication(proposal: Row | null, conversation: Row | null): Row | null {
+  if (!proposal) return null;
+  const { publishedWorkoutId: _oldMarker, ...raw } = proposal;
+  const publishedWorkoutId = publishedPersonalWorkoutId(proposal, conversation);
+  return { ...raw, ...(publishedWorkoutId ? { publishedWorkoutId } : {}) };
 }
 
 export function personalRefinementParams(proposal: Row, requestText: string, overrides: Row = {}): Row {
