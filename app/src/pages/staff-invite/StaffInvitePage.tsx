@@ -40,7 +40,7 @@ export default function StaffInvitePage() {
     });
     return () => { mounted.current = false; ++epoch.current; unsubscribe(); };
   }, []);
-  useEffect(() => { document.title = "Activate staff access | PoseTek"; }, []);
+  useEffect(() => { document.title = "Activate staff access | PoseTek"; window.scrollTo({ top: 0, left: 0 }); }, []);
   useEffect(() => { if (error) errorRef.current?.focus(); }, [error]);
   function currentRequest(uid: string) {
     const revision = epoch.current;

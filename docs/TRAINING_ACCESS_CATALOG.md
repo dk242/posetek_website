@@ -158,6 +158,13 @@ The ignored `.attempt.json` is written before sending the transaction commit;
 `.committed.json` records an acknowledged commit before post-write verification.
 An attempt alone does not prove a write succeeded. `.applied.json` is produced
 only after the preservation verification passes.
+Read-only `--verify` also saves a fresh `.verified.json`; when the matching
+`.committed.json` exists, it reconciles `.applied.json` from that acknowledged
+commit and the new verification. Typed comparisons normalize only Firestore
+REST's equivalent empty array/map wrappers (`arrayValue: {}` versus
+`arrayValue: {values: []}`, and the analogous empty map). Scalar types, all
+nonempty contents, media, reviews and unrelated fields still compare exactly;
+errors identify the record without dumping its private contents.
 
 There is no automatic rollback: deleting requirement maps would block those
 drills in the version-one access flow. Any rollback must be separately reviewed, versioned

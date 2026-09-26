@@ -6,7 +6,7 @@ import type { Row } from './execution';
 import type { PersonalWorkoutStore } from './use-personal-workouts';
 import { personalAge, personalCapabilityEnabled } from './personal-workouts';
 import type { SourceWorkout } from './personal-workouts';
-import { applyEquipmentChanges, equipmentChanges, suppliedWorkoutConditions } from './personal-conversation';
+import { applyEquipmentChanges, currentWorkoutConditions, equipmentChanges, suppliedWorkoutConditions } from './personal-conversation';
 import TrainingSetup from './TrainingSetup';
 import { confirmedSetup, emptySetup, readRememberedSetup, rememberSetup, setupForProposal, setupFromIntake, setupSignature, setupSummary, EQUIPMENT_LABELS } from './training-access';
 import type { SetupDraft } from './training-access';
@@ -57,7 +57,7 @@ export default function PersonalWorkoutHub({ store, playerId, athlete, config, p
   const confirmedRequest = useRef(''), proposalSetupId = useRef('');
   const supplied = suppliedWorkoutConditions(requestText, initialHandoff?.timeAvailableMinutes ?? initialHandoff?.workoutRef?.timeAvailableMinutes);
   const access = confirmedSetup(setup);
-  const conditions: Row = { ...supplied, ...answers, ...(personalAge(athlete) ? { age: personalAge(athlete) } : {}), ...(supplied.painAnswer === 'yes' ? { painAnswer: 'yes' } : {}) };
+  const conditions = currentWorkoutConditions(supplied, answers, personalAge(athlete));
   const p = mode === 'chat' ? store.proposal : null;
   const published = !!p && store.conversation?.publishedProposalId === p.proposalId;
   const setupChanged = !!p && (!p.intake?.access || setupSignature(setup) !== setupSignature(setupFromIntake(p.intake)));

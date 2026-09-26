@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 vi.mock('../../../lib/firebase', () => ({ default: {}, auth: { currentUser: { uid: 'athlete' } }, db: {}, cloud: {}, storage: {} }));
-import { personalDraftLink, suppliedWorkoutConditions } from './personal-conversation';
+import { currentWorkoutConditions, personalDraftLink, suppliedWorkoutConditions } from './personal-conversation';
 import PersonalWorkoutHub, { PersonalPrescription } from './PersonalWorkoutHub';
 
 describe('conversational workout inputs', () => {
@@ -22,6 +22,11 @@ describe('conversational workout inputs', () => {
   it('keeps player context when linking a recoverable draft', () => {
     const p = new URLSearchParams(personalDraftLink('?preview=1&view=drills&rep=x', 'conversation1'));
     expect(Object.fromEntries(p)).toEqual({ preview: '1', view: 'training', personalConversation: 'conversation1' });
+  });
+  it('uses newly supplied time instead of a hidden earlier form answer', () => {
+    const supplied = suppliedWorkoutConditions('Make it 15 minutes. I have knee pain.');
+    expect(currentWorkoutConditions(supplied, { minutes: 30, painAnswer: 'no', age: 18 })).toEqual({ minutes: 15, painAnswer: 'yes', age: 18 });
+    expect(currentWorkoutConditions({ age: 19 }, {}, 16).age).toBe(16);
   });
 });
 describe('reviewed workout presentation', () => {

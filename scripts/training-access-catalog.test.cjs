@@ -101,6 +101,24 @@ test('media/review/config/untouched-source mutations are detected after publicat
   const {plan}=fixture();
   for(const mutate of [a=>a.catalog[0].fields.media={mapValue:{fields:{}}},a=>a.authors[0].fields.reviewStatus={stringValue:'approved'},a=>a.config.fields.personalWorkoutsEnabled={booleanValue:false},a=>a.catalog.find(d=>d.name.endsWith('/BMA-501')).fields.untouchedNested={nullValue:null}]){const after=applied(plan);mutate(after);assert.throws(()=>verifyAfter(plan,after));}
 });
+test('Firestore REST empty typed containers verify without weakening value types or private diagnostics',()=>{
+  const {plan}=fixture();
+  function omitEmpty(value){
+    if(Array.isArray(value))return value.map(omitEmpty);
+    if(!value || typeof value!=='object')return value;
+    const out=Object.fromEntries(Object.entries(value).map(([key,item])=>[key,omitEmpty(item)]));
+    if(Array.isArray(out.arrayValue?.values) && out.arrayValue.values.length===0)delete out.arrayValue.values;
+    if(out.mapValue?.fields && Object.keys(out.mapValue.fields).length===0)delete out.mapValue.fields;
+    return out;
+  }
+  const actual=omitEmpty(applied(plan));
+  assert.equal(verifyAfter(plan,actual).requirementMaps,54);
+  for(const mutate of [
+    a=>{a.catalog.find(d=>d.name.endsWith('/BMA-501')).fields.accessRequirements.mapValue.fields.unknowns={mapValue:{}};},
+    a=>{a.catalog.find(d=>d.name.endsWith('/BMA-501')).fields.accessRequirements.mapValue.fields.participantMin={doubleValue:1};},
+    a=>{a.catalog.find(d=>d.name.endsWith('/BMA-501')).fields.privateUnexpected={stringValue:'NEVER_DUMP_THIS_VALUE'};}
+  ]){const altered=clone(actual);mutate(altered);assert.throws(()=>verifyAfter(plan,altered),error=>error.message==='Unexpected field change in drillCatalog/BMA-501'&&!error.message.includes('NEVER_DUMP_THIS_VALUE'));}
+});
 test('equipment correction refuses content-review or restricted-workflow bypass',()=>{
   const r=manifest.records.find(r=>r.drillId==='BMA-501');
   assert.throws(()=>ensureReviewBoundary(r,r.provenance.source,{reviewStatus:'approved',reviewedContentHash:'old'}));

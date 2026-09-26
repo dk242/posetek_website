@@ -58,6 +58,20 @@ function writesFor(plan){
   writes.push({update:{name:plan.before.meta.name,fields:fields(meta)},updateMask:{fieldPaths:Object.keys(meta)},currentDocument:{updateTime:plan.before.meta.updateTime},updateTransforms:[{fieldPath:'updatedAt',setToServerValue:'REQUEST_TIME'}]});
   return writes;
 }
+function normalizeEmptyProtoContainers(value){
+  if(Array.isArray(value))return value.map(normalizeEmptyProtoContainers);
+  if(!value || typeof value!=='object')return value;
+  const out=Object.fromEntries(Object.entries(value).map(([key,item])=>[key,normalizeEmptyProtoContainers(item)]));
+  // Firestore REST omits the empty repeated/map member of its typed wrappers.
+  // Preserve every scalar type, timestamp, nonempty value and unrelated key.
+  for(const [wrapper,member,empty] of [['arrayValue','values',[]],['mapValue','fields',{}]]){
+    if(out[wrapper] && typeof out[wrapper]==='object' && !Array.isArray(out[wrapper]) && Object.keys(out[wrapper]).length===0)out[wrapper]={[member]:empty};
+  }
+  return out;
+}
+function sameTypedValues(actual,expected,message){
+  assert.ok(canonical(normalizeEmptyProtoContainers(actual))===canonical(normalizeEmptyProtoContainers(expected)),message);
+}
 function verifyAfter(plan,after){
   const byPath=new Map(after.catalog.map(d=>[d.name,d]));
   assert.equal(after.catalog.length,208);assert.equal(byPath.size,208);
@@ -65,22 +79,22 @@ function verifyAfter(plan,after){
   for(const before of plan.before.catalog){
     const actual=byPath.get(before.name);assert.ok(actual,`Missing ${nameOf(before)}`);
     const patch=patches.get(before.name);
-    if(!patch){assert.equal(canonical(actual),canonical(before),`Untouched ${nameOf(before)} changed`);continue;}
+    if(!patch){sameTypedValues(actual,before,`Untouched ${nameOf(before)} changed`);continue;}
     // Compare Firestore values directly, preserving timestamp/reference/value
     // types rather than flattening and accidentally rewriting existing fields.
     const expectedFields={...before.fields,...fields(patch.fields)};
     delete expectedFields.updatedAt;
     const {updatedAt,...actualFields}=actual.fields;
     assert.ok(updatedAt?.timestampValue,'Expected server update timestamp');
-    assert.equal(canonical(actualFields),canonical(expectedFields),`Unexpected field change in ${nameOf(before)}`);
-    assert.equal(actual.createTime,before.createTime);
+    sameTypedValues(actualFields,expectedFields,`Unexpected field change in ${nameOf(before)}`);
+    assert.ok(actual.createTime===before.createTime,`Create time changed in ${nameOf(before)}`);
   }
-  assert.equal(canonical(after.authors),canonical(plan.before.authors),'Catalog authoring or reviews changed');
-  assert.equal(canonical(after.config),canonical(plan.before.config),'Configuration changed');
+  sameTypedValues(after.authors,plan.before.authors,'Catalog authoring or reviews changed');
+  sameTypedValues(after.config,plan.before.config,'Configuration changed');
   const expectedMeta={...plan.before.meta.fields,...fields({catalogVersion:plan.catalogVersionAfter,updatedBy:'operator:training-access-requirements',lastChange:{kind:'training-access-requirements',count:54,manifestSha256:plan.manifestSha256}})};
   delete expectedMeta.updatedAt;
   const {updatedAt,...actualMeta}=after.meta.fields;
-  assert.ok(updatedAt?.timestampValue);assert.equal(canonical(actualMeta),canonical(expectedMeta));
+  assert.ok(updatedAt?.timestampValue);sameTypedValues(actualMeta,expectedMeta,'Catalog metadata changed outside the reviewed patch');
   return {status:'verified',catalogRecords:208,requirementMaps:54,equipmentCorrections:2,untouchedRecords:154,wholeBodyDraftsPreserved:80,mediaAndOtherCatalogFieldsPreserved:true,authoringAndReviewsPreserved:true,aiConfigurationPreserved:true,mobileVerified:false,catalogVersion:plan.catalogVersionAfter,planSha256:sha256(plan)};
 }
 async function applyPlan(c,plan,manifest,equipment,{onAttempt=()=>{},onCommitted=()=>{}}={}){
@@ -103,7 +117,18 @@ async function main(){
   const output=option('--plan')||DEFAULT_PLAN;
   assert.ok(path.resolve(output).startsWith(path.resolve('.netlify')+path.sep),'Plans must stay in ignored .netlify/.');
   const c=await cloud();
-  if(args.includes('--verify')){const plan=readJson(output);verifyPlan(plan,manifest,equipment);console.log(JSON.stringify(verifyAfter(plan,await snapshot(c))));return;}
+  if(args.includes('--verify')){
+    const plan=readJson(output);verifyPlan(plan,manifest,equipment);
+    const verification={...verifyAfter(plan,await snapshot(c)),verifiedAt:new Date().toISOString(),readOnlyVerification:true};
+    fs.writeFileSync(output.replace(/\.json$/,'.verified.json'),JSON.stringify(verification,null,2)+'\n');
+    const committedPath=output.replace(/\.json$/,'.committed.json');
+    if(fs.existsSync(committedPath)){
+      const committed=readJson(committedPath);
+      assert.equal(committed.status,'commit-acknowledged');assert.equal(committed.planSha256,sha256(plan));
+      fs.writeFileSync(output.replace(/\.json$/,'.applied.json'),JSON.stringify({result:committed.result,verification},null,2)+'\n');
+    }
+    console.log(JSON.stringify(verification));return;
+  }
   if(args.includes('--apply')){
     const plan=readJson(output);assert.equal(option('--expected-plan-sha'),sha256(plan),'Apply requires the exact independently reviewed plan digest.');
     const receipt=(suffix,value)=>fs.writeFileSync(output.replace(/\.json$/,suffix+'.json'),JSON.stringify(value,null,2)+'\n');

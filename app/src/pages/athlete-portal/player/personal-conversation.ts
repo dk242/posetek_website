@@ -67,3 +67,9 @@ export function personalDraftLink(search: string, conversationId?: string, worko
   if (workoutId) params.set('personalWorkout', workoutId);
   return params.toString();
 }
+
+export function currentWorkoutConditions(supplied: Row, answers: Row, recordedAge?: number): Row {
+  // A newly written request can replace a previous form answer. Those form
+  // fields are hidden once supplied, so stale answers must not override it.
+  return { ...answers, ...supplied, ...(recordedAge ? { age: recordedAge } : {}) };
+}
