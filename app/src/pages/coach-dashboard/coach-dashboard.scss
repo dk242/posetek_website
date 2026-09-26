@@ -1,5 +1,5 @@
 // Coach dashboard styles — layered on the .pt-pose portal theme (pose-portal.css
-// supplies the header, buttons, dialogs, and CSS variables). Desktop-first.
+// supplies the header, buttons, dialogs, and CSS variables).
 
 .pt-coachdash {
   .coachdash-shell {
@@ -644,4 +644,71 @@
     .coachdash-tiles { grid-template-columns: repeat(2, 1fr); }
     .coachdash-heading { align-items: flex-start; flex-direction: column; }
   }
+
+  // Training workspace: scoped controls, readable mobile roster, saved history.
+  .quiet-button { margin-left: 0; }
+  button, .quiet-button, select, summary { min-height: 44px; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  :is(button, a, input, select, summary):focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+  h1, h2, h3 { text-wrap: balance; }
+  .coachdash-toolbar, .coachdash-list-tools { display: flex; align-items: end; gap: 16px; flex-wrap: wrap; }
+  .coachdash-toolbar { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .coachdash-toolbar > p { flex: 1; align-self: center; }
+  .coachdash-toolbar label, .coachdash-search { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .coachdash-toolbar select, .coachdash-search input {
+    color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: var(--small-radius);
+    padding: 10px 12px; font: inherit; font-size: 16px; min-width: 0; width: 100%; min-height: 44px;
+  }
+  .coachdash-toolbar label { min-width: min(260px, 100%); }
+  .coachdash-scope-note { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .coachdash-notice { margin: 0; border-left: 3px solid var(--amber); background: var(--card); border-radius: 0 12px 12px 0; padding: 14px 16px; line-height: 1.55; }
+  .coachdash-list-tools { justify-content: space-between; align-items: center; }
+  .coachdash-search { min-width: min(300px, 100%); }
+  .coachdash-player-list, .coachdash-history { display: grid; gap: 16px; }
+  .coachdash-player-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--card-radius); padding: 20px 24px; }
+  .coachdash-player-card > header, .coachdash-player-card > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .coachdash-player-card > header > div { display: grid; gap: 6px; }
+  .coachdash-player-name { display: inline-flex; align-items: center; gap: 12px; padding: 0; background: transparent; border: 0; color: var(--text); font-size: 20px; font-weight: 750; text-align: left; cursor: pointer; }
+  .coachdash-player-name .material-symbols-outlined { color: var(--muted); font-size: 20px; }
+  .coachdash-player-name:hover { color: var(--lime); }
+  .coachdash-player-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 18px 0; padding: 16px 0; border-block: 1px solid var(--line); }
+  .coachdash-player-metrics.testing { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .coachdash-player-metrics dt { font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+  .coachdash-player-metrics dd { font-size: 14px; font-weight: 650; margin: 0; line-height: 1.45; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .coachdash-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .coachdash-unavailable { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding-top: 8px; color: var(--amber); }
+  .coachdash-unavailable p { flex: 1; min-width: 180px; }
+  .coachdash-history h2 { margin-top: 0; }
+  .coachdash-history summary { padding-block: 12px; cursor: pointer; font-weight: 700; }
+  .coachdash-history .drill-list { margin-top: 10px; }
+  .coachdash-heading.detail .coachdash-tabs { flex-basis: 100%; width: fit-content; }
+
+  @media (max-width: 700px) {
+    .portal-header { height: auto; min-height: 72px; padding-block: 12px; gap: 10px; flex-wrap: wrap; }
+    .coachdash-nav { order: 3; flex-basis: 100%; margin-left: 0; gap: 8px; }
+    .coachdash-nav .quiet-button { flex: 1; padding-inline: 8px; font-size: 13px; }
+    .coachdash-signout { margin-left: auto; }
+    .coachdash-shell { width: calc(100% - 28px); padding-top: 22px; padding-bottom: max(40px, env(safe-area-inset-bottom)); gap: 18px; }
+    .coachdash-heading h1 { font-size: 29px; }
+    .coachdash-toolbar label, .coachdash-search { width: 100%; }
+    .coachdash-toolbar .coachdash-sub { font-size: 12px; }
+    .coachdash-heading .primary-cta { width: 100%; }
+    .coachdash-tiles { gap: 10px; }
+    .stat-tile { padding: 14px; }
+    .stat-tile .stat-value { font-size: 25px; }
+    .stat-tile .stat-label { letter-spacing: .03em; font-size: 11px; }
+    .stat-tile .coachdash-sub { font-size: 11px; line-height: 1.5; }
+    .coachdash-player-card, .week-card { padding: 16px; }
+    .coachdash-player-metrics, .coachdash-player-metrics.testing { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+    .coachdash-player-card > footer { align-items: stretch; }
+    .coachdash-row-actions { width: 100%; }
+    .coachdash-row-actions > button { flex: 1; }
+    .week-card > header { flex-direction: column; }
+    .coachdash-heading.detail .coachdash-tabs { display: grid; grid-template-columns: 1fr 1.25fr 1fr; width: 100%; max-width: 100%; }
+    .coachdash-tabs button { padding-inline: 6px; font-size: 13px; }
+    .detail-title { gap: 10px; min-width: 0; }
+    .detail-title > div { min-width: 0; }
+    .detail-title .icon-button { flex-shrink: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 }

@@ -14,6 +14,7 @@ import {
   prescriptionDoseLine,
   weekWindow,
   weekWindowLabel,
+  toDate,
 } from "../../athlete-portal/lib/training";
 import type { AthleteSummary } from "../lib/logic";
 import { hoursLine, planProgress } from "../lib/logic";
@@ -37,6 +38,7 @@ import DrillPicker from "./DrillPicker";
 import { isV3Plan } from "../../../lib/contracts/types";
 import { blockDoseLine } from "../../../lib/contracts/drillV2";
 import { orderedBlocks, orderedWorkouts, orderedWeeks as orderedV3Weeks } from "../../../lib/contracts/planV3";
+import WorkoutHistory from './WorkoutHistory';
 
 interface AthleteDetailProps {
   summary: AthleteSummary;
@@ -56,7 +58,7 @@ function fullName(athlete: any): string {
 }
 
 export default function AthleteDetail({ summary, job, preview, onBack, onCreatePlan, onPlanChanged, onPreviewEdit }: AthleteDetailProps) {
-  const [tab, setTab] = useState<"stats" | "program">("program");
+  const [tab, setTab] = useState<"stats" | "program" | "history">("program");
   const plan = summary.plan;
 
   return (
@@ -70,21 +72,23 @@ export default function AthleteDetail({ summary, job, preview, onBack, onCreateP
             <p className="eyebrow">Athlete</p>
             <h1>{fullName(summary.athlete)}</h1>
             <p className="coachdash-sub">
-              {summary.profile.totalSessions} sessions · {hoursLine(summary.totals.trainingSeconds)} of logged workouts · {planProgress(plan)}
+              {summary.totals.workoutsCompleted} completed workouts · {hoursLine(summary.totals.timerSeconds)} timer time · {planProgress(plan)}
             </p>
           </div>
         </div>
-        <div className="segmented-control coachdash-tabs" role="tablist">
+        <button type="button" className="primary-cta" disabled={preview} onClick={onCreatePlan}>Prescribe / review plan</button>
+        <div className="segmented-control coachdash-tabs" role="tablist" aria-label="Player progress">
           <button type="button" role="tab" aria-selected={tab === "program"} className={tab === "program" ? "active" : ""} onClick={() => setTab("program")}>
             Program
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'history'} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>Workout history</button>
           <button type="button" role="tab" aria-selected={tab === "stats"} className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
             Stats
           </button>
         </div>
       </section>
 
-      {tab === "stats" ? (
+      {tab === 'history' ? <WorkoutHistory logs={summary.logs} /> : tab === "stats" ? (
         <section className="coachdash-stats-wrap">
           <AthleteStats athlete={summary.athlete} athleteName={fullName(summary.athlete)} reps={summary.reps} provisionalEstimates={summary.provisionalEstimates} estimateReps={summary.allResultReps} />
         </section>
@@ -363,20 +367,21 @@ function V3ProgramView({ plan }: { plan: any }) {
     <section className="program-editor">
       <header className="program-header">
         <div>
-          <p className="eyebrow">Training plan · {String(plan.status || "active")} · version 3</p>
+          <p className="eyebrow">Active training program</p>
           <h2>{plan.horizonWeeks || (plan.weeks || []).length}-week program</h2>
           <p className="coachdash-sub">
             Started {String(plan.startDate || "—")} · {plan.sessionsPerWeek ?? "?"} sessions/week ·{" "}
             {plan.minutesPerSession ?? "?"} min each · plan revision {plan.planRevision ?? 1}
           </p>
+          {toDate(plan.activatedAt) && <p className="coachdash-sub">Reviewed plan activated {toDate(plan.activatedAt)!.toLocaleDateString()}</p>}
         </div>
       </header>
 
       <article className="week-card">
         <p>
-          This athlete is on a version 3 program: each week holds ready-made workouts rather than a
-          list of weekly prescriptions. Workouts are adjusted one at a time — with a recorded reason
-          for the change — in the PoseTek admin console.
+          This is the active program the player sees. Use Prescribe / review plan to prepare a new
+          draft, compare it with this program and explicitly activate it when ready. Creating a draft
+          keeps the current program in place. Ask PoseTek for an individual workout adjustment.
         </p>
       </article>
 

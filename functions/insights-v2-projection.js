@@ -4,7 +4,7 @@ const { randomUUID } = require("node:crypto");
 const { playerSegment } = require("./athlete-storage-paths");
 const { millis, duplicateIds, qualifyRep, workoutEvents } = require("./insights-v2-qualification");
 const { createProcessingEvidenceReader, failureMatchesRep } = require("./processing-evidence");
-const PROJECTION_VERSION = 2;
+const PROJECTION_VERSION = 3;
 const MAX_HISTORY = 20000;
 const MAX_WORKOUTS = 10000;
 const MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -77,12 +77,13 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
       return { deleted: true, playerId };
     }
     const token = state.data()?.token || null;
-    const [repDocs, logDocs, failures, corrections] = await Promise.all([
+    const [repDocs, logDocs, failures, corrections, personalLogs] = await Promise.all([
       completeQuery(playerRef.collection("reps"), maxHistory, HttpsError),
       completeQuery(playerRef.collection("workoutLogs"), maxWorkouts, HttpsError),
       injectedFailures ? injectedFailures(playerId) : completeQuery(db.collection("failureCases").where("playerDocumentID", "==", playerId), 5000, HttpsError)
         .then(docs => docs.map(doc => ({ ...doc.data(), id: doc.id }))),
       playerRef.collection("insightMetadata").doc("resultCorrections").get(),
+      completeQuery(playerRef.collection("personalWorkoutLogs"), maxWorkouts, HttpsError),
     ]);
     const reps = repDocs.map(doc => ({ ...doc.data(), id: doc.id, playerId })), duplicates = duplicateIds(reps, corrections.data()), cache = new Map(), linkedFailures = new Set();
     const testing = await mapBounded(reps, 8, async rep => {
@@ -90,7 +91,9 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
       for (const failure of evidence.failures || []) linkedFailures.add(failure);
       return qualifyRep(rep, evidence, duplicates.has(rep.id));
     });
-    const workouts = workoutEvents(logDocs.map(doc => ({ ...doc.data(), id: doc.id })));
+    if (logDocs.length + personalLogs.length > maxWorkouts) throw new HttpsError("resource-exhausted", "The complete workout history exceeds the reporting bound. No partial total was returned.");
+    const workouts = workoutEvents([...logDocs.map(doc => ({ ...doc.data(), id: doc.id })),
+      ...personalLogs.map(doc => ({ ...doc.data(), id: doc.id, source: "personal" }))]);
     const failureEvents = failures.map(failure => ({ at: millis(failure.createdAt), linked: linkedFailures.has(failure) ? 1 : 0, unmatched: linkedFailures.has(failure) ? 0 : 1 }));
     const grouped = new Map();
     for (const [type, values] of [["testing", testing], ["workouts", workouts], ["failures", failureEvents]]) for (const event of values) {
@@ -113,7 +116,7 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
     }
     if (pending) await batch.commit();
     const summary = { version: PROJECTION_VERSION, revisionId, rebuiltAtMillis, complete: true, token,
-      recordedDocuments: reps.length, workoutLogs: logDocs.length, failureReports: failures.length, dayIds };
+      recordedDocuments: reps.length, workoutLogs: logDocs.length + personalLogs.length, failureReports: failures.length, dayIds };
     // Immutable daily pages become visible only when the complete manifest is
     // published. Concurrent invalidation prevents stale rebuild publication.
     await db.runTransaction(async transaction => {

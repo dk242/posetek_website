@@ -88,10 +88,20 @@ function mockLog(daysAgo: number, minutes: number, completed: boolean): any {
     id: `log-${daysAgo}`,
     planId: "preview-plan",
     weekNumber: 1,
+    workoutId: `session-${daysAgo}`,
+    workoutRevision: 1,
+    activeSeconds: (minutes - 3) * 60,
+    workoutSnapshot: { title: 'Ball control and acceleration', blocks: [
+      { blockId: 'control', drillId: 'DRB-004', name: 'Tight-space control', domain: 'dribbling', sets: 3, reps: 45, repUnit: 'seconds', restSeconds: 45 },
+      { blockId: 'starts', drillId: 'SPD-010', name: 'Acceleration starts', domain: 'linearSpeed', sets: 3, reps: 3, repUnit: 'reps', restSeconds: 90 },
+    ] },
     startedAt: started,
     endedAt: new Date(started.valueOf() + minutes * 60000),
     endReason: completed ? "completed" : "endedEarly",
-    blocks: [],
+    blocks: [
+      { blockId: 'control', status: 'done', setsCompleted: 3 },
+      { blockId: 'starts', status: completed ? 'done' : 'partial', setsCompleted: completed ? 3 : 1 },
+    ],
   };
 }
 

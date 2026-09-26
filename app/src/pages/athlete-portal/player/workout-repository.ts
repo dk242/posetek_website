@@ -32,7 +32,7 @@ export async function startPlayerWorkout(playerId: string, reviewed: Row): Promi
   }
   return db.runTransaction(async tx => {
     const old = await tx.get(logRef);
-    if (old.exists && !needsTrainingStartCheck(old.data()?.workoutSnapshot || reviewed)) { resumeWorkout(reviewed, { ...old.data(), id: old.id }); return old.data()!; }
+    if (old.exists && !needsTrainingStartCheck(old.data()?.workoutSnapshot || reviewed)) { resumeWorkout(reviewed, { ...old.data(), id: old.id }); return { ...old.data(), timerStartedHere: false }; }
     const plan = await tx.get(player.collection('trainingPlans').doc(reviewed.planId));
     const schedule = await tx.get(scheduleRef);
     const adhoc = reviewed.source === 'adhoc' ? await tx.get(player.collection('plannedWorkouts').doc(reviewed.workoutId)) : null;
@@ -40,11 +40,11 @@ export async function startPlayerWorkout(playerId: string, reviewed: Row): Promi
     if (!Number.isInteger(revision)) throw new Error('Training is not ready to start. Refresh and try again.');
     const ready = freshWorkout({ ...plan.data(), id: plan.id }, reviewed, adhoc ? { ...adhoc.data(), id: adhoc.id } : undefined);
     if (needsTrainingStartCheck(ready) && (!approval || approval.planRevision !== (plan.data()?.planRevision || 1) || approval.workoutRevision !== ready.workoutRevision || approval.scheduleRevision !== revision)) throw new Error('Training clearance or schedule changed. Review the session and try starting again.');
-    if (old.exists) { resumeWorkout(ready, { ...old.data(), id: old.id }); return old.data()!; }
+    if (old.exists) { resumeWorkout(ready, { ...old.data(), id: old.id }); return { ...old.data(), timerStartedHere: false }; }
     const value = initialLog(ready, firebase.firestore.Timestamp.now());
     tx.set(logRef, value);
     tx.update(scheduleRef, { revision: revision + 1, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-    return value;
+    return { ...value, timerStartedHere: true };
   });
 }
 

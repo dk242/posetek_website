@@ -92,6 +92,21 @@ test("linked workout logs count once; no ending is not inferred abandonment", ()
   assert.equal(result[0].status, "inProgress"); assert.equal(result[0].unknownDuration, 1);
 });
 
+test("personal sessions have a separate identity and truthful early endings", () => {
+  const base = { id: "same", workoutId: "same", startedAt: NOW - 120000, endedAt: NOW,
+    activeSeconds: 30, endReason: "completed", workoutSnapshot: { blocks: [] }, blocks: [] };
+  const rows = workoutEvents([
+    { ...base, source: "plan", planId: "assigned" },
+    { ...base, source: "personal", endReason: "pain" },
+    { ...base, id: "second", workoutId: "second", source: "personal", endReason: "stopped" },
+    { ...base, id: "third", workoutId: "third", source: "personal" },
+  ]);
+  assert.equal(rows.length, 4);
+  assert.equal(rows.filter(row => row.status === "completed").length, 2);
+  assert.equal(rows.filter(row => row.status === "endedEarly").length, 2);
+  assert.ok(rows.every(row => row.timerMinutes === 0.5 && row.duplicateLogs === 0));
+});
+
 const evidencePath = path.resolve(__dirname, "../.netlify/vacaville-sep16-repair/completion-evidence.json");
 const qualificationPath = path.resolve(__dirname, "../.netlify/vacaville-sep16-repair/completion-qualification.json");
 test("private historical audit reproduces all approved qualifications and roster totals", { skip: !fs.existsSync(evidencePath) || !fs.existsSync(qualificationPath) }, () => {

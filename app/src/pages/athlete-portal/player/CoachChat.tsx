@@ -4,6 +4,7 @@ import { dateText } from '../lib/mobile';
 import { MultilineText } from '../views/shared';
 import { capabilityEnabled, streamCoach, useCoachConfig, validHandoff } from './gateway';
 import type { Row } from './execution';
+import { coachPrompts, coachToolStatus } from './coach-prompts';
 
 type Props = { playerId: string; preview: boolean; capability?: string; context?: Row; initialText?: string;
   onDraft?: (draft: Row | null) => void; onHandoff?: (request: Row) => void };
@@ -88,7 +89,7 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
         if (token !== turn.current) return;
         if (frame.event === 'start' && !memoryAction) conversation.current = frame.data.conversationId;
         if (frame.event === 'delta') { full += frame.data.text || ''; setAnswer(full); }
-        if (frame.event === 'tool') setStatus(`${frame.data.status === 'finished' ? 'Checked' : 'Checking'} ${String(frame.data.name || 'training').replaceAll('_', ' ')}…`);
+        if (frame.event === 'tool') setStatus(coachToolStatus(frame.data.name, frame.data.status === 'finished'));
         if (frame.event === 'draft') proposal = frame.data;
         if (frame.event === 'memory') memorySnapshot = frame.data;
         if (frame.event === 'workout_request' || frame.data.type === 'workout_request') handoff = frame.data;
@@ -103,14 +104,17 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
       }
       setAnswer('');
     } catch (e: any) {
-      if (token === turn.current && e.name !== 'AbortError') setError(e.message);
+      if (token === turn.current) {
+        setError(e.name === 'AbortError' ? 'Reply stopped. Check the saved conversation before sending again.' : e.message);
+        if (!memoryAction) setDraft(text);
+      }
       if (token === turn.current) onDraft?.(null);
     } finally {
       if (token === turn.current) { controller.current = null; setSending(false); setStatus(''); }
     }
   };
   const memoryCommand = (kind: string, extra: Row = {}) => void send('', { kind, ...(kind !== 'list' ? { expectedRevision: memory?.workspace.revision } : {}), ...extra });
-  return <section className="player-chat">
+  return <section className="player-chat" aria-busy={sending}>
     <div className="player-actions">
       <button type="button" onClick={() => setShowHistory(v => !v)}>History</button>
       <button type="button" onClick={reset}>New conversation</button>
@@ -126,12 +130,12 @@ export default function CoachChat({ playerId, preview, capability = 'pose_chat',
       </>}
     </section>}
     <div className="player-chat-messages" ref={messageRoot} aria-live="polite">
-      {!messages.length && <div className="player-chat-welcome"><span className="material-symbols-outlined">auto_awesome</span><h2>{capability === 'workout_chat' ? 'What would you like to change?' : 'What do you want to work on?'}</h2><p>{capability === 'workout_chat' ? 'Talk through the session. Review your coach’s proposal before saving it.' : 'Ask about your progress, your next session, or a drill.'}</p><div className="player-suggestions">{['How am I progressing?', 'Help me plan 20 minutes of training', 'What should I focus on next?'].map(s => <button key={s} onClick={() => setDraft(s)}>{s}</button>)}</div></div>}
+      {!messages.length && <div className="player-chat-welcome"><span className="material-symbols-outlined" aria-hidden="true">auto_awesome</span><h2>{capability === 'workout_chat' ? context?.workoutRef?.kind === 'new' ? 'Make a session that fits today.' : 'What would you like to change?' : capability === 'coaching_chat' ? 'Get clear on this drill.' : 'What do you want to work on?'}</h2><p>{capability === 'workout_chat' ? 'Describe your time, equipment, or focus. Review the proposal before saving it.' : 'Ask about your progress, your next session, or a drill.'}</p><div className="player-suggestions">{coachPrompts(capability, context?.workoutRef).map(s => <button type="button" key={s} onClick={() => setDraft(s)}>{s}<span aria-hidden="true">↗</span></button>)}</div><small>Choose a suggestion to edit it before sending.</small></div>}
       {messages.map((m, i) => <article key={m.id || i} className={`chat-message ${m.role === 'user' ? 'user' : 'assistant'}`}><MultilineText text={m.content || ''} />{onHandoff && !sending && !error && i === messages.length - 1 && m.role === 'assistant' && validHandoff(m.workoutRequest, playerId) && <button className="primary-cta" onClick={() => onHandoff(m.workoutRequest)}>Continue in Training</button>}</article>)}
-      {answer && <article className="chat-message assistant"><MultilineText text={answer} /></article>}
+      {answer && <article className="chat-message assistant">{error && <small>Interrupted reply · check history for the saved version</small>}<MultilineText text={answer} /></article>}
       {sending && <p role="status">{status || 'Your coach is thinking…'}</p>}
     </div>
-    {error && <p className="player-error" role="alert">{error}</p>}
+    {error && <div className="player-error" role="alert"><p>{error}</p>{conversation.current && <button type="button" disabled={sending} onClick={() => void openHistory({ id: conversation.current, workoutTarget: context?.workoutRef })}>Load saved conversation</button>}</div>}
     {!canChat && <p>{config ? 'Your coach is temporarily unavailable. Your history is still here.' : 'Connecting to your coach…'}</p>}
     <form className="chat-composer" onSubmit={e => { e.preventDefault(); void send(draft.trim()); }}>
       <textarea aria-label="Message your coach" value={draft} onChange={e => setDraft(e.target.value)} maxLength={capability === 'workout_chat' ? 500 : 2000} placeholder="Message your coach…" rows={2} disabled={sending} />

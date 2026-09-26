@@ -10,6 +10,7 @@
 import { buildProfile } from "../../../components/athlete-stats/AthleteStats";
 import type { AthleteProfile } from "../../../components/athlete-stats/AthleteStats";
 import type { ProvisionalEstimate } from "../../../lib/provisional-estimates";
+import { workoutHistory } from './history';
 import {
   currentWeekNumber,
   daysLeftInWeek,
@@ -38,22 +39,25 @@ export function activePlan(plans: any[]): any | null {
   const actives = (plans || []).filter(plan => plan?.status === "active");
   if (!actives.length) return null;
   return [...actives].sort(
-    (a, b) => (toDate(b?.generatedAt)?.valueOf() ?? 0) - (toDate(a?.generatedAt)?.valueOf() ?? 0),
+    (a, b) => (toDate(b?.activatedAt ?? b?.generatedAt)?.valueOf() ?? 0) - (toDate(a?.activatedAt ?? a?.generatedAt)?.valueOf() ?? 0),
   )[0];
 }
 
 // MARK: - Training time / activity aggregates
 
 export interface TrainingTotals {
-  /** Wall-clock seconds across ended workout logs. */
+  /** Compatibility total; display timerSeconds and estimatedSeconds separately. */
   trainingSeconds: number;
+  timerSeconds: number;
+  estimatedSeconds: number;
+  unknownDuration: number;
   workoutsCompleted: number;
   workoutsStarted: number;
   lastActiveMillis: number | null;
 }
 
 export function trainingTotals(logs: any[], reps: any[]): TrainingTotals {
-  let seconds = 0;
+  let timerSeconds = 0, estimatedSeconds = 0, unknownDuration = 0;
   let completed = 0;
   let started = 0;
   let lastActive: number | null = null;
@@ -64,21 +68,18 @@ export function trainingTotals(logs: any[], reps: any[]): TrainingTotals {
     }
   };
 
-  for (const log of logs || []) {
-    started += 1;
-    if (log?.endReason === "completed") completed += 1;
-    const startedAt = toDate(log?.startedAt);
-    const endedAt = toDate(log?.endedAt);
-    if (startedAt && endedAt) {
-      seconds += Math.max((endedAt.valueOf() - startedAt.valueOf()) / 1000, 0);
-      note(endedAt.valueOf());
-    } else if (startedAt) {
-      note(startedAt.valueOf());
-    }
+  for (const entry of workoutHistory(logs || [])) {
+    if (entry.start !== null) started += 1;
+    if (entry.status === 'completed') completed += 1;
+    timerSeconds += entry.timerSeconds ?? 0;
+    estimatedSeconds += entry.estimatedSeconds ?? 0;
+    if (entry.timerSeconds === null && entry.estimatedSeconds === null) unknownDuration++;
+    note(entry.end ?? entry.start);
   }
   for (const rep of reps || []) note(rep?.createdAtMillis);
 
-  return { trainingSeconds: seconds, workoutsCompleted: completed, workoutsStarted: started, lastActiveMillis: lastActive };
+  return { trainingSeconds: timerSeconds + estimatedSeconds, timerSeconds, estimatedSeconds, unknownDuration,
+    workoutsCompleted: completed, workoutsStarted: started, lastActiveMillis: lastActive };
 }
 
 export function hoursLine(seconds: number): string {
@@ -154,6 +155,7 @@ export interface AthleteSummary {
   totals: TrainingTotals;
   plan: any | null;
   focus: FocusArea[];
+  logs: any[];
 }
 
 export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: any[], provisionalEstimates?: ProvisionalEstimate[], allResultReps?: any[]): AthleteSummary {
@@ -168,6 +170,7 @@ export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: an
     totals: trainingTotals(logs, reps),
     plan,
     focus: focusAreasFor(plan, profile),
+    logs,
   };
 }
 

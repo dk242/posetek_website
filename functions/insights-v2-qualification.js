@@ -127,7 +127,8 @@ function demographics(profile, reporting, now) {
 function workoutEvents(logs) {
   const groups = new Map();
   for (const log of logs) {
-    const identity = log.planId && log.workoutId && log.source !== "adhoc" ? `plan:${log.planId}:${log.workoutId}`
+    const identity = log.source === "personal" ? `personal:${log.workoutId || log.id}`
+      : log.planId && log.workoutId && log.source !== "adhoc" ? `plan:${log.planId}:${log.workoutId}`
       : `adhoc:${log.workoutId || log.id}`;
     if (!groups.has(identity)) groups.set(identity, []);
     groups.get(identity).push(log);
@@ -138,7 +139,8 @@ function workoutEvents(logs) {
     group.sort((a, b) => Number(Boolean(b.workoutSnapshot)) - Number(Boolean(a.workoutSnapshot))
       || (millis(b.endedAt) ?? 0) - (millis(a.endedAt) ?? 0) || String(a.id).localeCompare(String(b.id)));
     const log = group[0], start = millis(log.startedAt), end = millis(log.endedAt);
-    const status = end === null ? "inProgress" : ["completed", "endedEarly", "abandoned"].includes(log.endReason) ? log.endReason : "unknown";
+    const status = end === null ? "inProgress" : log.source === "personal" && ["stopped", "pain"].includes(log.endReason) ? "endedEarly"
+      : ["completed", "endedEarly", "abandoned"].includes(log.endReason) ? log.endReason : "unknown";
     const completions = new Map((Array.isArray(log.blocks) ? log.blocks : []).filter(b => b && typeof b.blockId === "string").map(b => [b.blockId, b]));
     const blocks = [...completions.values()], frozen = log.workoutSnapshot?.blocks;
     let prescribedKnown = Array.isArray(frozen) && frozen.length > 0, allSets = prescribedKnown;

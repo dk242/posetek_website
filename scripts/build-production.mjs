@@ -12,6 +12,10 @@ const output = join(root, "production-dist");
 const manifest = JSON.parse(await readFile(join(root, "deployment/homepage-baseline.json"), "utf8"));
 const cache = join(app, "node_modules/.cache/homepage-baseline", manifest.deploymentId);
 const hash = bytes => createHash("sha1").update(bytes).digest("hex");
+// Some pinned releases include filename aliases with the same original bytes.
+// Share a declared local source only for an exact checksum AND size match.
+const localSources = new Map(manifest.files.filter(file => file.localPath)
+  .map(file => [`${file.sha}:${file.size}`, file.localPath]));
 const injected = /\n<!-- homepage-navigation:start -->[\s\S]*?<!-- homepage-navigation:end -->\n/g;
 const applicationPath = manifest.applicationPath ?? "/index.html";
 const preserveApplicationEntry = applicationPath === "/application.html";
@@ -62,9 +66,10 @@ await Promise.all(Array.from({ length: 6 }, async () => {
     try { bytes = await readFile(cached); } catch { /* First release downloads the pinned deploy. */ }
     // Netlify pretty-URL processing rewrites served HTML. Prefer matching
     // original source bytes, allowing only Git's Windows line-ending conversion.
-    if ((!bytes || hash(bytes) !== file.sha) && file.localPath) {
+    const localPath = file.localPath || localSources.get(`${file.sha}:${file.size}`);
+    if ((!bytes || hash(bytes) !== file.sha) && localPath) {
       try {
-        const local = await readFile(contained(root, "/" + file.localPath));
+        const local = await readFile(contained(root, "/" + localPath));
         const normalized = Buffer.from(local.toString("utf8").replace(/\r\n/g, "\n"));
         if (hash(local) === file.sha) bytes = local;
         else if (hash(normalized) === file.sha) bytes = normalized;
@@ -74,6 +79,17 @@ await Promise.all(Array.from({ length: 6 }, async () => {
       const response = await fetch(new URL(file.path, manifest.url), { signal: AbortSignal.timeout(60000) });
       if (!response.ok) throw new Error(`Baseline download failed: ${file.path} (${response.status})`);
       bytes = Buffer.from(await response.arrayBuffer());
+      // Historical duplicate marketing entries can be served through Netlify's
+      // pretty-URL rewrite. Recover only the committed noscript block, and only
+      // accept it if it reproduces the pinned original in full.
+      if (hash(bytes) !== file.sha && /^\/index \d+\.html$/.test(file.path)) {
+        const source = await readFile(join(root, 'index.html'), 'utf8');
+        const originalNoscript = source.match(/<noscript>.*<\/noscript>/)?.[0];
+        if (originalNoscript) {
+          const candidate = Buffer.from(bytes.toString('utf8').replace(/<noscript>.*<\/noscript>/, originalNoscript));
+          if (hash(candidate) === file.sha && candidate.length === file.size) bytes = candidate;
+        }
+      }
       if (hash(bytes) !== file.sha || bytes.length !== file.size) throw new Error("Baseline checksum mismatch: " + file.path);
     }
     await mkdir(dirname(cached), { recursive: true });

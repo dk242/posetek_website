@@ -1,0 +1,22 @@
+/* PoseTek's existing green/lime treatment; one clear timer and one primary action. */
+.pt-player .player-guided {
+  .player-workout-bar { gap: 8px; padding-block: max(10px, env(safe-area-inset-top)) 10px; border-bottom: 1px solid #ffffff16; }
+  .player-workout-bar > button { flex-shrink: 0; }
+  .workout-elapsed { margin-right: auto; min-width: 0; }
+  .workout-elapsed small, .workout-elapsed strong { display: block; margin: 0; }
+  .workout-elapsed strong { font-size: 24px; line-height: 1.2; letter-spacing: -.035em; }
+  .workout-elapsed small { font-size: 11px; }
+  .workout-save-line { min-height: 32px; padding-block: 8px; font-size: 12px; color: var(--player-muted); }
+  .workout-pause-note { padding: 12px 14px; border-left: 3px solid var(--lime); background: #b7f34a0a; border-radius: 0 10px 10px 0; }
+  .workout-screen-options { border-block: 1px solid #ffffff14; margin: 4px 0 20px; }
+  .workout-screen-options > summary { font-size: 13px; font-weight: 500; color: var(--player-muted); }
+  .workout-screen-options > label { min-height: 44px; }
+  .workout-progress-label { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--player-muted); margin-top: 20px; }
+  .player-block-strip { padding: 4px 2px 8px; }
+  .player-block-strip > button { flex-shrink: 0; min-width: 44px; }
+  .player-rest > div { display: grid; }
+  .player-rest strong { font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+  .player-workout-controls { border-top: 1px solid #ffffff20; padding-top: 10px; }
+  .player-workout-controls > button:not(.primary-cta) { padding-inline: 8px; }
+  button:disabled { cursor: not-allowed; }
+}

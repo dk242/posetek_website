@@ -3,13 +3,22 @@
 Shared source repository: [dk242/posetek_website](https://github.com/dk242/posetek_website).
 Public website: [posetek.net](https://posetek.net).
 
+**Player/coach experience candidate:** the September 25 mobile-web polish,
+standalone personal workouts and coach team workflow are documented in
+[the release handoff](docs/PLAYER_COACH_EXPERIENCE.md) and
+[coach workflow](docs/COACH_WORKFLOW.md). They are not deployed; personal
+capabilities remain gated. Use Vite's `/athlete?preview=1&view=training` and
+`/dashboard?preview=1` for synthetic review. The current protected production
+baseline is `6ab5e409d3ca5da40c5c01d2` (899 entries); historical release descriptions
+below do not override that manifest or authorize a production publish.
+
 This repository includes the scrolling homepage, all nine annotation updates,
 the clearer pose, training and technique experience, the mobile app showcase,
 and approved Figure-8 / Wall pass demo videos with interactive coach metrics.
 The public [Coaches page](https://posetek.net/coaches) adds a tailored club/team
 service, interactive sample profiles, and a Plan / Train / Retest walkthrough.
 Both pages share persistent Players / Coaches navigation.
-The latest release was published September 22, 2026 at 3:48:45 AM PDT as
+The filming-reference release was published September 22, 2026 at 3:48:45 AM PDT as
 `6ab25ae36de88d184cc9b2e1`. It adds external demo references to the private
 filming panel for all 80 new whole-body exercise drafts.
 Start with [the project context](POSETEK_PROJECT_CONTEXT.md) and

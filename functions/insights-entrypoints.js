@@ -4,7 +4,7 @@ const { createInsightsV2 } = require("./insights-v2");
 const { createInsightUsage } = require("./insight-usage");
 const { playerSegment } = require("./athlete-storage-paths");
 const BUCKET = "kickai-69dd0.firebasestorage.app";
-const RECORD_COLLECTIONS = new Set(["reps", "workoutLogs", "trainingSessions", "insightMetadata"]);
+const RECORD_COLLECTIONS = new Set(["reps", "workoutLogs", "personalWorkoutLogs", "trainingSessions", "insightMetadata"]);
 function storageOwner(object) {
   if (object?.bucket !== BUCKET || typeof object.name !== "string") return null;
   const match = /^([A-Za-z0-9_-]+)\/(deadballShot|sprint|jump|broadJump|changeOfDirection|dribbling|freeRecord)\/session[1-9]\d*\/(?:kick[1-9]\d*\/(?:capture_[a-f0-9]{32}\/)?)?(metadata|reprocess_context)\.json$/.exec(object.name);

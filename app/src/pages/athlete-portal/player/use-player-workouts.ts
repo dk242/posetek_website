@@ -8,7 +8,7 @@ import { startPlayerWorkout, mutatePlayerWorkout } from './workout-repository';
 export type PlayerWorkoutStore = WorkoutStore & {
   saving: boolean;
   start: (workout: Row) => Promise<Row>;
-  saveBlock: (workoutId: string, blockId: string, row: Row | null) => Promise<void>;
+  saveBlock: (workoutId: string, blockId: string, row: Row | null, elapsedSeconds?: number) => Promise<void>;
   finish: (workoutId: string, reason: string, activeSeconds?: number) => Promise<void>;
 };
 
@@ -52,11 +52,12 @@ export function usePlayerWorkouts(playerId: string, planId: string | null, previ
     const token = epoch.current;
     if (!loaded) throw new Error('Wait for workout history to load, then try again.');
     let saved: Row;
-    if (preview) saved = current.current[reviewed.id] || initialLog(reviewed, new Date());
+    if (preview) saved = { ...(current.current[reviewed.id] || initialLog(reviewed, new Date())), timerStartedHere: !current.current[reviewed.id] };
     else saved = await startPlayerWorkout(playerId, reviewed);
     if (epoch.current !== token) throw new Error('The selected player changed.');
-    remember(reviewed.id, saved, token);
-    return resumeWorkout(reviewed, { ...saved, id: reviewed.id });
+    const { timerStartedHere, ...log } = saved;
+    remember(reviewed.id, log, token);
+    return { ...resumeWorkout(reviewed, { ...log, id: reviewed.id }), timerStartedHere: timerStartedHere === true };
   });
   const mutate = (id: string, patch: (old: Row) => Row) => run(async () => {
     const token = epoch.current;

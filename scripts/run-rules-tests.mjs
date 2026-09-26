@@ -23,6 +23,9 @@ import { firestoreRulesPath, storageRulesPath } from '../app/rules-tests/canonic
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const firebase = process.env.FIREBASE_BIN || 'firebase';
+// A direct JavaScript entrypoint works on Windows without invoking a .cmd shim.
+const firebaseCommand = /\.[cm]?js$/i.test(firebase) ? process.execPath : firebase;
+const firebasePrefix = firebaseCommand === process.execPath ? [firebase] : [];
 
 // project: each suite's own demo project id, so their fixtures never share an emulator.
 // storage: whether the suite needs the Storage emulator as well as Firestore.
@@ -69,7 +72,7 @@ fs.writeFileSync(config, JSON.stringify({
 const run = (suite) => new Promise((resolve) => {
   const only = suite.storage ? 'firestore,storage' : 'firestore';
   const script = `node ${JSON.stringify(path.join(root, 'app/rules-tests', `${suite.name}.emulator.mjs`))}`;
-  const child = spawn(firebase, ['emulators:exec', '--project', suite.project, '--config', config, '--only', only, script], {
+  const child = spawn(firebaseCommand, [...firebasePrefix, 'emulators:exec', '--project', suite.project, '--config', config, '--only', only, script], {
     cwd: root,
     env: { ...process.env, RULES_PATH: firestoreRulesPath, STORAGE_RULES_PATH: storageRulesPath },
     stdio: 'inherit',
