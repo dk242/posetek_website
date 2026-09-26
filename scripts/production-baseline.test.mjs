@@ -33,7 +33,10 @@ async function fixture(mode, options, run) {
     }
     if (options.marketingAlias) {
       files.set('/index 2.html', '<html><noscript><a href="/bookPerformanceTest.html">Book</a></noscript></html>');
-      await put('index.html', '<noscript><a href="/bookPerformanceTest.html">Book</a></noscript>');
+      await put('index.html', '<noscript><a href="/bookPerformanceTest.html">Ask</a></noscript>');
+      await put('deployment/pinned-index-noscript.html', options.badPinnedNoscript
+        ? '<noscript><a href="/bookPerformanceTest.html">Wrong</a></noscript>'
+        : '<noscript><a href="/bookPerformanceTest.html">Book</a></noscript>');
     }
     if (options.overlap) files.set(options.overlap, '// do not preserve this marketing file');
     const manifest = {
@@ -162,6 +165,10 @@ test('marketing filename alias restores a rewritten noscript only when the whole
   await fixture('modern', { marketingAlias: true, aliasDrift: true }, async ({ build }) => {
     assert.notEqual(build.status, 0);
     assert.match(build.stderr, /Baseline checksum mismatch/);
+  });
+  await fixture('modern', { marketingAlias: true, badPinnedNoscript: true }, async ({ build }) => {
+    assert.notEqual(build.status, 0);
+    assert.match(build.stderr, /Baseline checksum mismatch: \/index 2.html/);
   });
 });
 
