@@ -1,12 +1,58 @@
 # PoseTek website project context
 
-Reviewed on September 25, 2026. This guide summarizes the available repository and
+Reviewed on September 26, 2026. This guide summarizes the available repository and
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
-## Player and coach experience live (2026-09-25)
+## Conversational workouts and Community (2026-09-26)
 
-The player and coach experience is live on [posetek.net](https://posetek.net), including manual and AI personal-workout creation. Website source is merged into main at `587c5b5`; published deployment `6ab723a4b245cdd9426dc47a` is the verified draft promoted without rebuilding. The baseline protects 957 application/public files. Read [the production receipt](deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json), [implementation handoff](docs/PLAYER_COACH_EXPERIENCE.md) and [coach workflow](docs/COACH_WORKFLOW.md).
+Website deployment `6ab76982d74a19707a6f9d9a`, from source
+`9b15c40a9a7f176ad333708099a73a7af8f7233f`, passed artifact and authenticated UI
+acceptance and was published September 26, 2026 at 12:31:38 AM PDT. All 1,048
+artifact files match the verified candidate; the reconciled baseline protects
+1,016 application/public files (114,556,878 bytes). Production browser verification,
+the ordinary preservation guard and synthetic verification cleanup passed. An
+independent scoped readback found zero remaining verification accounts, documents
+or storage objects, including orphaned conversation messages. The final gateway
+`agent-gateway-sha-9639e76f5e3a` and canonical creator-private rules are live.
+Read the [release receipt](deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json),
+[workout and Community handoff](docs/CONVERSATIONAL_WORKOUTS.md),
+[design acceptance](docs/AI_WORKOUT_FLOW_DESIGN.md) and
+[coach workflow](docs/COACH_WORKFLOW.md).
+
+AI Coach creates an actual checked proposal and hands its private conversation to
+Training. Athletes request changes through conversation, then explicitly publish
+to Personal workouts; manual drill/dose controls are removed from the website.
+Published unstarted workouts keep their saved identity when republished. Started
+workouts use a new personal copy, preserving the original log. Coaches retain
+authorized access to published workouts and progress; private proposals and
+conversation messages remain athlete-only. Administrators retain existing oversight.
+
+All seven live API stages passed, including concurrent publish equality, session
+start/stop, started-copy preservation and access boundaries. Candidate UI
+acceptance covered generation, conversational rename, immediate publication,
+Community/Training pause recovery and finishing a saved workout. Validation passed
+1,156 website tests, TypeScript, 22 release checks and 1,902 exact-image gateway
+tests; canonical rules passed 1,053 emulator tests and 55 deployed checks.
+
+AI configuration and allowances remain unchanged; all 208 catalog records remain
+present and the whole-body mobile acceptance flag remains false. No physical
+phone-lock or native acceptance is claimed. The submitted App Store build and
+uncompiled native candidate are unchanged. No real athlete training, account,
+invitation or conversation writes were performed; a brief read-only primary-origin
+signed-in check could emit ordinary page-view usage telemetry. Generation,
+publication, progress and cleanup verification use synthetic accounts.
+
+## Prior player and coach release (2026-09-25)
+
+This historical release introduced the player and coach experience, including
+manual and AI personal-workout creation, from source `587c5b5`. Deployment
+`6ab723a4b245cdd9426dc47a` was the verified draft promoted without rebuilding;
+its baseline protected 957 application/public files. The September 26 release
+above supersedes that manual athlete workflow with conversational creation and
+explicit publication. Read the [historical production receipt](deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json),
+[implementation handoff](docs/PLAYER_COACH_EXPERIENCE.md) and
+[coach workflow](docs/COACH_WORKFLOW.md).
 
 Personal capabilities, canonical rules, the gateway and scoped Insights functions are live. The user explicitly authorized web release independently of native UI acceptance. The submitted App Store build is unchanged; native candidate `bc492aa` remains uncompiled/unreleased. This does not change the separate false whole-body mobile acceptance gate or approve any of the 80 unpublished drills.
 
@@ -990,9 +1036,9 @@ node app/node_modules/typescript/bin/tsc -b app
 npm --prefix app run build:marketing
 ```
 
-The production command is `node scripts/build-production.mjs`. In the current
-release architecture it verifies the live app against the September 17 baseline,
-preserves 462 application/public files, serves the preserved application through `/application.html`, and
+The production command is `node scripts/build-production.mjs`. It verifies the
+live app against the current `deployment/homepage-baseline.json`, preserves every
+application/public file recorded there, serves the preserved application through `/application.html`, and
 adds the isolated homepage at `/` and `/index.html` with assets under
 `/marketing/assets/`. Output is `production-dist`. The ordinary application build
 outputs `dist` and is a different path; editing app source alone does not replace
@@ -1047,9 +1093,15 @@ Initial preparation verification (before the scrolling update):
 
 ## Context documents and precedence
 
-1. `deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
-   `docs/PROVISIONAL_DRIBBLING_RECOVERY.md`: current application/backend release,
-   conditional-estimate contract, validation, privacy and recovery.
+1. `deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json`,
+   `docs/CONVERSATIONAL_WORKOUTS.md` and `docs/AI_WORKOUT_FLOW_DESIGN.md`: current
+   application/gateway release, workout conversation and Community behavior,
+   validation and recovery. `deployment/homepage-baseline.json` is the current
+   protected-file manifest. `docs/COACH_WORKFLOW.md` defines the connected coach
+   workflow; canonical gateway and rules ownership in `AGENTS.md` remains binding.
+   `deployment/PROVISIONAL_DRIBBLING_PRODUCTION.json` and
+   `docs/PROVISIONAL_DRIBBLING_RECOVERY.md` retain the historical conditional-
+   estimate release and its privacy/recovery contract.
    `deployment/TESTING_AUDIT_PRODUCTION.json` and
    `docs/TESTING_AUDIT_BUILD_HANDOFF.md` record the preceding testing remediation.
    `deployment/VACAVILLE_WEBSITE_PRODUCTION.json` and `docs/VACAVILLE_WEBSITE_UPDATE.md`

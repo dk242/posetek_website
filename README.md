@@ -3,7 +3,17 @@
 Shared source repository: [dk242/posetek_website](https://github.com/dk242/posetek_website).
 Public website: [posetek.net](https://posetek.net).
 
-The player and coach experience is live on [posetek.net](https://posetek.net), including manual and AI personal-workout creation. Website source is merged into main at `587c5b5`; published deployment `6ab723a4b245cdd9426dc47a` is the verified draft promoted without rebuilding. The baseline protects 957 application/public files. Read [the production receipt](deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json), [implementation handoff](docs/PLAYER_COACH_EXPERIENCE.md) and [coach workflow](docs/COACH_WORKFLOW.md).
+Conversational personal workouts and Community navigation are live on
+[posetek.net](https://posetek.net). Source `9b15c40` was published as deployment
+`6ab76982d74a19707a6f9d9a` on September 26, 2026 at 12:31:38 AM PDT. The baseline
+protects 1,016 application/public files. Production browser verification, the
+ordinary preservation guard and synthetic verification cleanup passed. The gateway
+and canonical rules are live. AI Coach creates a checked proposal; Training keeps
+the conversation for changes and explicit publication into Personal workouts.
+Read the [release receipt](deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json),
+[workout and Community handoff](docs/CONVERSATIONAL_WORKOUTS.md) and
+[coach workflow](docs/COACH_WORKFLOW.md). The previous website deployment is
+`6ab723a4b245cdd9426dc47a`; historical receipts describe their own release state.
 
 Personal capabilities, canonical rules, the gateway and scoped Insights functions are live. The user explicitly authorized web release independently of native UI acceptance. The submitted App Store build is unchanged; native candidate `bc492aa` remains uncompiled/unreleased. This does not change the separate false whole-body mobile acceptance gate or approve any of the 80 unpublished drills.
 
@@ -158,8 +168,8 @@ node scripts/build-production.mjs
 ```
 
 This builds `production-dist/`, verifies the live application against
-`deployment/homepage-baseline.json`, and preserves all 727 application/public
-files from deployment `6ab25ae36de88d184cc9b2e1`. A fresh build downloads and
+`deployment/homepage-baseline.json`, and preserves every application/public file
+recorded in that baseline. A fresh build downloads and
 checksums baseline assets and uses matching tracked HTML where the host rewrites
 served pages; internet access is required. The build stops if the live application
 has drifted. Reconcile a reviewed baseline instead of bypassing the guard.
