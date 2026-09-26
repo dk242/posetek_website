@@ -56,14 +56,14 @@ export default function PlayerTraining({ ctx, statsProfile, personal, request, o
   const previousConversation = useRef(requestedConversation);
   useEffect(() => {
     const previous = previousConversation.current; previousConversation.current = requestedConversation;
-    if (!personal.enabled) return;
+    if (!personal.enabled || !personal.selectionReady) return;
     if (!requestedConversation) {
       if (previous && navigationType === 'POP') { setPersonalOpen(true); setPersonalCreate(false); setConversationOpen(false); setSeed(''); setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalHandoff(undefined); setPersonalEntry(v => v + 1); }
       return;
     }
     setPersonalOpen(true); setConversationOpen(true); setSeed(''); setPersonalEntry(v => v + 1);
     if (personal.conversationId !== requestedConversation) void personal.openConversation(requestedConversation).catch(e => setError(e.message));
-  }, [requestedConversation, personal.enabled]);
+  }, [requestedConversation, personal.enabled, personal.selectionReady]);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const plan = plans?.find(p => p.status === 'active') || plans?.find(p => p.status === 'completed') || null;

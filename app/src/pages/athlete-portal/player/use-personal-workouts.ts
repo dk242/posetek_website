@@ -32,6 +32,9 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
   const current = useRef({ workouts, logs, scheduleRevision }); current.current = { workouts, logs, scheduleRevision };
   const busy = useRef(false), generation = useRef(0), subscriptions = useRef<(() => void)[]>([]);
   const uid = auth.currentUser?.uid || '', key = personalJobKey(uid, playerId), proposalKey = `${key}:proposal`;
+  const selectionScope = JSON.stringify([uid, playerId, preview, enabled]);
+  const [initializedSelectionScope, setInitializedSelectionScope] = useState<string | null>(null);
+  const selectionReady = enabled && initializedSelectionScope === selectionScope;
   const conversationPort = {
     conversation: async (id: string) => (await db.collection('players').doc(playerId).collection('aiConversations').doc(id).get({ source: 'server' })).data() || null,
     proposal: async (id: string) => (await db.collection('players').doc(playerId).collection('personalWorkoutProposals').doc(id).get({ source: 'server' })).data() || null,
@@ -160,10 +163,11 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
   useEffect(() => {
     const token = ++generation.current;
     ++selectionVersion.current;
+    setInitializedSelectionScope(null);
     busy.current = false; setSaving(false); setStatus('');
     selected.current = { conversation: null, proposal: null }; setConversation(null); setConversationId(null); setMessages([]); setConversationLoading(false); setConversations([]); setConversationsLoaded(preview);
     if (!enabled) { current.current = { workouts: [], logs: {}, scheduleRevision: null }; setWorkouts([]); setLogs({}); setScheduleRevision(null); setLoaded(false); setProposal(null); setPending(null); setLastResult(null); return; }
-    if (preview) { setCatalog(sampleCatalog); setLoaded(true); setScheduleRevision(0); return; }
+    if (preview) { setCatalog(sampleCatalog); setLoaded(true); setScheduleRevision(0); setInitializedSelectionScope(selectionScope); return; }
     current.current = { workouts: [], logs: {}, scheduleRevision: null };
     setWorkouts([]); setLogs({}); setLoaded(false); setScheduleRevision(null); setProposal(null); setPending(null); setLastResult(null); setError('');
     const player = db.collection('players').doc(playerId);
@@ -187,6 +191,10 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
       }
     } catch { /* A corrupt unsaved proposal is never treated as an executable workout. */ }
     if (recovery) { setPending(recovery); if (!recovery.terminalFailed) void runPending(recovery).catch(() => {}); }
+    // Child route effects run before this owner initialization effect. Let the
+    // explicit URL select only after receipt recovery has started, so it cannot
+    // be invalidated by initialization or replaced by a different saved draft.
+    setInitializedSelectionScope(selectionScope);
     return () => { if (generation.current === token) generation.current++; stops.forEach(s => s()); subscriptions.current.splice(0).forEach(s => s()); busy.current = false; };
   }, [playerId, preview, enabled, uid]);
   useEffect(() => {
@@ -367,7 +375,7 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     beginWorkout: () => {}, updateBlock: () => {}, removeBlock: () => {}, endWorkout: () => {}, noteWorkout: () => {},
   };
   return { enabled, workouts, logs, catalog, scheduleRevision, loaded, saving, error, status, pending, proposal, lastResult, clearProposal, save, start, adapter,
-    conversations, conversationsLoaded, conversationId, conversation, messages, conversationLoading, openConversation, openProposal, newConversation, refine, publish,
+    conversations, conversationsLoaded, conversationId, conversation, messages, conversationLoading, selectionReady, openConversation, openProposal, newConversation, refine, publish,
     consumeResult: () => setLastResult(null),
     generate,
     recover: () => pending ? runPending(pending).catch(() => {}) : Promise.resolve(),
