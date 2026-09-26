@@ -10,7 +10,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PLAYER_INDEX_LIMIT, loadPlayer, loadPlayerIndex } from "../lib/accounts";
@@ -341,16 +341,42 @@ export function IncidentRow({ incident, name, to }: { incident: AiIncident; name
 // MARK: - Drawer
 
 function DrawerFrame({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+  const dialog = useRef<HTMLElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const container = dialog.current?.parentElement;
+    const siblings = container ? [...container.parentElement!.children].filter(child => child !== container && child instanceof HTMLElement) as HTMLElement[] : [];
+    const prior = siblings.map(element => element.inert);
+    siblings.forEach(element => { element.inert = true; });
+    dialog.current?.querySelector<HTMLButtonElement>('button[aria-label="Close"]')?.focus();
+    const focusable = () => [...(dialog.current?.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, summary, [tabindex]') || [])]
+      .filter(element => element.tabIndex >= 0 && !element.matches(":disabled") && (element.tagName === "SUMMARY" || !element.closest('details:not([open])'))
+        && !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true");
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); close.current(); return; }
+      if (event.key !== "Tab") return;
+      const nodes = focusable(), first = nodes[0], last = nodes.at(-1);
+      if (!first) { event.preventDefault(); dialog.current?.focus(); return; }
+      if (event.shiftKey && (document.activeElement === first || !dialog.current?.contains(document.activeElement))) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || !dialog.current?.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+    };
+    const onFocus = (event: FocusEvent) => { if (event.target instanceof Node && !dialog.current?.contains(event.target)) focusable()[0]?.focus(); };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("focusin", onFocus);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("focusin", onFocus);
+      siblings.forEach((element, index) => { element.inert = prior[index]; });
+      previous?.focus();
+    };
+  }, []);
   return (
     <div className="ai-drawer-backdrop" onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
-      <aside className="ai-drawer" role="dialog" aria-modal="true" aria-label="Incident detail">
+      <aside ref={dialog} className="ai-drawer" role="dialog" aria-modal="true" aria-labelledby="ai-drawer-title" tabIndex={-1}>
         <header className="ai-drawer-head">
-          <h2>{title}</h2>
+          <h2 id="ai-drawer-title">{title}</h2>
           <button className="icon-button" type="button" aria-label="Close" onClick={onClose}>
             <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
