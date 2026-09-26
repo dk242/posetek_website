@@ -90,4 +90,17 @@ describe("four-view Insights report", () => {
     expect(html).toContain("Players by team");
     expect(html).toContain("84 matching players");
   });
+  it("shows scoped record-level issues and separates undated evidence", () => {
+    const request = { ...base, view: "testing" as const, issue: "needsReview", issuePage: 0 }, data = previewInsights(base);
+    data.testing.needsReview = 1;
+    data.issues = { kind: "needsReview", dateBucket: "dated", datedTotal: 1, total: 1, page: 0, pageSize: 25, undated: 2, futureDated: 1,
+      rows: [{ key: "player:rep", playerId: "player", playerName: "Casey Rivera", organizationName: "Club", teamName: "U17", recordId: "rep", atMillis: Date.UTC(2026, 8, 16), drill: "sprint", reason: "missingEvidence" }] };
+    const html = renderToStaticMarkup(<MemoryRouter><ExpandedReport data={data} request={request} onChange={() => {}} onPrevious={() => {}} onNext={() => {}} playerLink={() => "#player"} /></MemoryRouter>);
+    expect(html).toContain("Reps needing review");
+    expect(html).toContain("Date missing (2)");
+    expect(html).toContain("Future date (1)");
+    expect(html).toContain("Casey Rivera");
+    expect(html).toContain("/admin/accounts/player/player/results/sprint/rep");
+    expect(html).not.toContain("Issue list and report count differ");
+  });
 });

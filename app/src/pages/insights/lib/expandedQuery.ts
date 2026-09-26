@@ -29,6 +29,9 @@ export function expandedRequest(search: string, now = new Date()) {
   const startDate = validDate(startInput) && startInput! <= endDate && startInput! >= shiftDate(endDate, -365) ? startInput! : shiftDate(endDate, 1 - weeks * 7);
   return { ...accountContext(params), from: choice(params.get("from"), ["accounts", "organization", "dashboard"], "organization") as InsightsOrigin,
     view: choice(params.get("view"), INSIGHT_VIEWS, "overview") as InsightView,
+    issue: choice(params.get("issue"), ["needsReview", "unmatchedFailures"]),
+    issueDate: choice(params.get("issueDate"), ["dated", "undated", "future"], "dated"),
+    issuePage: Math.max(0, Math.min(10000, Number.parseInt(params.get("issuePage") || "0", 10) || 0)),
     weeks, timezone, startDate, endDate,
     testingWindow: choice(params.get("testingWindow"), ["cumulative", "period"], "cumulative") as "cumulative" | "period",
     division: choice(params.get("division"), DIVISIONS), ageBand: choice(params.get("ageBand"), AGE_BANDS),
@@ -42,7 +45,9 @@ export function expandedRequest(search: string, now = new Date()) {
 export type ExpandedRequest = ReturnType<typeof expandedRequest>;
 export function expandedQuery(request: ExpandedRequest, patch: Partial<ExpandedRequest> = {}) {
   const next = { ...request, ...patch }, query = new URLSearchParams();
-  for (const key of ["orgId", "teamId", "coachId", "from", "view", "timezone", "testingWindow", "division", "ageBand", "testingStatus", "workoutStatus", "usageStatus", "usagePlatform", "usageFeature", "teamAssignment"] as const) if (next[key]) query.set(key, next[key]);
+  for (const key of ["orgId", "teamId", "coachId", "from", "view", "issue", "timezone", "testingWindow", "division", "ageBand", "testingStatus", "workoutStatus", "usageStatus", "usagePlatform", "usageFeature", "teamAssignment"] as const) if (next[key]) query.set(key, next[key]);
+  if (next.issue && next.issuePage) query.set("issuePage", String(next.issuePage));
+  if (next.issue && next.issueDate !== "dated") query.set("issueDate", next.issueDate);
   query.set("weeks", String(next.weeks)); query.set("start", next.startDate); query.set("end", next.endDate);
   return query;
 }

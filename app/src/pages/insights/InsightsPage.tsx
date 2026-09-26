@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { clubCall, getClubContext } from "../../lib/organization-data";
@@ -30,7 +31,18 @@ export default function InsightsPage() {
 }
 
 export function InsightTabs({ request, onChange }: { request: ExpandedRequest; onChange: (patch: Partial<ExpandedRequest>) => void }) {
-  return <nav className="insights-tabs" aria-label="Insights views" role="tablist">{INSIGHT_VIEWS.map(view => <button key={view} type="button" role="tab" aria-selected={request.view === view} aria-controls="insights-report" id={`insights-tab-${view}`} onClick={() => onChange({ view })}>{view[0].toUpperCase() + view.slice(1)}</button>)}</nav>;
+  function onKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>, index: number) {
+    const next = event.key === "ArrowRight" ? (index + 1) % INSIGHT_VIEWS.length
+      : event.key === "ArrowLeft" ? (index + INSIGHT_VIEWS.length - 1) % INSIGHT_VIEWS.length
+      : event.key === "Home" ? 0 : event.key === "End" ? INSIGHT_VIEWS.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    const view = INSIGHT_VIEWS[next];
+    onChange({ view });
+    // The selected tab can remount when the URL changes, so focus after commit.
+    requestAnimationFrame(() => document.getElementById(`insights-tab-${view}`)?.focus());
+  }
+  return <nav className="insights-tabs" aria-label="Insights views" role="tablist">{INSIGHT_VIEWS.map((view, index) => <button key={view} type="button" role="tab" tabIndex={request.view === view ? 0 : -1} aria-selected={request.view === view} aria-controls="insights-report" id={`insights-tab-${view}`} onKeyDown={event => onKeyDown(event, index)} onClick={() => onChange({ view })}>{view[0].toUpperCase() + view.slice(1)}</button>)}</nav>;
 }
 
 export function InsightsControls({ choices, request, scope, loading, hideScope = false, onChange, onRefresh }: {
@@ -117,10 +129,10 @@ export function InsightsWorkspace({ uid, embedded = false }: { uid: string; embe
       } finally { if (isCurrent()) setLoading(false); }
     })();
     return () => guard.cancel();
-  }, [uid, embedded, request.orgId, request.teamId, request.startDate, request.endDate, request.timezone, request.testingWindow, request.division, request.ageBand, request.testingStatus, request.workoutStatus, request.usageStatus, request.usagePlatform, request.usageFeature, request.teamAssignment, cursor, retry, guard, setQuery]);
+  }, [uid, embedded, request.orgId, request.teamId, request.startDate, request.endDate, request.timezone, request.testingWindow, request.division, request.ageBand, request.testingStatus, request.workoutStatus, request.usageStatus, request.usagePlatform, request.usageFeature, request.teamAssignment, request.issue, request.issueDate, request.issuePage, cursor, retry, guard, setQuery]);
 
   function change(patch: Partial<ExpandedRequest>) {
-    const next = expandedQuery(request, patch);
+    const next = expandedQuery(request, { ...patch, ...(Object.hasOwn(patch, "issuePage") ? {} : { issuePage: 0 }) });
     if (next.toString() === query.toString()) return;
     guard.cancel(); setReport(null); setLoading(true); setQuery(next);
   }
