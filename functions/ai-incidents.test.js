@@ -109,9 +109,11 @@ test("client-only incident and later report fold once in either arrival order", 
   const original = { requestedByUid: "athlete", requestId: own, stage: "upload", client: { detail: "diagnostic" } };
   const follow = { requestedByUid: "athlete", requestId: own, stage: "user_report", userReport: { note: "Please investigate" } };
   for (const first of [originalId, followId]) {
-    const { db, incidents } = setup({ [`aiIncidents/${originalId}`]: original, [`aiIncidents/${followId}`]: follow });
+    const { db, incidents } = setup({ [`aiIncidents/${first}`]: first === originalId ? original : follow });
     await incidents.foldIncident(first, first === originalId ? original : follow);
-    await incidents.foldIncident(first === originalId ? followId : originalId, first === originalId ? follow : original);
+    const second = first === originalId ? followId : originalId;
+    db.docs.set(`aiIncidents/${second}`, second === originalId ? original : follow);
+    await incidents.foldIncident(second, second === originalId ? original : follow);
     await incidents.foldIncident(followId, follow);
     assert.equal(db.snapshot(`aiIncidents/${followId}`).foldedInto, originalId);
     assert.deepEqual(db.snapshot(`aiIncidents/${originalId}`).userReport, follow.userReport);

@@ -194,14 +194,12 @@ export function normalizeIncident(id: string, data: any): AiIncident {
 export const whenOf = (incident: AiIncident): Date | null => incident.occurredAt ?? incident.createdAt;
 
 /**
- * A phone half the fold merged into a canonical `req-`/`job-` doc is part of
- * that incident, not a second one (§2 "exactly one countable"). It is hidden
- * only when its canonical doc is in the loaded window, so a half whose
- * canonical fell outside the 500 never silently disappears.
+ * Folded phone documents are evidence attached to their canonical incident,
+ * never another incident. The newest-500 window can still omit an older
+ * canonical incident; the dashboard labels this window separately.
  */
 export function countable(incidents: AiIncident[]): AiIncident[] {
-  const ids = new Set(incidents.map(incident => incident.id));
-  return incidents.filter(incident => !(incident.foldedInto && ids.has(incident.foldedInto)));
+  return incidents.filter(incident => !incident.foldedInto);
 }
 
 // MARK: - Pacific time (§3.4: every timestamp renders in Pacific; `day` is UTC and never shown)

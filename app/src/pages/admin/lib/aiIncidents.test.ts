@@ -109,12 +109,12 @@ describe("normalizeIncident", () => {
 });
 
 describe("countable", () => {
-  it("hides a folded phone half only while its canonical incident is loaded", () => {
+  it("never counts a folded phone half as a second incident", () => {
     const all = fixtures();
     expect(countable(all).map(incident => incident.id)).not.toContain("client-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
     expect(countable(all)).toHaveLength(3);
     const withoutCanonical = all.filter(incident => !incident.id.startsWith("req-3f2a"));
-    expect(countable(withoutCanonical).map(incident => incident.id)).toContain("client-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
+    expect(countable(withoutCanonical).map(incident => incident.id)).not.toContain("client-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
   });
 });
 
