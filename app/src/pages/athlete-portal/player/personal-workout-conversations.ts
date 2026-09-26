@@ -44,6 +44,17 @@ export function checkedPersonalProposal(value: Row | null, id: string, uid: stri
   return value;
 }
 
+// The enclosing player document scopes canonical proposals; playerId is not a
+// required proposal field. Still reject a conflicting field on older records.
+export function checkedCoachPersonalProposal(value: Row | null, id: string, uid: string, playerId: string, conversationId: string): Row {
+  const proposal = checkedPersonalProposal(value, id, uid);
+  if (!validId(conversationId) || proposal.conversationId !== conversationId ||
+      (proposal.playerId !== undefined && proposal.playerId !== playerId)) {
+    throw new Error('This workout draft is unavailable. Open its conversation in Training.');
+  }
+  return proposal;
+}
+
 export function orderedPersonalMessages(rows: Row[]): Row[] {
   return rows.filter(row => ['user', 'assistant'].includes(row.role) && typeof row.content === 'string')
     .sort((a, b) => Number(a.sequence || 0) - Number(b.sequence || 0) || personalTimestamp(a.createdAt) - personalTimestamp(b.createdAt));

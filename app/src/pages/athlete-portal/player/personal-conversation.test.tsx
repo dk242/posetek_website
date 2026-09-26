@@ -43,4 +43,11 @@ describe('reviewed workout presentation', () => {
     expect(html).not.toContain('About how many minutes?'); expect(html).not.toContain('Training with'); expect(html).not.toContain('What equipment do you have?'); expect(html).not.toContain('Your age');
     expect(html).toContain('Any pain or restriction affecting this session?');
   });
+  it('does not repeat the original request in the revision composer when opening an existing conversation', () => {
+    const store = { enabled: true, proposal, conversation: {}, workouts: [], logs: {}, messages: [], scheduleRevision: 0, loaded: true } as any;
+    const html = renderToStaticMarkup(<PersonalWorkoutHub store={store} playerId="athlete" athlete={{ age: 15 }} config={null} preview initialConversation initialRequest="Already sent original request" onBack={() => {}} />);
+    expect(html).toContain('What would you like to change?');
+    expect(html).not.toContain('Already sent original request');
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Send changes<\/button>/);
+  });
 });

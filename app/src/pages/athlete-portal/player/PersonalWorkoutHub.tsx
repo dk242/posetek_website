@@ -25,7 +25,7 @@ export default function PersonalWorkoutHub({ store, playerId, athlete, config, p
   const [selected, setSelected] = useState<Row | null>(initialWorkout || null), [playing, setPlaying] = useState<Row | null>(null);
   const [editing, setEditing] = useState<Row | null>(null), [sourceRef, setSourceRef] = useState(source?.reference);
   const [copyFromWorkoutId, setCopyFromWorkoutId] = useState<string | undefined>();
-  const [requestText, setRequestText] = useState(initialRequest), [submitted, setSubmitted] = useState(!!initialRequest);
+  const [requestText, setRequestText] = useState(initialConversation ? '' : initialRequest), [submitted, setSubmitted] = useState(!initialConversation && !!initialRequest);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', today = localDayString(new Date(), timezone);
   const latest = new Date(`${today}T12:00:00Z`); latest.setUTCDate(latest.getUTCDate() + 28);
   const [scheduledDate, setScheduledDate] = useState(today), [answers, setAnswers] = useState<Row>({});
