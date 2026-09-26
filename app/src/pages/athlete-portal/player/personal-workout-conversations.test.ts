@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalProposalWithPublication, personalPublishParams, personalRefinementParams, publishedPersonalWorkoutId, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
+import { checkedCoachPersonalProposal, checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalProposalWithPublication, personalPublishParams, personalRefinementParams, publishedPersonalWorkoutId, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
 
 const expiry = new Date('2026-10-01T12:00:00Z');
 const proposal = () => ({ schemaVersion: 1, proposalId: 'proposal_2', conversationId: 'conversation_1', proposalRevision: 2,
@@ -10,6 +10,15 @@ const proposal = () => ({ schemaVersion: 1, proposalId: 'proposal_2', conversati
 const conversation = () => ({ id: 'conversation_1', conversationId: 'conversation_1', capability: 'generate_personal_workout', createdByUid: 'athlete_1', latestProposalId: 'proposal_2', proposalRevision: 2 });
 
 describe('personal conversation recovery', () => {
+  it('opens the canonical Coach proposal without requiring a redundant playerId field', () => {
+    expect(checkedCoachPersonalProposal(proposal(), 'proposal_2', 'athlete_1', 'player_1', 'conversation_1')).toEqual(proposal());
+  });
+  it('rejects Coach previews with a different owner, conversation, explicit player scope, or invalid prescription', () => {
+    for (const value of [null, { ...proposal(), createdByUid: 'another' }, { ...proposal(), conversationId: 'other' },
+      { ...proposal(), playerId: 'other' }, { ...proposal(), check: { ok: false } }]) {
+      expect(() => checkedCoachPersonalProposal(value, 'proposal_2', 'athlete_1', 'player_1', 'conversation_1')).toThrow();
+    }
+  });
   it('migrates an older cached proposal into IDs only, never trusting its workout or checks', () => {
     expect(restorePersonalSelection({ uid: 'athlete_1', playerId: 'player_1', result: { ...proposal(), workout: { title: 'Tampered cache' } } }, 'athlete_1', 'player_1'))
       .toEqual({ schemaVersion: 1, uid: 'athlete_1', playerId: 'player_1', proposalId: 'proposal_2', conversationId: 'conversation_1' });

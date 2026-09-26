@@ -3,6 +3,7 @@ import { auth, db } from '../../../lib/firebase';
 import type { Row } from './execution';
 import type { PersonalWorkoutStore } from './use-personal-workouts';
 import PersonalWorkoutHub, { PersonalPrescription } from './PersonalWorkoutHub';
+import { checkedCoachPersonalProposal } from './personal-workout-conversations';
 
 export default function CoachPersonalWorkout({ playerId, athlete, preview, store, config, request, reference, active, onReview }: {
   playerId: string; athlete: Row; preview: boolean; store: PersonalWorkoutStore; config: Row | null;
@@ -24,11 +25,10 @@ export default function CoachPersonalWorkout({ playerId, athlete, preview, store
     void db.collection('players').doc(playerId).collection('personalWorkoutProposals').doc(link.proposalId).get({ source: 'server' }).then(d => {
       const value = d.data();
       if (!alive) return;
-      if (!d.exists || value?.createdByUid !== auth.currentUser?.uid || value?.playerId !== playerId || value?.conversationId !== link.conversationId) throw new Error('This workout draft is unavailable. Open its conversation in Training.');
-      setProposal({ ...value, proposalId: d.id }); setError('');
+      setProposal(checkedCoachPersonalProposal(d.exists ? value! : null, d.id, auth.currentUser?.uid || '', playerId, link.conversationId)); setError('');
     }).catch(e => { if (alive) setError(e.message); });
     return () => { alive = false; };
-  }, [playerId, preview, link?.proposalId]);
+  }, [playerId, preview, link?.proposalId, link?.conversationId]);
   useEffect(() => {
     if (active && originLoaded && !link && !ready && !store.saving && !store.conversationLoading) { store.newConversation(); setReady(true); }
   }, [active, originLoaded, link, ready, store.saving, store.conversationLoading]);
