@@ -147,16 +147,17 @@ describe('personal workout review screens', () => {
     const html = renderToStaticMarkup(<PersonalWorkoutHub store={store} playerId="player-doc" athlete={{ age: 15 }} config={config} preview onBack={() => {}} />);
     expect(html).toContain('Create workout'); expect(html).toContain('without a multiweek plan');
   });
-  it('opens a manual draft without inventing an AI Coach request', () => {
+  it('opens a conversation without athlete drill editing controls', () => {
     const html = renderToStaticMarkup(<PersonalWorkoutHub store={store} playerId="player-doc" athlete={{ age: 15 }} config={config} preview initialCreate onBack={() => {}} />);
-    expect(html).toContain('Build your workout.'); expect(html).not.toContain('Your AI Coach request');
-    expect(html).toContain('<details class="personal-ai">');
+    expect(html).toContain('Your workout conversation.');
+    expect(html).toContain('Your focus and available time');
+    for (const text of ['Add a drill', 'Search drills', 'Fine-tune drills', 'personal-dose-grid', 'personal-drill-actions']) expect(html).not.toContain(text);
   });
   it('labels an assigned copy and requires conditions before review', () => {
     const source = { workout: addPersonalDrill(personalDraft(), drill), reference: { planId: 'assigned', workoutId: 'slot', revision: 3 } };
     const html = renderToStaticMarkup(<PersonalWorkoutHub store={store} playerId="player-doc" athlete={{ age: 15 }} config={config} source={source} preview onBack={() => {}} />);
     expect(html).toContain('Your assigned workout stays as prescribed.');
-    expect(html.match(/<button[^>]*>Review workout<\/button>/)?.[0]).toContain('disabled');
-    expect(html).toContain('Generate a proposal');
+    expect(html.match(/<button[^>]*>Send request<\/button>/)?.[0]).toContain('disabled');
+    expect(html).toContain('how much time you have');
   });
 });

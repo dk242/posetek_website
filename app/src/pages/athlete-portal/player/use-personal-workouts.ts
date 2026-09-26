@@ -113,7 +113,7 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     if (busy.current) throw new Error('Wait for the current workout action to finish.');
     if (!personalCapabilityEnabled(config, record.capability, preview) || !uid || auth.currentUser?.uid !== record.uid) throw new Error('This workout action is unavailable. Return to Training and sign in again.');
     busy.current = true; setSaving(true); setError(''); setStatus('Checking your request…');
-    const token = generation.current;
+    const token = generation.current, selectedVersion = selectionVersion.current;
     let terminal = false;
     try {
       // Persist the chosen ID before the create. A lost acknowledgement can
@@ -140,6 +140,12 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
       if (generation.current !== token || auth.currentUser?.uid !== uid) throw new Error('The selected player changed.');
       // A completed job is a recovery receipt. Read the authoritative proposal
       // and current conversation head, rather than caching its result payload.
+      if (record.capability === 'generate_personal_workout' && selectionVersion.current !== selectedVersion) {
+        // Back/history can change the active conversation while the accepted
+        // job completes. Its server history remains recoverable, without
+        // replacing the conversation the athlete has since chosen.
+        savePending(null); setStatus(''); return result;
+      }
       const confirmed = record.capability === 'generate_personal_workout' && result.proposalId ? await openProposal(result.proposalId) : result;
       const effective = accept(record.capability, confirmed);
       savePending(null); setStatus(''); return effective;

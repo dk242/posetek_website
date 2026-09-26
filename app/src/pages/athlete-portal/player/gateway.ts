@@ -71,7 +71,7 @@ export function useCoachConfig(preview: boolean) {
 export function validHandoff(value: any, playerId: string): boolean {
   return value?.type === 'workout_request' && value.playerId === playerId &&
     typeof value.request === 'string' && !!value.request.trim() && value.request.length <= 500 &&
-    ['workout_builder', 'program_intake'].includes(value.destination);
+    ['workout_builder', 'program_intake', 'personal_workout'].includes(value.destination);
 }
 
 export function jobProgress(job: Row): string {

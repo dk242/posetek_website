@@ -4,6 +4,8 @@ Published September 25, 2026. Manual/AI personal creation, tracking, coach histo
 
 The user explicitly requested personal creation live and authorized deployment independently of native UI acceptance. Native candidate `bc492aa` remains uncompiled/unreleased; the submitted App Store build is unchanged. The separate whole-body mobile acceptance gate remains false.
 
+The subsequent [conversational workout and Community pass](CONVERSATIONAL_WORKOUTS.md) replaces the website's manual builder and header feed shortcut. The release-specific descriptions below record this earlier release.
+
 ## Confirmed product decisions
 
 - Keep PoseTek's dark green surfaces, readable neutral text and lime primary

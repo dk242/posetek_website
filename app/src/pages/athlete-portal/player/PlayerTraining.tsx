@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { db } from '../../../lib/firebase';
 import { currentWeekNumber, nextWorkout, orderedWeeks, orderedWorkouts, stateOf, workoutStates, findWorkout } from '../../../lib/contracts/planV3';
 import { blockDoseLine } from '../../../lib/contracts/drillV2';
@@ -21,7 +22,8 @@ import { weekProgress } from './progress';
 import { needsTrainingStartCheck } from './workout-repository';
 import TrainingStartConfirmation from './TrainingStartConfirmation';
 import PersonalWorkoutHub from './PersonalWorkoutHub';
-import { usePersonalWorkouts } from './use-personal-workouts';
+import type { PersonalWorkoutStore } from './use-personal-workouts';
+import { personalDraftLink } from './personal-conversation';
 import type { SourceWorkout } from './personal-workouts';
 import { personalProgress } from './personal-workouts';
 
@@ -34,7 +36,7 @@ export function previewProgram(): Row {
         blocks: [{ blockId: 'b1', order: 1, drillId: 'DRB-005', name: 'Cone maze', kind: 'main', domain: 'dribbling', sets: 3, reps: 60, repUnit: 'seconds', restSeconds: 30, restScope: 'sets', estimatedMinutes: 14, cues: ['Small touches', 'Eyes up'] }, { blockId: 'b2', order: 2, drillId: 'PAS-001', name: 'Wall pass rhythm', kind: 'main', domain: 'passing', sets: 3, reps: 60, repUnit: 'seconds', restSeconds: 30, restScope: 'sets', estimatedMinutes: 12, cues: ['Open your body'] }] })) })) };
 }
 
-export default function PlayerTraining({ ctx, statsProfile, request, onAcknowledge }: { ctx: PortalContext; statsProfile: Row; request: Row | null; onAcknowledge: () => void }) {
+export default function PlayerTraining({ ctx, statsProfile, personal, request, onAcknowledge }: { ctx: PortalContext; statsProfile: Row; personal: PersonalWorkoutStore; request: Row | null; onAcknowledge: () => void }) {
   const preview = ctx.access === 'preview';
   const [plans, setPlans] = useState<Row[] | null>(preview ? [previewProgram()] : null), [error, setError] = useState('');
   const [intake, setIntake] = useState(false), [seed, setSeed] = useState(''), [reveal, setReveal] = useState(false);
@@ -43,10 +45,25 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
   const [chatTarget, setChatTarget] = useState<Row | null>(null), [proposal, setProposal] = useState<Row | null>(null);
   const [applying, setApplying] = useState(false), [newTime, setNewTime] = useState(30), [energy, setEnergy] = useState('normal');
   const config = useCoachConfig(preview);
-  const personal = usePersonalWorkouts(ctx.playerId!, preview, config);
+  const location = useLocation(), navigate = useNavigate(), navigationType = useNavigationType();
   const [personalOpen, setPersonalOpen] = useState(false), [personalSource, setPersonalSource] = useState<{ workout: Row; reference?: SourceWorkout } | undefined>();
   const [personalSelected, setPersonalSelected] = useState<Row | undefined>();
   const [personalCreate, setPersonalCreate] = useState(false);
+  const [personalHandoff, setPersonalHandoff] = useState<Row | undefined>();
+  const [conversationOpen, setConversationOpen] = useState(false);
+  const [personalEntry, setPersonalEntry] = useState(0);
+  const requestedConversation = new URLSearchParams(location.search).get('personalConversation');
+  const previousConversation = useRef(requestedConversation);
+  useEffect(() => {
+    const previous = previousConversation.current; previousConversation.current = requestedConversation;
+    if (!personal.enabled) return;
+    if (!requestedConversation) {
+      if (previous && navigationType === 'POP') { setPersonalOpen(true); setPersonalCreate(false); setConversationOpen(false); setSeed(''); setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalHandoff(undefined); setPersonalEntry(v => v + 1); }
+      return;
+    }
+    setPersonalOpen(true); setConversationOpen(true); setSeed(''); setPersonalEntry(v => v + 1);
+    if (personal.conversationId !== requestedConversation) void personal.openConversation(requestedConversation).catch(e => setError(e.message));
+  }, [requestedConversation, personal.enabled]);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const plan = plans?.find(p => p.status === 'active') || plans?.find(p => p.status === 'completed') || null;
@@ -66,6 +83,11 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
   useEffect(() => {
     if (!request || !plans || playing || review || chatTarget || (!preview && !config)) return;
     setSeed(request.request || '');
+    if (request.destination === 'personal_workout' && personal.enabled) {
+      setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalHandoff(request); setPersonalCreate(!request.conversationId); setConversationOpen(!!request.conversationId); setPersonalOpen(true); setPersonalEntry(v => v + 1);
+      if (request.conversationId && personal.conversationId !== request.conversationId) void personal.openConversation(request.conversationId).catch(e => setError(e.message));
+      onAcknowledge(); return;
+    }
     if (request.destination === 'workout_builder' && personal.enabled) {
       const supplied = request.workoutRef, found = supplied?.kind === 'plan' && supplied.planId === plan?.id ? findWorkout(plan!, supplied.workoutId) : null;
       setPersonalSource(found ? { workout: found.workout, reference: { planId: plan!.id, workoutId: found.workout.workoutId, revision: Number(found.workout.revision || 1) } } : undefined);
@@ -117,17 +139,17 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
   const openPlan = () => { setSeed(''); setIntake(true); setPanel(''); };
   const back = <button className="text-button" disabled={applying} onClick={() => { setPanel(''); setReview(null); setChatTarget(null); setDrillId(''); setProposal(null); }}>← Training</button>;
   const message = (error || store.error) && <p className="player-error" role="alert">{error || store.error}</p>;
-  const openPersonal = (w?: Row, create = false) => { setSeed(''); setPersonalSource(undefined); setPersonalSelected(w); setPersonalCreate(create); setPersonalOpen(true); };
+  const openPersonal = (w?: Row, create = false) => { setSeed(''); setPersonalSource(undefined); setPersonalSelected(w); setPersonalHandoff(undefined); setConversationOpen(false); setPersonalCreate(create); if (create) personal.newConversation(); setPersonalOpen(true); setPersonalEntry(v => v + 1); };
   const personalResume = personal.enabled ? personal.workouts.find(w => personal.logs[w.workoutId] && !personal.logs[w.workoutId].endedAt) : undefined;
   const ownProgress = personalProgress(Object.values(personal.logs));
   const personalActions = personal.enabled && <div className="player-actions"><button onClick={() => openPersonal()}>Personal workouts</button><button onClick={() => setPanel('history')}>History</button></div>;
 
-  if (personalOpen) return <PersonalWorkoutHub store={personal} playerId={ctx.playerId!} athlete={ctx.athlete} config={config} preview={preview} source={personalSource} initialWorkout={personalSelected} initialCreate={personalCreate} initialRequest={seed} onBack={() => { setPersonalOpen(false); setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalCreate(false); }} />;
+  if (personalOpen) return <PersonalWorkoutHub key={personalEntry} store={personal} playerId={ctx.playerId!} athlete={ctx.athlete} config={config} preview={preview} source={personalSource} initialWorkout={personalSelected} initialCreate={personalCreate} initialRequest={seed} initialHandoff={personalHandoff} initialConversation={conversationOpen} onSelection={id => { const search = personalDraftLink(location.search, id); if (new URLSearchParams(location.search).get('view') === 'training' && search !== new URLSearchParams(location.search).toString()) navigate({ search }); }} onBack={() => { setPersonalOpen(false); setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalCreate(false); setConversationOpen(false); navigate({ search: personalDraftLink(location.search) }, { replace: true }); }} />;
   if (playing) return <PlayerWorkout workout={playing} store={store} playerId={ctx.playerId!} preview={preview} onExit={() => setPlaying(null)} />;
   if (intake) return <ProgramIntake playerId={ctx.playerId!} athlete={ctx.athlete} statsProfile={statsProfile} preview={preview} initialText={seed} onReady={() => { setIntake(false); setReveal(true); }} onBack={() => setIntake(false)} />;
   if (!plans) return <section className="portal-card"><p>{error || 'Loading training…'}</p></section>;
   if (panel === 'history') return <>{back}<TrainingHistory playerId={ctx.playerId!} preview={preview} plans={plans} currentLogs={logs} onReview={w => { setPanel(''); setReview(w); }} /></>;
-  if (!plan) return <><p className="eyebrow">Your training</p><h1>Choose today’s session.</h1>{personal.enabled && <section className="portal-card"><h2>Start with a single workout</h2><p>Choose and adjust your drills, then track your sets.</p><button className="primary-cta" onClick={() => openPersonal(personalResume, !personalResume)}>{personalResume ? 'Resume personal workout' : 'Create a personal workout'}</button></section>}{personalActions}<section className="portal-card"><h2>Build a longer plan</h2><p>Turn your goals and results into a week of focused sessions.</p><button className="hub-secondary" onClick={openPlan}>Build my plan</button>{!personal.enabled && <button className="hub-secondary" onClick={() => setPanel('history')}>History</button>}</section></>;
+  if (!plan) return <><p className="eyebrow">Your training</p><h1>Choose today’s session.</h1>{personal.enabled && <section className="portal-card"><h2>Start with a single workout</h2><p>Ask your AI coach for a workout, review it, then track your sets.</p><button className="primary-cta" onClick={() => openPersonal(personalResume, !personalResume)}>{personalResume ? 'Resume personal workout' : 'Create a personal workout'}</button></section>}{personalActions}<section className="portal-card"><h2>Build a longer plan</h2><p>Turn your goals and results into a week of focused sessions.</p><button className="hub-secondary" onClick={openPlan}>Build my plan</button>{!personal.enabled && <button className="hub-secondary" onClick={() => setPanel('history')}>History</button>}</section></>;
   if (plan.schemaVersion !== 3) return <>{personalActions}<button className="hub-secondary" onClick={openPlan}>Build a new plan</button><TrainingView ctx={ctx} /></>;
   if (drillId) return <><button className="text-button" onClick={() => setDrillId('')}>← Back</button><DrillMedia drillId={drillId} preview={preview} /></>;
   if (chatTarget) return <>{back}<h2>{chatTarget.kind === 'new' ? 'Create your workout' : 'Adjust with your coach'}</h2>{message}
@@ -138,7 +160,7 @@ export default function PlayerTraining({ ctx, statsProfile, request, onAcknowled
     const log = store.logFor(review.id), snapshot = log?.workoutSnapshot || review;
     return <>{back}<p className="eyebrow">{log?.endedAt ? log.endReason === 'completed' ? 'Completed' : 'Ended early' : log ? 'In progress' : 'Your workout'}</p><h2>{snapshot.title || 'Workout'}</h2><p>{snapshot.intent}</p><p>{snapshot.estimatedMinutes} minutes · {snapshot.blocks?.length || 0} drills</p>{message}<WorkoutBlocks workout={snapshot} onDrill={setDrillId} />
       {log?.endedAt ? <p>Saved {dateText(log.endedAt)}. Completed sets remain in your history.</p> : needsTrainingStartCheck(review) ? <TrainingStartConfirmation key={review.id} disabled={store.saving || !store.logsLoaded || plan.status !== 'active'} resuming={Boolean(log)} onStart={confirmation => void start({ ...review, startConfirmation: confirmation })} /> : <button className="primary-cta" disabled={store.saving || !store.logsLoaded || plan.status !== 'active'} onClick={() => void start(review)}>{store.saving ? 'Starting…' : log ? 'Resume workout' : 'Start workout'}</button>}
-      {personal.enabled && <button className="hub-secondary" onClick={() => { setSeed(''); setPersonalSelected(undefined); setPersonalSource({ workout: snapshot, ...(review.source === 'plan' ? { reference: { planId: review.planId, workoutId: review.workoutId, revision: Number(review.workoutRevision || 1) } } : {}) }); setPersonalOpen(true); setReview(null); }}>Customize a personal copy</button>}
+      {personal.enabled && <button className="hub-secondary" onClick={() => { personal.newConversation(); setPersonalEntry(v => v + 1); setConversationOpen(false); setPersonalHandoff(undefined); setSeed(''); setPersonalSelected(undefined); setPersonalSource({ workout: snapshot, ...(review.source === 'plan' ? { reference: { planId: review.planId, workoutId: review.workoutId, revision: Number(review.workoutRevision || 1) } } : {}) }); setPersonalOpen(true); setReview(null); }}>Customize a personal copy</button>}
       {!log && review.source !== 'plan' && <button className="hub-secondary" disabled={!capabilityEnabled(config, 'workout_chat')} onClick={() => { setSeed(''); setChatTarget({ kind: 'adhoc', plannedWorkoutId: review.workoutId }); setReview(null); }}>Adjust with your AI coach</button>}
     </>;
   }
