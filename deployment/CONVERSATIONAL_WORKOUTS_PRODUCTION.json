@@ -1,0 +1,288 @@
+{
+  "release": "Conversational personal workouts and Community navigation",
+  "status": "published",
+  "verificationStatus": "complete",
+  "website": {
+    "deployId": "6ab76982d74a19707a6f9d9a",
+    "url": "https://posetek.net",
+    "publishedAt": "2026-09-26T07:31:38Z",
+    "publishedAtPacific": "2026-09-26 00:31:38 PDT",
+    "sourceCommit": "9b15c40a9a7f176ad333708099a73a7af8f7233f",
+    "promotedWithoutRebuilding": true,
+    "previousDeploy": "6ab723a4b245cdd9426dc47a",
+    "liveInventoryFilesIncludingNetlifyMetadata": 1049,
+    "artifactFilesVerified": 1048,
+    "protectedFiles": 1016,
+    "protectedBytes": 114556878,
+    "applicationSha1": "196bea5a7697c361528787af2da6596e80b87183",
+    "applicationBytes": 1309,
+    "guardedBuildPreservedFiles": 956,
+    "addedAssets": 59,
+    "marketingBytesPreserved": true,
+    "draftApplicationAndAssetFilesVerified": 60,
+    "draftRoutesVerified": [
+      "/athlete",
+      "/dashboard",
+      "/admin",
+      "/coaches",
+      "/application.html",
+      "/feed",
+      "/feed.html"
+    ],
+    "draftRouteStatus": 200,
+    "draftExpectedCacheHeadersVerified": true,
+    "ordinaryPreservationGuard": "passed_1016_files",
+    "ordinaryGuardOutputDeployed": false,
+    "primaryOriginApplicationAndAssetHashesVerified": 60,
+    "primaryOriginRoutesVerified": 7,
+    "primaryOriginRouteStatus": 200,
+    "primaryOriginCacheHeadersVerified": true,
+    "productionBrowserVerification": "passed"
+  },
+  "gateway": {
+    "sourceRepository": "posetek/posetek-backend",
+    "sourceCommit": "9639e76f5e3a6716b64431d18687980a6bc29eaa",
+    "releaseRecordCommit": "907a71e0a7a9aeb0ea96aaab422c8fd9cf75ece3",
+    "featureCommit": "1cfa6f3",
+    "revision": "agent-gateway-sha-9639e76f5e3a",
+    "releasedAt": "2026-09-26T07:22:15Z",
+    "trafficPercent": 100,
+    "cloudBuild": "d4b8a2fb-ed33-4823-9457-8c372663b173",
+    "cloudBuildStatus": "SUCCESS",
+    "imageDigest": "sha256:6a905d9975cf0c32a140c2e2695f3bdb38f6cb1467478dadb428f4632bd54da4",
+    "containerTestsPassed": 1902,
+    "containerTestDurationSeconds": 592.59,
+    "focusedTestsPassed": 309,
+    "sharedToolTestsPassed": 65,
+    "independentRelatedTestsPassed": 86,
+    "releaseCommand": "Services/agent-gateway/scripts/release.sh --shift",
+    "personalMutationGuard": {
+      "scope": "Personal-workout-only tool mutation safeguard rejects request_keep_drills before replacing a seeded valid draft.",
+      "conditionalInstruction": "Seeded refinements and copies must use the existing draft.",
+      "otherIntermediateEditsUnchanged": true,
+      "explicitReplacementUnchanged": true,
+      "dosageChangesUnchanged": true,
+      "nativeBehaviorUnchanged": true,
+      "canonicalReleaseAndLiveAcceptance": "passed"
+    },
+    "transactionCorrection": "The shared read helper checks transaction is not None so empty Firestore transactions retain snapshot reads; faithful fake, actual-SDK and concurrent-retry regressions passed."
+  },
+  "rules": {
+    "sourceRepository": "posetek/posetek-mobile-app",
+    "sourceCommit": "d7c0b03",
+    "releaseRecordCommit": "ccacdab494725c045490b02fb765e9f8d0ca3707",
+    "firestoreSha256": "686dd2cb492f62b520567372774228c59478c7b6c229007537d85032550deaeb",
+    "storageSha256": "1da8799ec5f785c1a43330342f895fef76774622b32bbf48853b45bc3e4bf3eb",
+    "firestoreRuleset": "3c9dde1c-766d-4f16-b48f-4538a8f7a3dd",
+    "storageRuleset": "cef8b6f9-cc01-4caf-8bde-d98056307741",
+    "storageBytesUnchanged": true,
+    "publisher": "firebase/operations.py publish",
+    "emulatorTestsPassed": 1053,
+    "websiteRuleSuitesPassed": 7,
+    "deployedChecksPassed": 55,
+    "deployedChecksCompletedAt": "2026-09-25T22:05:21.166598-07:00",
+    "identityAuditUnresolved": 0,
+    "identityAuditAccessGaps": 0,
+    "publishedBeforeGateway": true
+  },
+  "workoutFlow": {
+    "creation": "AI Coach or Training creates one checked private proposal; Training continues the same conversation and publishes it explicitly.",
+    "manualDrillControls": "Removed from the athlete website; older manual API clients remain compatible.",
+    "timeTarget": "Approximate using the existing tolerance; requested and calculated minutes remain visible.",
+    "publishedEdits": "Unstarted workouts refine and republish into the same saved identity; started workouts use an immutable personal copy.",
+    "recovery": "Server-owned conversations and immutable proposals; local proposal selection caches identifiers for authoritative readback.",
+    "pendingRequestOutbox": "Temporarily retains submitted parameters with stable request/job identities to retry an accepted action safely.",
+    "liveApiStagesPassed": 7,
+    "liveApiSourceRevision": "agent-gateway-sha-9639e76f5e3a",
+    "liveApiChecks": [
+      {
+        "scenario": "Fresh unpublished revision raced through two save jobs",
+        "status": "passed",
+        "resultsExactlyEqual": true,
+        "savedRevisionCount": 1
+      },
+      {
+        "scenario": "Start and Stop",
+        "status": "passed"
+      },
+      {
+        "scenario": "Editing a started workout",
+        "status": "passed",
+        "denied": true
+      },
+      {
+        "scenario": "Personal copy of started workout",
+        "status": "passed",
+        "newWorkoutIdentity": true,
+        "oldLogFrozen": true
+      },
+      {
+        "scenario": "Private athlete proposal/conversation ownership",
+        "status": "passed",
+        "coachAndStrangerDenied": true,
+        "coachPublishedWorkoutReadAllowed": true
+      },
+      {
+        "scenario": "Direct-write, pain and stale-schedule requests",
+        "status": "passed",
+        "denied": true
+      }
+    ],
+    "assignedPlansOrAssignedLogsWritten": false,
+    "safelyRefusedEarlierRefinements": {
+      "count": 2,
+      "sourceRevision": "agent-gateway-sha-487890f1c9b6",
+      "verificationMode": "Read-only live readback",
+      "proposalExactlyUnchanged": true,
+      "savedWorkoutExactlyUnchanged": true,
+      "scheduleExactlyUnchanged": true,
+      "startedLogPresent": false
+    }
+  },
+  "community": {
+    "navigation": [
+      "Profile",
+      "AI Coach",
+      "Drills",
+      "Training",
+      "Community",
+      "Standings"
+    ],
+    "panels": [
+      "Activity",
+      "Find people",
+      "Sharing settings"
+    ],
+    "legacyRoutesPreserved": [
+      "/feed",
+      "/feed.html"
+    ],
+    "sharingPermissionsChanged": false
+  },
+  "validation": {
+    "websiteTestsPassed": 1156,
+    "websiteTestFiles": 96,
+    "websiteTestDurationSeconds": 47.25,
+    "typeScript": "passed",
+    "independentWebsiteTestsPassed": 26,
+    "releaseTestsPassed": 22,
+    "releaseTestDurationMilliseconds": 5018.694,
+    "localPreviewWidths": [
+      360,
+      390,
+      430
+    ],
+    "localPreviewDesktop": "passed",
+    "localPreviewKeyboardClearance": "Viewport/focus simulation passed; no physical-device virtual-keyboard claim.",
+    "candidateReadOnlyUi": {
+      "candidateDeployId": "6ab76982d74a19707a6f9d9a",
+      "status": "passed_for_recorded_read_only_checks",
+      "coachPrescriptionRequestedMinutes": 35,
+      "coachPrescriptionCalculatedMinutes": 31,
+      "reviewInTrainingOpenedSameConversation": true,
+      "initialAndRevisionHistoryComplete": true,
+      "publishedStatusVisible": true,
+      "revisionComposerEmptyAndDisabled": true,
+      "signInReturnPreservedAiCoachDestination": true,
+      "communityPanelsVerified": [
+        "Activity",
+        "People",
+        "Sharing"
+      ],
+      "allSixSharedNavigationTabsPresent": true,
+      "browserBackRestoredFull35Target31CalculatedConversation": true,
+      "uiWritesDuringPass": false
+    },
+    "candidateInteractiveUi": {
+      "status": "passed",
+      "syntheticAccount": true,
+      "requestedMinutes": 12,
+      "calculatedMinutes": 8,
+      "redundantIntakeQuestions": false,
+      "conversationalRename": "My Close Control Session",
+      "renamePreservedDrillIdentitiesAndDosage": true,
+      "publishImmediatelyOpenedSavedDetailWithStart": true,
+      "completedSets": 1,
+      "totalSets": 4,
+      "communityToTrainingResume": "passed",
+      "restoredPausedElapsedSeconds": 22,
+      "restoredRestRemainingSeconds": 48,
+      "saveAndFinishVisibleInPersonalWorkouts": true,
+      "finalStatus": "Finished",
+      "coldConversationUrlAtoB": "Correct requested B, history/title and 12-minute target / 8-minute calculation restored."
+    },
+    "finalProductionBrowser": {
+      "status": "passed",
+      "origin": "Netlify production alias",
+      "syntheticAccount": true,
+      "signInReturnedToTraining": true,
+      "personalWorkoutsShowedFinishedUiWorkoutAndEarlierCopy": true,
+      "conversationRecovered12Target8CalculatedAndRenameHistory": true,
+      "prescriptionReadable": true,
+      "communityToolbarAndAllSixSharedTabsVerified": true,
+      "communityEmptyStateVerified": true,
+      "signedOutAfterVerification": true,
+      "supplemental390pxCommunityScreenshot": "Primary-origin /feed?preview=1 sample preview; not an authenticated-account screenshot."
+    },
+    "primaryOriginApiValidation": "All seven final live API stages passed.",
+    "candidateOriginBoundary": "Netlify aliases remain outside the AI stream proxy CORS allowlist; authenticated UI acceptance and production-origin API checks are recorded separately.",
+    "readOnlyPrimaryOriginCheck": {
+      "usedExistingSignedInView": true,
+      "controlsOrTrainingMutations": false,
+      "ordinaryPageViewUsageTelemetryPossible": true,
+      "identityRecordedInReleaseReceipt": false
+    },
+    "generationPublishProgressCleanupVerificationAccounts": "Synthetic accounts only",
+    "physicalPhoneLock": "Not tested on a physical device.",
+    "nativeUi": "Candidate bc492aa remains uncompiled/unreleased; submitted App Store build unchanged."
+  },
+  "preserved": {
+    "personalWorkoutsEnabled": true,
+    "aiConfigurationDeepEqualToPreflight": true,
+    "configurationCatalogAndMobileGateRecheckedAfterFinalGateway": true,
+    "configurationCatalogAndMobileGateRecheckedAfterCleanup": true,
+    "aiAllowancesUnchanged": true,
+    "aiProxyCorsUnchanged": true,
+    "wholeBodyMobileVerified": false,
+    "catalogRecords": 208,
+    "unpublishedWholeBodyDrafts": 80,
+    "insightsOrSocialFunctionsRedeployed": false,
+    "realAthleteTrainingAccountInvitationConversationWrites": false,
+    "ordinaryUsageTelemetryNote": "The brief read-only primary-origin signed-in page check could emit ordinary page-view usage telemetry."
+  },
+  "cleanup": {
+    "status": "complete",
+    "verifiedAt": "2026-09-26T07:38:31Z",
+    "supplementalScopedCleanup": {
+      "documentsRemoved": 194,
+      "storageObjectsRemoved": 8,
+      "failures": 0
+    },
+    "canonicalFixtureCleanup": {
+      "status": "cleaned",
+      "deletionActions": 13,
+      "authAccountsDeletedIncludedInActions": 3,
+      "failures": 0,
+      "countNote": "Mixed deletion actions, including Auth accounts; not a Firestore-document total.",
+      "postTriggerSocialPreferencesNotSeen": 3,
+      "notSeenWasFailure": false
+    },
+    "zeroResidueVerification": {
+      "status": "passed",
+      "mode": "Independent scoped readback after trigger wait",
+      "accountsRemaining": 0,
+      "documentsRemaining": 0,
+      "storageObjectsRemaining": 0,
+      "scopes": ["Verification identities", "Conversation messages including orphaned grandchildren", "Artifact prefixes", "Social", "Usage", "Organization", "Team"]
+    },
+    "verificationAccountsRemoved": true,
+    "syntheticRecordsRemoved": true,
+    "nestedConversationMessagesRemoved": true
+  },
+  "rollback": {
+    "website": "Restore previous Netlify deployment 6ab723a4b245cdd9426dc47a.",
+    "gateway": "Use canonical release.sh --shift-only with a reviewed prior revision when needed. Prior stable agent-gateway-sha-2f0b076f9b92 shares the transaction truthiness bug, so rollback to it does not resolve the current finding.",
+    "feature": "If required, disable only config/llm.personalWorkoutsEnabled with an update-time precondition; retain saved workouts and conversations.",
+    "rules": "Retain the creator-private conversation boundary; any future rules publication requires canonical operations.py, reviewed live baseline, fresh identity audit and exact-byte tests."
+  }
+}

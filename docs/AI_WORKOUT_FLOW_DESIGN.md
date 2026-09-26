@@ -53,3 +53,39 @@ Ignored screenshots are in `.netlify/player-coach-review/`:
 `workout-conversation-{360,390,430,desktop}.png`, and
 `workout-conversation-keyboard-clearance-390.png`. Production verification and
 physical mobile acceptance remain separate release checks.
+
+## Authenticated candidate acceptance — September 26, 2026
+
+Candidate `6ab76982d74a19707a6f9d9a` uses website source `9b15c40` and the accepted
+gateway `agent-gateway-sha-9639e76f5e3a`. A synthetic athlete created a standalone
+workout with a 12-minute target; the calculated prescription was 8 minutes and
+the conversation did not repeat already supplied intake questions. A rename
+follow-up changed the title to **My Close Control Session**, preserving the drill
+identities and dosage. Publish immediately opened the saved workout with Start.
+
+After completing one of four sets, leaving for Community and returning to Training
+restored the paused workout with 22 seconds elapsed, 48 seconds of rest remaining
+and one of four sets complete. Save and finish produced **Finished** in Personal
+workouts. These are browser interaction checks, not physical-phone lock or native
+device acceptance.
+
+An existing AI Coach prescription opened in Training with its original and
+revision history, Published status and empty disabled revision composer. Sign-in
+return preserved the AI Coach destination. Community Activity, People and Sharing
+retained all six bottom destinations; browser Back restored the complete workout
+conversation. The cold-URL regression harness also confirmed that a URL selecting
+draft B cannot display previously stored draft A. Canonical proposals need no
+redundant `playerId` field; server readback still validates owner, schema, checked
+proposal, expiry format, conversation and any explicit scope.
+
+The verified candidate was published September 26, 2026 at 12:31:38 AM PDT without
+rebuilding. Its 1,048 artifact files match; the reconciled baseline protects 1,016
+files. Production-alias synthetic sign-in returned to Training, showed the
+Finished workout and earlier copy, and recovered the exact 12-minute target /
+8-minute prescription and rename history. Community retained its six destinations,
+Activity / Find people / Sharing settings toolbar and empty state. The account
+was signed out after verification. A supplemental 390px production screenshot
+uses `/feed?preview=1` sample data; it is not authenticated-account evidence.
+Cleanup completed and independent scoped readback found zero remaining synthetic
+accounts, documents or objects. See the
+[release receipt](../deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json).

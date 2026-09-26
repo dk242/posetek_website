@@ -48,7 +48,20 @@ default to a sibling `../PoseTek-mobile-app` checkout, and `RULES_PATH` /
 `deployment/*.json`, including the composed `whole-body-firestore.rules`
 (deleted), are historical records of past publishes, not instructions.
 
-Current production is `6ab723a4b245cdd9426dc47a` with 957 protected application/public entries. Player/coach updates and manual/AI personal workouts are live. Read `deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json`, `docs/PLAYER_COACH_EXPERIENCE.md` and `docs/COACH_WORKFLOW.md`. Native UI remains a separate uncompiled/unreleased candidate; the user authorized the web release independently. Preserve the whole-body acceptance hold. Backend now redirects to `https://github.com/posetek/posetek-backend`; canonical publishing commands above remain binding.
+Conversational personal workouts and Community navigation are live in website
+deployment `6ab76982d74a19707a6f9d9a`, source `9b15c40`, published September 26,
+2026 at 12:31:38 AM PDT. The baseline protects 1,016 application/public files.
+Production browser verification, the ordinary preservation guard and synthetic
+verification cleanup passed. The gateway and canonical rules are live. Read
+`deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json`,
+`docs/CONVERSATIONAL_WORKOUTS.md` and `docs/COACH_WORKFLOW.md`. AI Coach creates an
+actual private proposal; Training continues its conversation and publishes the
+reviewed workout into Personal workouts. Previous website production is
+`6ab723a4b245cdd9426dc47a`; its receipt remains historical. Native UI remains a
+separate uncompiled/unreleased candidate; the user authorized the web release
+independently. Preserve the whole-body acceptance hold. Backend now redirects to
+`https://github.com/posetek/posetek-backend`; canonical publishing commands above
+remain binding.
 
 The prior filming-reference production release is `6ab25ae36de88d184cc9b2e1`, published
 September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo
@@ -98,7 +111,7 @@ measured Sprint results while preserving the genuine Sprint attempt. Read
 historical checkpoint. The preceding testing audit adds canonical
 qualified results, proven duplicate suppression, exact capture media and truthful
 pose timing. Read `deployment/TESTING_AUDIT_PRODUCTION.json` and
-`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. The protected baseline now has 727 files.
+`docs/TESTING_AUDIT_BUILD_HANDOFF.md`. That historical baseline protected 727 files.
 Native candidate `e2c3736` on `codex/testing-audit-remediation` includes durable
 capture retention and awaits Taiyo's Mac/iPhone/TestFlight validation; do not deploy
 native repository rules. Preserve the 32-entry video archive guard in
@@ -133,15 +146,16 @@ At the initial September 15 review, GitHub main was older than the live homepage
 The user chose the deployed site as the reference. Recovered modules have provenance
 beside their code; the other computer's original authored source remains unavailable.
 The unchanged deployment `6aa9b6f0d8faf6177db8fd97` remains the tabbed comparison
-reference. The current application baseline instead pins the September 22 release
-in `deployment/homepage-baseline.json`. On a fresh clone, run
+reference. The current application release and protected files are recorded in
+`deployment/homepage-baseline.json`. On a fresh clone, run
 `node scripts/capture-deployed-reference.mjs` before using either preview server.
 The ignored capture lives in `.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd97/`.
 
 Run `npm --prefix app run build:marketing` and
 `node scripts/serve-homepage-preview.mjs` to review current source at port 4174.
 Run `node scripts/serve-deployed-reference.mjs` for the unchanged reference at
-port 4173. The ordinary production build preserves 727 application/public files byte-for-byte,
+port 4173. The ordinary production build preserves every application/public file
+recorded in `deployment/homepage-baseline.json` byte-for-byte,
 including `/application.html` and its navigation bridge. Keep the live-application
 guard enforced and verify the baseline again before another release.
 
