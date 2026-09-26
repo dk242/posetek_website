@@ -263,6 +263,20 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
     }
   }
 
+  async function stampClientTest(incidentId, doc) {
+    const uid = text(doc.requestedByUid);
+    const isTest = Boolean(uid && (await testUids()).has(uid));
+    // Client supplied classifications are never authoritative. Also correct
+    // older client documents when their create trigger is retried.
+    if (doc.isTest !== isTest) {
+      try { await incidents.doc(incidentId).update({ isTest }); }
+      catch (error) {
+        if (!(error && (error.code === 5 || error.code === "not-found" || /NOT_FOUND/.test(String(error.message))))) throw error;
+      }
+    }
+    return isTest;
+  }
+
   /**
    * Whether a newly created doc is a countable incident, and so evidence that
    * its class recurred. A client doc counts only when it stands alone: it has
@@ -322,6 +336,7 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
   /** onCreate of any incident doc; order-independent. */
   async function foldIncident(incidentId, data) {
     const doc = data || {};
+    if (incidentId.startsWith("client-")) doc.isTest = await stampClientTest(incidentId, doc);
     const results = await foldHalves(incidentId, doc);
     const reopened = await reopenVerifiedClass(incidentId, doc);
     return reopened.length ? { ...results, reopened } : results;
@@ -330,6 +345,26 @@ function createAiIncidents({ db, FieldValue, Timestamp, logger, now = () => Date
   async function foldHalves(incidentId, doc) {
     if (incidentId.startsWith("client-")) {
       await stampClientRetention(incidentId, doc);
+      const ownId = incidentId.slice("client-".length);
+      // A client-only failure uses its UUID as requestId. It is the canonical
+      // incident for later user-report documents with that same requestId.
+      if (doc.requestId === ownId && doc.stage !== "user_report" && !doc.jobId) {
+        const matches = await incidents.where("requestId", "==", ownId).get();
+        const results = {};
+        for (const match of matches.docs) {
+          if (match.id !== incidentId && match.id.startsWith("client-") && match.data().stage === "user_report")
+            results[match.id] = await foldPair(incidentId, match.id);
+        }
+        return Object.keys(results).length ? results : { standalone: true };
+      }
+      if (text(doc.requestId) && !doc.jobId) {
+        const clientCanonicalId = `client-${doc.requestId}`;
+        if (clientCanonicalId !== incidentId) {
+          const candidate = await incidents.doc(clientCanonicalId).get();
+          if (candidate.exists && candidate.data().stage !== "user_report")
+            return { [clientCanonicalId]: await foldPair(clientCanonicalId, incidentId) };
+        }
+      }
       const canonicalId = text(doc.requestId) ? incidentIdForRequest(doc.requestId)
         : text(doc.jobId) ? incidentIdForJob(doc.jobId) : null;
       if (!canonicalId) return { standalone: true };
