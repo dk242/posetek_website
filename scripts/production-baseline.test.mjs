@@ -26,12 +26,21 @@ async function fixture(mode, options, run) {
       ['/bookperformancetest.html', '<!doctype html><form id="bookingForm"></form>'],
     ]);
     if (modern) files.set('/marketing/home-navigation.js', '// current published bridge\n');
+    if (options.localAlias) files.set('/booking-copy.html', files.get('/bookperformancetest.html'));
+    if (options.marketingAlias) {
+      files.set('/index 2.html', '<html><noscript><a href="/bookPerformanceTest.html">Book</a></noscript></html>');
+      await put('index.html', '<noscript><a href="/bookPerformanceTest.html">Book</a></noscript>');
+    }
     if (options.overlap) files.set(options.overlap, '// do not preserve this marketing file');
     const manifest = {
       deploymentId: 'test-pinned-deployment', url: 'https://pinned.example',
       ...(modern ? { applicationPath: '/application.html' } : {}),
       files: [...files].map(([path, bytes]) => ({ path, sha: sha(bytes), size: Buffer.byteLength(bytes) })),
     };
+    if (options.localAlias) {
+      manifest.files.find(file => file.path === '/bookperformancetest.html').localPath = 'booking-source.html';
+      await put('booking-source.html', options.badLocal ? 'incorrect original source' : files.get('/bookperformancetest.html'));
+    }
     await put('deployment/homepage-baseline.json', JSON.stringify(manifest));
     await put('deployment/home-navigation.js', '// local legacy-only bridge\n');
     await put('marketing-dist/index.html', marketing);
@@ -46,10 +55,12 @@ async function fixture(mode, options, run) {
     await copyFile(join(source, 'build-production.mjs'), join(directory, 'scripts/build-production.mjs'));
     await copyFile(join(source, 'test-production-entry.cjs'), join(directory, 'scripts/test-production-entry.cjs'));
 
-    const responses = Object.fromEntries([...files].map(([path, bytes]) => ['https://pinned.example' + path, bytes]));
+    const responses = Object.fromEntries([...files].map(([path, bytes]) => [new URL(path, 'https://pinned.example').href, bytes]));
     responses['https://posetek.net/'] = marketing;
     responses['https://posetek.net/application.html'] = options.drift ? applicationWithBridge + '\nchanged' : applicationWithBridge;
     if (options.corrupt) responses['https://pinned.example/assets/current.js'] = 'corrupted bytes';
+    if (options.localAlias) for (const path of ['/bookperformancetest.html', '/booking-copy.html']) responses['https://pinned.example' + path] = '<html>pretty URL rewrite</html>';
+    if (options.marketingAlias) responses['https://pinned.example/index%202.html'] = `<html>${options.aliasDrift ? 'changed' : ''}<noscript><a href='/bookperformancetest'>Book</a></noscript></html>`;
     await put('mock-fetch.mjs', `const responses = ${JSON.stringify(responses)};
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init) => {
@@ -102,6 +113,31 @@ test('preserved download hash mismatches remain fatal', async () => {
   await fixture('modern', { corrupt: true }, async ({ build }) => {
     assert.notEqual(build.status, 0);
     assert.match(build.stderr, /Baseline checksum mismatch: \/assets\/current.js/);
+  });
+});
+
+test('pinned aliases preserve identical original source bytes despite served HTML rewrites', async () => {
+  await fixture('modern', { localAlias: true }, async ({ directory, files, build }) => {
+    assert.equal(build.status, 0, build.stderr);
+    assert.equal(await readFile(join(directory, 'production-dist/booking-copy.html'), 'utf8'), files.get('/bookperformancetest.html'));
+  });
+});
+
+test('an alias never accepts a declared source with different bytes', async () => {
+  await fixture('modern', { localAlias: true, badLocal: true }, async ({ build }) => {
+    assert.notEqual(build.status, 0);
+    assert.match(build.stderr, /Baseline checksum mismatch/);
+  });
+});
+
+test('marketing filename alias restores a rewritten noscript only when the whole original hash matches', async () => {
+  await fixture('modern', { marketingAlias: true }, async ({ directory, files, build }) => {
+    assert.equal(build.status, 0, build.stderr);
+    assert.equal(await readFile(join(directory, 'production-dist/index 2.html'), 'utf8'), files.get('/index 2.html'));
+  });
+  await fixture('modern', { marketingAlias: true, aliasDrift: true }, async ({ build }) => {
+    assert.notEqual(build.status, 0);
+    assert.match(build.stderr, /Baseline checksum mismatch/);
   });
 });
 

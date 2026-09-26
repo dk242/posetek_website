@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { auth } from '../../lib/firebase';
 import { athleteSummary, summarySort } from './lib/logic';
@@ -24,7 +24,7 @@ export default function CoachDashboardPage() {
   const [loads, setLoads] = useState<Record<string, AthleteLoad>>({});
   const [loading, setLoading] = useState(true), [error, setError] = useState('');
   const [refreshKey, setRefreshKey] = useState(0), [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
-  const guard = useRef(createDashboardGuard(() => auth.currentUser?.uid)).current;
+  const [guard] = useState(() => createDashboardGuard(() => auth.currentUser?.uid));
   const scope: TeamScope | null = context?.organizationId && context.teamId
     ? { orgId: context.organizationId, teamId: context.teamId } : null;
 
