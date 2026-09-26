@@ -1,8 +1,10 @@
 # Training access catalog requirements
 
-Prepared September 26, 2026. This document describes a proposed, source-derived
-metadata patch. It is not a publication receipt, content approval, or mobile
-acceptance. No catalog mutation was performed while preparing it.
+Published September 26, 2026 as catalog version `1.0.92`. The guarded transaction
+committed at `08:26:04.508195Z`; independent readback verified preservation at
+`08:27:57.605Z`. All 54 requirement maps and the two equipment corrections are
+installed. This metadata publication does not approve content or mobile use.
+The website production receipt records the coordinated release and acceptance.
 
 ## Scope and source of truth
 
@@ -70,8 +72,8 @@ invent distances, clearances, material substitutions, or review approvals.
 ## Two narrow equipment corrections
 
 `BMA-501` explicitly names a ball and two cones but stores an empty equipment
-array. Its proposed array is `['ball', 'cones']`. `SHT-502` explicitly names cone,
-goal and ball but stores an empty array; its proposed array is
+array. Its corrected array is `['ball', 'cones']`. `SHT-502` explicitly names cone,
+goal and ball but stored an empty array; its corrected array is
 `['ball', 'cones', 'goal']`. These are the only edits to existing prescription
 content. No dose, instruction, age, difficulty, partner flag, status, media,
 review, clearance, active plan or log is changed.
