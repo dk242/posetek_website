@@ -24,6 +24,9 @@ function effectiveRep(rep, evidence, duplicate) {
   const qualification = qualifyRep(rep, evidence, duplicate);
   const output = { id: rep.id, repType: drillOf(rep), drillType: drillOf(rep), createdAtMillis: millis(rep.createdAt),
     resultStatus: resultStatus(rep, qualification) };
+  // A station attempt that failed processing, as older app builds committed it. Readers hide
+  // it from athletes and coaches; the app now repeats the slot instead of writing one.
+  if (rep.processingStatus === "failed" && rep.resultsValid === false) output.failedAttempt = true;
   for (const key of ["sessionNumber", "repNumber", "absoluteRepNumber"]) output[key] = Number.isSafeInteger(rep[key]) && rep[key] > 0 ? rep[key] : null;
   for (const key of ["sessionId", "trainingSessionId"]) if (playerSegment(rep[key])) output[key] = rep[key];
   if (typeof rep.captureId === "string" && /^[a-f0-9]{32}$/.test(rep.captureId)) output.captureId = rep.captureId;

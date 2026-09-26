@@ -41,7 +41,14 @@ export function metricValue(rep: any, field: string, meta: any = {}, fallbacks: 
 }
 
 /** Only proven pathless jump mirrors are suppressed; matching labels alone are not proof. */
-export function visibleAttempts<T extends Record<string, any>>(reps: T[]): T[] {
+/** A station attempt that failed processing, flagged by the results callable or read raw from Firestore. */
+export function failedAttempt(rep: Record<string, any>): boolean {
+  return rep.failedAttempt === true || (rep.processingStatus === "failed" && rep.resultsValid === false);
+}
+
+/** Failed attempts are hidden from athletes and coaches; staff review passes `includeFailedAttempts`. */
+export function visibleAttempts<T extends Record<string, any>>(reps: T[], options: { includeFailedAttempts?: boolean } = {}): T[] {
+  if (!options.includeFailedAttempts) reps = reps.filter(rep => !failedAttempt(rep));
   const key = (rep: T) => {
     const type = rep.repType || rep.drillType || rep._statsDrill;
     if (type !== "jump" || !Number.isSafeInteger(rep.sessionNumber) || rep.sessionNumber < 1

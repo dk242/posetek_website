@@ -660,6 +660,9 @@ function createTestingEvents({
   }
 
   async function repairProgressFromCommittedRep(eventId, stationId, playerId, repId, source) {
+    // An invalid attempt never fills a slot. Current app builds never write one for a
+    // testing event; this guards reps journaled by older builds whose progress write was lost.
+    if (source.resultsValid === false) return;
     const drillType = source.testingDrillType;
     const station = STATIONS.find((candidate) => candidate.id === stationId);
     const drillIndex = station?.drills.findIndex((candidate) => candidate.drillType === drillType) ?? -1;

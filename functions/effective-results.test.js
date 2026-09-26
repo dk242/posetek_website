@@ -32,6 +32,12 @@ test("effective rows null every measurement for incomplete results and duplicate
   assert.equal(duplicate.totalTime, null); assert.equal(duplicate.resultStatus.reason, "duplicateDocument");
   assert.equal(duplicate.resultStatus.duplicate, true);
 });
+test("a failed station attempt is flagged so readers can hide it; partial and valid reps are not", () => {
+  const failed = effectiveRep({ ...original, totalTime: null, processingStatus: "failed", resultsValid: false }, {}, false);
+  assert.equal(failed.failedAttempt, true); assert.equal(failed.resultStatus.qualified, false);
+  assert.equal(Object.hasOwn(effectiveRep({ ...original, processingStatus: "partial", resultsValid: false }, valid, false), "failedAttempt"), false);
+  assert.equal(Object.hasOwn(effectiveRep(original, valid, false), "failedAttempt"), false);
+});
 test("secondary broad-jump height can be unavailable while horizontal distance qualifies; legacy jump peak uses bounded original keyframes", () => {
   const broad = { ...original, repType: "broadJump", broadJumpDistance: 1.4, jumpHeight: -0.2 };
   const evidence = { metadata: { broadJumpDistance: 1.4 }, context: { result: { resultsValid: true, primaryMetric: 1.4 } } };

@@ -51,4 +51,15 @@ describe("effective result readers", () => {
     expect(attemptLabel(rows[0], rows)).not.toBe(attemptLabel(rows[2], rows));
     expect(attemptLabel(rows[3], rows)).toContain("Attempt");
   });
+
+  it("hides failed station attempts from athletes and coaches but not from staff review", () => {
+    const rows = [
+      { id: "good", repType: "sprint", resultStatus: { qualified: true } },
+      { id: "flagged", repType: "sprint", failedAttempt: true, resultStatus: { qualified: false } },
+      { id: "raw", repType: "sprint", processingStatus: "failed", resultsValid: false },
+      { id: "partial", repType: "sprint", processingStatus: "partial", resultsValid: false },
+    ];
+    expect(visibleAttempts(rows).map(row => row.id)).toEqual(["good", "partial"]);
+    expect(visibleAttempts(rows, { includeFailedAttempts: true }).map(row => row.id)).toEqual(["good", "flagged", "raw", "partial"]);
+  });
 });
