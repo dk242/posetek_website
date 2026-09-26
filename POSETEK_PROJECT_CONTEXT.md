@@ -4,22 +4,46 @@ Reviewed on September 26, 2026. This guide summarizes the available repository a
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
-## Confirmed training setup and account entry (2026-09-26 candidate)
+## Confirmed training setup and account entry (2026-09-26)
 
-The current source adds a confirmed equipment/space/people setup before personal
-AI creation and a current-access check at personal Start/Resume. All 28 equipment
+Website deployment `6ab788d1c138322f8f9b9911`, from source
+`e571df38b80f524da4dd547a9d82fe906d10aaa9`, was published September 26, 2026 at
+2:55:16 AM PDT. All 1,110 artifact files match the reviewed candidate; the
+reconciled baseline protects 1,078 application/public files (118,178,840 bytes).
+Production artifact/browser verification and the ordinary preservation build passed.
+
+The release adds a confirmed equipment/space/people setup before personal AI
+creation and a current-access check at personal Start/Resume. All 28 equipment
 tokens are represented across five setup tabs. A changed setup requires a revised
 AI draft before publication. Private conversations, exact proposal publication,
-assigned-workout boundaries and existing allowances remain intact.
+assigned-workout boundaries and existing allowances remain intact. The final
+gateway `agent-gateway-sha-dac82d119dc7` replaces unavailable baseline drills without
+loosening eligibility and avoids repeated empty domain searches. Canonical rules
+and all 54 source-bound catalog maps are live in catalog version `1.0.92`; all
+208 catalog records, 80 unpublished drafts and the false mobile acceptance gate
+remain preserved.
 
 Account entry distinguishes player activation, invited coaches/organization
 admins, independent coaches and legacy organization-code signup. Privileged
 access remains server assigned; no public administrator role is introduced.
-Read [the training handoff](docs/CONFIRMED_TRAINING_ACCESS.md),
+Read [the production receipt](deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json),
+[the training handoff](docs/CONFIRMED_TRAINING_ACCESS.md),
 [catalog requirements and guarded publisher](docs/TRAINING_ACCESS_CATALOG.md)
-and [account-entry workflow](docs/ACCOUNT_ENTRY_WORKFLOW.md). This section records
-the implementation decision; the release below remains the current production
-checkpoint until the new production receipt is complete.
+and [account-entry workflow](docs/ACCOUNT_ENTRY_WORKFLOW.md).
+
+Live acceptance passed 13 workflow stages, 15 checks and four staff-invitation
+checks. Browser acceptance covered AI revision and refresh recovery, explicit
+republication, Start, Community pause/return, current-access Resume and a truthful
+partial finish. The assigned coach's history showed the same saved revision and
+reported set, while retaining private-conversation boundaries. Checks covered
+360/390/430px and desktop, plus production sign-in, setup and Community readback.
+Validation includes 1,211 website tests, 95 final account tests, 2,003 exact-image
+gateway tests, 1,055 canonical emulator tests and 55 deployed rules checks.
+Run-scoped cleanup removed three temporary accounts, 244 documents and ten storage
+objects. Independent readback found zero remaining accounts, documents or objects,
+including nested messages; a final catalog/configuration check preserved all
+source-bound maps, unrelated fields, media/reviews and the whole-body hold.
+The following sections remain historical records of earlier releases.
 
 ## Conversational workouts and Community (2026-09-26)
 

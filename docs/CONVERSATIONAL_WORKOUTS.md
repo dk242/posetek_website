@@ -8,6 +8,14 @@ conversation rules are live. Production browser verification and the ordinary
 preservation guard passed, and synthetic verification cleanup is complete in the
 [release receipt](../deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json).
 
+The subsequent [confirmed training access release](../deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json)
+adds five visible setup tabs before generation and checks today's resources at
+personal Start/Resume. Explicit resource changes revise unavailable drills while
+preserving suitable prescription details; they cannot publish an old draft under
+new conditions. Read [the current resource workflow](CONFIRMED_TRAINING_ACCESS.md)
+for confirmation, revision and recovery details. The numbers below remain the
+historical acceptance record for the conversational-navigation release.
+
 ## Athlete experience
 
 Personal workouts → Create workout opens a dedicated conversation. The athlete

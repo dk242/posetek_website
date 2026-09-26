@@ -3,17 +3,25 @@
 Shared source repository: [dk242/posetek_website](https://github.com/dk242/posetek_website).
 Public website: [posetek.net](https://posetek.net).
 
-Conversational personal workouts and Community navigation are live on
-[posetek.net](https://posetek.net). Source `9b15c40` was published as deployment
-`6ab76982d74a19707a6f9d9a` on September 26, 2026 at 12:31:38 AM PDT. The baseline
-protects 1,016 application/public files. Production browser verification, the
-ordinary preservation guard and synthetic verification cleanup passed. The gateway
-and canonical rules are live. AI Coach creates a checked proposal; Training keeps
-the conversation for changes and explicit publication into Personal workouts.
-Read the [release receipt](deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json),
-[workout and Community handoff](docs/CONVERSATIONAL_WORKOUTS.md) and
+Confirmed training resources and accurate account entry are live on
+[posetek.net](https://posetek.net). Source `e571df3` was published as deployment
+`6ab788d1c138322f8f9b9911` on September 26, 2026 at 2:55:16 AM PDT. The baseline
+protects 1,078 application/public files. Production artifact/browser verification
+and the ordinary preservation guard passed; the canonical gateway, rules and
+source-bound catalog requirements are live.
+Run-scoped cleanup and independent verification found no remaining temporary
+accounts, documents or storage objects.
+
+Athletes confirm available space, people and equipment before AI creation, review
+conversational revisions, then explicitly publish. Personal Start/Resume rechecks
+today's resources while preserving recorded progress. Account entry distinguishes
+player codes, invited staff and the existing independent/legacy paths. Coaches
+retain their assigned teams and can inspect published personal-workout outcomes.
+Read the [release receipt](deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json),
+[training-access handoff](docs/CONFIRMED_TRAINING_ACCESS.md),
+[account-entry workflow](docs/ACCOUNT_ENTRY_WORKFLOW.md) and
 [coach workflow](docs/COACH_WORKFLOW.md). The previous website deployment is
-`6ab723a4b245cdd9426dc47a`; historical receipts describe their own release state.
+`6ab76982d74a19707a6f9d9a`; historical receipts describe their own release state.
 
 Personal capabilities, canonical rules, the gateway and scoped Insights functions are live. The user explicitly authorized web release independently of native UI acceptance. The submitted App Store build is unchanged; native candidate `bc492aa` remains uncompiled/unreleased. This does not change the separate false whole-body mobile acceptance gate or approve any of the 80 unpublished drills.
 

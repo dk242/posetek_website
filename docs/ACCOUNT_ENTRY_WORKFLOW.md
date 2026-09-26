@@ -1,6 +1,7 @@
 # Account entry and staff activation
 
-Prepared September 26, 2026. This is a source handoff, not a deployment receipt.
+Updated September 26, 2026. Deployment and cleanup evidence are recorded in the
+[production receipt](../deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json).
 
 ## Entry paths
 
@@ -92,7 +93,7 @@ references (live Refero tools unavailable). The direct-build decision ledger is:
 
 ## Source and verification
 
-Owned source: `app/src/pages/landing/` and `app/src/pages/staff-invite/`.
+Account-entry source: `app/src/pages/landing/` and `app/src/pages/staff-invite/`.
 Backend authority remains `functions/admission.js`, `functions/clubs.js`,
 `functions/club-access.js`; canonical Firebase rules remain mobile-repository-only.
 Read `docs/PLAYER_INVITATION_LINKS.md` for the unchanged robust player redemption
@@ -106,13 +107,31 @@ Verified locally with synthetic tests:
   team isolation, staff email verification, wrong-email/expired code rejection,
   race conditions and canonical membership.
 
-The first shared TypeScript check reported only concurrent training-screen edits,
-not account-entry errors. Final aggregate typecheck and browser QA are owned by
-the main task. Preview runs at `http://127.0.0.1:4175`; this agent's unavailable
-Chrome/in-app browser prevented visual acceptance here. Review `/signin` and
-`/join` at 360, 390, 430 and desktop widths; check primary/secondary choices,
-player modal keyboard focus, independent/organization forms, existing-account
-selector, reset and verification affordances, and synthetic error layouts.
+Browser checks covered anonymous `/signin` and `/join` at 360, 390, 430 and
+1280 pixels. The existing visual tokens and primary player/invited-staff choices
+were preserved, with independent-coach and organization-code signup retained as
+secondary paths. No horizontal overflow was observed. Signup modal Tab containment
+and Escape, the staff account selector, and password-reset guidance for a missing
+email were verified. An existing unlinked synthetic Auth account signed in with
+`returnTo=/join` and reached staff activation.
 
-No real accounts or invitations were created/claimed; no verification/reset emails
-were sent; no production write or deployment was performed by this work.
+TypeScript checks passed, and the final candidate application build and 95 account
+tests passed. Source review confirmed that the deferred login-focus callback checks
+the committed overlay state: closing signup can return focus to sign-in, while an
+open overlay blocks delayed login focus. Pending focus timers are cleared on
+unmount. At 390 pixels on the final candidate, Tab entered the signup close control;
+**Already have an account? Sign in** closed the dialog and restored focus to the
+email field, confirmed through the active DOM element.
+
+All four authenticated invitation checks passed using a temporary organization:
+wrong-email refusal, matching verified-email redemption, exact team scope and
+malformed/used-code refusal. Browser acceptance confirmed the invited coach's
+assigned-team dashboard and saved personal-workout history; the manager retained
+organization/staff controls and the scoped player preview. The independent coach
+path and unlinked-account activation return also passed.
+
+Production sign-in returned the temporary athlete to Training, where saved
+workouts, the resource setup and the six-tab Community navigation were verified.
+These checks do not establish physical-device or native-app acceptance. No real
+accounts or invitations were claimed, and no verification or password-reset
+emails were sent during account-entry verification.

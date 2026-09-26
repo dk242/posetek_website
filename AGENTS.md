@@ -48,20 +48,28 @@ default to a sibling `../PoseTek-mobile-app` checkout, and `RULES_PATH` /
 `deployment/*.json`, including the composed `whole-body-firestore.rules`
 (deleted), are historical records of past publishes, not instructions.
 
-Conversational personal workouts and Community navigation are live in website
-deployment `6ab76982d74a19707a6f9d9a`, source `9b15c40`, published September 26,
-2026 at 12:31:38 AM PDT. The baseline protects 1,016 application/public files.
-Production browser verification, the ordinary preservation guard and synthetic
-verification cleanup passed. The gateway and canonical rules are live. Read
-`deployment/CONVERSATIONAL_WORKOUTS_PRODUCTION.json`,
-`docs/CONVERSATIONAL_WORKOUTS.md` and `docs/COACH_WORKFLOW.md`. AI Coach creates an
-actual private proposal; Training continues its conversation and publishes the
-reviewed workout into Personal workouts. Previous website production is
-`6ab723a4b245cdd9426dc47a`; its receipt remains historical. Native UI remains a
+Confirmed training resources and accurate account entry are live in website
+deployment `6ab788d1c138322f8f9b9911`, source `e571df3`, published September 26,
+2026 at 2:55:16 AM PDT. The baseline protects 1,078 application/public files.
+Production artifact/browser verification and the ordinary preservation guard
+passed. The canonical gateway, rules and catalog version `1.0.92` are live. Read
+`deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json`,
+`docs/CONFIRMED_TRAINING_ACCESS.md`, `docs/TRAINING_ACCESS_CATALOG.md`,
+`docs/ACCOUNT_ENTRY_WORKFLOW.md` and `docs/COACH_WORKFLOW.md`. All 28 equipment
+choices appear in five setup categories; confirmed access constrains generation,
+publication and personal Start/Resume. Preserve the 54 source-bound requirement
+maps and all 80 unpublished whole-body drafts. Staff authority remains assigned
+through existing invitations and canonical memberships. Previous website production
+is `6ab76982d74a19707a6f9d9a`; its receipt remains historical. Native UI remains a
 separate uncompiled/unreleased candidate; the user authorized the web release
 independently. Preserve the whole-body acceptance hold. Backend now redirects to
 `https://github.com/posetek/posetek-backend`; canonical publishing commands above
 remain binding.
+
+All temporary release-verification accounts, documents and storage objects were
+removed; independent readback found zero residue, including nested messages.
+Post-cleanup verification preserved the exact catalog maps, media/reviews, AI
+configuration and false whole-body mobile acceptance gate.
 
 The prior filming-reference production release is `6ab25ae36de88d184cc9b2e1`, published
 September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo

@@ -1,0 +1,435 @@
+{
+  "release": "Confirmed training resources and accurate account entry",
+  "status": "published_verified",
+  "website": {
+    "deployId": "6ab788d1c138322f8f9b9911",
+    "url": "https://posetek.net",
+    "sourceCommit": "e571df38b80f524da4dd547a9d82fe906d10aaa9",
+    "previousDeploy": "6ab76982d74a19707a6f9d9a",
+    "publishedAt": "2026-09-26T09:55:16.348Z",
+    "applicationSha1": "1ab2d0ddc8473d816dec99cd04d43707a215808a",
+    "applicationBytes": 1309,
+    "guardedBuildPreservedFiles": 1015,
+    "addedAssets": 62,
+    "draftArtifactFiles": 1110,
+    "draftArtifactBytes": 124261187,
+    "draftInventorySha256": "13f483f204bebe22a5066d373e65f3259c17b67fe97b221b7c34628a535ba30b",
+    "draftDownloadedFilesVerified": 95,
+    "draftRoutesVerified": 10,
+    "approvedMarketingFilesPreserved": 32,
+    "marketingSnapshot": "6ab5e409d3ca5da40c5c01d2",
+    "rawHomepageSha1": "e4d2dfc372f5554ba31be85fefffac6f1b467847",
+    "servedHomepageSha1": "ef9d1b3fb603c59e4c0e2a26fcefc1fb0ec8d286",
+    "coachesSha1": "0581430222a96caf034d1d6099adff7d4c68236d",
+    "productionArtifactFilesVerified": 1110,
+    "productionArtifactVerifiedAt": "2026-09-26T09:58:58.203Z",
+    "primaryHostVerifiedAt": "2026-09-26T10:01:06.408Z",
+    "primaryHostDownloadedFiles": 95,
+    "primaryHostRoutes": 10,
+    "reconciledBaselineFiles": 1078,
+    "reconciledBaselineBytes": 118178840
+  },
+  "gateway": {
+    "sourceRepository": "posetek/posetek-backend",
+    "sourceCommit": "dac82d119dc7f3cb1f661724b36ba91644094af6",
+    "revision": "agent-gateway-sha-dac82d119dc7",
+    "status": "published",
+    "publisher": "Services/agent-gateway/scripts/release.sh --shift",
+    "initialAccessRevision": "agent-gateway-sha-1c2d3f474ecb",
+    "initialExactImageTestsPassed": 1978,
+    "refinementRepairFocusedTestsPassed": 281,
+    "refinementRepairIndependentTestsPassed": 142,
+    "realProviderInMemoryReplay": {
+      "passed": true,
+      "requestedMinutes": 15,
+      "calculatedMinutes": 14,
+      "unavailableIdentityReplaced": true,
+      "suitableIdentityPreserved": true,
+      "priorProposalUnchanged": true,
+      "productionDatabaseWrites": false,
+      "revision": "agent-gateway-sha-781e840a9685"
+    },
+    "refinementRepair": "Latest confirmed access releases only unavailable baseline identities from implicit preservation. Suitable identities and earlier explicit exclusions/counts remain constrained. Bare include requests express domain presence; explicit additions retain new-identity semantics. Intermediate repairs must strictly reduce existing access violations without introducing other hard failures; final publication validation remains strict.",
+    "cloudBuild": "be39c5dc-c0a6-4b8f-8e48-b14138bc4da2",
+    "cloudBuildStatus": "SUCCESS",
+    "containerTestsPassed": 2003,
+    "containerTestDurationSeconds": 598.75,
+    "releasedAt": "2026-09-26T09:44:14Z",
+    "trafficPercent": 100,
+    "healthVerifiedAt": "2026-09-26T09:44:33.600Z",
+    "imageDigest": "sha256:f1b49aa933ef4a89245db44be84539cbd82b95f82eecd883ce51d1588f6a0867",
+    "searchGuidance": "Personal search reports existing requested-domain coverage and offers labeled alternatives when the requested domain is exhausted, retaining all non-domain eligibility filters. Read-only preview reports calculated duration and remaining intent needs. A fourth unchanged empty search aborts without persisting a partial draft; the provider still chooses changes and the final validator remains authoritative.",
+    "previousRefinementRevision": {
+      "sourceCommit": "781e840a9685a5196c7ad6f0f13a6e538bfdc4d2",
+      "revision": "agent-gateway-sha-781e840a9685",
+      "containerTestsPassed": 1990,
+      "cloudBuild": "462b7a86-bfc2-4d0c-aa14-c55e658eb3f7",
+      "releasedAt": "2026-09-26T09:15:44Z",
+      "imageDigest": "sha256:382e180e139969218613437f8010044588646abb339b99120b6f92b9bde818cb"
+    },
+    "searchGuidanceFocusedTestsPassed": 294,
+    "searchGuidanceIndependentTestsPassed": 155,
+    "searchGuidanceRealProviderReplays": [
+      {
+        "request": "Exact failed resource refinement",
+        "requestedMinutes": 15,
+        "calculatedMinutes": 13,
+        "toolCalls": 9
+      },
+      {
+        "request": "Setup panel suggested revision",
+        "requestedMinutes": 15,
+        "calculatedMinutes": 16,
+        "toolCalls": 15,
+        "invalidDoseRejectedThenRepaired": true
+      }
+    ],
+    "durationFailureGuidance": "Try a different duration or training focus. Your last valid proposal is unchanged.",
+    "releaseRecordCommit": "90efe3fd8fa3dddfc548dfcb2a1eff6e10d44525",
+    "releaseRecord": "Services/agent-gateway/deployments/2026-09-26/sha-dac82d119dc7/README.md"
+  },
+  "rules": {
+    "sourceRepository": "posetek/posetek-mobile-app",
+    "sourceCommit": "623ed74ab50055f7cb268204da40d6835cc1c193",
+    "releaseRecordCommit": "5e4337700a6e182ac063c7a1db6bcbf6c395355c",
+    "publisher": "firebase/operations.py publish",
+    "firestoreRuleset": "0526f2ed-79c8-42ef-ab2e-15356734670f",
+    "firestorePublishedAt": "2026-09-26T08:27:23.038061Z",
+    "firestoreSha256": "ffd8a5c344e4cfd67882ab33f0fec41aaf7f2ce08beb860b286ced94e1b0e92e",
+    "storageRuleset": "262ada52-973b-4446-8f0f-037873a367bc",
+    "storageSha256": "1da8799ec5f785c1a43330342f895fef76774622b32bbf48853b45bc3e4bf3eb",
+    "storageBytesUnchanged": true,
+    "canonicalEmulatorTestsPassed": 1055,
+    "websiteRuleSuitesPassed": 7,
+    "websiteRuleChecksPassed": 910,
+    "deployedChecksPassed": 55,
+    "identityAuditUnresolved": 0,
+    "identityAuditAccessGaps": 0,
+    "identityAuditCanonicalConflicts": 0
+  },
+  "catalog": {
+    "version": "1.0.92",
+    "committedAt": "2026-09-26T08:26:04.508195Z",
+    "preservationVerifiedAt": "2026-09-26T08:27:57.605Z",
+    "planSha256": "3d7db78eb8ef1263ccfb6c857a41360bce238ed53d3844aed8e756a78561dda7",
+    "records": 208,
+    "sourceBoundRequirementMaps": 54,
+    "untouchedRecords": 154,
+    "equipmentCorrections": {
+      "BMA-501": [
+        "ball",
+        "cones"
+      ],
+      "SHT-502": [
+        "ball",
+        "cones",
+        "goal"
+      ]
+    },
+    "unresolvedAccessOnlyHolds": [
+      "HJP-003",
+      "SPD-006",
+      "STR-004"
+    ],
+    "authoringMediaAndReviewsPreserved": true,
+    "wholeBodyDraftsPreserved": 80,
+    "mobileVerified": false,
+    "verificationNote": "The commit acknowledgement was retained. Read-only verification normalized only equivalent typed empty Firestore array/map containers, then confirmed exact unrelated data preservation; the transaction was not reapplied.",
+    "finalPreservationReadback": {
+      "status": "verified",
+      "catalogRecords": 208,
+      "requirementMaps": 54,
+      "equipmentCorrections": 2,
+      "untouchedRecords": 154,
+      "wholeBodyDraftsPreserved": 80,
+      "mediaAndOtherCatalogFieldsPreserved": true,
+      "authoringAndReviewsPreserved": true,
+      "aiConfigurationPreserved": true,
+      "mobileVerified": false,
+      "catalogVersion": "1.0.92",
+      "planSha256": "3d7db78eb8ef1263ccfb6c857a41360bce238ed53d3844aed8e756a78561dda7",
+      "verifiedAt": "2026-09-26T10:22:59.495Z",
+      "readOnlyVerification": true
+    }
+  },
+  "experience": {
+    "setupCategories": [
+      "Space & people",
+      "Football",
+      "Strength",
+      "Movement",
+      "Timing & cues"
+    ],
+    "canonicalEquipmentChoices": 28,
+    "locationDoesNotGrantEquipment": true,
+    "explicitConfirmationRequired": true,
+    "changedSetupRequiresReviewedAiRevision": true,
+    "personalStartAndResumeRevalidateCurrentAccess": true,
+    "resumePreservesFrozenLogAndProgress": true,
+    "crossMidnightAndWeekBoundaryRecovery": true,
+    "assignedStartAndResumeUnchanged": true,
+    "accountPaths": [
+      "Player signup code",
+      "Invited coach or organization admin",
+      "Independent coach",
+      "Legacy organization code",
+      "Existing PoseTek administrator sign-in"
+    ],
+    "newPublicPrivilegedRoleSelection": false,
+    "staffAuthority": "Existing email-bound invitation, verified recipient, canonical organization membership and assigned teams.",
+    "communityTabs": [
+      "Profile",
+      "AI Coach",
+      "Drills",
+      "Training",
+      "Community",
+      "Standings"
+    ]
+  },
+  "validation": {
+    "websiteTestsPassed": 1211,
+    "websiteTestFiles": 99,
+    "websiteTestDurationSeconds": 22.33,
+    "finalAccountTestsPassed": 95,
+    "typeScriptAndGuardedApplicationBuild": "passed",
+    "releaseGuardTestsPassed": 28,
+    "catalogTestsPassed": 14,
+    "admissionAndClubTestsPassed": 32,
+    "candidateUi": "passed",
+    "liveApi": "passed",
+    "physicalPhoneLockAndNativeAcceptance": "not_claimed",
+    "safelyRefusedLiveAttempts": [
+      {
+        "revision": "agent-gateway-sha-1c2d3f474ecb",
+        "stage": "initial_generation",
+        "reason": "14 calculated minutes was below the existing 20-minute target tolerance",
+        "persistedProposal": false
+      },
+      {
+        "revision": "agent-gateway-sha-1c2d3f474ecb",
+        "stage": "resource_refinement",
+        "reason": "Implicit preservation incorrectly retained an unavailable drill",
+        "priorProposalAndScheduleUnchanged": true
+      },
+      {
+        "revision": "agent-gateway-sha-781e840a9685",
+        "stage": "exact_resource_refinement_retry",
+        "reason": "Unavailable drill removed, but provider repeatedly searched without filling the replacement; 8 of 15 minutes",
+        "priorProposalAndScheduleUnchanged": true
+      }
+    ],
+    "finalCandidateViewports": [
+      360,
+      390,
+      430,
+      1280
+    ],
+    "liveApiStages": [
+      "setup",
+      "coach",
+      "generate",
+      "refine",
+      "publish",
+      "mismatch-start",
+      "start",
+      "progress",
+      "mismatch-resume",
+      "resume",
+      "stop",
+      "copy",
+      "ownership"
+    ],
+    "liveApiChecks": [
+      "temporary athlete and assigned coach prepared without active plan",
+      "actual AI Coach request hands off to confirmed training setup",
+      "explicit normal recovery retains the original refused generation and its unchanged resource constraints",
+      "confirmed ball/cones/home setup produces an eligible unsaved20-minute proposal",
+      "explicit refinement recovery preserves the original refused job and repeats the same setup-change request",
+      "removing cones and changing time revalidates a private revision without changing the original",
+      "duplicate publication returns one exact identity and revision",
+      "missing current ball refuses start without creating a log or changing the prescription",
+      "start records actual access separately from the immutable prescription",
+      "partial progress preserves the frozen workout snapshot",
+      "changed-access resume refuses without changing any log or prescription field",
+      "valid exact-log resume rechecks current setup and preserves every progress field",
+      "stopping retains completed effort and closes the saved session",
+      "stopped-session copy gets a new identity and setup while retaining original evidence",
+      "creator-private drafts and current coach read scope hold; only athlete can submit session commands"
+    ],
+    "liveApiVerifiedAt": "2026-09-26T09:46:04.041Z",
+    "invitationChecksPassed": 4,
+    "liveRefinement": {
+      "requestedMinutes": 15,
+      "calculatedMinutes": 13
+    },
+    "liveStoppedSessionCopy": {
+      "requestedMinutes": 15,
+      "calculatedMinutes": 14
+    },
+    "productionBrowserReadback": "passed",
+    "browserAcceptance": {
+      "authenticatedReadback": {
+        "signInReturnedToTraining": true,
+        "noActivePlanRequired": true,
+        "originatingAiCoachHistoryRecovered": true,
+        "aiCoachActualPreview": true,
+        "reviewInTrainingOpenedSameConversation": true,
+        "reviewTriggeredNewGeneration": false,
+        "requestedMinutes": 20,
+        "calculatedMinutes": 16,
+        "conversationRefreshRecovered": true,
+        "refreshRequiresCurrentSetupConfirmation": true,
+        "equipmentChangedFromBallAndConesToBallOnly": true,
+        "changedSetupBlockedStalePublish": true,
+        "changedSetupOfferedAiRevision": true,
+        "manualDrillAndDoseControlsAbsent": true
+      },
+      "responsiveAndKeyboard": {
+        "reviewedWidthsAcrossLocalAndCandidates": [
+          360,
+          390,
+          430,
+          1280
+        ],
+        "finalCandidateWidthsReviewed": [
+          360,
+          390,
+          430,
+          1280
+        ],
+        "horizontalOverflowObserved": false,
+        "allFiveSetupCategoriesVisibleAt360": true,
+        "setupTabHeight": 48,
+        "bottomTabHeightAt430": 53.5,
+        "bottomTabWidthsAt430ApproximatelyEqual": true,
+        "homeKeySelectedAndFocusedFirstSetupTab": true,
+        "strengthMovementTimingFootballChoicesInspected": true,
+        "physicalKeyboardOrSafeAreaDeviceAcceptance": false,
+        "reducedViewportComposer": {
+          "width": 390,
+          "height": 520,
+          "focused": true,
+          "textareaBottom": 259.84375,
+          "bottomNavigationTop": 449.5,
+          "sendButtonVisible": true,
+          "physicalKeyboard": false
+        },
+        "desktop1280": {
+          "scrollWidth": 1265,
+          "setupTabHeight": 48,
+          "bottomNavigationWidth": 720,
+          "bottomNavigationHeight": 70.5
+        }
+      },
+      "accountEntry": {
+        "primaryPlayerAndInvitedStaffChoices": true,
+        "independentAndLegacyOptionsPreserved": true,
+        "signupTabContainmentAndEscape": true,
+        "finalCandidateCloseSignupReturnedFocusToEmail": true,
+        "staffAccountSelector": true,
+        "resetMissingEmailGuidance": true,
+        "existingUnlinkedSyntheticAuthReturnedToJoin": true,
+        "staffJoinStartedAtTop": true,
+        "verificationOrResetEmailsSent": false,
+        "realAccountsCreatedOrInvitationsClaimed": false,
+        "syntheticCoachSignInHonoredOrganizationReturn": true,
+        "independentCoachOrganizationHelpAndRosterWorked": true,
+        "coachDashboardScopedToSingleSyntheticPlayer": true,
+        "coachDashboardDidNotExposePrivateDraft": true
+      },
+      "interactiveWorkout": {
+        "passed": true,
+        "requestedMinutes": 15,
+        "calculatedMinutes": 14,
+        "aiRevisionPreservedDrillsAndDose": true,
+        "refreshAfterSubmittingGenerationRecoveredDraft": true,
+        "explicitRepublicationOpenedSavedDetail": true,
+        "currentSetupRequiredAtStartAndResume": true,
+        "oneSetSaved": true,
+        "communityNavigationPausedSession": true,
+        "returnedThroughResumePersonalWorkout": true,
+        "elapsedSecondsPreserved": 39,
+        "restSecondsRemainingPreserved": 52,
+        "completedSetsPreserved": 1,
+        "finishSavedPartialEffort": true,
+        "finishedWorkoutImmediatelyListed": true
+      },
+      "staffAcceptance": {
+        "invitedCoachAssignedTeamOnly": true,
+        "managerOrganizationAndStaffControls": true,
+        "managerPlayerPreviewRetainedStaffNavigation": true,
+        "coachTeamDashboardLoaded": true,
+        "coachRecordedPersonalWorkout": "Outdoor Ball Control",
+        "coachSavedRevision": 2,
+        "coachEnding": "Ended early",
+        "coachSetsReported": 1,
+        "coachDrillOutcomes": "0 done · 1 partial · 0 skipped",
+        "coachNoPlanRequiredForHistory": true,
+        "privateConversationsNotShown": true
+      },
+      "community": {
+        "activityPeopleAndSharingPanels": true,
+        "emptyStates": true,
+        "allSixSharedTabs": true,
+        "browserBackRestoredPeoplePanel": true,
+        "sharingSettingsChanged": false
+      },
+      "productionReadback": {
+        "host": "https://posetek.netlify.app",
+        "samePublishedDeployment": "6ab788d1c138322f8f9b9911",
+        "authenticatedSyntheticAthlete": true,
+        "signInReturnedToTraining": true,
+        "finishedWorkoutsListed": true,
+        "creationRequiresSetup": true,
+        "communitySixTabs": true,
+        "primaryOriginArtifactAndRouteProof": "primary-host-verified.json",
+        "allTemporaryBrowserSessionsSignedOut": true,
+        "verificationTabsClosed": true,
+        "viewportOverrideReset": true,
+        "proofScreenshot": "production-setup-mobile.png"
+      }
+    },
+    "liveAiGenerationAttempts": 7,
+    "acceptedLiveGenerations": 4,
+    "retainedRefusedGenerations": 3,
+    "allowanceOverride": false,
+    "ordinaryPreservationBuild": "passed",
+    "ordinaryPreservationFiles": 1078,
+    "ordinaryBuildOutputDeployed": false
+  },
+  "preserved": {
+    "aiConfigurationAndAllowances": true,
+    "aiProxyCors": true,
+    "assignedWorkoutSeparation": true,
+    "socialAndSharingPermissions": true,
+    "realAthleteTrainingAccountAndInvitationWrites": false,
+    "verificationAndPasswordResetEmailsSent": false,
+    "submittedAppStoreBuild": "unchanged",
+    "wholeBodyContentAndMobileAcceptance": "held"
+  },
+  "cleanup": {
+    "status": "passed",
+    "verifiedAt": "2026-09-26T10:21:23.278Z",
+    "preservationVerifiedAt": "2026-09-26T10:22:59.495Z",
+    "totalRemoved": {
+      "documents": 244,
+      "objects": 10,
+      "accounts": 3
+    },
+    "remaining": {
+      "accounts": 0,
+      "documents": 0,
+      "objects": 0
+    },
+    "failures": 0,
+    "nestedMessagesChecked": true,
+    "privateAuditJournalsPreserved": true
+  },
+  "rollback": {
+    "website": "Restore previous Netlify deployment 6ab76982d74a19707a6f9d9a, then reconcile its verified baseline.",
+    "gateway": "Use canonical release.sh --shift-only with a reviewed compatible revision. The initial access revision retains the refinement bug documented above.",
+    "catalog": "Retain installed source-bound maps. Do not delete maps or restore incorrectly empty equipment lists as a shortcut; a metadata rollback requires a separately reviewed versioned plan with current preconditions.",
+    "rules": "Retain canonical creator-private conversation boundaries and access validation. Future publication requires fresh canonical baseline, identity audit and exact-byte tests.",
+    "logs": "Never rewrite started workout snapshots or athlete progress during rollback."
+  }
+}

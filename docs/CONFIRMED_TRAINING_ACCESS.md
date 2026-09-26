@@ -3,6 +3,16 @@
 Prepared September 26, 2026. This handoff describes the implemented source;
 the production receipt records deployment and live acceptance separately.
 
+Published as website deployment `6ab788d1c138322f8f9b9911` on September 26 at
+2:55:16 AM PDT, with gateway `agent-gateway-sha-dac82d119dc7`, canonical rules and
+catalog version `1.0.92`. Read the
+[production receipt](../deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json).
+The exact artifact, primary-host routes, authenticated browser flow and ordinary
+preservation guard passed. Browser/API checks verified an unchanged saved
+prescription, one reported set and 39 active seconds across Community navigation
+and current-access Resume; the coach's history showed that same saved revision
+and the correct early ending. Physical-device lock-screen behavior is not claimed.
+
 ## Athlete experience
 
 Personal workout creation and AI Coach handoffs begin with a visible setup:
@@ -20,6 +30,25 @@ the same private conversation. Explicit equipment statements prefill suggestions
 negations remove availability, and a drill request alone grants no equipment.
 If a message changes the setup, generation waits for the athlete to review and
 confirm the changed selections. Manual drill and dose controls remain absent.
+
+Confirmed access changes take precedence over implicit preservation of an older
+draft. The personal generator may replace only baseline drills that no longer
+fit, retaining suitable identities and earlier explicit exclusions/counts. This
+also covers “No cones today” and the setup panel's suggested revision request.
+An explicit request to keep an unavailable drill produces a constraint conflict.
+“Include ball control” requires that domain to be present; explicit requests to
+add another drill still require a new identity. Intermediate repair steps must
+strictly reduce existing access failures without introducing another hard
+violation. Final eligibility and exact-proposal publication remain strict.
+
+If the requested domain has no additional eligible drill, personal search explains
+which domains the draft already covers and offers clearly labeled alternatives
+from other domains. Those alternatives retain every resource, age, frequency and
+other eligibility filter; the AI must choose and validate the resulting draft.
+A read-only candidate preview exposes calculated duration and remaining request
+requirements. Repeated unchanged empty searches stop with a recoverable error
+instead of using the remaining tool calls in a loop. No fallback silently grants
+equipment, changes the athlete's intent or publishes a partial draft.
 
 The reviewed prescription shows calculated and requested minutes, dose, rest,
 and available catalog resource requirements. A changed setup blocks publication

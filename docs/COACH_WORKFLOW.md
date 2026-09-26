@@ -42,7 +42,19 @@ changed to verify this work.
 
 See [the shared planner contract](PERSONALIZED_PLANNER_WEB_CONTRACT.md),
 [canonical account hierarchy](VACAVILLE_WEBSITE_UPDATE.md#canonical-account-hierarchy)
-and [Insights semantics](insights/V2_CONTRACT.md).
+and [Insights semantics](insights/V2_CONTRACT.md). The September 26
+[account-entry workflow](ACCOUNT_ENTRY_WORKFLOW.md) documents invited staff,
+independent coaches, legacy codes and activation recovery without changing this
+membership hierarchy. Personal workout resources and current-access checks are
+documented in [confirmed training access](CONFIRMED_TRAINING_ACCESS.md).
+
+September 26 synthetic acceptance verified the account hierarchy after invitation
+activation: the assigned coach saw only its team, then inspected the athlete's
+published personal-workout revision, one reported set and truthful early ending.
+The manager retained organization and staff controls. Private workout conversations
+were not exposed. This follow-up used disposable verification accounts; see the
+[release receipt](../deployment/CONFIRMED_TRAINING_ACCESS_PRODUCTION.json) for their
+scoped cleanup and the live website/backend versions.
 
 The website does not own the gateway or Firebase rules. Their current canonical
 repositories and release commands are in `AGENTS.md`; historical deployment
