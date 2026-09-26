@@ -8,6 +8,13 @@ import { loadCoachContext } from "./data";
 
 beforeEach(() => { vi.clearAllMocks(); f.coach.mockResolvedValue(null); f.docs = {}; });
 describe("canonical coach dashboard roster", () => {
+  it("offers assigned teams instead of guessing for a multi-team coach", async () => {
+    f.context.mockResolvedValue({ role: 'coach', organization: { id: 'club', name: 'Club' },
+      teams: [{ id: 'one' }, { id: 'two' }], players: [] });
+    const result = await loadCoachContext({ uid: 'coach' });
+    expect(result.teamId).toBeUndefined(); expect(result.players).toEqual([]); expect(result.teams?.map(team => team.id)).toEqual(['one', 'two']);
+    await expect(loadCoachContext({ uid: 'coach' }, 'someone-elses-team')).rejects.toThrow('not assigned');
+  });
   it("uses canonical context players when the team's playerIds mirror is stale or empty", async () => {
     f.context.mockResolvedValue({ role: "coach", organization: { id: "club", name: "Club" },
       teams: [{ id: "team", organizationId: "club", name: "Team", playerIds: ["stale"] }],

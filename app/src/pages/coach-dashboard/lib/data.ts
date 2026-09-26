@@ -7,6 +7,7 @@
 import { getClubContext } from "../../../lib/organization-data";
 import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../lib/provisional-estimates";
 import { selectedTeam } from "../../../lib/organization";
+import type { ClubTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
 import { auth, cloud, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
@@ -26,18 +27,22 @@ export interface CoachContext {
   players: any[];
   organizationId?: string;
   teamId?: string;
+  teams?: ClubTeam[];
+  limited?: boolean;
 }
 
 export async function loadCoachContext(user: any, requestedTeamId: string | null = null, organizationId?: string): Promise<CoachContext> {
   const club = await getClubContext(organizationId);
   if (club.role === "coach" && club.organization) {
     const team = selectedTeam(club.teams, requestedTeamId);
-    if (!team) throw new Error("Choose a team from your organization before opening the dashboard.");
+    const shared = { organizationId: club.organization.id, teams: club.teams,
+      limited: club.players.length >= 2000 || club.teams.length >= 100 };
+    if (!team) return { coachDoc: null, orgLabel: club.organization.name, players: [], ...shared };
     const ids = [...new Set(club.players.filter(player => player.organizationId === club.organization!.id && player.teamId === team.id).map(player => player.id))];
     const docs = await Promise.all(ids.map(id => db.collection("players").doc(id).get()));
     const players = docs.filter(doc => doc.exists && doc.data()?.organizationId === club.organization!.id && doc.data()?.teamId === team.id)
       .map(doc => ({ ...doc.data(), id: doc.id }));
-    return { coachDoc: await findCoach(user.uid), orgLabel: `${club.organization.name} · ${team.name}`, players, organizationId: club.organization.id, teamId: team.id };
+    return { coachDoc: null, orgLabel: `${club.organization.name} · ${team.name}`, players, ...shared, teamId: team.id };
   }
   if (club.role === "manager" || club.role === "admin") throw new Error("Open your organization to review its teams and athlete results.");
   const coachDoc = await findCoach(user.uid);
@@ -74,11 +79,16 @@ export interface AthleteBundle {
 // excluded — it feeds no metric and Storage listing is slow at roster scale.
 export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle> {
   const player = db.collection("players").doc(playerId);
-  const [repsSnapshot, plansSnapshot, logsSnapshot] = await Promise.all([
+  const [repsSnapshot, plansSnapshot, logsSnapshot, config] = await Promise.all([
     cloud.httpsCallable("getAthleteEffectiveResults")({ playerId }),
     player.collection("trainingPlans").get(),
     player.collection("workoutLogs").get(),
+    db.collection('config').doc('llm').get(),
   ]);
+  // Rules and gateway deploy before this flag is enabled. Do not query the new
+  // staff-readable collection while its permission contract is unavailable.
+  const personal = config.data()?.personalWorkoutsEnabled === true
+    ? (await player.collection('personalWorkoutLogs').get()).docs.map(doc => ({ ...doc.data(), id: doc.id, source: 'personal' })) : [];
   const all = ((repsSnapshot.data as any).reps || []).map(normalizeRep);
   const byDrill: Record<string, any[]> = {};
   DRILLS.forEach(drill => { byDrill[drill.key] = all.filter((rep: any) => accepted(rep, drill)); });
@@ -87,7 +97,7 @@ export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle
     provisionalEstimates: parseProvisionalEstimates((repsSnapshot.data as any).provisionalEstimates),
     allResultReps: all,
     plans: plansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
-    logs: logsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+    logs: [...logsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })), ...personal],
   };
 }
 

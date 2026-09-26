@@ -1,224 +1,156 @@
-// Coach dashboard — desktop-first roster analytics + per-athlete program
-// management. Route: /dashboard (?athlete=<id> deep-links a detail view).
-//
-// Data flow: one CoachContext load, then per-athlete bundles (reps + plans +
-// workout logs) fetched in parallel and summarized by pure logic in lib/.
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { auth } from "../../lib/firebase";
-import { athleteSummary, summarySort } from "./lib/logic";
-import type { AthleteSummary } from "./lib/logic";
-import { loadAthleteBundle, loadCoachContext } from "./lib/data";
-import type { AthleteBundle, PlanJobState } from "./lib/data";
-import { PREVIEW_BUNDLES, PREVIEW_PLAYERS } from "./lib/preview";
-import Overview from "./views/Overview";
-import AthleteDetail from "./views/AthleteDetail";
-import { createInsightsRequestGuard, dashboardPlayerQuery, insightsLink } from "../insights/lib/navigation";
-import "../../styles/pose-portal.css";
-import "./coach-dashboard.scss";
-
-type Boot =
-  | { kind: "loading"; note: string }
-  | { kind: "ready" }
-  | { kind: "error"; message: string };
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { auth } from '../../lib/firebase';
+import { athleteSummary, summarySort } from './lib/logic';
+import { loadAthleteBundle, loadCoachContext } from './lib/data';
+import type { CoachContext } from './lib/data';
+import { PREVIEW_BUNDLES, PREVIEW_PLAYERS } from './lib/preview';
+import { athleteLoadFailure, coachPath, createDashboardGuard, loadRosterStates } from './lib/workspace';
+import type { AthleteLoad, TeamScope } from './lib/workspace';
+import Overview from './views/Overview';
+import AthleteDetail from './views/AthleteDetail';
+import { dashboardPlayerQuery, insightsLink } from '../insights/lib/navigation';
+import '../../styles/pose-portal.css';
+import './coach-dashboard.scss';
 
 export default function CoachDashboardPage() {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate(), [query, setQuery] = useSearchParams();
+  const preview = import.meta.env.DEV && query.get('preview') === '1';
+  const orgId = query.get('orgId') || undefined, teamId = query.get('teamId') || query.get('team');
+  const selectedId = query.get('athlete');
+  const [uid, setUid] = useState('');
+  const [context, setContext] = useState<CoachContext | null>(null);
+  const [loads, setLoads] = useState<Record<string, AthleteLoad>>({});
+  const [loading, setLoading] = useState(true), [error, setError] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0), [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
+  const guard = useRef(createDashboardGuard(() => auth.currentUser?.uid)).current;
+  const scope: TeamScope | null = context?.organizationId && context.teamId
+    ? { orgId: context.organizationId, teamId: context.teamId } : null;
 
-  const [boot, setBoot] = useState<Boot>({ kind: "loading", note: "Checking your sign-in…" });
-  const [orgLabel, setOrgLabel] = useState("Coach dashboard");
-  const [players, setPlayers] = useState<any[]>([]);
-  const [clubSelection, setClubSelection] = useState<{ orgId: string; teamId: string } | null>(null);
-  const bootGuard = useRef(createInsightsRequestGuard(() => auth.currentUser?.uid)).current;
-  const [bundles, setBundles] = useState<Record<string, AthleteBundle>>({});
-  const [jobs] = useState<Record<string, PlanJobState>>({});
-
-  const signingOutRef = useRef(false);
-  const unsubscribersRef = useRef<(() => void)[]>([]);
-
-  const selectedId = searchParams.get("athlete");
-
-  const reloadAthlete = useCallback(async (playerId: string) => {
-    const bundle = await loadAthleteBundle(playerId);
-    setBundles(current => ({ ...current, [playerId]: bundle }));
-    return bundle;
-  }, []);
-
-  const boot_ = useCallback(async (user: any) => {
-    const isCurrent = bootGuard.begin(user.uid);
-    setPlayers([]); setBundles({}); setClubSelection(null);
-    setBoot({ kind: "loading", note: "Loading your roster…" });
-    try {
-    const query = new URLSearchParams(window.location.search);
-    const context = await loadCoachContext(user, query.get("teamId") || query.get("team"), query.get("orgId") || undefined);
-    if (!isCurrent()) return;
-    setClubSelection(context.organizationId && context.teamId ? { orgId: context.organizationId, teamId: context.teamId } : null);
-    setOrgLabel(context.orgLabel);
-    setPlayers(context.players);
-    setBoot({ kind: "loading", note: "Crunching athlete data…" });
-    // All bundles in parallel — a failed athlete shows as empty rather than
-    // sinking the whole dashboard.
-    const loaded = await Promise.all(context.players.map(async (player: any) => {
-      try {
-        return [player.id, await loadAthleteBundle(player.id)] as const;
-      } catch (error) {
-        console.warn("[dashboard] bundle failed", player.id, error);
-        return [player.id, { reps: [], plans: [], logs: [] }] as const;
-      }
-    }));
-    if (!isCurrent()) return;
-    setBundles(Object.fromEntries(loaded));
-    setBoot({ kind: "ready" });
-    } catch (error: any) {
-      if (!isCurrent()) return;
-      setPlayers([]); setBundles({}); setClubSelection(null);
-      setBoot({ kind: "error", message: error.message || "Please refresh and try again." });
-    }
-  }, [bootGuard]);
-
-  const preview = searchParams.get("preview") === "1";
+  const clear = useCallback(() => {
+    guard.cancel(); setContext(null); setLoads({}); setRefreshedAt(null); setLoading(true); setError('');
+  }, [guard]);
+  const refresh = useCallback(() => { clear(); setRefreshKey(value => value + 1); }, [clear]);
 
   useEffect(() => {
-    document.title = "Dashboard | PoseTek";
-    if (preview) {
-      setOrgLabel("Vacaville Training");
-      setPlayers([...PREVIEW_PLAYERS]);
-      setBundles({ ...PREVIEW_BUNDLES });
-      setBoot({ kind: "ready" });
-      return;
-    }
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (!user) {
-        bootGuard.cancel(); setClubSelection(null); setPlayers([]); setBundles({});
-        if (!signingOutRef.current) navigate("/signin", { replace: true });
-        return;
-      }
-      void boot_(user);
-    });
-    const subscriptions = unsubscribersRef.current;
-    return () => {
-      bootGuard.cancel();
-      unsubscribe();
-      subscriptions.forEach(stop => stop());
-    };
-    // Boot once per mount, like the roster page.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const summaries: AthleteSummary[] = useMemo(
-    () => summarySort(players.map(player => {
-      const bundle = bundles[player.id] || { reps: [], plans: [], logs: [] };
-      return athleteSummary(player, bundle.reps, bundle.plans, bundle.logs, bundle.provisionalEstimates, bundle.allResultReps);
-    })),
-    [players, bundles],
-  );
-
-  // Website requests open the shared draft/review flow; native generation is unchanged.
-  const createPlanFor = useCallback(async (playerId: string) => {
-    if (!players.some(player => player.id === playerId) || preview) return;
-    const params = new URLSearchParams({ players: playerId });
-    const player = players.find(row => row.id === playerId);
-    if (player.organizationId) params.set("orgId", player.organizationId);
-    if (player.teamId) params.set("teamId", player.teamId);
-    navigate("/programs?" + params);
-  }, [players, preview, navigate]);
-
-  const createPlansForAll = useCallback(async () => {
+    document.title = 'My team | PoseTek';
     if (preview) return;
-    const ids = summaries.filter(summary => !summary.plan).map(summary => summary.athlete.id);
-    navigate("/programs?" + new URLSearchParams({ players: ids.join(","), ...(clubSelection || {}) }));
-  }, [summaries, preview, navigate, clubSelection]);
+    return auth.onAuthStateChanged(user => {
+      clear(); setUid(user?.uid || ''); setRefreshKey(value => value + 1);
+      if (!user) navigate('/signin', { replace: true });
+    });
+  }, [preview, clear, navigate]);
 
-  async function handleSignOut() {
-    signingOutRef.current = true;
-    await auth.signOut();
-    navigate("/signin");
+  useEffect(() => {
+    clear();
+    if (preview) {
+      setContext({ coachDoc: null, orgLabel: 'Sample team', players: [...PREVIEW_PLAYERS] });
+      setLoads(Object.fromEntries(Object.entries(PREVIEW_BUNDLES).map(([id, bundle]) => [id, { kind: 'ready', bundle }])));
+      setLoading(false); setRefreshedAt(new Date()); return;
+    }
+    if (!uid) return;
+    const isCurrent = guard.begin(uid);
+    void (async () => {
+      try {
+        const current = await loadCoachContext({ uid }, teamId, orgId);
+        if (!isCurrent()) return;
+        setContext(current);
+        const result = await loadRosterStates(current.players.map(player => player.id), loadAthleteBundle);
+        if (!isCurrent()) return;
+        setLoads(result); setRefreshedAt(new Date());
+      } catch (failure) {
+        if (!isCurrent()) return;
+        setContext(null); setLoads({});
+        setError(failure instanceof Error ? failure.message : 'Your team could not be loaded.');
+      } finally { if (isCurrent()) setLoading(false); }
+    })();
+    return () => guard.cancel();
+  }, [uid, orgId, teamId, preview, refreshKey, clear, guard]);
+
+  async function reloadAthlete(playerId: string) {
+    if (preview || !context?.players.some(player => player.id === playerId) || auth.currentUser?.uid !== uid) return;
+    const isCurrent = guard.player(uid, playerId);
+    setLoads(previous => ({ ...previous, [playerId]: { kind: 'loading' } }));
+    try {
+      // Retry after edits or failures rechecks current canonical team access.
+      const current = await loadCoachContext({ uid }, scope?.teamId || null, scope?.orgId);
+      if (!isCurrent()) return;
+      if (!current.players.some(player => player.id === playerId)) { refresh(); return; }
+      const bundle = await loadAthleteBundle(playerId);
+      if (isCurrent()) setLoads(previous => ({ ...previous, [playerId]: { kind: 'ready', bundle } }));
+    } catch (failure) {
+      if (isCurrent()) setLoads(previous => ({ ...previous, [playerId]: { kind: 'error', message: athleteLoadFailure(failure) } }));
+    }
   }
 
-  const selectAthlete = useCallback((id: string | null) => {
-    setSearchParams(dashboardPlayerQuery(searchParams.toString(), clubSelection, id), { replace: false });
-  }, [setSearchParams, searchParams, clubSelection]);
+  const summaries = useMemo(() => summarySort((context?.players || []).flatMap(player => {
+    const state = loads[player.id];
+    if (state?.kind !== 'ready') return [];
+    const bundle = state.bundle;
+    return [athleteSummary(player, bundle.reps, bundle.plans, bundle.logs, bundle.provisionalEstimates, bundle.allResultReps)];
+  })), [context, loads]);
 
-  const selected = selectedId ? summaries.find(summary => summary.athlete.id === selectedId) : null;
-
-  let body;
-  if (boot.kind === "loading") {
-    body = (
-      <div className="portal-loading">
-        <span className="spinner" />
-        <p>{boot.note}</p>
-      </div>
-    );
-  } else if (boot.kind === "error") {
-    body = (
-      <div className="error-card">
-        <span className="material-symbols-outlined">error</span>
-        <h3>Dashboard unavailable</h3><Link className="quiet-button" to="/organization">Open organization</Link>
-        <p>{boot.message}</p>
-      </div>
-    );
-  } else if (selected) {
-    body = (
-      <AthleteDetail
-        summary={selected}
-        job={jobs[selected.athlete.id] || null}
-        preview={preview}
-        onBack={() => selectAthlete(null)}
-        onCreatePlan={() => createPlanFor(selected.athlete.id)}
-        onPlanChanged={() => reloadAthlete(selected.athlete.id)}
-        onPreviewEdit={(planId, weeks) => {
-          const playerId = selected.athlete.id;
-          setBundles(current => {
-            const bundle = current[playerId];
-            if (!bundle) return current;
-            return {
-              ...current,
-              [playerId]: {
-                ...bundle,
-                plans: bundle.plans.map((plan: any) => plan.id === planId ? { ...plan, weeks } : plan),
-              },
-            };
-          });
-        }}
-      />
-    );
-  } else {
-    body = (
-      <Overview
-        orgLabel={orgLabel}
-        summaries={summaries}
-        jobs={jobs}
-        onSelect={selectAthlete}
-        onCreateAll={createPlansForAll}
-      />
-    );
+  function prescribe(ids: string[]) {
+    if (preview || loading || auth.currentUser?.uid !== uid) return;
+    const allowed = ids.filter(id => loads[id]?.kind === 'ready' && context?.players.some(player => player.id === id));
+    if (allowed.length) navigate(coachPath('/programs', scope, allowed));
   }
+  function selectAthlete(id: string | null) { setQuery(dashboardPlayerQuery(query.toString(), scope, id)); }
+  function selectTeam(id: string) {
+    if (!context?.organizationId || !context.teams?.some(team => team.id === id)) return;
+    const next = new URLSearchParams({ orgId: context.organizationId, teamId: id });
+    clear(); setQuery(next);
+  }
+  const selected = summaries.find(summary => summary.athlete.id === selectedId);
+  const selectedPlayer = context?.players.find(player => player.id === selectedId);
+  const unavailable = selectedPlayer && loads[selectedPlayer.id];
+  const backPath = coachPath('/dashboard', scope);
 
-  return (
-    <div className="pt-pose portal-body pt-coachdash">
-      <header className="portal-header">
-        <Link className="quiet-button" to="/feed">Community feed</Link>
-        <Link className="portal-brand" to="/dashboard" aria-label="PoseTek dashboard">
-          <span className="portal-brand-mark">P</span>
-          <span>POSETEK</span>
-        </Link>
-        <nav className="coachdash-nav">
-          {clubSelection && !preview && <Link className="quiet-button" to={insightsLink(clubSelection, "dashboard")}><span className="material-symbols-outlined">monitoring</span><span>Team Insights</span></Link>}
-          <Link className="quiet-button" to="/roster?userType=coach">
-            <span className="material-symbols-outlined">groups</span>
-            <span>Roster</span>
-          </Link>
-        </nav>
-        <button className="quiet-button coachdash-signout" type="button" onClick={handleSignOut}>
-          <span className="material-symbols-outlined">logout</span>
-          <span>Sign Out</span>
-        </button>
-      </header>
-      <main className="coachdash-shell">{body}</main>
-    </div>
-  );
+  return <div className="pt-pose portal-body pt-coachdash">
+    <header className="portal-header">
+      <Link className="portal-brand" to={backPath} aria-label="PoseTek team dashboard"><span className="portal-brand-mark">P</span><span>POSETEK</span></Link>
+      <nav className="coachdash-nav" aria-label="Coach workspace">
+        <Link className="quiet-button" to={coachPath('/organization', scope)}>My teams</Link>
+        <Link className="quiet-button" to={coachPath('/roster', scope)}>Roster</Link>
+        {scope && !preview && <Link className="quiet-button" to={insightsLink(scope, 'dashboard')}>Team Insights</Link>}
+      </nav>
+      {!preview && <button className="quiet-button coachdash-signout" type="button" onClick={() => {
+        clear(); void auth.signOut().then(() => navigate('/signin')).catch(() => { setLoading(false); setError('Sign out failed. Try again.'); });
+      }}>Sign out</button>}
+    </header>
+    <main className="coachdash-shell">
+      {preview && <p className="coachdash-notice">Preview · fictional athletes. No account or workout changes are saved.</p>}
+      <section className="coachdash-toolbar" aria-label="Team and freshness">
+        {context?.teams && <label>My team<select value={context.teamId || ''} disabled={loading} onChange={event => selectTeam(event.target.value)}>
+          <option value="" disabled>Choose an assigned team</option>{context.teams.map(team => <option value={team.id} key={team.id}>{team.name}</option>)}
+        </select></label>}
+        <p className="coachdash-sub">{refreshedAt ? `Checked ${refreshedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · Refresh for latest activity` : 'Current team access is checked when loading.'}</p>
+        <button type="button" className="quiet-button" disabled={loading} onClick={refresh}>Refresh team</button>
+      </section>
+      {loading ? <div className="portal-loading" role="status"><span className="spinner" /><p>Loading your team and player history…</p></div>
+        : error ? <section className="error-card" role="alert"><h1>Team unavailable</h1><p>{error}</p><Link className="quiet-button" to="/organization">Open my teams</Link></section>
+        : context?.teams && !context.teamId ? <section className="empty-card"><h1>Choose your team</h1><p>{context.teams.length ? 'Select one of your assigned teams above to review its players and training.' : 'No teams are assigned to this account. Ask your organization manager to review your access.'}</p></section>
+        : <>
+          {context?.limited && <p role="status" className="coachdash-notice">The roster service reached its limit. Team totals may be incomplete; contact PoseTek to review coverage.</p>}
+          {selected ? <AthleteDetail key={selected.athlete.id} summary={selected} job={null} preview={preview}
+            onBack={() => selectAthlete(null)} onCreatePlan={() => prescribe([selected.athlete.id])}
+            onPlanChanged={() => reloadAthlete(selected.athlete.id)} onPreviewEdit={(planId, weeks) => {
+              setLoads(previous => {
+                const state = previous[selected.athlete.id]; if (state?.kind !== 'ready') return previous;
+                return { ...previous, [selected.athlete.id]: { kind: 'ready', bundle: { ...state.bundle,
+                  plans: state.bundle.plans.map(plan => plan.id === planId ? { ...plan, weeks } : plan) } } };
+              });
+            }} />
+            : selectedPlayer ? <section className="error-card"><button className="quiet-button" onClick={() => selectAthlete(null)}>Back to team</button>
+              <h1>{selectedPlayer.firstName} {selectedPlayer.lastName}</h1><p role="status">{unavailable?.kind === 'error' ? unavailable.message : 'Loading player history…'}</p>
+              <button className="quiet-button" disabled={unavailable?.kind === 'loading'} onClick={() => void reloadAthlete(selectedPlayer.id)}>Retry player history</button></section>
+            : <><p className="coachdash-scope-note">Your assigned players only · Prescribe a reviewed plan, follow their workouts, then review progress.</p>
+              {selectedId && <p role="status" className="coachdash-notice">That player is not in the selected team. Choose a current roster member.</p>}
+              <Overview orgLabel={context?.orgLabel || 'My team'} summaries={summaries} players={context?.players || []} loads={loads}
+                limited={context?.limited} preview={preview} onSelect={selectAthlete} onRetry={id => void reloadAthlete(id)} onPrescribe={prescribe} />
+            </>}
+        </>}
+    </main>
+  </div>;
 }
