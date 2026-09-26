@@ -27,6 +27,10 @@ async function fixture(mode, options, run) {
     ]);
     if (modern) files.set('/marketing/home-navigation.js', '// current published bridge\n');
     if (options.localAlias) files.set('/booking-copy.html', files.get('/bookperformancetest.html'));
+    if (options.crlfLocalAlias) {
+      files.set('/drillcreation.html', '<html>\r\n<body>Protected drill page</body>\r\n</html>\r\n');
+      files.set('/drillcreation 2.html', files.get('/drillcreation.html'));
+    }
     if (options.marketingAlias) {
       files.set('/index 2.html', '<html><noscript><a href="/bookPerformanceTest.html">Book</a></noscript></html>');
       await put('index.html', '<noscript><a href="/bookPerformanceTest.html">Book</a></noscript>');
@@ -40,6 +44,10 @@ async function fixture(mode, options, run) {
     if (options.localAlias) {
       manifest.files.find(file => file.path === '/bookperformancetest.html').localPath = 'booking-source.html';
       await put('booking-source.html', options.badLocal ? 'incorrect original source' : files.get('/bookperformancetest.html'));
+    }
+    if (options.crlfLocalAlias) {
+      manifest.files.find(file => file.path === '/drillcreation.html').localPath = 'drillcreation.html';
+      await put('drillcreation.html', options.badLocal ? 'different drill content\n' : files.get('/drillcreation.html').replace(/\r\n/g, '\n'));
     }
     await put('deployment/homepage-baseline.json', JSON.stringify(manifest));
     await put('deployment/home-navigation.js', '// local legacy-only bridge\n');
@@ -60,6 +68,7 @@ async function fixture(mode, options, run) {
     responses['https://posetek.net/application.html'] = options.drift ? applicationWithBridge + '\nchanged' : applicationWithBridge;
     if (options.corrupt) responses['https://pinned.example/assets/current.js'] = 'corrupted bytes';
     if (options.localAlias) for (const path of ['/bookperformancetest.html', '/booking-copy.html']) responses['https://pinned.example' + path] = '<html>pretty URL rewrite</html>';
+    if (options.crlfLocalAlias) for (const path of ['/drillcreation.html', '/drillcreation%202.html']) responses['https://pinned.example' + path] = '<html>pretty URL rewrite</html>';
     if (options.marketingAlias) responses['https://pinned.example/index%202.html'] = `<html>${options.aliasDrift ? 'changed' : ''}<noscript><a href='/bookperformancetest'>Book</a></noscript></html>`;
     await put('mock-fetch.mjs', `const responses = ${JSON.stringify(responses)};
 const originalFetch = globalThis.fetch;
@@ -127,6 +136,21 @@ test('an alias never accepts a declared source with different bytes', async () =
   await fixture('modern', { localAlias: true, badLocal: true }, async ({ build }) => {
     assert.notEqual(build.status, 0);
     assert.match(build.stderr, /Baseline checksum mismatch/);
+  });
+});
+
+test('LF checkout restores both CRLF-pinned drill aliases without accepting Netlify rewrites', async () => {
+  await fixture('modern', { crlfLocalAlias: true }, async ({ directory, files, build }) => {
+    assert.equal(build.status, 0, build.stderr);
+    for (const path of ['/drillcreation.html', '/drillcreation 2.html']) {
+      const preserved = await readFile(join(directory, 'production-dist', path.slice(1)));
+      assert.deepEqual(preserved, Buffer.from(files.get(path)));
+      assert.equal(sha(preserved), sha(files.get(path)));
+    }
+  });
+  await fixture('modern', { crlfLocalAlias: true, badLocal: true }, async ({ build }) => {
+    assert.notEqual(build.status, 0);
+    assert.match(build.stderr, /Baseline checksum mismatch: \/drillcreation/);
   });
 });
 
