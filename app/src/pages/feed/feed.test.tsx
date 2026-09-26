@@ -7,6 +7,8 @@ import { createSocialApi } from "./api";
 import { socialCallableNames } from "./contracts";
 import type { SocialActivity, SocialRequests, SocialResponses, SocialCallableName } from "./contracts";
 import { formatMeasurement, initials, mergeActivities } from "./model";
+import { communityPanel, communityPanelPath, communityPersonPath } from "./navigation";
+import { PLAYER_TABS, communityPath, playerTabPath } from "../athlete-portal/player/PlayerShell";
 
 // No test connects to Firebase, reads an account, or performs a network write.
 vi.mock("../../lib/firebase", () => ({
@@ -56,6 +58,34 @@ describe("feed offline rendering", () => {
     expect(html).not.toContain('class="social-card"');
   });
 
+  it.each(['', '&panel=people', '&panel=settings'])('keeps shared player chrome throughout Community %s', panel => {
+    const html = renderPage(`/feed.html?preview=1${panel}`);
+    const navigation = html.match(/<nav class="player-bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+    expect(navigation.match(/<a /g)).toHaveLength(6);
+    expect(PLAYER_TABS.map(tab => tab.label)).toEqual(['Profile', 'AI Coach', 'Drills', 'Training', 'Community', 'Standings']);
+    for (const tab of PLAYER_TABS) expect(navigation).toContain(`>${tab.label}</span>`);
+    expect(navigation).toMatch(/aria-current="page"[^>]*href="\/feed.html|href="\/feed.html[^>]*aria-current="page"/);
+    expect(html).toContain('aria-label="Community sections"');
+    expect(html).toContain('Find people');
+    expect(html).toContain('Sharing settings');
+    expect(html).not.toContain('class="social-header"');
+    expect(html).not.toContain('class="social-bottom"');
+    expect((html.match(/<main /g) || [])).toHaveLength(1);
+  });
+
+  it('retains chrome while loading without enabling self-player navigation before authorization', () => {
+    const html = renderPage('/feed.html?activity=activity-1&organizationId=club-1');
+    const navigation = html.match(/<nav class="player-bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+    expect(navigation.match(/aria-disabled="true"/g)).toHaveLength(6);
+    expect(html).toContain('Loading your community');
+  });
+
+  it('does not expose moderation or a blank panel through an athlete URL', () => {
+    const html = renderPage('/feed?preview=1&panel=moderation');
+    expect(html).toContain('Better together');
+    expect(html).not.toContain('>Reports</span>');
+  });
+
   it("retains athlete-preview warnings and stays within the preview on player tabs", () => {
     const html = renderPage("/feed?preview=1&viewAsPlayerId=player-1&organizationId=club-1");
     expect(html).toContain("Read-only athlete preview");
@@ -77,6 +107,34 @@ describe("feed offline rendering", () => {
     expect(html).toContain('<select disabled=""');
     expect(html).toContain("Watch saved rep");
     expect(html).toContain("Hide activity from others");
+  });
+});
+
+describe('Community route context', () => {
+  const scoped = '?viewAsPlayerId=player-1&organizationId=club-1&preview=1&activity=a-1&connect=p-2&extra=retained';
+  it('keeps legacy aliases and viewer scope through panel changes and browser history', () => {
+    const settings = communityPanelPath('/feed.html', scoped, 'settings');
+    expect(settings).toBe('/feed.html?viewAsPlayerId=player-1&organizationId=club-1&preview=1&activity=a-1&connect=p-2&extra=retained&panel=settings');
+    expect(communityPanel(settings.split('?')[1])).toBe('settings');
+    expect(communityPanel(scoped)).toBe('people');
+    expect(communityPanelPath('/feed.html', settings.split('?')[1], 'feed')).toBe('/feed.html?viewAsPlayerId=player-1&organizationId=club-1&preview=1&extra=retained');
+    expect(communityPanel('?panel=unknown')).toBe('feed');
+  });
+  it('opens a selected person without retaining a stale activity or panel', () => {
+    const path = communityPersonPath('/feed.html', scoped + '&panel=settings', 'player /3');
+    expect(path).toContain('connect=player+%2F3');
+    expect(path).toContain('viewAsPlayerId=player-1');
+    expect(path).not.toContain('activity=');
+    expect(path).not.toContain('panel=');
+    expect(communityPanel(path.split('?')[1])).toBe('people');
+  });
+  it('separates player navigation context from feed deep links and private profile tokens', () => {
+    expect(playerTabPath('training', '?preview=1&activity=a-1&connect=p-2&organizationId=club-1', '/feed.html')).toBe('/athlete?view=training&preview=1');
+    expect(communityPath('?preview=1&view=training&session=s1&rep=r1&share=private-token')).toBe('/feed?preview=1');
+    expect(playerTabPath('feed', '?preview=1&view=training')).toBe('/feed?preview=1');
+    expect(playerTabPath('home', scoped, '/feed.html')).toContain('/feed.html?');
+    expect(playerTabPath('home', scoped, '/feed.html')).toContain('viewAsPlayerId=player-1');
+    expect(playerTabPath('home', scoped, '/feed.html')).not.toContain('/athlete');
   });
 });
 

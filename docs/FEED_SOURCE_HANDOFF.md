@@ -24,6 +24,39 @@ application output. Both `/feed` and `/feed.html` load the recovered React page.
 
 ## Start here
 
+### Community navigation follow-up (September 25, 2026; candidate, not deployed)
+
+Athlete Community now shares the player header, canvas, content width and bottom
+navigation with Profile and Training. The tab order is **Profile, AI Coach,
+Drills, Training, Community, Standings**. The former player-header Community
+button is removed. Activity, Find people and Sharing settings stay in a content
+toolbar while browsing the feed, people and sharing panels, including loading
+and empty states.
+
+`PlayerShell.tsx` owns the shared presentation and navigation definition;
+`FeedPage.jsx` keeps its own social authorization and data loading. It does not
+mount the athlete result loader or workout controllers. Staff-only feeds retain
+their organization/roster navigation. Administrator athlete previews remain
+read-only and do not navigate into self-player controls. Social APIs and privacy
+permissions are unchanged.
+
+Both `/feed` and `/feed.html` remain entry points. A `panel` query parameter
+records Community panel navigation for refresh and browser Back/Forward.
+Activity/connection links and organization/view-as context continue to work;
+switching to Activity clears the prior activity/connection selection while
+preserving viewer scope. Unknown panels fall back to Activity; Reports requires
+the authorized admin context. Sign-in preserves the complete return URL.
+
+Design reference lock: the existing player screens supply the dark-green
+canvas, Inter text, lime selected states, 720px content limit and bottom bar.
+Refero's bundled typography and craft guidance supplies readable hierarchy,
+visible focus and touch sizing. No new imagery or alternate visual direction is
+introduced. At 360/390/430px browser viewports the six navigation targets measured
+at least 53.5px high and 56px wide, without page overflow. Sample-data browser
+checks verified Activity → Sharing settings → Back and People while retaining
+the same navigation. Physical-device testing and production deployment remain
+separate release checks; local screenshots stay ignored.
+
 From a fresh clone, use Node.js 22.18 or later in the Node 22 release line and npm 10:
 
 ```powershell

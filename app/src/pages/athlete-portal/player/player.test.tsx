@@ -145,16 +145,18 @@ describe('player route and preview rendering', () => {
     expect(playerRoute('?view=aiCoach').view).toBe('aiCoach');
     expect(playerRoute('?view=feed').view).toBe('feed');
   });
-  it.each(['home', 'aiCoach', 'training', 'leaderboards', 'drills'])('renders %s with five player tabs and no staff controls', view => {
+  it.each(['home', 'aiCoach', 'training', 'leaderboards', 'drills'])('renders %s with six shared player tabs and no staff controls', view => {
     const data = previewData();
     const ctx = { ...data, notify: () => {}, allStatsReps: () => Object.values(data.reps).flat() };
     const html = renderToStaticMarkup(<MemoryRouter initialEntries={[`/athlete?preview=1&view=${view}`]}><PlayerExperience ctx={ctx} initialReps={data.reps} /></MemoryRouter>);
     expect(html).toContain('Player tabs'); expect(html).not.toContain('Coach view'); expect(html).toContain('no account changes');
     const navigation = html.match(/<nav class="player-bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
-    expect((navigation.match(/<button/g) || []).length).toBe(5);
+    expect((navigation.match(/<a /g) || []).length).toBe(6);
     expect(navigation).toContain('>Profile</span>'); expect(navigation).toContain('>AI Coach</span>');
     expect(navigation).toContain('>Training</span>');
-    expect(html).toContain('Open community feed');
+    expect(navigation).toContain('>Community</span>');
+    expect(navigation.indexOf('>Community</span>')).toBeLessThan(navigation.indexOf('>Standings</span>'));
+    expect(html).not.toContain('Open community feed');
     if (view === 'aiCoach') expect(html).toContain('Your AI Coach');
     if (view === 'training') { expect(html).toContain('Next'); expect(html).toContain('Keep the ball close'); }
     if (view === 'home') expect(html).toContain('Your skill map');

@@ -980,6 +980,63 @@
   margin:12px 0 0;
   font-size:12px
 }
+
+/* Athlete Community uses the same canvas, content width and chrome as Training.
+   Staff and read-only admin previews keep their scoped social layout. */
+.pt-player .social-embedded {
+  color:inherit;
+  background:none;
+  min-height:0;
+  padding:0;
+  isolation:auto;
+}
+.pt-player .social-embedded .social-layout {
+  display:block;
+  padding:0;
+  margin:0;
+  max-width:none;
+}
+.pt-player .social-embedded .social-main { min-width:0; }
+.pt-player .social-embedded .social-toolbar {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:0 0 24px;
+}
+.pt-player .social-embedded .social-toolbar button {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:64px;
+  min-width:44px;
+  padding:8px 4px;
+  border:1px solid #ffffff22;
+  border-radius:12px;
+  background:#ffffff08;
+  color:var(--player-muted);
+  font-size:11px;
+  line-height:1.35;
+}
+.pt-player .social-embedded .social-toolbar button[aria-current="page"] {
+  color:var(--lime);
+  border-color:#b7f34a66;
+  background:#b7f34a12;
+}
+.pt-player .social-embedded h1 {
+  font-size:clamp(27px,6.5vw,36px);
+  line-height:1.15;
+  letter-spacing:-.035em;
+}
+.pt-player .social-embedded :is(.social-card,.social-person,.social-settings form,.social-empty) {
+  border:1px solid #ffffff14;
+  border-radius:20px;
+  background:#1634298a;
+  box-shadow:none;
+}
+.pt-player .social-embedded .social-filters { margin-right:0; }
+.pt-player .social-embedded :is(input,select,textarea) { font-size:16px; }
 @media (width<=760px) {
   .social-admin-controls>div {
     grid-template-columns:1fr;
