@@ -28,6 +28,8 @@ export default function CoachDashboardPage() {
   const scope: TeamScope | null = context?.organizationId && context.teamId
     ? { orgId: context.organizationId, teamId: context.teamId } : null;
 
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [selectedId, teamId]);
+
   const clear = useCallback(() => {
     guard.cancel(); setContext(null); setLoads({}); setRefreshedAt(null); setLoading(true); setError('');
   }, [guard]);

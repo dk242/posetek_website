@@ -1,7 +1,12 @@
 # Player experience
 
+September 25 candidate additions (not deployed): see
+[Player and coach experience](PLAYER_COACH_EXPERIENCE.md) for personal-workout
+ownership, standalone creation, durable timer recovery, feature gates, validation
+and the coordinated gateway/rules/native release boundary.
+
 The player route is a mobile-first React surface with Profile, AI Coach, Drills,
-Training and Leaderboards. `AthletePortalPage` selects it only for resolved
+Training and Standings. `AthletePortalPage` selects it only for resolved
 `athlete` access and the explicit sample preview. Coach, organization, admin and
 shared-results access continue through their existing surfaces. Identity remains
 in `lib/identity.ts` and the portal loader: a player document ID is not assumed to
@@ -59,7 +64,7 @@ processing and new body scans remain in the mobile app.
 
 The mobile repository is the source of truth for the player behavior and its
 binding contracts. `player/mobile-parity.json` records the reviewed source hashes;
-the JSON benchmark bundle is byte-identical to the mobile source.
+the JSON benchmark bundle matches the mobile source after UTF-8 LF normalization.
 
 Run `npm --prefix app run check:player-parity` with the mobile checkout beside this
 repo, or `node scripts/check-player-parity.mjs /path/to/mobile`. A changed or

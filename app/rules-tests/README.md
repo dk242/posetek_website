@@ -32,6 +32,9 @@ before it merges, point the two variables at the branch or worktree that holds i
 This repo does not depend on `firebase-tools`. The mobile repo's `firebase/package.json`
 pins the CLI, so `npm ci --prefix <dir>` with a copy of that file gives a
 `<dir>/node_modules/.bin/firebase` for `FIREBASE_BIN`.
+On Windows, set `FIREBASE_BIN` to the absolute
+`<dir>/node_modules/firebase-tools/lib/bin/firebase.js` path; the runner invokes
+that entrypoint with Node directly instead of a shell shim.
 
 | Suite | Emulators | Covers |
 |---|---|---|

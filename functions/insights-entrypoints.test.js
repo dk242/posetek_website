@@ -14,5 +14,5 @@ test('artifact events are confined to canonical per-rep metadata paths', () => {
 });
 test('projection writes cannot recursively trigger another rebuild', () => {
   for (const collection of ['insightSummaries', 'insightSummaryDays', 'personalizedPlanDrafts', 'trainingPlans']) assert.equal(RECORD_COLLECTIONS.has(collection), false);
-  for (const collection of ['reps', 'workoutLogs', 'trainingSessions', 'insightMetadata']) assert.equal(RECORD_COLLECTIONS.has(collection), true);
+  for (const collection of ['reps', 'workoutLogs', 'personalWorkoutLogs', 'trainingSessions', 'insightMetadata']) assert.equal(RECORD_COLLECTIONS.has(collection), true);
 });

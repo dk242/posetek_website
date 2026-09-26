@@ -17,13 +17,14 @@ import type { Row } from './execution';
 import './player.css';
 
 export const PLAYER_TABS = [
-  { view: 'feed', label: 'Home', icon: 'home' },
+  { view: 'home', label: 'Profile', icon: 'person' },
+  { view: 'aiCoach', label: 'AI Coach', icon: 'auto_awesome' },
   { view: 'drills', label: 'Drills', icon: 'sports_soccer' }, { view: 'training', label: 'Training', icon: 'fitness_center' },
-  { view: 'leaderboards', label: 'Leaderboards', icon: 'leaderboard' }, { view: 'home', label: 'You', icon: 'person' },
+  { view: 'leaderboards', label: 'Standings', icon: 'leaderboard' },
 ];
 export function playerRoute(search: string) {
   const p = new URLSearchParams(search), raw = p.has('drill') ? 'drills' : p.get('view') || 'home';
-  return { view: raw === 'profile' ? 'home' : raw === 'aiCoach' || PLAYER_TABS.some(t => t.view === raw) ? raw : 'home',
+  return { view: raw === 'profile' ? 'home' : raw === 'feed' || PLAYER_TABS.some(t => t.view === raw) ? raw : 'home',
     drill: DRILLS.some(d => d.key === p.get('drill')) ? p.get('drill')! : 'shooting', session: p.get('session'), rep: p.get('rep') };
 }
 export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalContext; initialReps: Record<string, Row[]> }) {
@@ -32,7 +33,11 @@ export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalCont
   const [reps, setReps] = useState(initialReps), [athlete, setAthlete] = useState(ctx.athlete), [dataset, setDataset] = useState(defaultDataset);
   const [provisionalEstimates, setProvisionalEstimates] = useState(ctx.provisionalEstimates || []);
   const [visited, setVisited] = useState(new Set([route.view])), [request, setRequest] = useState<Row | null>(null), [refreshError, setRefreshError] = useState('');
+  useEffect(() => { if (route.view === 'feed') navigate(preview ? '/feed?preview=1' : '/feed', { replace: true }); }, [route.view, preview, navigate]);
   useEffect(() => { setVisited(old => new Set([...old, route.view])); }, [route.view]);
+  useEffect(() => {
+    if (route.view !== 'training') window.dispatchEvent(new CustomEvent('posetek:player-route-leave'));
+  }, [route.view]);
   useEffect(() => {
     if (preview) return;
     const player = db.collection('players').doc(ctx.playerId!);
@@ -59,6 +64,7 @@ export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalCont
   const profile = useMemo(() => playerProfile(all, athlete, dataset), [all, athlete, dataset]);
   const playerCtx = useMemo(() => ({ ...ctx, athlete, provisionalEstimates, allStatsReps: () => all, allResultReps: () => Object.values(reps).flat() }), [ctx, athlete, all, reps, provisionalEstimates]);
   const go = (view: string, drill?: string, session?: string, rep?: string) => {
+    if (route.view === 'training' && view !== 'training') window.dispatchEvent(new CustomEvent('posetek:player-route-leave'));
     if (view === 'feed') { navigate(preview ? '/feed?preview=1' : '/feed'); return; }
     const params = new URLSearchParams(location.search);
     params.set('view', view); ['drill', 'session', 'rep'].forEach(k => params.delete(k));
@@ -68,11 +74,10 @@ export default function PlayerExperience({ ctx, initialReps }: { ctx: PortalCont
   };
   const activeDrill = drillByKey(route.drill);
   return <div className="pt-pose pt-player">
-    <header className="player-header"><button className="player-wordmark" onClick={() => go('home')} aria-label="PoseTek profile">POSETEK<span>●</span></button><span>{PLAYER_TABS.find(t => t.view === route.view)?.label}</span>{!preview && <button className="player-signout" onClick={() => { void auth.signOut(); }}>Sign out</button>}</header>
+    <header className="player-header"><button className="player-wordmark" onClick={() => go('home')} aria-label="PoseTek profile">POSETEK<span>●</span></button><span>{PLAYER_TABS.find(t => t.view === route.view)?.label}</span><button className="player-community-link" onClick={() => go('feed')} aria-label="Open community feed"><span className="material-symbols-outlined" aria-hidden="true">groups</span></button>{!preview && <button className="player-signout" onClick={() => { void auth.signOut(); }}>Sign out</button>}</header>
     <main className="player-main">
       {preview && <p className="player-preview-note">Local preview · sample data · no account changes</p>}
       {refreshError && <p className="player-error" role="status">Could not refresh your latest results: {refreshError}</p>}
-      {['home', 'training'].includes(route.view) && <button onClick={() => go('aiCoach')}>Ask your AI Coach</button>}
       {route.view === 'home' && <PlayerProfile ctx={playerCtx} profile={profile} onDrills={rep => go('drills', 'shooting', rep ? rep.sessionFolder || `session${rep.sessionNumber}` : undefined, rep?.id)} />}
       {visited.has('aiCoach') && <div hidden={route.view !== 'aiCoach'}><h1>Your AI Coach</h1><CoachChat playerId={ctx.playerId!} preview={preview} onHandoff={r => { setRequest(r); go('training'); }} /></div>}
       {route.view === 'drills' && <section className="player-drills"><p className="eyebrow">Your measured progress</p><h1>Drills</h1><p>Revisit your sessions, see your progress, and watch saved videos.</p><nav className="player-week-rail" aria-label="Drill results">{DRILLS.map(d => <button key={d.key} aria-pressed={d.key === route.drill} onClick={() => go('drills', d.key)}>{d.short || d.label}<small>{reps[d.key]?.length || 0} reps</small></button>)}</nav>

@@ -36,6 +36,21 @@ test("foreign recording paths cannot trigger Storage reads or qualification", as
   assert.equal(result.testing[0].qualified, 0); assert.equal(service.bucket.reads.length, 0);
 });
 
+test("personal workout collection joins reporting without merging an assigned workout", async () => {
+  const common = { workoutId: "same", startedAt: NOW - 60000, endedAt: NOW - 1,
+    activeSeconds: 45, endReason: "completed", workoutSnapshot: { blocks: [] }, blocks: [] };
+  const service = fixture({
+    "players/p/workoutLogs/same": { ...common, source: "plan", planId: "assigned" },
+    "players/p/personalWorkoutLogs/same": { ...common, source: "plan", endReason: "pain" },
+  });
+  const result = await service.loadInsightPlayer("p");
+  assert.equal(result.summary.workoutLogs, 2);
+  assert.equal(result.workouts.length, 2);
+  assert.deepEqual(result.workouts.map(row => row.status).sort(), ["completed", "endedEarly"]);
+  assert.ok(result.workouts.every(row => row.timerMinutes === 0.75));
+  assert.ok(service.db.queries.some(query => query.path === "players/p/personalWorkoutLogs"));
+});
+
 test("missing recording coordinates never borrow session one evidence", async () => {
   const service = fixture({ "players/p/reps/r": { repType: "sprint", max_velocity: 8 } });
   const result = await service.loadInsightPlayer("p");

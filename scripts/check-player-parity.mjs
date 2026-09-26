@@ -9,7 +9,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const mobile = resolve(process.argv[2] || resolve(root, '../PoseTek-mobile-app'));
 const player = resolve(root, 'app/src/pages/athlete-portal/player');
 const receipt = JSON.parse(await readFile(resolve(player, 'mobile-parity.json'), 'utf8'));
-const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+// These are UTF-8 source files; checkout line endings are not contract changes.
+const hash = bytes => createHash('sha256').update(receipt.sourceNormalization === 'utf8-lf'
+  ? bytes.toString('utf8').replaceAll('\r\n', '\n') : bytes).digest('hex');
 let failed = false;
 for (const [path, expected] of Object.entries(receipt.sources)) {
   try {

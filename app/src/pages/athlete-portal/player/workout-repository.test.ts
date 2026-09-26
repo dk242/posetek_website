@@ -55,6 +55,8 @@ describe('acknowledged player workout transactions', () => {
   });
   it('creates a snapshot and increments the shared schedule together under the player document ID', async () => {
     const log = await startPlayerWorkout('player-doc', reviewed);
+    expect(log.timerStartedHere).toBe(true);
+    expect(fake.writes[0].data).not.toHaveProperty('timerStartedHere');
     expect(log.workoutSnapshot.blocks).toEqual([block]);
     expect(fake.writes.map(w => w.path)).toEqual(['players/player-doc/workoutLogs/plan_w', 'players/player-doc/workoutSchedule/current']);
     expect(fake.writes[1].data.revision).toBe(8);
@@ -63,7 +65,7 @@ describe('acknowledged player workout transactions', () => {
     const saved = initialLog(reviewed, 100);
     fake.docs.set('players/player-doc/workoutLogs/plan_w', saved);
     fake.docs.delete('players/player-doc/trainingPlans/plan');
-    expect(await startPlayerWorkout('player-doc', reviewed)).toEqual(saved);
+    expect(await startPlayerWorkout('player-doc', reviewed)).toEqual({ ...saved, timerStartedHere: false });
     expect(fake.writes).toEqual([]);
   });
   it('rejects revision drift without creating a log or advancing the schedule', async () => {

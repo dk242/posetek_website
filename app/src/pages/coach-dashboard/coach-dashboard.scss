@@ -704,8 +704,8 @@
     .coachdash-row-actions { width: 100%; }
     .coachdash-row-actions > button { flex: 1; }
     .week-card > header { flex-direction: column; }
-    .coachdash-tabs { max-width: 100%; }
-    .coachdash-tabs button { padding-inline: 10px; font-size: 13px; }
+    .coachdash-heading.detail .coachdash-tabs { display: grid; grid-template-columns: 1fr 1.25fr 1fr; width: 100%; max-width: 100%; }
+    .coachdash-tabs button { padding-inline: 6px; font-size: 13px; }
     .detail-title { gap: 10px; min-width: 0; }
     .detail-title > div { min-width: 0; }
     .detail-title .icon-button { flex-shrink: 0; }
