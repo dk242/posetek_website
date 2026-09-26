@@ -114,5 +114,4 @@ coach, revoked membership and a player transfer without claiming real invitation
 or generating production plans as test data.
 
 Website publication must use the guarded application release and verified
-preview workflow. This source handoff does not claim deployment, native build,
-physical-phone acceptance, or completion of the unpublished training-content gate.
+preview workflow. The web workflow is live; see [the production receipt](../deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json). Authenticated temporary-account checks verified team scope, revoked membership, personal history and planner selection. Native build, physical-phone acceptance and the unpublished training-content gate remain outstanding.

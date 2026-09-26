@@ -4,24 +4,11 @@ Reviewed on September 25, 2026. This guide summarizes the available repository a
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
-## Player and coach experience candidate (2026-09-25, not deployed)
+## Player and coach experience live (2026-09-25)
 
-The mobile-web pass and coach follow-up are on `codex/player-coach-experience`,
-based on current website main `27f3cb8`. Read
-[the implementation and release handoff](docs/PLAYER_COACH_EXPERIENCE.md) and
-[the coach source-of-truth workflow](docs/COACH_WORKFLOW.md). The candidate adds
-recoverable guided timing, clearer AI/navigation, manual/AI standalone personal
-workouts, preserved assigned prescriptions, scoped coach training history and
-personal-session reporting. Personal capabilities remain disabled until paired
-gateway, canonical rules and native/device acceptance. No production records,
-accounts, invitations or content approvals were changed.
+The player and coach experience is live on [posetek.net](https://posetek.net), including manual and AI personal-workout creation. Website source is merged into main at `587c5b5`; published deployment `6ab723a4b245cdd9426dc47a` is the verified draft promoted without rebuilding. The baseline protects 957 application/public files. Read [the production receipt](deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json), [implementation handoff](docs/PLAYER_COACH_EXPERIENCE.md) and [coach workflow](docs/COACH_WORKFLOW.md).
 
-The connected Netlify project and `deployment/homepage-baseline.json` now agree on
-current release `6ab5e409d3ca5da40c5c01d2`, published September 24 at 8:04:50 PM
-PDT, with 899 protected application/public entries. Its deployment title records
-the server-backed coach week editor from main `865753d`; the provider did not
-return a commit ref. Earlier releases below remain historical receipts. Preserve
-the current live-application guard and approved marketing bytes.
+Personal capabilities, canonical rules, the gateway and scoped Insights functions are live. The user explicitly authorized web release independently of native UI acceptance. The submitted App Store build is unchanged; native candidate `bc492aa` remains uncompiled/unreleased. This does not change the separate false whole-body mobile acceptance gate or approve any of the 80 unpublished drills.
 
 Gateway source is only `Services/agent-gateway` in the backend repository;
 GitHub now redirects `Athelytics/python-video-processor` to
