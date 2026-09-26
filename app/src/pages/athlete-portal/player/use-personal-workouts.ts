@@ -4,8 +4,10 @@ import { normalizeCatalogDrill } from '../../../lib/contracts/drillV2';
 import type { CatalogDrill } from '../../../lib/contracts/drillV2';
 import type { Row } from './execution';
 import type { PlayerWorkoutStore } from './use-player-workouts';
-import { ensurePersonalSubmission, latestPersonalRevision, personalCapabilityEnabled, personalExecution, personalExecutionId, personalGenerationErrors, personalJobKey, personalLogRows, personalWorkoutsEnabled, restorePersonalJob } from './personal-workouts';
+import { addPersonalDrill, eligiblePersonalDrill, ensurePersonalSubmission, latestPersonalRevision, personalCapabilityEnabled, personalDraft, personalExecution, personalExecutionId, personalGenerationErrors, personalJobKey, personalLogRows, personalWorkoutsEnabled, recomputePersonalDraft, restorePersonalJob } from './personal-workouts';
 import type { PendingPersonalJob, PersonalCapability } from './personal-workouts';
+import { checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalPublishParams, personalRefinementParams, personalTimestamp, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
+import type { PersonalSelection } from './personal-workout-conversations';
 
 const sampleCatalog = [
   { drillId: 'DRB-005', name: 'Cone maze', domain: 'dribbling', equipment: ['ball', 'cones'] },
@@ -21,9 +23,63 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
   const [loaded, setLoaded] = useState(preview), [saving, setSaving] = useState(false), [error, setError] = useState(''), [status, setStatus] = useState('');
   const [pending, setPending] = useState<PendingPersonalJob | null>(null), [proposal, setProposal] = useState<Row | null>(null);
   const [lastResult, setLastResult] = useState<{ capability: PersonalCapability; result: Row } | null>(null);
+  const [conversations, setConversations] = useState<Row[]>([]), [conversationsLoaded, setConversationsLoaded] = useState(preview);
+  const [conversationId, setConversationId] = useState<string | null>(null), [conversation, setConversation] = useState<Row | null>(null);
+  const [messages, setMessages] = useState<Row[]>([]), [conversationLoading, setConversationLoading] = useState(false);
+  const samples = useRef(new Map<string, { conversation: Row; proposal: Row; messages: Row[] }>());
+  const selected = useRef<{ conversation: Row | null; proposal: Row | null }>({ conversation: null, proposal: null });
+  const selectionVersion = useRef(0);
   const current = useRef({ workouts, logs, scheduleRevision }); current.current = { workouts, logs, scheduleRevision };
   const busy = useRef(false), generation = useRef(0), subscriptions = useRef<(() => void)[]>([]);
   const uid = auth.currentUser?.uid || '', key = personalJobKey(uid, playerId), proposalKey = `${key}:proposal`;
+  const conversationPort = {
+    conversation: async (id: string) => (await db.collection('players').doc(playerId).collection('aiConversations').doc(id).get({ source: 'server' })).data() || null,
+    proposal: async (id: string) => (await db.collection('players').doc(playerId).collection('personalWorkoutProposals').doc(id).get({ source: 'server' })).data() || null,
+    messages: async (id: string) => (await db.collection('players').doc(playerId).collection('aiConversations').doc(id).collection('messages').get({ source: 'server' })).docs.map(d => ({ ...d.data(), id: d.id })),
+  };
+  const persistSelection = (value: { conversationId?: string; proposalId?: string } | null) => {
+    if (preview) return;
+    try {
+      if (value) localStorage.setItem(proposalKey, JSON.stringify({ schemaVersion: 1, uid, playerId, ...value } satisfies PersonalSelection));
+      else localStorage.removeItem(proposalKey);
+    } catch { /* The server conversation remains available in history. */ }
+  };
+  const useSelection = (next: { conversation: Row | null; proposal: Row | null; messages: Row[] }) => {
+    selected.current = { conversation: next.conversation, proposal: next.proposal };
+    setConversation(next.conversation); setConversationId(next.conversation?.conversationId || null);
+    setProposal(next.proposal); setMessages(next.messages);
+    persistSelection(next.proposal ? { ...(next.conversation ? { conversationId: next.conversation.conversationId } : {}), proposalId: next.proposal.proposalId } : null);
+  };
+  const openConversation = async (id: string): Promise<Row> => {
+    const version = ++selectionVersion.current, owner = generation.current;
+    setConversationLoading(true); setError('');
+    try {
+      const next = preview ? samples.current.get(id) : await readPersonalConversation(conversationPort, id, uid);
+      if (!next) throw new Error('This sample workout conversation is unavailable.');
+      if (version !== selectionVersion.current || owner !== generation.current || !preview && auth.currentUser?.uid !== uid) throw new Error('The selected workout conversation changed.');
+      useSelection(next);
+      return next.proposal;
+    } catch (e: any) { if (version === selectionVersion.current && owner === generation.current) setError(e.message); throw e; }
+    finally { if (version === selectionVersion.current && owner === generation.current) setConversationLoading(false); }
+  };
+  const openProposal = async (id: string): Promise<Row> => {
+    const version = ++selectionVersion.current, owner = generation.current;
+    setConversationLoading(true); setError('');
+    try {
+      const sample = preview ? [...samples.current.values()].find(row => row.proposal.proposalId === id) : undefined;
+      if (preview && !sample) throw new Error('This sample workout proposal is unavailable.');
+      const recovered = sample?.proposal || checkedPersonalProposal(await conversationPort.proposal(id), id, uid);
+      const next = sample || (recovered.conversationId ? await readPersonalConversation(conversationPort, recovered.conversationId, uid) : { conversation: null, proposal: recovered, messages: [] });
+      if (version !== selectionVersion.current || owner !== generation.current || !preview && auth.currentUser?.uid !== uid) throw new Error('The selected workout conversation changed.');
+      useSelection(next);
+      return next.proposal;
+    } catch (e: any) { if (version === selectionVersion.current && owner === generation.current) setError(e.message); throw e; }
+    finally { if (version === selectionVersion.current && owner === generation.current) setConversationLoading(false); }
+  };
+  const newConversation = () => {
+    if (busy.current) { setError('Wait for the current workout request before starting another.'); return; }
+    ++selectionVersion.current; useSelection({ conversation: null, proposal: null, messages: [] }); setConversationLoading(false); setError(''); setLastResult(null);
+  };
   const savePending = (p: PendingPersonalJob | null) => {
     if (p) localStorage.setItem(key, JSON.stringify(p)); else localStorage.removeItem(key);
     setPending(p);
@@ -44,8 +100,9 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     }
     if (Number.isInteger(result.scheduleRevision)) { effective.scheduleRevision = Math.max(current.current.scheduleRevision || 0, result.scheduleRevision); current.current.scheduleRevision = effective.scheduleRevision; setScheduleRevision(effective.scheduleRevision); }
     if (capability === 'generate_personal_workout' && result.proposalId) {
-      if (!preview) localStorage.setItem(proposalKey, JSON.stringify({ uid, playerId, result }));
       setProposal(result);
+      selected.current.proposal = result;
+      persistSelection({ proposalId: result.proposalId, ...(result.conversationId ? { conversationId: result.conversationId } : {}) });
     }
     setLastResult({ capability, result: effective });
     return effective;
@@ -79,7 +136,10 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
         subscriptions.current.push(() => { stop(); reject(new Error('The selected player changed.')); });
       });
       if (generation.current !== token || auth.currentUser?.uid !== uid) throw new Error('The selected player changed.');
-      const effective = accept(record.capability, result);
+      // A completed job is a recovery receipt. Read the authoritative proposal
+      // and current conversation head, rather than caching its result payload.
+      const confirmed = record.capability === 'generate_personal_workout' && result.proposalId ? await openProposal(result.proposalId) : result;
+      const effective = accept(record.capability, confirmed);
       savePending(null); setStatus(''); return effective;
     } catch (e: any) {
       if (generation.current === token) {
@@ -91,7 +151,9 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
   };
   useEffect(() => {
     const token = ++generation.current;
+    ++selectionVersion.current;
     busy.current = false; setSaving(false); setStatus('');
+    selected.current = { conversation: null, proposal: null }; setConversation(null); setConversationId(null); setMessages([]); setConversationLoading(false); setConversations([]); setConversationsLoaded(preview);
     if (!enabled) { current.current = { workouts: [], logs: {}, scheduleRevision: null }; setWorkouts([]); setLogs({}); setScheduleRevision(null); setLoaded(false); setProposal(null); setPending(null); setLastResult(null); return; }
     if (preview) { setCatalog(sampleCatalog); setLoaded(true); setScheduleRevision(0); return; }
     current.current = { workouts: [], logs: {}, scheduleRevision: null };
@@ -102,15 +164,49 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
       player.collection('personalWorkoutLogs').onSnapshot(s => { current.current.logs = Object.fromEntries(s.docs.map(d => [d.id, latestPersonalRevision(current.current.logs[d.id], { ...d.data(), id: d.id })])); setLogs(current.current.logs); }, e => setError(e.message)),
       player.collection('workoutSchedule').doc('current').onSnapshot(d => { current.current.scheduleRevision = Math.max(current.current.scheduleRevision || 0, Number(d.data()?.revision || 0)); setScheduleRevision(current.current.scheduleRevision); }, e => setError(e.message)),
       db.collection('drillCatalog').where('status', '==', 'published').onSnapshot(s => setCatalog(s.docs.map(d => normalizeCatalogDrill(d.id, d.data()))), e => setError(e.message)),
+      player.collection('aiConversations').where('capability', '==', 'generate_personal_workout').where('createdByUid', '==', uid).onSnapshot(s => {
+        if (generation.current !== token) return;
+        setConversations(s.docs.map(d => ({ ...d.data(), id: d.id, conversationId: d.id })).sort((a: Row, b: Row) => personalTimestamp(b.lastMessageAt) - personalTimestamp(a.lastMessageAt)));
+        setConversationsLoaded(true);
+      }, e => { setConversationsLoaded(true); setError(`Workout conversations: ${e.message}`); }),
     ];
-    try {
-      const saved = JSON.parse(localStorage.getItem(proposalKey) || 'null');
-      if (saved?.uid === uid && saved?.playerId === playerId && saved.result?.proposalId) setProposal(saved.result);
-    } catch { /* A corrupt unsaved proposal is never treated as an executable workout. */ }
     const recovery = readPending();
+    try {
+      const saved = restorePersonalSelection(JSON.parse(localStorage.getItem(proposalKey) || 'null'), uid, playerId);
+      // An accepted generation will select its own confirmed result on recovery.
+      if (saved && !(recovery?.capability === 'generate_personal_workout' && !recovery.terminalFailed)) {
+        void (saved.conversationId ? openConversation(saved.conversationId) : openProposal(saved.proposalId!)).catch(() => {});
+      }
+    } catch { /* A corrupt unsaved proposal is never treated as an executable workout. */ }
     if (recovery) { setPending(recovery); if (!recovery.terminalFailed) void runPending(recovery).catch(() => {}); }
     return () => { if (generation.current === token) generation.current++; stops.forEach(s => s()); subscriptions.current.splice(0).forEach(s => s()); busy.current = false; };
   }, [playerId, preview, enabled, uid]);
+  useEffect(() => {
+    if (!conversationId || preview || !enabled) return;
+    let alive = true, headVersion = 0;
+    const base = db.collection('players').doc(playerId).collection('aiConversations').doc(conversationId);
+    const stopConversation = base.onSnapshot(snapshot => {
+      if (!alive || selected.current.conversation?.conversationId !== conversationId) return;
+      const token = ++headVersion;
+      try {
+        const next = checkedPersonalConversation(snapshot.data() || null, conversationId, uid);
+        if (Number(selected.current.conversation?.proposalRevision || 0) > next.proposalRevision) return;
+        selected.current.conversation = next; setConversation(next);
+        if (selected.current.proposal?.proposalId !== next.latestProposalId) {
+          setConversationLoading(true);
+          void conversationPort.proposal(next.latestProposalId).then(raw => {
+            if (!alive || token !== headVersion || selected.current.conversation?.conversationId !== conversationId) return;
+            const checked = checkedPersonalProposal(raw, next.latestProposalId, uid, next);
+            selected.current.proposal = checked; setProposal(checked); persistSelection({ conversationId, proposalId: checked.proposalId });
+          }).catch(e => { if (alive && token === headVersion) setError(e.message); }).finally(() => { if (alive && token === headVersion) setConversationLoading(false); });
+        }
+      } catch (e: any) { if (alive) setError(e.message); }
+    }, e => { if (alive) setError(e.message); });
+    const stopMessages = base.collection('messages').onSnapshot(s => {
+      if (alive && selected.current.conversation?.conversationId === conversationId) setMessages(orderedPersonalMessages(s.docs.map(d => ({ ...d.data(), id: d.id }))));
+    }, e => { if (alive) setError(e.message); });
+    return () => { alive = false; ++headVersion; stopConversation(); stopMessages(); };
+  }, [conversationId, playerId, uid, enabled, preview]);
   const perform = async (capability: PersonalCapability, params: Row): Promise<Row> => {
     if (!personalCapabilityEnabled(config, capability, preview)) throw new Error('This workout action is not enabled yet.');
     if (preview) throw new Error('Sample workout actions must use the in-memory preview.');
@@ -124,7 +220,7 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     };
     return runPending(record);
   };
-  const clearProposal = () => { setProposal(null); if (!preview) try { localStorage.removeItem(proposalKey); } catch { /* Server checks remain authoritative. */ } };
+  const clearProposal = () => { selected.current.proposal = null; setProposal(null); persistSelection(null); };
   const save = async (params: Row) => {
     if (preview) {
       const workoutId = params.workoutId || `sample-${crypto.randomUUID()}`, revision = Number(params.expectedRevision || 0) + 1;
@@ -132,6 +228,79 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
       const result = accept('save_personal_workout', { workoutId, revision, workout, scheduleRevision: (current.current.scheduleRevision || 0) + 1 }); clearProposal(); return result;
     }
     const result = await perform('save_personal_workout', params); clearProposal(); return result;
+  };
+  const generate = async (params: Row): Promise<Row> => {
+    const errors = personalGenerationErrors(params.intake, params.timeAvailableMinutes, params.requestText);
+    if (errors.length) throw new Error(errors.join(' '));
+    if (!preview) return perform('generate_personal_workout', params);
+    const before = params.conversationId ? samples.current.get(params.conversationId) : undefined;
+    if (params.conversationId && (!before || before.proposal.proposalId !== params.baseProposalId)) throw new Error('Reopen the latest sample workout before changing it.');
+    const id = before?.conversation.conversationId || `sample-conversation-${crypto.randomUUID()}`;
+    const revision = Number(before?.conversation.proposalRevision || 0) + 1;
+    const available = sampleCatalog.filter(d => eligiblePersonalDrill(d, params.intake));
+    if (!available.length) throw new Error('Select equipment for a sample workout, such as a ball.');
+    const asked = String(params.requestText).toLowerCase();
+    const included = available.filter(d => !(asked.includes('no wall') || asked.includes('remove') && asked.includes('wall')) || !d.equipment.includes('wall'));
+    if (!included.length) throw new Error('This sample needs at least one suitable drill.');
+    let workout = personalDraft(before?.proposal.workout, true);
+    if (!before) for (const drill of included.slice(0, 3)) workout = addPersonalDrill(workout, drill);
+    else workout.blocks = workout.blocks.filter(block => included.some(d => d.drillId === block.drillId));
+    if (asked.includes('add')) for (const drill of included) if (!workout.blocks.some(b => b.drillId === drill.drillId)) { workout = addPersonalDrill(workout, drill); break; }
+    const targetBlockMinutes = Math.max(1, (params.timeAvailableMinutes - Math.max(0, workout.blocks.length - 1)) / Math.max(1, workout.blocks.length));
+    workout = recomputePersonalDraft({ ...workout, title: before?.proposal.workout.title || 'Your focused practice', budgetMinutes: params.timeAvailableMinutes,
+      intent: 'Sample workout for reviewing the conversation and publishing flow.', blocks: workout.blocks.map(b => ({ ...b, sets: 4,
+        reps: Math.max(20, Math.min(90, Math.floor((targetBlockMinutes * 60 - 90) / 4))), restSeconds: 30 })) });
+    const proposalId = `sample-proposal-${crypto.randomUUID()}`, now = new Date();
+    const nextProposal = { ...params, schemaVersion: 1, proposalId, conversationId: id, baseProposalId: params.baseProposalId || null,
+      proposalRevision: revision, requestedMinutes: params.timeAvailableMinutes, createdByUid: uid, createdAt: now,
+      expiresAt: new Date(now.getTime() + 86400000), workout, check: { ok: true },
+      assistantMessage: 'Here is a sample workout. Ask for a change, or publish when you are ready.' };
+    const nextConversation = { ...(before?.conversation || {}), id, conversationId: id, capability: 'generate_personal_workout', createdByUid: uid,
+      title: before?.conversation.title || params.requestText.slice(0, 60), createdAt: before?.conversation.createdAt || now,
+      latestProposalId: proposalId, proposalRevision: revision, lastMessageAt: now, messageCount: revision * 2 };
+    const next = { conversation: nextConversation, proposal: nextProposal, messages: [...(before?.messages || []),
+      { id: `${proposalId}_user`, role: 'user', content: params.requestText, createdAt: now, sequence: revision * 2 - 1 },
+      { id: `${proposalId}_assistant`, role: 'assistant', content: nextProposal.assistantMessage, proposalId, createdAt: now, sequence: revision * 2 }] };
+    samples.current.set(id, next); useSelection(next); setConversations([...samples.current.values()].map(value => value.conversation));
+    return accept('generate_personal_workout', nextProposal);
+  };
+  const refine = async (requestText: string, overrides: Row = {}): Promise<Row> => {
+    const active = selected.current.proposal;
+    if (!active) throw new Error('Open a workout proposal before asking for changes.');
+    if (selected.current.conversation?.publishedWorkoutId) throw new Error('This conversation was published. Open the saved workout to request a new change.');
+    // Keep the last confirmed workout visible throughout generation and failure.
+    return generate(personalRefinementParams(active, requestText, overrides));
+  };
+  const publish = async (): Promise<Row> => {
+    const active = selected.current.proposal, owner = generation.current, version = selectionVersion.current;
+    if (!active) throw new Error('Review a workout proposal before publishing.');
+    const next = preview ? { conversation: selected.current.conversation, proposal: active } : active.conversationId ?
+      await readPersonalConversation(conversationPort, active.conversationId, uid) : { conversation: null, proposal: checkedPersonalProposal(await conversationPort.proposal(active.proposalId), active.proposalId, uid) };
+    if (owner !== generation.current || version !== selectionVersion.current || !preview && auth.currentUser?.uid !== uid) throw new Error('The selected workout or player changed.');
+    if (next.proposal.proposalId !== active.proposalId) {
+      if ('messages' in next) useSelection(next);
+      throw new Error('A newer workout proposal is available. Review it before publishing.');
+    }
+    // The saved marker is server owned, and allows safe recovery after a lost
+    // publish acknowledgement without starting a second workout.
+    if (next.conversation?.publishedWorkoutId) {
+      const workoutId = next.conversation.publishedWorkoutId;
+      const workout = preview ? current.current.workouts.find(w => w.workoutId === workoutId) :
+        (await db.collection('players').doc(playerId).collection('personalWorkouts').doc(workoutId).get({ source: 'server' })).data();
+      if (owner !== generation.current || version !== selectionVersion.current || !preview && auth.currentUser?.uid !== uid) throw new Error('The selected workout or player changed.');
+      if (!workout || workout.source !== 'personal') throw new Error('The published workout could not be loaded. Reopen Personal workouts.');
+      return accept('save_personal_workout', { workoutId, workout, revision: workout.revision });
+    }
+    const params = personalPublishParams(next.proposal, next.conversation);
+    const result = preview ? await save(params) : await perform('save_personal_workout', params);
+    if (preview && next.conversation) {
+      const updated: Row = { ...next.conversation, publishedWorkoutId: result.workoutId };
+      const entry = samples.current.get(updated.conversationId);
+      if (entry) { entry.conversation = updated; samples.current.set(updated.conversationId, entry); }
+      selected.current = { conversation: updated, proposal: active }; setProposal(active); setConversation(updated);
+      setConversations([...samples.current.values()].map(value => value.conversation));
+    }
+    return result;
   };
   const start = async (workout: Row, confirmation: Row) => {
     const token = generation.current;
@@ -174,8 +343,9 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     beginWorkout: () => {}, updateBlock: () => {}, removeBlock: () => {}, endWorkout: () => {}, noteWorkout: () => {},
   };
   return { enabled, workouts, logs, catalog, scheduleRevision, loaded, saving, error, status, pending, proposal, lastResult, clearProposal, save, start, adapter,
+    conversations, conversationsLoaded, conversationId, conversation, messages, conversationLoading, openConversation, openProposal, newConversation, refine, publish,
     consumeResult: () => setLastResult(null),
-    generate: (params: Row) => { const errors = personalGenerationErrors(params.intake, params.timeAvailableMinutes, params.requestText); return errors.length ? Promise.reject(new Error(errors.join(' '))) : perform('generate_personal_workout', params); },
+    generate,
     recover: () => pending ? runPending(pending).catch(() => {}) : Promise.resolve(),
     setError,
   };
