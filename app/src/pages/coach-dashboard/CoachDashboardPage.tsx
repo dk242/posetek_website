@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { auth } from '../../lib/firebase';
 import { athleteSummary, summarySort } from './lib/logic';
-import { loadAthleteBundle, loadCoachContext } from './lib/data';
+import { loadAthleteBundle, loadAthleteOverview, loadCoachContext, personalWorkoutLogsEnabled } from './lib/data';
 import type { CoachContext } from './lib/data';
 import { PREVIEW_BUNDLES, PREVIEW_PLAYERS } from './lib/preview';
-import { athleteLoadFailure, coachPath, createDashboardGuard, loadRosterStates } from './lib/workspace';
+import { athleteLoadFailure, coachPath, createDashboardGuard, streamRosterStates } from './lib/workspace';
 import type { AthleteLoad, TeamScope } from './lib/workspace';
 import Overview from './views/Overview';
 import AthleteDetail from './views/AthleteDetail';
@@ -54,23 +54,34 @@ export default function CoachDashboardPage() {
     if (!uid) return;
     const isCurrent = guard.begin(uid);
     void (async () => {
+      let contextLoaded = false;
       try {
         const current = await loadCoachContext({ uid }, teamId, orgId);
         if (!isCurrent()) return;
+        const rowGuards = new Map(current.players.map(player => [player.id, guard.player(uid, player.id)]));
         setContext(current);
-        const result = await loadRosterStates(current.players.map(player => player.id), loadAthleteBundle);
+        contextLoaded = true;
+        setLoads(Object.fromEntries(current.players.map(player => [player.id, { kind: 'loading' }])));
+        setLoading(false); setRefreshedAt(new Date());
+        const personalEnabled = await personalWorkoutLogsEnabled();
         if (!isCurrent()) return;
-        setLoads(result); setRefreshedAt(new Date());
+        const overviewNow = new Date();
+        await streamRosterStates(current.players.map(player => player.id), async id => {
+          return loadAthleteOverview(id, personalEnabled, overviewNow);
+        }, (id, state) => {
+          if (isCurrent() && rowGuards.get(id)?.()) setLoads(previous => ({ ...previous, [id]: state }));
+        });
       } catch (failure) {
         if (!isCurrent()) return;
-        setContext(null); setLoads({});
-        setError(failure instanceof Error ? failure.message : 'Your team could not be loaded.');
+        setLoads(previous => Object.fromEntries(Object.entries(previous).map(([id, state]) => [id,
+          state.kind === 'loading' ? { kind: 'error', message: athleteLoadFailure(failure) } : state])));
+        if (!contextLoaded) { setContext(null); setError(failure instanceof Error ? failure.message : 'Your team could not be loaded.'); }
       } finally { if (isCurrent()) setLoading(false); }
     })();
     return () => guard.cancel();
   }, [uid, orgId, teamId, preview, refreshKey, clear, guard]);
 
-  async function reloadAthlete(playerId: string) {
+  async function reloadAthlete(playerId: string, detail = false) {
     if (preview || !context?.players.some(player => player.id === playerId) || auth.currentUser?.uid !== uid) return;
     const isCurrent = guard.player(uid, playerId);
     setLoads(previous => ({ ...previous, [playerId]: { kind: 'loading' } }));
@@ -79,18 +90,27 @@ export default function CoachDashboardPage() {
       const current = await loadCoachContext({ uid }, scope?.teamId || null, scope?.orgId);
       if (!isCurrent()) return;
       if (!current.players.some(player => player.id === playerId)) { refresh(); return; }
-      const bundle = await loadAthleteBundle(playerId);
+      const bundle = detail ? await loadAthleteBundle(playerId)
+        : await loadAthleteOverview(playerId, await personalWorkoutLogsEnabled());
       if (isCurrent()) setLoads(previous => ({ ...previous, [playerId]: { kind: 'ready', bundle } }));
     } catch (failure) {
       if (isCurrent()) setLoads(previous => ({ ...previous, [playerId]: { kind: 'error', message: athleteLoadFailure(failure) } }));
     }
   }
 
+  useEffect(() => {
+    if (selectedId && context?.players.some(player => player.id === selectedId) && !preview) {
+      void reloadAthlete(selectedId, true);
+    }
+    // Selection and roster scope are the triggers; load state must not restart detail reads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, context, preview]);
+
   const summaries = useMemo(() => summarySort((context?.players || []).flatMap(player => {
     const state = loads[player.id];
     if (state?.kind !== 'ready') return [];
     const bundle = state.bundle;
-    return [athleteSummary(player, bundle.reps, bundle.plans, bundle.logs, bundle.provisionalEstimates, bundle.allResultReps)];
+    return [athleteSummary(player, bundle.reps, bundle.plans, bundle.logs, bundle.provisionalEstimates, bundle.allResultReps, bundle.coverage)];
   })), [context, loads]);
 
   function prescribe(ids: string[]) {
@@ -104,7 +124,8 @@ export default function CoachDashboardPage() {
     const next = new URLSearchParams({ orgId: context.organizationId, teamId: id });
     clear(); setQuery(next);
   }
-  const selected = summaries.find(summary => summary.athlete.id === selectedId);
+  const selected = summaries.find(summary => summary.athlete.id === selectedId &&
+    summary.coverage === 'all');
   const selectedPlayer = context?.players.find(player => player.id === selectedId);
   const unavailable = selectedPlayer && loads[selectedPlayer.id];
   const backPath = coachPath('/dashboard', scope);
@@ -137,16 +158,10 @@ export default function CoachDashboardPage() {
           {context?.limited && <p role="status" className="coachdash-notice">The roster service reached its limit. Team totals may be incomplete; contact PoseTek to review coverage.</p>}
           {selected ? <AthleteDetail key={selected.athlete.id} summary={selected} job={null} preview={preview}
             onBack={() => selectAthlete(null)} onCreatePlan={() => prescribe([selected.athlete.id])}
-            onPlanChanged={() => reloadAthlete(selected.athlete.id)} onPreviewEdit={(planId, weeks) => {
-              setLoads(previous => {
-                const state = previous[selected.athlete.id]; if (state?.kind !== 'ready') return previous;
-                return { ...previous, [selected.athlete.id]: { kind: 'ready', bundle: { ...state.bundle,
-                  plans: state.bundle.plans.map(plan => plan.id === planId ? { ...plan, weeks } : plan) } } };
-              });
-            }} />
+            />
             : selectedPlayer ? <section className="error-card"><button className="quiet-button" onClick={() => selectAthlete(null)}>Back to team</button>
               <h1>{selectedPlayer.firstName} {selectedPlayer.lastName}</h1><p role="status">{unavailable?.kind === 'error' ? unavailable.message : 'Loading player history…'}</p>
-              <button className="quiet-button" disabled={unavailable?.kind === 'loading'} onClick={() => void reloadAthlete(selectedPlayer.id)}>Retry player history</button></section>
+              <button className="quiet-button" disabled={unavailable?.kind === 'loading'} onClick={() => void reloadAthlete(selectedPlayer.id, true)}>Retry player history</button></section>
             : <><p className="coachdash-scope-note">Your assigned players only · Prescribe a reviewed plan, follow their workouts, then review progress.</p>
               {selectedId && <p role="status" className="coachdash-notice">That player is not in the selected team. Choose a current roster member.</p>}
               <Overview orgLabel={context?.orgLabel || 'My team'} summaries={summaries} players={context?.players || []} loads={loads}

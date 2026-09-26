@@ -9,7 +9,7 @@ import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../li
 import { selectedTeam } from "../../../lib/organization";
 import type { ClubTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
-import { auth, cloud, db } from "../../../lib/firebase";
+import { cloud, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
 import { DRILLS } from "../../athlete-portal/lib/drills";
@@ -73,6 +73,37 @@ export interface AthleteBundle {
   logs: any[];
   provisionalEstimates?: ProvisionalEstimate[];
   allResultReps?: any[];
+  /** Overview uses bounded recent logs; detail reads complete history. */
+  coverage?: 'all' | 'recent' | 'recent-truncated';
+}
+
+export const OVERVIEW_DAYS = 30;
+export const OVERVIEW_LOG_LIMIT = 50;
+
+export async function personalWorkoutLogsEnabled(): Promise<boolean> {
+  const config = await db.collection('config').doc('llm').get();
+  return config.data()?.personalWorkoutsEnabled === true;
+}
+
+/** Plans are complete; recorded outcomes are a bounded, ended-at 30-day sample. */
+export async function loadAthleteOverview(playerId: string, personalEnabled: boolean, now = new Date()): Promise<AthleteBundle> {
+  const player = db.collection('players').doc(playerId);
+  const since = new Date(now.valueOf() - OVERVIEW_DAYS * 86400000);
+  const recent = (name: string) => player.collection(name).where('endedAt', '>=', since)
+    .orderBy('endedAt', 'desc').limit(OVERVIEW_LOG_LIMIT + 1).get();
+  const [plans, assigned, personal] = await Promise.all([
+    player.collection('trainingPlans').get(), recent('workoutLogs'),
+    personalEnabled ? recent('personalWorkoutLogs') : Promise.resolve(null),
+  ]);
+  const assignedDocs = assigned.docs.slice(0, OVERVIEW_LOG_LIMIT);
+  const personalDocs = personal?.docs.slice(0, OVERVIEW_LOG_LIMIT) || [];
+  return {
+    reps: [], plans: plans.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+    logs: [...assignedDocs.map(doc => ({ id: doc.id, ...doc.data() })),
+      ...personalDocs.map(doc => ({ id: doc.id, ...doc.data(), source: 'personal' }))],
+    coverage: assigned.docs.length > OVERVIEW_LOG_LIMIT || (personal?.docs.length || 0) > OVERVIEW_LOG_LIMIT
+      ? 'recent-truncated' : 'recent',
+  };
 }
 
 // One athlete's reps + plans + workout logs, fetched together. Free Record is
@@ -98,6 +129,7 @@ export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle
     allResultReps: all,
     plans: plansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
     logs: [...logsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })), ...personal],
+    coverage: 'all',
   };
 }
 
@@ -110,37 +142,6 @@ export async function loadDrillCatalog(): Promise<any[]> {
   const snapshot = await db.collection("drillCatalog").get();
   catalogCache = snapshot.docs.map(doc => ({ id: doc.id, drillId: doc.id, ...doc.data() }));
   return catalogCache;
-}
-
-// MARK: - Plan writes
-
-export const PLAN_WEEKS_TIMEOUT_MS = 60000;
-
-// Replaces an edited weeks array on an older (schemaVersion 1/2) plan through the
-// gateway's deterministic `save_plan_weeks` job. The browser no longer writes
-// `trainingPlans`: the rules cutover closes that path (gateway consolidation plan
-// §4.6). The gateway re-checks that the signed-in user is the athlete's coach,
-// refuses a v3 plan — whose workouts are edited one at a time in the admin
-// console's workout editor, with the required `planAdjustments` record — and
-// stamps `coachAdjustedAt` / `coachAdjustedByUid` itself, in one transaction.
-export async function savePlanWeeks(playerId: string, planId: string, weeks: any[]): Promise<void> {
-  if (!auth.currentUser?.uid) throw new Error("You are signed out. Sign in again to save.");
-  const ref = await submitLlmJob(playerId, "save_plan_weeks", { planId, weeks });
-  await new Promise<void>((resolve, reject) => {
-    let stop = () => {};
-    const timeout = setTimeout(() => {
-      stop();
-      reject(new Error("The save is still processing. Reload the plan before editing again; the server job continues."));
-    }, PLAN_WEEKS_TIMEOUT_MS);
-    stop = ref.onSnapshot((snapshot: any) => {
-      const job = snapshot.data() || {};
-      if (job.status === "complete") { clearTimeout(timeout); stop(); resolve(); }
-      else if (job.status === "failed") {
-        clearTimeout(timeout); stop();
-        reject(new Error(job.error?.detail || job.error?.message || "The change could not be saved."));
-      }
-    }, (error: Error) => { clearTimeout(timeout); stop(); reject(error); });
-  });
 }
 
 // MARK: - Plan generation jobs

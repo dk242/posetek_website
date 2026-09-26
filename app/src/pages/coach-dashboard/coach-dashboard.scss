@@ -712,3 +712,15 @@
   }
   @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 }
+
+.coachdash-followups {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--line, #d9e2df);
+  border-radius: 1rem;
+  background: var(--surface, #fff);
+}
+.coachdash-followups h2 { margin: 0 0 .35rem; }
+.coachdash-followups ul { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .5rem; }
+.coachdash-followups li { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; padding: .65rem; border: 1px solid var(--line, #d9e2df); border-radius: .7rem; }
+.coachdash-followups li time { margin-left: auto; color: var(--muted, #536361); }

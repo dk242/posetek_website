@@ -66,12 +66,12 @@ export default function DrillPicker({ existingDrillIds, preview, onPick, onClose
   }, [state, category, search]);
 
   return (
-    <dialog className="portal-dialog drill-picker" ref={dialogRef} onCancel={onClose} onClose={onClose}>
+    <dialog className="portal-dialog drill-picker" ref={dialogRef} aria-labelledby="drill-picker-title" onCancel={onClose} onClose={onClose}>
       <div className="dialog-card wide">
         <header>
           <div>
             <p className="eyebrow">Drill catalog</p>
-            <h2>Add a drill</h2>
+            <h2 id="drill-picker-title">Add a drill</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close" onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
@@ -89,7 +89,7 @@ export default function DrillPicker({ existingDrillIds, preview, onPick, onClose
           />
         </label>
 
-        <div className="picker-categories" role="tablist" aria-label="Drill categories">
+        <div className="picker-categories" role="group" aria-label="Drill categories">
           <button type="button" className={`focus-chip toggle ${category === "all" ? "active" : ""}`} onClick={() => setCategory("all")}>
             All
           </button>

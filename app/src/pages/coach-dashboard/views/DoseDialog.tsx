@@ -31,7 +31,7 @@ export default function DoseDialog({ title, confirmLabel, initial, doseText, onC
   };
 
   return (
-    <dialog className="portal-dialog dose-dialog" ref={dialogRef} onCancel={onCancel} onClose={onCancel}>
+    <dialog className="portal-dialog dose-dialog" ref={dialogRef} aria-labelledby="dose-dialog-title" onCancel={onCancel} onClose={onCancel}>
       <form
         className="dialog-card"
         method="dialog"
@@ -43,7 +43,7 @@ export default function DoseDialog({ title, confirmLabel, initial, doseText, onC
         <header>
           <div>
             <p className="eyebrow">Dosage</p>
-            <h2>{title}</h2>
+            <h2 id="dose-dialog-title">{title}</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close" onClick={onCancel}>
             <span className="material-symbols-outlined">close</span>
