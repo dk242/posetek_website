@@ -38,12 +38,20 @@ export function athleteLoadFailure(error: unknown): string {
 /** Keep incomplete evidence explicit, with bounded parallel reads at roster scale. */
 export async function loadRosterStates(ids: string[], load: (id: string) => Promise<AthleteBundle>) {
   const result: Record<string, AthleteLoad> = {};
+  await streamRosterStates(ids, load, (id, state) => { result[id] = state; });
+  return result;
+}
+
+/** Report each completed athlete without waiting for the slowest read. */
+export async function streamRosterStates(ids: string[], load: (id: string) => Promise<AthleteBundle>, onState: (id: string, state: AthleteLoad) => void) {
+  const result: Record<string, AthleteLoad> = {};
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(4, ids.length) }, async () => {
     while (next < ids.length) {
       const id = ids[next++];
       try { result[id] = { kind: 'ready', bundle: await load(id) }; }
       catch (error) { result[id] = { kind: 'error', message: athleteLoadFailure(error) }; }
+      onState(id, result[id]);
     }
   }));
   return result;

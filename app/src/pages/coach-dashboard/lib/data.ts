@@ -73,6 +73,37 @@ export interface AthleteBundle {
   logs: any[];
   provisionalEstimates?: ProvisionalEstimate[];
   allResultReps?: any[];
+  /** Overview uses bounded recent logs; detail reads complete history. */
+  coverage?: 'all' | 'recent' | 'recent-truncated';
+}
+
+export const OVERVIEW_DAYS = 30;
+export const OVERVIEW_LOG_LIMIT = 50;
+
+export async function personalWorkoutLogsEnabled(): Promise<boolean> {
+  const config = await db.collection('config').doc('llm').get();
+  return config.data()?.personalWorkoutsEnabled === true;
+}
+
+/** Plans are complete; recorded outcomes are a bounded, ended-at 30-day sample. */
+export async function loadAthleteOverview(playerId: string, personalEnabled: boolean, now = new Date()): Promise<AthleteBundle> {
+  const player = db.collection('players').doc(playerId);
+  const since = new Date(now.valueOf() - OVERVIEW_DAYS * 86400000);
+  const recent = (name: string) => player.collection(name).where('endedAt', '>=', since)
+    .orderBy('endedAt', 'desc').limit(OVERVIEW_LOG_LIMIT + 1).get();
+  const [plans, assigned, personal] = await Promise.all([
+    player.collection('trainingPlans').get(), recent('workoutLogs'),
+    personalEnabled ? recent('personalWorkoutLogs') : Promise.resolve(null),
+  ]);
+  const assignedDocs = assigned.docs.slice(0, OVERVIEW_LOG_LIMIT);
+  const personalDocs = personal?.docs.slice(0, OVERVIEW_LOG_LIMIT) || [];
+  return {
+    reps: [], plans: plans.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+    logs: [...assignedDocs.map(doc => ({ id: doc.id, ...doc.data() })),
+      ...personalDocs.map(doc => ({ id: doc.id, ...doc.data(), source: 'personal' }))],
+    coverage: assigned.docs.length > OVERVIEW_LOG_LIMIT || (personal?.docs.length || 0) > OVERVIEW_LOG_LIMIT
+      ? 'recent-truncated' : 'recent',
+  };
 }
 
 // One athlete's reps + plans + workout logs, fetched together. Free Record is
@@ -98,6 +129,7 @@ export async function loadAthleteBundle(playerId: string): Promise<AthleteBundle
     allResultReps: all,
     plans: plansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
     logs: [...logsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })), ...personal],
+    coverage: 'all',
   };
 }
 

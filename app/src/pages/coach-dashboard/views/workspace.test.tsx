@@ -41,6 +41,14 @@ describe('coach source-of-truth presentation', () => {
     expect(html).toContain('Saved workout'); expect(html).toContain('Saved drill'); expect(html).toContain('2 min timer');
     expect(html).toContain('Completed'); expect(html).toContain('Not all completed'); expect(html).toContain('Reason: pain');
   });
+  it('renders follow-up destinations as native keyboard-operable buttons with a named region', () => {
+    const summary = athleteSummary(player, [], [], []);
+    const html = renderToStaticMarkup(<Overview orgLabel="Assigned team" players={[player]} summaries={[summary]}
+      loads={{ p: { kind: 'ready', bundle: { plans: [], reps: [], logs: [], coverage: 'recent' } } }}
+      onRetry={noop} onSelect={noop} onPrescribe={noop} />);
+    expect(html).toContain('aria-label="Coach follow-ups"');
+    expect(html).toMatch(/<button[^>]*>Sam Example<\/button><strong>No active plan/);
+  });
   it('does not substitute the current program when an old execution snapshot is missing', () => {
     const html = renderToStaticMarkup(<WorkoutHistory logs={[{ id: 'legacy', startedAt: new Date(), blocks: [] }]} />);
     expect(html).toContain('No ending recorded'); expect(html).toContain('Current program details are not substituted');

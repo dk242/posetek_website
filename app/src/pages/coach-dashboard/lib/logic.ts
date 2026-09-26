@@ -156,9 +156,10 @@ export interface AthleteSummary {
   plan: any | null;
   focus: FocusArea[];
   logs: any[];
+  coverage: 'all' | 'recent' | 'recent-truncated';
 }
 
-export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: any[], provisionalEstimates?: ProvisionalEstimate[], allResultReps?: any[]): AthleteSummary {
+export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: any[], provisionalEstimates?: ProvisionalEstimate[], allResultReps?: any[], coverage: AthleteSummary['coverage'] = 'all'): AthleteSummary {
   const profile = buildProfile(reps);
   const plan = activePlan(plans);
   return {
@@ -171,6 +172,7 @@ export function athleteSummary(athlete: any, reps: any[], plans: any[], logs: an
     plan,
     focus: focusAreasFor(plan, profile),
     logs,
+    coverage,
   };
 }
 
