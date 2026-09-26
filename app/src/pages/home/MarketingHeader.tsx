@@ -34,7 +34,7 @@ export function MarketingHeader({ audience }: { audience: MarketingAudience }) {
   const header = useRef<HTMLElement>(null);
   const cta = audience === "coaches"
     ? { label: "Talk about your team", href: TEAM_ENQUIRY_HREF }
-    : { label: "Book a test", href: "/bookPerformanceTest.html" };
+    : { label: "Ask about testing", href: "/bookPerformanceTest.html" };
 
   useEffect(() => {
     const update = () => setScrolled(isHeaderScrolled(window.scrollY));

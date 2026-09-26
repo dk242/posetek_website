@@ -121,4 +121,6 @@ for (const file of manifest.files) {
   const original = !preserveApplicationEntry && file.path === "/index.html" ? bytes.toString("utf8").replace(injected, "") : bytes;
   if (hash(original) !== file.sha || Buffer.byteLength(original) !== file.size) throw new Error("Preservation verification failed: " + file.path);
 }
+// Replace only the reviewed legacy checkout after pinned bytes pass verification.
+await writeFile(join(output, "bookperformancetest.html"), await readFile(join(root, "bookPerformanceTest.html")));
 console.log(`[production] Verified ${manifest.files.length} preserved application files from ${manifest.deploymentId}; added isolated player and coaches pages.`);

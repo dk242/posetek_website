@@ -37,7 +37,15 @@ export async function createCoachDocument(
     coachData.coachCode = generateCode("COACH", 4);
   }
 
-  await db.collection("coaches").doc(coachId).set(coachData);
+  await db.runTransaction(async transaction => {
+    const ref = db.collection("coaches").doc(coachId);
+    const existing = await transaction.get(ref);
+    if (existing.exists) {
+      if (existing.data()?.userUID !== coachId) throw new Error("This coach profile belongs to another account.");
+      return;
+    }
+    transaction.set(ref, coachData);
+  });
   return coachData;
 }
 
@@ -47,13 +55,18 @@ export async function createCoachDocument(
 // (`cloud` is the same us-central1 Functions instance legacy reached through
 // `firebase.functions()`.)
 
-export async function discardFailedSignup(user: any): Promise<void> {
-  if (!user) return;
-  try {
-    await user.delete();
-  } catch {
-    /* leave sign-in state to the next attempt */
-  }
+export async function resolvedLegacyAdmission(uid: string, role: OrganizationRole, expectedCode?: string): Promise<boolean> {
+  const collection = role === "player" ? "players" : "coaches";
+  const direct = await db.collection(collection).doc(uid).get();
+  const profiles = direct.exists ? [direct] : (await db.collection(collection).where("userUID", "==", uid).limit(2).get()).docs;
+  if (profiles.length !== 1) return false;
+  const profile = profiles[0].data();
+  if (!profile) return false;
+  if (profile.userUID !== uid && profile.authenticationUID !== uid) return false;
+  if (!profile.organization || (expectedCode && profile.organizationCode !== expectedCode.toUpperCase())) return false;
+  const organization = await profile.organization.get();
+  return organization.exists && Array.isArray(organization.data()?.[role === "player" ? "players" : "coaches"])
+    && organization.data()![role === "player" ? "players" : "coaches"].includes(uid);
 }
 
 /** Binds an unclaimed, freshly invited player document to the caller. */

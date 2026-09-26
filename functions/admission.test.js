@@ -106,6 +106,14 @@ test("player joins an organization by fresh code and a coach creates one", async
   assert.equal(coach.userUID, "coach");
   assert.deepEqual(coach.members, []);
   assert.equal(coach.organizationCode, created.code);
+
+  // A callable response can be lost after the transaction commits. Replaying
+  // with the same UID must return the original organization and roster.
+  const replay = await admission.createOrganization({ uid: "coach", email: "c@example.test", firstName: "Cody", lastName: "Coach", name: "New Club" });
+  assert.deepEqual(replay, created);
+  assert.deepEqual(db.snapshot(`organizations/${created.organizationId}`).coaches, ["coach"]);
+  await admission.joinOrganization({ uid: "athlete", email: "a@example.test", role: "player", code: "orgfresh", firstName: "Ada", lastName: "Smith" });
+  assert.deepEqual(db.snapshot("organizations/org").players, ["athlete"]);
 });
 
 test("organization admission refuses legacy codes and foreign profiles", async () => {

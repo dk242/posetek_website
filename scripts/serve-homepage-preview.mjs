@@ -7,10 +7,11 @@ import { resolve, relative, isAbsolute, extname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const marketing = fileURLToPath(new URL('../marketing-dist/', import.meta.url));
+const source = fileURLToPath(new URL('../', import.meta.url));
 const reference = fileURLToPath(new URL('../.netlify/deployed-reference/6aa9b6f0d8faf6177db8fd97/', import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.wasm': 'application/wasm', '.woff2': 'font/woff2' };
 
-export function createHomepagePreviewServer({ marketingRoot = marketing, referenceRoot = reference } = {}) {
+export function createHomepagePreviewServer({ marketingRoot = marketing, referenceRoot = reference, sourceRoot = source } = {}) {
 return createServer(async (req, res) => {
   try {
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); res.end(); return; }
@@ -26,7 +27,8 @@ return createServer(async (req, res) => {
     } else if (pathname.startsWith('/marketing/assets/')) {
       root = marketingRoot;
       filePath = pathname.slice('/marketing'.length);
-    } else if (/^\/bookperformancetest\/?$/i.test(pathname)) {
+    } else if (/^\/bookperformancetest(?:\.html)?\/?$/i.test(pathname)) {
+      root = sourceRoot;
       filePath = '/bookPerformanceTest.html';
     }
     let target = resolve(root, '.' + filePath);

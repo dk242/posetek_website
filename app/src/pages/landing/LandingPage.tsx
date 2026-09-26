@@ -32,10 +32,11 @@ import type { CoachOrgAction, CoachOrgChoice, SignupTab } from "./landing-helper
 import {
   createCoachDocument,
   createOrganization,
-  discardFailedSignup,
+  resolvedLegacyAdmission,
   joinOrganization,
   redeemPlayerSignupCode,
 } from "./signup-data";
+import { finishIndependentCoachSignup } from "./independent-coach-signup";
 import "./landing.scss";
 
 export default function LandingPage() {
@@ -53,6 +54,8 @@ export default function LandingPage() {
   const loginPanelRef = useRef<HTMLElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const signupDialogRef = useRef<HTMLDivElement>(null);
+  const forgotDialogRef = useRef<HTMLDivElement>(null);
+  const coachOrgDialogRef = useRef<HTMLDivElement>(null);
   const loginFocusTimerRef = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(loginFocusTimerRef.current), []);
 
@@ -65,6 +68,7 @@ export default function LandingPage() {
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [pendingActivation, setPendingActivation] = useState(false);
   const loginMounted = useRef(false);
   const authEpoch = useRef(0);
@@ -162,6 +166,15 @@ export default function LandingPage() {
       ++authEpoch.current;
       setSignedIn(Boolean(user));
       setPendingActivation(false);
+      if (user) {
+        try {
+          const pending = JSON.parse(sessionStorage.getItem("posetek-independent-signup") || "null");
+          if (pending?.uid === user.uid && pending.email?.toLowerCase() === user.email?.toLowerCase()) {
+            setIndFirstName(pending.firstName); setIndLastName(pending.lastName); setIndEmail(pending.email);
+            setActiveTab("independent"); setSignupOpen(true);
+          }
+        } catch { sessionStorage.removeItem("posetek-independent-signup"); }
+      }
       if (!user && getSafeReturnToUrl()) showLoginPanel();
     });
     return () => { loginMounted.current = false; ++authEpoch.current; unsubscribe(); };
@@ -173,9 +186,9 @@ export default function LandingPage() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (signupOpen) setSignupOpen(false);
-      if (forgotOpen) finishForgotModal(null);
       if (coachOrgOpen) finishCoachOrgModal(null);
+      else if (forgotOpen) finishForgotModal(null);
+      else if (signupOpen) setSignupOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -200,6 +213,25 @@ export default function LandingPage() {
     document.addEventListener("keydown", trapFocus);
     return () => { window.cancelAnimationFrame(focusFrame); document.removeEventListener("keydown", trapFocus); previous?.focus(); };
   }, [signupOpen, coachOrgOpen]);
+
+  useEffect(() => {
+    const dialog = coachOrgOpen ? coachOrgDialogRef.current : forgotOpen ? forgotDialogRef.current : null;
+    if (!dialog) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // The signup dialog's cleanup restores its opener when the nested setup
+    // opens. Move focus after that restoration and the overlay transition.
+    const focusTimer = window.setTimeout(() => dialog.focus(), 80);
+    const trap = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), [tabindex="0"]')).filter(el => el.getClientRects().length > 0);
+      const first = controls[0]; const last = controls.at(-1);
+      if (!first || !last) { event.preventDefault(); return; }
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog || !dialog.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog || !dialog.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", trap);
+    return () => { window.clearTimeout(focusTimer); document.removeEventListener("keydown", trap); previous?.focus(); };
+  }, [forgotOpen, coachOrgOpen]);
 
   // legacy showModal(loginModal)
   function showLoginPanel() {
@@ -291,6 +323,7 @@ export default function LandingPage() {
     try {
       setLoginLoading(true);
       setLoginError(""); setLoginSuccess(""); setPendingActivation(false);
+      await auth.setPersistence(rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user: any = userCredential.user;
       if (!user || !loginMounted.current || auth.currentUser?.uid !== user.uid) return;
@@ -427,24 +460,37 @@ export default function LandingPage() {
         if (!coachSetup) throw new Error("Organization setup cancelled");
       }
 
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      user = userCredential.user;
-      await user.sendEmailVerification();
+      if (auth.currentUser?.email?.toLowerCase() === email.toLowerCase()) user = auth.currentUser;
+      else user = (await auth.createUserWithEmailAndPassword(email, password)).user;
+      if (!user) throw new Error("Your account could not be created. Please try again.");
 
       if (userTypeVal === "player") {
-        await joinOrganization(orgCodeVal, "player", firstNameVal, lastNameVal);
+        if (!await resolvedLegacyAdmission(user.uid, "player", orgCodeVal)) await joinOrganization(orgCodeVal, "player", firstNameVal, lastNameVal);
+        if (!await resolvedLegacyAdmission(user.uid, "player", orgCodeVal)) throw new Error("We could not confirm your organization access. Try again while signed in.");
         navigate(playerSignupRoute(null)); // legacy: profile.html?userType=player
       } else {
         // validateOrgSignup only lets "coach" past here, and the modal was confirmed above.
         const setup = coachSetup as CoachOrgChoice;
-        if (setup.action === "create") await createOrganization(setup.value, firstNameVal, lastNameVal);
-        else await joinOrganization(setup.value, "coach", firstNameVal, lastNameVal);
+        const expectedCode = setup.action === "join" ? setup.value : undefined;
+        if (!await resolvedLegacyAdmission(user.uid, "coach", expectedCode)) {
+          if (setup.action === "create") await createOrganization(setup.value, firstNameVal, lastNameVal);
+          else await joinOrganization(setup.value, "coach", firstNameVal, lastNameVal);
+        }
+        if (!await resolvedLegacyAdmission(user.uid, "coach", expectedCode)) throw new Error("We could not confirm your organization access. Try again while signed in.");
         navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
       }
+      try { await user.sendEmailVerification(); } catch { /* Profile is durable; verification can be resent after sign-in. */ }
     } catch (error: any) {
       console.error("Signup error:", error);
-      await discardFailedSignup(user);
-      setOrgSignupError(accountError(error, error.message));
+      if (user && auth.currentUser?.uid === user.uid) {
+        try {
+          const role = userTypeVal === "player" ? "player" : "coach";
+          if (await resolvedLegacyAdmission(user.uid, role, role === "player" ? orgCodeVal : undefined)) {
+            navigate(role === "player" ? playerSignupRoute(null) : coachHomeRoute()); return;
+          }
+        } catch { /* Keep identity for a same-UID retry. */ }
+      }
+      setOrgSignupError(accountError(error, "Your sign-in was kept. Try Create Account again to finish organization setup."));
     } finally {
       setOrgSignupLoading(false);
     }
@@ -518,7 +564,8 @@ export default function LandingPage() {
       setIndependentError("");
       setIndependentSuccess("");
 
-      const problem = validateIndependentSignup({
+      const resumeUser = auth.currentUser?.email?.toLowerCase() === email.toLowerCase() ? auth.currentUser : null;
+      const problem = resumeUser && !password && !confirmPasswordVal ? (!firstNameVal || !lastNameVal ? "Enter your name to finish your coach account." : null) : validateIndependentSignup({
         firstName: firstNameVal,
         lastName: lastNameVal,
         password,
@@ -527,11 +574,16 @@ export default function LandingPage() {
       if (problem) throw new Error(problem);
 
       // Create user in Firebase Auth
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const user: any = userCredential.user;
-      await user.sendEmailVerification();
-
-      await createCoachDocument(user.uid, email, firstNameVal, lastNameVal);
+      const user: any = auth.currentUser?.email?.toLowerCase() === email.toLowerCase()
+        ? auth.currentUser : (await auth.createUserWithEmailAndPassword(email, password)).user;
+      if (!user) throw new Error("Your account could not be created. Please try again.");
+      await finishIndependentCoachSignup({ uid: user.uid, email, firstName: firstNameVal, lastName: lastNameVal }, {
+        currentUid: () => auth.currentUser?.uid,
+        remember: intent => sessionStorage.setItem("posetek-independent-signup", JSON.stringify(intent)),
+        writeProfile: intent => createCoachDocument(intent.uid, intent.email, intent.firstName, intent.lastName),
+        clear: () => sessionStorage.removeItem("posetek-independent-signup"),
+        verify: () => user.sendEmailVerification(),
+      });
       navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
     } catch (error: any) {
       console.error("Signup error:", error);
@@ -641,7 +693,7 @@ export default function LandingPage() {
                 </div>
                 <div className="login-form-row">
                   <div className="checkbox-group">
-                    <input type="checkbox" id="rememberMe" />
+                    <input type="checkbox" id="rememberMe" checked={rememberMe} onChange={event => setRememberMe(event.target.checked)} />
                     <label htmlFor="rememberMe">Remember me</label>
                   </div>
                   <a
@@ -1102,10 +1154,10 @@ export default function LandingPage() {
 
       {/* Forgot Password Modal */}
       <div className={`modal-overlay${forgotOpen ? " active" : ""}`} id="forgotPasswordModal">
-        <div className="auth-modal">
+        <div className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="forgot-title" tabIndex={-1} ref={forgotDialogRef}>
           <div className="modal-content-wrapper">
             <div className="modal-header">
-              <h3 className="modal-title">Reset Password</h3>
+              <h3 className="modal-title" id="forgot-title">Reset Password</h3>
               <button
                 className="close-btn"
                 id="closeForgotModal"
@@ -1117,6 +1169,7 @@ export default function LandingPage() {
               </button>
             </div>
             <p className="mini-modal-copy">Enter your email and we’ll send you a reset link.</p>
+            <form onSubmit={event => { event.preventDefault(); handleForgotConfirm(); }}>
             <div className="form-group">
               <label htmlFor="forgotEmailInput">Email Address</label>
               <input
@@ -1133,25 +1186,26 @@ export default function LandingPage() {
               />
             </div>
             <div className="mini-modal-buttons">
-              <button className="mini-cancel-btn" id="forgotCancelBtn" onClick={() => finishForgotModal(null)}>
+              <button type="button" className="mini-cancel-btn" id="forgotCancelBtn" onClick={() => finishForgotModal(null)}>
                 Cancel
               </button>
-              <button className="submit-btn" id="forgotConfirmBtn" style={{ flex: 1 }} onClick={handleForgotConfirm}>
+              <button type="submit" className="submit-btn" id="forgotConfirmBtn" style={{ flex: 1 }}>
                 Send Reset Email
               </button>
             </div>
+            </form>
           </div>
         </div>
       </div>
 
       {/* Coach Organization Setup Modal */}
       <div className={`modal-overlay${coachOrgOpen ? " active" : ""}`} id="coachOrgModal">
-        <div className="auth-modal">
+        <div className="auth-modal" role="dialog" aria-modal="true" aria-labelledby={coachOrgStep === 1 ? "coach-org-title" : "coachOrgStep2Title"} tabIndex={-1} ref={coachOrgDialogRef}>
           <div className="modal-content-wrapper">
             {/* Step 1: Choose action */}
             <div id="coachOrgStep1" style={{ display: coachOrgStep === 1 ? "block" : "none" }}>
               <div className="modal-header">
-                <h3 className="modal-title">Organization Setup</h3>
+                <h3 className="modal-title" id="coach-org-title">Organization Setup</h3>
                 <button
                   className="close-btn"
                   id="closeCoachOrgModal"
@@ -1181,7 +1235,7 @@ export default function LandingPage() {
               </div>
             </div>
             {/* Step 2: Input org name or join code */}
-            <div id="coachOrgStep2" style={{ display: coachOrgStep === 2 ? "block" : "none" }}>
+            <form id="coachOrgStep2" style={{ display: coachOrgStep === 2 ? "block" : "none" }} onSubmit={event => { event.preventDefault(); handleCoachOrgConfirm(); }}>
               <div className="modal-header">
                 <h3 className="modal-title" id="coachOrgStep2Title">
                   {step2.title}
@@ -1216,14 +1270,14 @@ export default function LandingPage() {
                 {coachOrgError}
               </div>
               <div className="mini-modal-buttons">
-                <button className="mini-cancel-btn" id="coachOrgBackBtn" onClick={() => setCoachOrgStep(1)}>
+                <button type="button" className="mini-cancel-btn" id="coachOrgBackBtn" onClick={() => setCoachOrgStep(1)}>
                   ← Back
                 </button>
-                <button className="submit-btn" id="coachOrgConfirmBtn" style={{ flex: 1 }} onClick={handleCoachOrgConfirm}>
+                <button type="submit" className="submit-btn" id="coachOrgConfirmBtn" style={{ flex: 1 }}>
                   Confirm
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

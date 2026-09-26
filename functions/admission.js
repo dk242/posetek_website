@@ -253,14 +253,22 @@ function createAdmission({ db, FieldValue, HttpsError, randomInt, invitations })
     await enforceRateLimit(uid, "createOrganization");
     const ref = db.collection("organizations").doc();
     const code = invitationCode("ORG", 6);
-    await db.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
+      const existingCoach = await transaction.get(db.collection("coaches").doc(uid));
+      if (existingCoach.exists && existingCoach.data()?.userUID === uid && existingCoach.data()?.organization) {
+        const existingOrg = await transaction.get(existingCoach.data().organization);
+        if (existingOrg.exists && Array.isArray(existingOrg.data()?.coaches) && existingOrg.data().coaches.includes(uid)) {
+          return { organizationId: existingOrg.id, code: existingCoach.data().organizationCode };
+        }
+      }
       await ensureCoach(transaction, uid, email, first, last, { organization: ref, organizationCode: code });
       transaction.set(ref, {
         name: organizationName, coaches: [uid], players: [], code, codeVersion: INVITATION_VERSION,
         createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
       });
+      return { organizationId: ref.id, code };
     });
-    return { organizationId: ref.id, code };
+    return result;
   }
 
   /** A coach attaches an existing player to their roster by the player's fresh code. */

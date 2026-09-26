@@ -35,6 +35,18 @@ test("application composition rejects drift and asset-name collisions", async ()
   await fixture(async (root, put) => { await put("production-dist/booking.html", "changed"); await assert.rejects(composeApplicationRelease(root), /Baseline not verified/); });
   await fixture(async (root, put) => { await put("dist/assets/old.js", "collision"); await assert.rejects(composeApplicationRelease(root), /Asset collision/); });
 });
+test("application composition accepts only the reviewed testing enquiry replacement", async () => fixture(async (root, put) => {
+  const baselinePath = join(root, "deployment/homepage-baseline.json");
+  const baseline = JSON.parse(await readFile(baselinePath, "utf8"));
+  baseline.files.push({ path: "/bookperformancetest.html", sha: sha("retired checkout"), size: "retired checkout".length });
+  await writeFile(baselinePath, JSON.stringify(baseline));
+  await put("bookPerformanceTest.html", "reviewed enquiry");
+  await put("production-dist/bookperformancetest.html", "reviewed enquiry");
+  await composeApplicationRelease(root);
+  await put("production-dist/application.html", "old entry");
+  await put("production-dist/bookperformancetest.html", "unreviewed change");
+  await assert.rejects(composeApplicationRelease(root), /Reviewed testing enquiry not installed/);
+}));
 
 test("case-only identical Vite assets retain the pinned filename and are not counted as new", async () => fixture(async (root, put) => {
   await put("dist/assets/OLD.js", "old asset");

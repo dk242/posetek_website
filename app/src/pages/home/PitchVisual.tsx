@@ -10,7 +10,7 @@ export function PitchVisual() {
   const interactionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [selected, setSelected] = useState<HeroPoseId>("shooting");
   const layer: HeroLayer = "skeleton";
-  const cycling = true;
+  const [cycling, setCycling] = useState(true);
   const [interacting, setInteracting] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [active, setActive] = useState(false);
@@ -31,7 +31,7 @@ export function PitchVisual() {
     handle.current?.update(view.current);
     interactionEnd();
   };
-  const selectPose = (id: HeroPoseId) => { interactionStart(); setSelected(id); interactionEnd(); };
+  const selectPose = (id: HeroPoseId) => { interactionStart(); setCycling(false); setSelected(id); interactionEnd(); };
 
   useEffect(() => {
     view.current = { ...view.current, pose: selected, layer, reducedMotion, rotating };
@@ -106,7 +106,7 @@ export function PitchVisual() {
       <PoseFallback pose={pose} layer={layer} />
       <div ref={hostRef} className="pitch-scene" aria-hidden="true" />
     </div>
-    <div className="hero-view-tools"><span className="hero-orbit-hint"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="m18 5 4 6-6 1M5 8l-3 3"/></svg>{failed ? 'Static preview' : 'Drag to rotate'}</span></div>
+    <div className="hero-view-tools"><span className="hero-orbit-hint"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="m18 5 4 6-6 1M5 8l-3 3"/></svg>{failed ? 'Static preview' : 'Drag to rotate'}</span><button type="button" aria-pressed={!cycling} onClick={() => setCycling(value => !value)}>{cycling ? "Pause animation" : "Play animation"}</button></div>
     <div className="hero-pose-controls">
       <div className="hero-pose-choices" role="group" aria-label="Choose a 3D pose">{HERO_POSES.map((item, index) => <button type="button" key={item.id} aria-pressed={selected === item.id} onClick={() => selectPose(item.id)}><span aria-hidden="true">0{index + 1}</span><span>{item.label}</span><i aria-hidden="true" /></button>)}</div>
 
