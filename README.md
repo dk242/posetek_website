@@ -3,14 +3,9 @@
 Shared source repository: [dk242/posetek_website](https://github.com/dk242/posetek_website).
 Public website: [posetek.net](https://posetek.net).
 
-**Player/coach experience candidate:** the September 25 mobile-web polish,
-standalone personal workouts and coach team workflow are documented in
-[the release handoff](docs/PLAYER_COACH_EXPERIENCE.md) and
-[coach workflow](docs/COACH_WORKFLOW.md). They are not deployed; personal
-capabilities remain gated. Use Vite's `/athlete?preview=1&view=training` and
-`/dashboard?preview=1` for synthetic review. The current protected production
-baseline is `6ab5e409d3ca5da40c5c01d2` (899 entries); historical release descriptions
-below do not override that manifest or authorize a production publish.
+The player and coach experience is live on [posetek.net](https://posetek.net), including manual and AI personal-workout creation. Website source is merged into main at `587c5b5`; published deployment `6ab723a4b245cdd9426dc47a` is the verified draft promoted without rebuilding. The baseline protects 957 application/public files. Read [the production receipt](deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json), [implementation handoff](docs/PLAYER_COACH_EXPERIENCE.md) and [coach workflow](docs/COACH_WORKFLOW.md).
+
+Personal capabilities, canonical rules, the gateway and scoped Insights functions are live. The user explicitly authorized web release independently of native UI acceptance. The submitted App Store build is unchanged; native candidate `bc492aa` remains uncompiled/unreleased. This does not change the separate false whole-body mobile acceptance gate or approve any of the 80 unpublished drills.
 
 This repository includes the scrolling homepage, all nine annotation updates,
 the clearer pose, training and technique experience, the mobile app showcase,

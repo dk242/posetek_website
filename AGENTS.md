@@ -48,13 +48,7 @@ default to a sibling `../PoseTek-mobile-app` checkout, and `RULES_PATH` /
 `deployment/*.json`, including the composed `whole-body-firestore.rules`
 (deleted), are historical records of past publishes, not instructions.
 
-Current production was rechecked September 25: `6ab5e409d3ca5da40c5c01d2`, published
-September 24 at 8:04:50 PM PDT, matches the 899-entry application baseline. The
-player/coach candidate remains unpublished on `codex/player-coach-experience`;
-read `docs/PLAYER_COACH_EXPERIENCE.md` and `docs/COACH_WORKFLOW.md`. Personal workout
-capabilities stay disabled pending paired gateway/rules/native acceptance. The
-backend repository now redirects to `https://github.com/posetek/posetek-backend`;
-its canonical service directory and release command above are unchanged.
+Current production is `6ab723a4b245cdd9426dc47a` with 957 protected application/public entries. Player/coach updates and manual/AI personal workouts are live. Read `deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json`, `docs/PLAYER_COACH_EXPERIENCE.md` and `docs/COACH_WORKFLOW.md`. Native UI remains a separate uncompiled/unreleased candidate; the user authorized the web release independently. Preserve the whole-body acceptance hold. Backend now redirects to `https://github.com/posetek/posetek-backend`; canonical publishing commands above remain binding.
 
 The prior filming-reference production release is `6ab25ae36de88d184cc9b2e1`, published
 September 22, 2026 at 3:48:45 AM PDT. All 80 new drills have 81 external demo

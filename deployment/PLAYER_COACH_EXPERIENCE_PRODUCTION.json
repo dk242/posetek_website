@@ -1,0 +1,108 @@
+{
+  "release": "Player and coach experience with personal workouts",
+  "status": "published",
+  "website": {
+    "deployId": "6ab723a4b245cdd9426dc47a",
+    "url": "https://posetek.net",
+    "publishedAt": "2026-09-26T02:11:19.941Z",
+    "sourceCommit": "587c5b5",
+    "artifactFilesVerified": 989,
+    "protectedFiles": 957,
+    "applicationSha1": "504fe1b0fe49be8a28a1814b1e02dae3f54d35c9",
+    "marketingPreserved": true,
+    "previousDeploy": "6ab5e409d3ca5da40c5c01d2"
+  },
+  "gateway": {
+    "revision": "agent-gateway-sha-2f0b076f9b92",
+    "sourceCommit": "2f0b076f9b92d7eaa498de5d50bf5c6202ae8dfb",
+    "cloudBuild": "8b97176e-6407-4f3c-942d-bd59d9525d95",
+    "trafficPercent": 100,
+    "imageDigest": "sha256:1eac1267e3c1bfa48430be2c897e41de90655028575a24ab66bac094b9a16b04",
+    "testsPassed": 1827,
+    "releaseCommand": "Services/agent-gateway/scripts/release.sh --shift",
+    "aiFix": "Personal draft tool schema requires focusDomains, budgetMinutes, title and intent."
+  },
+  "rules": {
+    "sourceRepository": "posetek/posetek-mobile-app",
+    "sourceCommit": "46cfeb4",
+    "firestoreSha256": "19575e5cf2be607e848d4259325af91500f45c1549ddb4f7ed1e7975cec4730b",
+    "storageSha256": "1da8799ec5f785c1a43330342f895fef76774622b32bbf48853b45bc3e4bf3eb",
+    "firestoreRuleset": "dfc3d798-1760-4777-8e16-8291b8bbd950",
+    "storageRuleset": "ed88f190-d3aa-4dbd-9114-4c49bccfaeba",
+    "publisher": "firebase/operations.py publish",
+    "emulatorTestsPassed": 1051,
+    "deployedChecksPassed": 55,
+    "identityAuditUnresolved": 0
+  },
+  "reporting": {
+    "functions": [
+      "getClubInsightsV2",
+      "recordInsightUsage",
+      "projectInsightPlayer",
+      "projectInsightRecords",
+      "projectInsightRevisions",
+      "projectInsightFailures",
+      "projectInsightArtifacts",
+      "projectInsightArtifactDeletes"
+    ],
+    "sourceSha256": "a40711eaf6fe7f9c58e432edd03254035f13f569879944faaa69255e8d4a25d8",
+    "unrelatedFunctionsPreserved": true
+  },
+  "personalWorkouts": {
+    "enabled": true,
+    "capabilities": {
+      "save_personal_workout": 100,
+      "generate_personal_workout": 15,
+      "start_personal_workout": 50,
+      "update_personal_workout_log": 1000
+    },
+    "sharedAiAdjustmentAllowance": 15,
+    "manualChecks": [
+      "create",
+      "idempotent replay",
+      "edit",
+      "start",
+      "partial progress",
+      "stale revision denied",
+      "early ending",
+      "coach read",
+      "stranger denied",
+      "direct write denied",
+      "assigned records unchanged"
+    ],
+    "aiChecks": [
+      "live AI generation",
+      "unsaved proposal",
+      "athlete proposal read",
+      "coach proposal denied",
+      "explicit save"
+    ],
+    "coachChecks": [
+      "canonical context exposes assigned player only",
+      "coach reads personal progress",
+      "revoked coach denied",
+      "membership restored"
+    ],
+    "verificationAccountsRemoved": true
+  },
+  "validation": {
+    "websiteTestsPassed": 1122,
+    "websiteTestFiles": 94,
+    "typeScript": "passed",
+    "releaseTestsPassed": 28,
+    "browser": "Authenticated draft and production checks using temporary synthetic accounts; mobile-width player creation, coach roster/history and planner handoff.",
+    "physicalPhoneLock": "not tested on a physical device",
+    "nativeUi": "Candidate bc492aa remains uncompiled/unreleased; submitted App Store build unchanged."
+  },
+  "preserved": {
+    "wholeBodyMobileVerified": false,
+    "unpublishedWholeBodyDrafts": 80,
+    "realAthleteRecords": "No real athlete training, invitation or account records changed by verification."
+  },
+  "rollback": {
+    "website": "Restore previous Netlify deployment 6ab5e409d3ca5da40c5c01d2.",
+    "feature": "Set only config/llm.personalWorkoutsEnabled false with update-time precondition; retain personal records.",
+    "gateway": "Use canonical release.sh --shift-only with a reviewed prior revision; previous stable pre-release revision agent-gateway-sha-eed9d23c19b8.",
+    "rules": "Use canonical operations.py with reviewed baseline and audit; never deploy website rules."
+  }
+}

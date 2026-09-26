@@ -1,9 +1,8 @@
-# Player and coach experience candidate
+# Player and coach experience
 
-September 25, 2026. Source implementation and review handoff; **not deployed**.
-The new personal-workout capabilities remain disabled in production. No athlete
-plans, coach accounts, invitations, training approvals or production settings were
-changed for this work.
+Published September 25, 2026. Manual/AI personal creation, tracking, coach history and scoped reporting are live. See [the verified production receipt](../deployment/PLAYER_COACH_EXPERIENCE_PRODUCTION.json). Temporary synthetic verification accounts and records were removed. No real athlete plans, invitations or content approvals were changed.
+
+The user explicitly requested personal creation live and authorized deployment independently of native UI acceptance. Native candidate `bc492aa` remains uncompiled/unreleased; the submitted App Store build is unchanged. The separate whole-body mobile acceptance gate remains false.
 
 ## Confirmed product decisions
 
@@ -30,11 +29,12 @@ draft review, activation and progress review. Current canonical organization
 membership and the player's organization/team fields determine coach access;
 historical coach mirrors do not override a migrated roster.
 
-| Component | Candidate source |
+| Component | Release source |
 | --- | --- |
-| Website player, coach and reporting UI | `posetek/posetek_website`, `codex/player-coach-experience` |
-| Job validation, personal workouts, AI, shared workload | `posetek/posetek-backend`, `codex/personal-workouts-experience`, `Services/agent-gateway/` |
-| Native follow-up and canonical access rules | `posetek/posetek-mobile-app`, `personal-workouts-experience` |
+| Website player, coach and reporting UI | `posetek/posetek_website`, main `587c5b5` |
+| Job validation, personal workouts, AI, shared workload | `posetek/posetek-backend`, main `2f0b076`, `Services/agent-gateway/` |
+| Published canonical access rules | `posetek/posetek-mobile-app`, main `46cfeb4`, `firebase/` |
+| Unreleased native UI follow-up | `posetek/posetek-mobile-app`, `personal-workouts-experience`, `bc492aa` |
 
 The former `Athelytics/python-video-processor` repository redirects to
 `posetek/posetek-backend` (confirmed by GitHub during the candidate push).
@@ -164,31 +164,15 @@ Its eleven UTF-8 sources and benchmark data match after LF normalization; Window
 checkout line endings no longer produce a false contract change. The receipt
 does not certify the new native personal-workout UI or Xcode compilation.
 
-Required release sequence:
+## Confirmed production release
 
-1. Review the paired source branches and rerun their recorded checks. Build the
-   native candidate through the owned primary Mac checkout and complete physical
-   iPhone acceptance; preserve the submitted App Store build.
-2. Publish canonical rules only through `python firebase/operations.py publish`,
-   with its current reviewed live snapshot, identity audit and exact test receipt.
-   Coordinate the rules main merge/push with publication to preserve the drift
-   monitor. Never deploy rules from this website.
-3. Release the gateway from pushed backend main using
-   `Services/agent-gateway/scripts/release.sh`, and publish the changed Insights
-   functions through their existing scoped release workflow.
-4. Build/preview the website using `scripts/build-application-release.mjs` with
-   the verified approved marketing snapshot and the current live baseline guard.
-   Review authenticated player/coach/admin paths, including distinct teams and
-   revoked membership, without manufacturing production training as test data.
-5. Enable the personal capability group only after the shared acceptance gates
-   pass. Preserve the separate false whole-body mobile acceptance gate and all
-   80 unpublished exercise drafts.
+The exact verified draft `6ab723a4b245cdd9426dc47a` was promoted after canonical rules publication, scoped reporting verification and gateway release from pushed main. Manual create/edit/start/partial-save/early-finish, idempotency and stale-revision checks passed against production. Live AI generation produced an unsaved proposal and explicit save persisted it. An initial AI tool-schema omission was corrected in gateway main `2f0b076` and released through the canonical full-test pipeline.
 
-On September 25, the connected Netlify project and committed baseline both
-identified current release `6ab5e409d3ca5da40c5c01d2` (published September 24 at
-8:04:50 PM PDT), with 899 protected application/public entries. This candidate
-does not replace that production record. The local Netlify CLI is signed out;
-no deploy was attempted through a different publishing route.
+Authenticated browser review covered the mobile player builder and personal history, assigned-team coach dashboard, preserved prescription/outcome history, and selected-player planner handoff. Canonical coach scope and membership revocation were also checked against production. Physical-phone lock/unlock and the native candidate were not tested here. Browser timer recovery does not provide iPhone Live Activities.
+
+Final frontend validation: 94 files / 1,122 tests and TypeScript passed. Canonical rules: 1,051 emulator tests, 55 deployed checks and zero unresolved identities. Scoped Insights publication verified all eight functions and preservation of unrelated functions. The production file inventory matched the built artifact. Refer to the receipt for revisions, checksums and rollback.
+
+Future releases must retain the guarded application build, verify a draft and promote that exact deployment, then reconcile the baseline. Publish gateway only from pushed backend main through `release.sh` and rules only through native `firebase/operations.py publish`. Preserve explicit plan activation, current team scope, personal/assigned separation, and the whole-body review hold.
 
 The older September 16 marketing snapshot fails the current live-page check and
 must not be reused. Current marketing was captured from the immutable September
