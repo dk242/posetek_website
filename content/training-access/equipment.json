@@ -1,0 +1,170 @@
+[
+  {
+    "id": "ball",
+    "label": "Soccer ball",
+    "group": "Ball and field",
+    "grantsOnly": "ball"
+  },
+  {
+    "id": "cones",
+    "label": "Cones",
+    "group": "Ball and field",
+    "grantsOnly": "cones"
+  },
+  {
+    "id": "markers",
+    "label": "Flat markers",
+    "group": "Ball and field",
+    "grantsOnly": "markers"
+  },
+  {
+    "id": "wall",
+    "label": "Usable rebound wall",
+    "group": "Ball and field",
+    "grantsOnly": "wall"
+  },
+  {
+    "id": "goal",
+    "label": "Soccer goal",
+    "group": "Ball and field",
+    "grantsOnly": "goal"
+  },
+  {
+    "id": "hurdles",
+    "label": "Low hurdles",
+    "group": "Movement",
+    "grantsOnly": "hurdles"
+  },
+  {
+    "id": "box",
+    "label": "Stable exercise box",
+    "group": "Movement",
+    "grantsOnly": "box"
+  },
+  {
+    "id": "sledOrBand",
+    "label": "Sled or band for the authored drill",
+    "group": "Movement",
+    "grantsOnly": "sledOrBand"
+  },
+  {
+    "id": "timer",
+    "label": "Timer",
+    "group": "Training tools",
+    "grantsOnly": "timer"
+  },
+  {
+    "id": "bench",
+    "label": "Stable exercise bench",
+    "group": "Strength and floor",
+    "grantsOnly": "bench"
+  },
+  {
+    "id": "mat",
+    "label": "Exercise mat",
+    "group": "Strength and floor",
+    "grantsOnly": "mat"
+  },
+  {
+    "id": "kneePad",
+    "label": "Knee pad",
+    "group": "Strength and floor",
+    "grantsOnly": "kneePad"
+  },
+  {
+    "id": "tapeMeasure",
+    "label": "Tape measure",
+    "group": "Training tools",
+    "grantsOnly": "tapeMeasure"
+  },
+  {
+    "id": "cueDevice",
+    "label": "Cue device",
+    "group": "Training tools",
+    "grantsOnly": "cueDevice"
+  },
+  {
+    "id": "dumbbells",
+    "label": "Dumbbells",
+    "group": "Gym equipment",
+    "grantsOnly": "dumbbells"
+  },
+  {
+    "id": "barbell",
+    "label": "Barbell",
+    "group": "Gym equipment",
+    "grantsOnly": "barbell"
+  },
+  {
+    "id": "weightPlates",
+    "label": "Weight plates",
+    "group": "Gym equipment",
+    "grantsOnly": "weightPlates"
+  },
+  {
+    "id": "squatRack",
+    "label": "Squat rack",
+    "group": "Gym equipment",
+    "grantsOnly": "squatRack"
+  },
+  {
+    "id": "trapBar",
+    "label": "Trap bar",
+    "group": "Gym equipment",
+    "grantsOnly": "trapBar"
+  },
+  {
+    "id": "kettlebell",
+    "label": "Kettlebell",
+    "group": "Gym equipment",
+    "grantsOnly": "kettlebell"
+  },
+  {
+    "id": "cableMachine",
+    "label": "Cable machine",
+    "group": "Gym equipment",
+    "grantsOnly": "cableMachine"
+  },
+  {
+    "id": "resistanceBand",
+    "label": "Resistance band",
+    "group": "Gym equipment",
+    "grantsOnly": "resistanceBand"
+  },
+  {
+    "id": "medicineBall",
+    "label": "Medicine ball",
+    "group": "Gym equipment",
+    "grantsOnly": "medicineBall"
+  },
+  {
+    "id": "pullUpBar",
+    "label": "Pull-up bar",
+    "group": "Gym equipment",
+    "grantsOnly": "pullUpBar"
+  },
+  {
+    "id": "legCurlMachine",
+    "label": "Leg curl machine",
+    "group": "Gym equipment",
+    "grantsOnly": "legCurlMachine"
+  },
+  {
+    "id": "legPressMachine",
+    "label": "Leg press machine",
+    "group": "Gym equipment",
+    "grantsOnly": "legPressMachine"
+  },
+  {
+    "id": "jumpRope",
+    "label": "Jump rope",
+    "group": "Movement",
+    "grantsOnly": "jumpRope"
+  },
+  {
+    "id": "sliders",
+    "label": "Exercise sliders",
+    "group": "Strength and floor",
+    "grantsOnly": "sliders"
+  }
+]

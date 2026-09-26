@@ -4,6 +4,23 @@ Reviewed on September 26, 2026. This guide summarizes the available repository a
 release notes; it is not a claim that every historical discussion or private
 business document is included.
 
+## Confirmed training setup and account entry (2026-09-26 candidate)
+
+The current source adds a confirmed equipment/space/people setup before personal
+AI creation and a current-access check at personal Start/Resume. All 28 equipment
+tokens are represented across five setup tabs. A changed setup requires a revised
+AI draft before publication. Private conversations, exact proposal publication,
+assigned-workout boundaries and existing allowances remain intact.
+
+Account entry distinguishes player activation, invited coaches/organization
+admins, independent coaches and legacy organization-code signup. Privileged
+access remains server assigned; no public administrator role is introduced.
+Read [the training handoff](docs/CONFIRMED_TRAINING_ACCESS.md),
+[catalog requirements and guarded publisher](docs/TRAINING_ACCESS_CATALOG.md)
+and [account-entry workflow](docs/ACCOUNT_ENTRY_WORKFLOW.md). This section records
+the implementation decision; the release below remains the current production
+checkpoint until the new production receipt is complete.
+
 ## Conversational workouts and Community (2026-09-26)
 
 Website deployment `6ab76982d74a19707a6f9d9a`, from source

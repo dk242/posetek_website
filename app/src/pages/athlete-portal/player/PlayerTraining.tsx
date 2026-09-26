@@ -61,6 +61,10 @@ export default function PlayerTraining({ ctx, statsProfile, personal, request, o
       if (previous && navigationType === 'POP') { setPersonalOpen(true); setPersonalCreate(false); setConversationOpen(false); setSeed(''); setPersonalSource(undefined); setPersonalSelected(undefined); setPersonalHandoff(undefined); setPersonalEntry(v => v + 1); }
       return;
     }
+    // The conversation already selected by the visible hub only updates its
+    // address. Do not remount it and discard the just-confirmed session setup.
+    // Browser Back/Forward and external links still recover through the route.
+    if (personalOpen && personal.conversationId === requestedConversation && navigationType !== 'POP') return;
     setPersonalOpen(true); setConversationOpen(true); setSeed(''); setPersonalEntry(v => v + 1);
     if (personal.conversationId !== requestedConversation) void personal.openConversation(requestedConversation).catch(e => setError(e.message));
   }, [requestedConversation, personal.enabled, personal.selectionReady]);

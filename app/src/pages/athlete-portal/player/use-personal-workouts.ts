@@ -8,6 +8,7 @@ import { addPersonalDrill, eligiblePersonalDrill, ensurePersonalSubmission, late
 import type { PendingPersonalJob, PersonalCapability } from './personal-workouts';
 import { checkedPersonalConversation, checkedPersonalProposal, orderedPersonalMessages, personalProposalWithPublication, personalPublishParams, personalRefinementParams, personalTimestamp, publishedPersonalWorkoutId, readPersonalConversation, restorePersonalSelection } from './personal-workout-conversations';
 import type { PersonalSelection } from './personal-workout-conversations';
+import { confirmedSetup, setupFromIntake } from './training-access';
 
 const sampleCatalog = [
   { drillId: 'DRB-005', name: 'Cone maze', domain: 'dribbling', equipment: ['ball', 'cones'] },
@@ -244,7 +245,9 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
   const save = async (params: Row) => {
     if (preview) {
       const workoutId = params.workoutId || `sample-${crypto.randomUUID()}`, revision = Number(params.expectedRevision || 0) + 1;
-      const workout = { ...params.workout, schemaVersion: 1, source: 'personal', playerId, workoutId, revision, status: 'ready', scheduledDate: params.scheduledDate, timezone: params.timezone, intake: params.intake, sourceWorkout: params.sourceWorkout || null };
+      const origin = [...samples.current.values()].find(entry => entry.proposal.proposalId === params.proposalId);
+      const workout = { ...params.workout, schemaVersion: 1, source: 'personal', playerId, workoutId, revision, status: 'ready', scheduledDate: params.scheduledDate, timezone: params.timezone, intake: params.intake, sourceWorkout: params.sourceWorkout || null,
+        ...(origin ? { personalConversationId: origin.conversation.conversationId, personalProposalId: params.proposalId } : {}) };
       const result = accept('save_personal_workout', { workoutId, revision, workout, scheduleRevision: (current.current.scheduleRevision || 0) + 1 }); clearProposal(); return result;
     }
     const result = await perform('save_personal_workout', params); clearProposal(); return result;
@@ -338,22 +341,28 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     const token = generation.current;
     if (!personalCapabilityEnabled(config, 'start_personal_workout', preview)) throw new Error('Starting personal workouts is not enabled.');
     if (confirmation.equipmentConfirmed !== true || confirmation.painFlag !== false) throw new Error('Confirm today’s equipment and pain-free training before continuing.');
+    if (!confirmedSetup({ ...setupFromIntake(confirmation.currentAccess), confirmed: confirmation.currentAccess?.access?.confirmed === true })) throw new Error('Confirm today’s training setup before continuing.');
     let result: Row;
     if (preview) {
       const old = current.current.logs[workout.workoutId];
       if (old?.endedAt) throw new Error('This workout is finished. Customize a new copy to train again.');
+      if ((old?.workoutSnapshot || workout).blocks.some((block: Row) => {
+        const drill = sampleCatalog.find(d => d.drillId === block.drillId);
+        return !drill || !eligiblePersonalDrill(drill, confirmation.currentAccess);
+      })) throw new Error('Your current setup does not support this sample workout. Ask AI for a suitable revision or personal copy.');
       result = { log: old || { schemaVersion: 1, source: 'personal', workoutId: workout.workoutId, workoutRevision: workout.revision, workoutSnapshot: workout, revision: 1, startedAt: new Date(), endedAt: null, elapsedSeconds: 0, activeSeconds: 0, blocks: [] } };
       result = accept('start_personal_workout', result);
     } else {
-      // Resuming an immutable personal log is not a second start/reservation.
-      // Refresh its confirmed revision and elapsed baseline before opening it.
+      // Read the exact log before asking the server to recheck today's access.
+      // The resume command returns its frozen snapshot without a new reservation.
       const saved = await db.collection('players').doc(playerId).collection('personalWorkoutLogs').doc(workout.workoutId).get({ source: 'server' });
       if (generation.current !== token || auth.currentUser?.uid !== uid) throw new Error('The selected player changed. Return to Training.');
       if (saved.exists) {
         const log = saved.data()!;
         if (log.endedAt) throw new Error('This workout is finished. Customize a new copy to train again.');
-        result = accept('start_personal_workout', { log });
-      } else result = await perform('start_personal_workout', { workoutId: workout.workoutId, expectedRevision: workout.revision, expectedScheduleRevision: current.current.scheduleRevision, equipmentConfirmed: confirmation.equipmentConfirmed, painFlag: confirmation.painFlag });
+        result = await perform('start_personal_workout', { workoutId: workout.workoutId, expectedRevision: workout.revision, expectedScheduleRevision: current.current.scheduleRevision,
+          expectedLogRevision: log.revision, equipmentConfirmed: confirmation.equipmentConfirmed, painFlag: confirmation.painFlag, currentAccess: confirmation.currentAccess });
+      } else result = await perform('start_personal_workout', { workoutId: workout.workoutId, expectedRevision: workout.revision, expectedScheduleRevision: current.current.scheduleRevision, equipmentConfirmed: confirmation.equipmentConfirmed, painFlag: confirmation.painFlag, currentAccess: confirmation.currentAccess });
     }
     return personalExecution(workout, result.log);
   };
@@ -374,7 +383,7 @@ export function usePersonalWorkouts(playerId: string, preview: boolean, config: 
     finish: async (id, reason, seconds) => { try { await updateLog(id, adapter.logFor(id)?.blocks || [], seconds, reason); } catch (e: any) { setError(e.message); throw e; } },
     beginWorkout: () => {}, updateBlock: () => {}, removeBlock: () => {}, endWorkout: () => {}, noteWorkout: () => {},
   };
-  return { enabled, workouts, logs, catalog, scheduleRevision, loaded, saving, error, status, pending, proposal, lastResult, clearProposal, save, start, adapter,
+  return { ownerUid: uid, enabled, workouts, logs, catalog, scheduleRevision, loaded, saving, error, status, pending, proposal, lastResult, clearProposal, save, start, adapter,
     conversations, conversationsLoaded, conversationId, conversation, messages, conversationLoading, selectionReady, openConversation, openProposal, newConversation, refine, publish,
     consumeResult: () => setLastResult(null),
     generate,

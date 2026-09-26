@@ -1,0 +1,22 @@
+.staff-activation {
+  .portal-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  .club-signup { max-width: 600px; }
+  h1 { text-wrap: balance; }
+  .activation-steps { display: grid; gap: 10px; padding-left: 24px; color: #d8e8de; margin: 24px 0; }
+  .activation-steps li::marker { color: #c5f16c; font-weight: 700; }
+  .activation-help { font-size: 13px; margin-top: -4px; }
+  .primary-cta, .quiet-button, .club-inline-link { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .primary-cta { white-space: normal; text-align: center; }
+  .activation-actions { display: flex; gap: 4px 12px; flex-wrap: wrap; margin-top: 12px; }
+  form > .quiet-button { margin: 10px 0 0 12px; }
+  .activation-existing h2 { margin-bottom: 8px; }
+  .activation-existing p { margin-bottom: 12px; }
+  .activation-footer { margin-top: 24px; }
+  button, input, select, a { touch-action: manipulation; }
+  :is(button, a, input, select):focus-visible { outline: 2px solid #c5f16c; outline-offset: 4px; }
+  @media (max-width: 480px) {
+    .primary-cta { width: 100%; }
+    form > .quiet-button { margin-left: 0; }
+    .portal-header { padding-inline: 18px; }
+  }
+}

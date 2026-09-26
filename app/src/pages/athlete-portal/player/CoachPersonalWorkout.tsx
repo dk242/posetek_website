@@ -33,7 +33,7 @@ export default function CoachPersonalWorkout({ playerId, athlete, preview, store
     if (active && originLoaded && !link && !ready && !store.saving && !store.conversationLoading) { store.newConversation(); setReady(true); }
   }, [active, originLoaded, link, ready, store.saving, store.conversationLoading]);
   const review = (p: Row) => onReview({ ...request, destination: 'personal_workout', conversationId: p.conversationId, proposalId: p.proposalId });
-  if (link) return <section className="personal-coach-preview">{error && <p role="alert">{error}</p>}{proposal ? <><p className="eyebrow">Workout ready to review</p><PersonalPrescription proposal={proposal} /></> : !error && <p role="status">Loading your workout…</p>}<button className="primary-cta" onClick={() => review(link)}>Review in Training</button></section>;
+  if (link) return <section className="personal-coach-preview">{error && <p role="alert">{error}</p>}{proposal ? <><p className="eyebrow">Workout ready to review</p><PersonalPrescription proposal={proposal} catalog={store.catalog} /></> : !error && <p role="status">Loading your workout…</p>}<button className="primary-cta" onClick={() => review(link)}>Review in Training</button></section>;
   if (!active) return <button className="hub-secondary" onClick={() => onReview(request)}>Continue workout request in Training</button>;
   if (!ready) return <p role="status">Preparing your workout conversation…</p>;
   return <PersonalWorkoutHub store={store} playerId={playerId} athlete={athlete} preview={preview} config={config} initialCreate initialRequest={request.request} initialHandoff={request} coachOnly onReview={review} onBack={() => {}} />;

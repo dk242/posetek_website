@@ -50,6 +50,8 @@ export interface CatalogDrill {
   mediaPublishedAt?: unknown;
   productionBatchId?: string;
   trainingPolicy?: Record<string, unknown>;
+  /** Additive, source-bound personal-workout resource requirements. Server checks remain authoritative. */
+  accessRequirements?: Record<string, any>;
 }
 
 // MARK: - Legacy domain mapping (§2)
@@ -211,6 +213,7 @@ export function normalizeCatalogDrill(id: string, raw: any): CatalogDrill {
     mediaPublishedAt: raw?.mediaPublishedAt,
     productionBatchId: typeof raw?.productionBatchId === "string" ? raw.productionBatchId : undefined,
     trainingPolicy: raw?.trainingPolicy && typeof raw.trainingPolicy === "object" ? raw.trainingPolicy : undefined,
+    ...(raw?.accessRequirements && typeof raw.accessRequirements === 'object' ? { accessRequirements: raw.accessRequirements } : {}),
   };
 }
 

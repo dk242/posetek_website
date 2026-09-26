@@ -166,6 +166,10 @@ const RETURN_TO_ALLOWED_PATHS = new Set([
   "/drills/broad-jump",
   "/drills/change-of-direction",
   "/drills/dribbling",
+  "/join",
+  "/organization",
+  "/programs",
+  "/insights",
 ]);
 
 export function getSafeReturnToUrl(
@@ -179,7 +183,7 @@ export function getSafeReturnToUrl(
     const target = new URL(raw, baseHref);
     const fileName = target.pathname.split("/").pop() ?? "";
     const allowed = RETURN_TO_ALLOWED.has(fileName) || RETURN_TO_ALLOWED_PATHS.has(target.pathname);
-    return target.origin === origin && allowed ? target.href : null;
+    return target.origin === origin && !target.username && !target.password && allowed ? target.href : null;
   } catch {
     return null;
   }
