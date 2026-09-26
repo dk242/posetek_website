@@ -122,6 +122,8 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
   const entry = await readFile(join(dist, "index.html"), "utf8");
   if (!entry.includes('id="root"') || !entry.includes('type="module"') || entry.includes("/src/") || !entry.includes("/assets/")) throw new Error("Fresh compiled application entry required");
   const before = new Map();
+  const reviewedBooking = baseline.files.some(file => file.path.toLowerCase() === "/bookperformancetest.html")
+    ? await readFile(join(root, "bookPerformanceTest.html")) : null;
   for (const file of baseline.files) {
     const key = file.path.toLowerCase(), existing = before.get(key);
     if (existing) {
@@ -129,7 +131,9 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
       continue;
     }
     const bytes = await readFile(join(output, file.path.slice(1)));
-    if (sha(bytes) !== file.sha || bytes.length !== file.size) throw new Error("Baseline not verified: " + file.path);
+    if (file.path.toLowerCase() === "/bookperformancetest.html") {
+      if (!reviewedBooking || sha(bytes) !== sha(reviewedBooking)) throw new Error("Reviewed testing enquiry not installed: " + file.path);
+    } else if (sha(bytes) !== file.sha || bytes.length !== file.size) throw new Error("Baseline not verified: " + file.path);
     before.set(key, { ...file, bytes });
   }
   const added = [], newAssets = new Map();
@@ -165,7 +169,8 @@ export async function composeApplicationRelease(root, { marketingDeploymentId } 
   }
   if (sha(await readFile(join(output, "index.html"))) !== sha(homepage)) throw new Error("Homepage changed during application composition");
   if (sha(await readFile(join(output, "coaches/index.html"))) !== sha(coaches)) throw new Error("Coaches page changed during application composition");
-  const receipt = { baselineDeploymentId: baseline.deploymentId, ...(marketingDeploymentId ? { marketingDeploymentId } : {}), homepageSha: sha(homepage), coachesSha: sha(coaches), preservedFiles: before.size - 1,
+  const receipt = { baselineDeploymentId: baseline.deploymentId, ...(marketingDeploymentId ? { marketingDeploymentId } : {}), homepageSha: sha(homepage), coachesSha: sha(coaches), preservedFiles: before.size - 1 - (reviewedBooking ? 1 : 0),
+    ...(reviewedBooking ? { reviewedReplacements: [{ path: "/bookperformancetest.html", sha: sha(reviewedBooking), size: reviewedBooking.length }] } : {}),
     application: { path: "/application.html", sha: sha(application), size: Buffer.byteLength(application) }, added };
   await mkdir(join(root, ".netlify"), { recursive: true });
   await writeFile(join(root, ".netlify/application-release-build.json"), JSON.stringify(receipt, null, 2) + "\n");

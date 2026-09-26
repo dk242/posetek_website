@@ -36,6 +36,7 @@ import {
   joinOrganization,
   redeemPlayerSignupCode,
 } from "./signup-data";
+import { finishIndependentCoachSignup } from "./independent-coach-signup";
 import "./landing.scss";
 
 export default function LandingPage() {
@@ -217,7 +218,9 @@ export default function LandingPage() {
     const dialog = coachOrgOpen ? coachOrgDialogRef.current : forgotOpen ? forgotDialogRef.current : null;
     if (!dialog) return;
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const frame = window.requestAnimationFrame(() => dialog.focus());
+    // The signup dialog's cleanup restores its opener when the nested setup
+    // opens. Move focus after that restoration and the overlay transition.
+    const focusTimer = window.setTimeout(() => dialog.focus(), 80);
     const trap = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
       const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), [tabindex="0"]')).filter(el => el.getClientRects().length > 0);
@@ -227,7 +230,7 @@ export default function LandingPage() {
       else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog || !dialog.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
     };
     document.addEventListener("keydown", trap);
-    return () => { window.cancelAnimationFrame(frame); document.removeEventListener("keydown", trap); previous?.focus(); };
+    return () => { window.clearTimeout(focusTimer); document.removeEventListener("keydown", trap); previous?.focus(); };
   }, [forgotOpen, coachOrgOpen]);
 
   // legacy showModal(loginModal)
@@ -574,11 +577,13 @@ export default function LandingPage() {
       const user: any = auth.currentUser?.email?.toLowerCase() === email.toLowerCase()
         ? auth.currentUser : (await auth.createUserWithEmailAndPassword(email, password)).user;
       if (!user) throw new Error("Your account could not be created. Please try again.");
-      sessionStorage.setItem("posetek-independent-signup", JSON.stringify({ uid: user.uid, email, firstName: firstNameVal, lastName: lastNameVal }));
-      await createCoachDocument(user.uid, email, firstNameVal, lastNameVal);
-      if (auth.currentUser?.uid !== user.uid) throw new Error("Sign in with the original account to finish signup.");
-      sessionStorage.removeItem("posetek-independent-signup");
-      try { await user.sendEmailVerification(); } catch { /* Resend after sign-in. */ }
+      await finishIndependentCoachSignup({ uid: user.uid, email, firstName: firstNameVal, lastName: lastNameVal }, {
+        currentUid: () => auth.currentUser?.uid,
+        remember: intent => sessionStorage.setItem("posetek-independent-signup", JSON.stringify(intent)),
+        writeProfile: intent => createCoachDocument(intent.uid, intent.email, intent.firstName, intent.lastName),
+        clear: () => sessionStorage.removeItem("posetek-independent-signup"),
+        verify: () => user.sendEmailVerification(),
+      });
       navigate(coachHomeRoute()); // legacy: coachesview.html?userType=coach
     } catch (error: any) {
       console.error("Signup error:", error);

@@ -10,13 +10,16 @@ test('marketing preview keeps coaches routes separate and serves seekable drill 
   const directory = await mkdtemp(join(resolve(tmpdir()), 'posetek-marketing-preview-'));
   const marketingRoot = join(directory, 'marketing'), referenceRoot = join(directory, 'reference');
   const put = async (file, value) => { const target = join(directory, file); await mkdir(dirname(target), { recursive: true }); await writeFile(target, value); };
-  const server = createHomepagePreviewServer({ marketingRoot, referenceRoot });
+  const sourceRoot = join(directory, 'source');
+  const server = createHomepagePreviewServer({ marketingRoot, referenceRoot, sourceRoot });
   try {
     await put('marketing/index.html', 'Players entry');
     await put('marketing/coaches/index.html', 'Coaches entry');
     await put('marketing/assets/drill.mp4', Buffer.from('0123456789'));
     await put('reference/application.html', 'Preserved application');
     await put('reference/marketing/home-navigation.js', 'Preserved navigation bridge');
+    await put('source/bookPerformanceTest.html', 'Current testing enquiry');
+    await put('reference/bookPerformanceTest.html', 'Retired checkout');
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
     const base = 'http://127.0.0.1:' + server.address().port;
@@ -25,6 +28,9 @@ test('marketing preview keeps coaches routes separate and serves seekable drill 
       ['/coaches', 'Coaches entry'], ['/coaches/', 'Coaches entry'], ['/coaches/index.html', 'Coaches entry'],
       ['/admin/organizations', 'Preserved application'], ['/signin', 'Preserved application'],
       ['/marketing/home-navigation.js', 'Preserved navigation bridge'],
+      ['/bookPerformanceTest.html', 'Current testing enquiry'],
+      ['/bookperformancetest.html', 'Current testing enquiry'],
+      ['/bookperformancetest', 'Current testing enquiry'],
     ]) {
       const response = await fetch(base + route);
       assert.equal(response.status, 200, route);
