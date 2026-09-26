@@ -1,0 +1,7 @@
+# Coach reliability candidate — September 26, 2026
+
+This isolated website branch retires the legacy schema 1/2 week editor. Existing prescriptions remain readable in the coach dashboard, with a clear Prescribe / review plan action. The paired gateway branch `codex/gateway-coach-validation-20260926` rejects every `save_plan_weeks` job with `capability_disabled`, including already queued jobs, because old week payloads have no reliable catalog eligibility, dosage, or revision contract. This prevents newly prescribing held catalog drills and stale whole-plan overwrites without changing historical data. The gateway must be released before the website to close the old deployed client's write path; neither branch has been deployed.
+
+Roster loads now apply only if their request generation and signed-in UID still match. Loading and error clear old rows and actions; search filters a successfully loaded roster only. Club roster URLs retain `orgId` and `teamId` through team selection, dashboard and athlete navigation. Coach progress switches use labelled pressed-button semantics. Dormant drill and dose dialogs have accessible names and the drill filter uses button-group semantics.
+
+This branch does not add a new legacy editor or expose schema 3 adjustment controls. Review-plan generation keeps its existing explicit draft/review flow. The current implementation still loads full athlete history before first coach overview; a lightweight overview and lazy history need a separate data contract and were not claimed here.

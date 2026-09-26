@@ -137,13 +137,7 @@ export default function CoachDashboardPage() {
           {context?.limited && <p role="status" className="coachdash-notice">The roster service reached its limit. Team totals may be incomplete; contact PoseTek to review coverage.</p>}
           {selected ? <AthleteDetail key={selected.athlete.id} summary={selected} job={null} preview={preview}
             onBack={() => selectAthlete(null)} onCreatePlan={() => prescribe([selected.athlete.id])}
-            onPlanChanged={() => reloadAthlete(selected.athlete.id)} onPreviewEdit={(planId, weeks) => {
-              setLoads(previous => {
-                const state = previous[selected.athlete.id]; if (state?.kind !== 'ready') return previous;
-                return { ...previous, [selected.athlete.id]: { kind: 'ready', bundle: { ...state.bundle,
-                  plans: state.bundle.plans.map(plan => plan.id === planId ? { ...plan, weeks } : plan) } } };
-              });
-            }} />
+            />
             : selectedPlayer ? <section className="error-card"><button className="quiet-button" onClick={() => selectAthlete(null)}>Back to team</button>
               <h1>{selectedPlayer.firstName} {selectedPlayer.lastName}</h1><p role="status">{unavailable?.kind === 'error' ? unavailable.message : 'Loading player history…'}</p>
               <button className="quiet-button" disabled={unavailable?.kind === 'loading'} onClick={() => void reloadAthlete(selectedPlayer.id)}>Retry player history</button></section>

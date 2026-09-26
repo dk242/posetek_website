@@ -9,7 +9,7 @@ import { parseProvisionalEstimates, type ProvisionalEstimate } from "../../../li
 import { selectedTeam } from "../../../lib/organization";
 import type { ClubTeam } from "../../../lib/organization";
 import { readAccessibleLegacyRoster } from "../../../lib/legacy-roster";
-import { auth, cloud, db } from "../../../lib/firebase";
+import { cloud, db } from "../../../lib/firebase";
 import { findCoach as findCoachByUid } from "../../../lib/identity";
 import { allStatsReps, normalizeRep, accepted } from "../../athlete-portal/lib/metrics";
 import { DRILLS } from "../../athlete-portal/lib/drills";
@@ -110,37 +110,6 @@ export async function loadDrillCatalog(): Promise<any[]> {
   const snapshot = await db.collection("drillCatalog").get();
   catalogCache = snapshot.docs.map(doc => ({ id: doc.id, drillId: doc.id, ...doc.data() }));
   return catalogCache;
-}
-
-// MARK: - Plan writes
-
-export const PLAN_WEEKS_TIMEOUT_MS = 60000;
-
-// Replaces an edited weeks array on an older (schemaVersion 1/2) plan through the
-// gateway's deterministic `save_plan_weeks` job. The browser no longer writes
-// `trainingPlans`: the rules cutover closes that path (gateway consolidation plan
-// §4.6). The gateway re-checks that the signed-in user is the athlete's coach,
-// refuses a v3 plan — whose workouts are edited one at a time in the admin
-// console's workout editor, with the required `planAdjustments` record — and
-// stamps `coachAdjustedAt` / `coachAdjustedByUid` itself, in one transaction.
-export async function savePlanWeeks(playerId: string, planId: string, weeks: any[]): Promise<void> {
-  if (!auth.currentUser?.uid) throw new Error("You are signed out. Sign in again to save.");
-  const ref = await submitLlmJob(playerId, "save_plan_weeks", { planId, weeks });
-  await new Promise<void>((resolve, reject) => {
-    let stop = () => {};
-    const timeout = setTimeout(() => {
-      stop();
-      reject(new Error("The save is still processing. Reload the plan before editing again; the server job continues."));
-    }, PLAN_WEEKS_TIMEOUT_MS);
-    stop = ref.onSnapshot((snapshot: any) => {
-      const job = snapshot.data() || {};
-      if (job.status === "complete") { clearTimeout(timeout); stop(); resolve(); }
-      else if (job.status === "failed") {
-        clearTimeout(timeout); stop();
-        reject(new Error(job.error?.detail || job.error?.message || "The change could not be saved."));
-      }
-    }, (error: Error) => { clearTimeout(timeout); stop(); reject(error); });
-  });
 }
 
 // MARK: - Plan generation jobs
