@@ -1,0 +1,19 @@
+# Protected application guard: CRLF recovery — September 26, 2026
+
+This isolated branch fixes the clean-checkout production build failure without changing a protected page, the 1,078-file manifest, the pinned deployment, or the release approval boundary.
+
+## Exact discrepancy
+
+`deployment/homepage-baseline.json` pins `/drillcreation.html` and its duplicate `/drillcreation 2.html` to SHA-1 `1aea46bb035974a1adf4a90bb8c789126d656631`, 36,092 bytes. The tracked `drillcreation.html` checks out on this Mac as 35,175 bytes, SHA-1 `ae35c4489fe37249044d749e1ccb6ded496c4e3e`, with 917 LF endings. Converting those 917 endings to CRLF adds exactly 917 bytes and reproduces the pinned hash and size exactly.
+
+The pinned deployed URL serves 36,088 bytes, SHA-1 `4b51adb5329e4c902660d449e61a7842333e6b50`, because Netlify pretty-URL processing changes the page's `href="sessions.html"` to `href='/sessions'` (including quote changes). The served response is therefore not the original protected file. The previous builder could normalize CRLF to LF but could not reconstruct the original CRLF when Git checked the source out as LF, so the fallback download failed its checksum. The earlier AI incidents production receipt recorded this same cache-seeding workaround for 23 legacy pages and noted automatic Linux builds still failed.
+
+## Narrow correction and verification
+
+`scripts/build-production.mjs` now tries the local bytes, LF-normalized bytes, and CRLF-normalized bytes for a declared local source or exact-hash alias. A candidate is accepted only when **both** size and SHA-1 match that manifest entry. A source with different content still fails. The live application drift check, overlap guard, downloaded-file checksum, and final verification of every preserved output file remain unchanged.
+
+The new fixture test covers both drill aliases with an LF checkout and a rewritten served response, and proves a different local source still fails. The full `node scripts/build-production.mjs` run verified all **1,078** protected files from deployment `6ab788d1c138322f8f9b9911`. `node scripts/test-production-entry.cjs --http-only` independently verified all 1,078 output files, 25 application routes, three Coaches routes, and 920 assets. The 12 production-baseline integration tests passed. Browser and authenticated workflow checks were not performed by this guard-only task.
+
+## Release effect
+
+Once this branch is integrated, a clean checkout can reconstruct the pinned original HTML for these legacy pages without manual cache seeding. Other feature branches still require their own production assembly, preservation check, review, and authorized deployment; this branch deploys nothing and does not update the recorded production baseline. If the live application entry changes before a future build, the drift guard continues to stop the build until a deliberate baseline reconciliation.

@@ -65,17 +65,20 @@ await Promise.all(Array.from({ length: 6 }, async () => {
     let bytes;
     try { bytes = await readFile(cached); } catch { /* First release downloads the pinned deploy. */ }
     // Netlify pretty-URL processing rewrites served HTML. Prefer matching
-    // original source bytes, allowing only Git's Windows line-ending conversion.
+    // original source bytes. Git can check out either LF or CRLF; accept a
+    // converted source only when both its size and SHA-1 match this pin.
     const localPath = file.localPath || localSources.get(`${file.sha}:${file.size}`);
-    if ((!bytes || hash(bytes) !== file.sha) && localPath) {
+    if ((!bytes || bytes.length !== file.size || hash(bytes) !== file.sha) && localPath) {
       try {
         const local = await readFile(contained(root, "/" + localPath));
-        const normalized = Buffer.from(local.toString("utf8").replace(/\r\n/g, "\n"));
-        if (hash(local) === file.sha) bytes = local;
-        else if (hash(normalized) === file.sha) bytes = normalized;
+        const lf = Buffer.from(local.toString("utf8").replace(/\r\n/g, "\n"));
+        const crlf = Buffer.from(lf.toString("utf8").replace(/\n/g, "\r\n"));
+        for (const candidate of [local, lf, crlf]) {
+          if (candidate.length === file.size && hash(candidate) === file.sha) { bytes = candidate; break; }
+        }
       } catch { /* Download when the original source is unavailable. */ }
     }
-    if (!bytes || hash(bytes) !== file.sha) {
+    if (!bytes || bytes.length !== file.size || hash(bytes) !== file.sha) {
       const response = await fetch(new URL(file.path, manifest.url), { signal: AbortSignal.timeout(60000) });
       if (!response.ok) throw new Error(`Baseline download failed: ${file.path} (${response.status})`);
       bytes = Buffer.from(await response.arrayBuffer());
