@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../lib/firebase";
 import { callSocial } from "./api";
 import { formatMeasurement, mergeActivities, initials, formatDate } from "./model";
+import PlayerShell, { playerTabPath } from "../athlete-portal/player/PlayerShell";
+import { communityPanel, communityPanelPath, communityPersonPath } from "./navigation";
 import "./feed.css";
 import "../../styles/pose-portal.css";
 import "./feed-cascade.css";
@@ -183,12 +185,16 @@ function FeedPage() {
   let [status, setStatus] = React.useState(preview ? `ready` : `loading`);
   let [error, setError] = React.useState(``);
   let [scope, setScope] = React.useState(`all`);
-  let [panel, setPanel] = React.useState(linkedPlayer ? `people` : `feed`);
+  let requestedPanel = communityPanel(location.search);
+  let panel = requestedPanel === `moderation` && !context?.admin ? `feed` : requestedPanel;
+  let setPanel = next => navigate(communityPanelPath(location.pathname, location.search, next));
   let [activities, setActivities] = React.useState(preview ? sampleActivities : []);
   let [cursor, setCursor] = React.useState(null);
   let [loading, setLoading] = React.useState(false);
   let authRequest = React.useRef(0);
   let feedRequest = React.useRef(0);
+  let authReturnTo = React.useRef(location.pathname + location.search);
+  authReturnTo.current = location.pathname + location.search;
   React.useEffect(() => {
     document.title = `Community | PoseTek`;
   }, []);
@@ -206,7 +212,7 @@ function FeedPage() {
       setError(``);
       setStatus(`loading`);
       if (!r) {
-        navigate(`/signin?returnTo=` + encodeURIComponent(location.pathname + location.search), {
+        navigate(`/signin?returnTo=` + encodeURIComponent(authReturnTo.current), {
           replace: true
         });
         return;
@@ -237,8 +243,7 @@ function FeedPage() {
     organizationId,
     viewAsPlayerId,
     navigate,
-    location.pathname,
-    location.search
+    location.pathname
   ]); /* oxlint-enable react/set-state-in-effect */
   /* oxlint-enable react-hooks/exhaustive-deps */
   let loadFeed = React.useCallback(async (e = null) => {
@@ -298,9 +303,11 @@ function FeedPage() {
     };
   }, [context, loadFeed]); /* oxlint-enable react/set-state-in-effect */
   /* oxlint-enable react-hooks/exhaustive-deps */
-  let feedUrl = `/feed` + (location.search || ``);
-  let athleteUrl = e => athletePreview ? feedUrl : `/athlete?view=${e}${preview ? `&preview=1` : ``}`;
+  let feedUrl = location.pathname + (location.search || ``);
+  let athleteUrl = e => athletePreview ? feedUrl : playerTabPath(e, location.search, location.pathname);
   let staffOnly = !!context && (context.staff || context.admin) && !context.playerId;
+  let sharedPlayerShell = !athletePreview && !staffOnly;
+  let Content = sharedPlayerShell ? `section` : `main`;
   let tabs = staffOnly ? [
     [
       feedUrl,
@@ -344,8 +351,8 @@ function FeedPage() {
       `You`
     ]
   ];
-  return <div className={`pt-pose social-app`}>
-    <header className={`social-header`}>
+  let content = <div className={sharedPlayerShell ? `social-app social-embedded` : `pt-pose social-app`}>
+    {!sharedPlayerShell && <header className={`social-header`}>
       <Link className={`social-brand`} to={feedUrl}>
         {`POSETEK`}
         <span>
@@ -366,9 +373,9 @@ function FeedPage() {
           {initials(context?.name || `You`)}
         </Link>
       </div>
-    </header>
+    </header>}
     <div className={`social-layout`}>
-      <aside className={`social-sidebar`}>
+      {!sharedPlayerShell && <aside className={`social-sidebar`}>
         <div className={`social-club-mark`}>
           <Icon name={`sports_soccer`} />
         </div>
@@ -414,14 +421,19 @@ function FeedPage() {
         {!preview && <button className={`social-signout`} onClick={() => void auth.signOut()}>
           {`Sign out`}
         </button>}
-      </aside>
-      <main className={`social-main`}>
+      </aside>}
+      <Content className={`social-main`}>
+        {sharedPlayerShell && <nav className="social-toolbar" aria-label="Community sections">
+          <button aria-current={panel === `feed` ? `page` : undefined} onClick={() => setPanel(`feed`)}><Icon name="dynamic_feed" /><span>Activity</span></button>
+          <button aria-current={panel === `people` ? `page` : undefined} onClick={() => setPanel(`people`)}><Icon name="person_add" /><span>Find people</span></button>
+          <button aria-current={panel === `settings` ? `page` : undefined} onClick={() => setPanel(`settings`)}><Icon name="tune" /><span>Sharing settings</span></button>
+          {context?.admin && <button aria-current={panel === `moderation` ? `page` : undefined} onClick={() => setPanel(`moderation`)}><Icon name="flag" /><span>Reports</span></button>}
+        </nav>}
         {context?.adminViewer && <AdminDirectory organizationId={context.organizationId || ``} selectedPlayer={viewAsPlayerId || ``} onSwitch={() => {
           ++feedRequest.current;
           setActivities([]);
           setCursor(null);
           setScope(`all`);
-          setPanel(`feed`);
         }} />}
         {athletePreview && <p className={`social-notice`} role={`status`}>
           {`Read-only athlete preview · `}
@@ -464,7 +476,7 @@ function FeedPage() {
                 <Icon name={`refresh`} />
               </button>
             </div>
-            <div className={`social-mobile-links`}>
+            {!sharedPlayerShell && <div className={`social-mobile-links`}>
               <button onClick={() => setPanel(`people`)}>
                 <Icon name={`group`} />
                 {`Find friends`}
@@ -473,22 +485,12 @@ function FeedPage() {
                 <Icon name={`auto_awesome`} />
                 {staffOnly ? `Organization` : `AI Coach`}
               </Link>
-            </div>
+            </div>}
             <nav className={`social-filters`} aria-label={`Activity audience`}>
               {feedScopes.map(([e, t]) => <button aria-pressed={e === scope} onClick={() => {
                 setScope(e);
                 if (activityId) {
-                  navigate(`/feed?` + new URLSearchParams({
-                    ...organizationId ? {
-                      organizationId: organizationId
-                    } : {},
-                    ...viewAsPlayerId ? {
-                      viewAsPlayerId: viewAsPlayerId
-                    } : {},
-                    ...preview ? {
-                      preview: `1`
-                    } : {}
-                  }));
+                  navigate(communityPanelPath(location.pathname, location.search, `feed`));
                 }
               }} key={e}>
                 {t}
@@ -496,19 +498,7 @@ function FeedPage() {
             </nav>
             <div className={`social-feed`} aria-busy={loading}>
               {activities.map(e => <ActivityCard activity={e} organizationId={organizationId} preview={preview} onChange={e => setActivities(t => t.map(t => t.id === e.id ? e : t))} onPerson={e => {
-                navigate(`/feed?` + new URLSearchParams({
-                  connect: e,
-                  ...organizationId ? {
-                    organizationId: organizationId
-                  } : {},
-                  ...viewAsPlayerId ? {
-                    viewAsPlayerId: viewAsPlayerId
-                  } : {},
-                  ...preview ? {
-                    preview: `1`
-                  } : {}
-                }));
-                setPanel(`people`);
+                navigate(communityPersonPath(location.pathname, location.search, e));
               }} key={`${context.uid}:${e.id}`} />)}
             </div>
             {loading && <div className={`social-skeleton`} role={`status`}>
@@ -540,8 +530,8 @@ function FeedPage() {
           })} key={`${context.uid}:${organizationId || ``}`} />}
           {panel === `moderation` && context.admin && <Moderation organizationId={organizationId} />}
         </>}
-      </main>
-      <aside className={`social-right`}>
+      </Content>
+      {!sharedPlayerShell && <aside className={`social-right`}>
         <p className={`social-eyebrow`}>
           {`Small steps. Real progress.`}
         </p>
@@ -567,9 +557,9 @@ function FeedPage() {
             {`Manage sharing →`}
           </button>
         </div>
-      </aside>
+      </aside>}
     </div>
-    <nav className={`social-bottom`} aria-label={staffOnly ? `Staff navigation` : `Player tabs`}>
+    {!sharedPlayerShell && <nav className={`social-bottom`} aria-label={staffOnly ? `Staff navigation` : `Athlete preview navigation`}>
       {tabs.map(([e, t, n]) => <Link to={e} aria-current={n === `Home` ? `page` : void 0} onClick={() => {
         if (n === `Home`) {
           setPanel(`feed`);
@@ -580,8 +570,13 @@ function FeedPage() {
           {n}
         </span>
       </Link>)}
-    </nav>
+    </nav>}
   </div>;
+  return sharedPlayerShell ? <PlayerShell activeView="feed" search={location.search} pathname={location.pathname} className="player-community" navigationDisabled={!context} onSignOut={preview ? undefined : () => { void auth.signOut(); }} onNavigate={view => {
+    if (view === `feed`) setPanel(`feed`);
+    else navigate(athleteUrl(view));
+    window.scrollTo({ top: 0 });
+  }}>{content}</PlayerShell> : content;
 }
 function ActivityCard({ activity, organizationId, preview, onChange, onPerson }) {
   let viewAsPlayerId = new URLSearchParams(useLocation().search).get(`viewAsPlayerId`) || void 0;

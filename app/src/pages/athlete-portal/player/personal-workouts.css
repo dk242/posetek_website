@@ -1,4 +1,24 @@
 .pt-player .personal-workouts {
+  min-width: 0;
+  .personal-conversation-welcome { padding: 22px 0 12px; }
+  .personal-conversation-welcome > span { color: var(--lime); font-size: 32px; }
+  .personal-conversation-messages { margin: 20px 0 28px; }
+  .personal-conversation-messages .chat-message { display: block; }
+  .personal-conversation-messages p { white-space: pre-wrap; }
+  .personal-conversation-messages small { display: block; color: #c5d6c7; }
+  .personal-conversation-composer { margin-top: 24px; padding-top: 20px; border-top: 1px solid #ffffff20; }
+  .personal-conversation-composer > small { display: block; margin-top: 8px; }
+  textarea { resize: vertical; min-height: 100px; scroll-margin-bottom: 100px; }
+  :is(input, select, textarea):focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .personal-duration { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px 0; border-block: 1px solid #ffffff20; margin-block: 18px; }
+  .personal-duration strong { display: block; font-size: 24px; color: var(--lime); }
+  .personal-duration small { display: block; margin-top: 5px; font-size: 12px; }
+  .personal-prescription-list { list-style: none; margin: 18px 0; padding: 0; }
+  .personal-prescription-list li { display: flex; align-items: start; gap: 12px; }
+  .personal-prescription-list li > div { flex: 1; min-width: 0; }
+  .personal-prescription-list h3 { margin: 0 0 10px; font-size: 17px; }
+  .personal-prescription-list p { margin-block: 8px; }
+  .personal-drill-number { flex: 0 0 26px; padding-top: 1px; font-size: 13px; color: var(--lime); }
   .personal-session-fields { border-bottom: 1px solid #ffffff18; padding-bottom: 16px; }
   legend { font-size: 17px; max-width: 100%; overflow-wrap: anywhere; }
   .personal-equipment { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; }
@@ -13,7 +33,7 @@
   .personal-drill-actions { display: flex; justify-content: flex-end; gap: 8px; }
   .personal-drill-actions button { min-width: 44px; }
   .personal-drill-actions button:last-child { margin-left: auto; }
-  .personal-save-bar { position: sticky; bottom: calc(82px + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 16px; padding: 10px 0; background: #0b241bf5; border-top: 1px solid #ffffff22; }
+  .personal-save-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 0; border-top: 1px solid #ffffff22; }
   .personal-save-bar > span { flex: 1 0 auto; }
   .personal-save-bar small { display: block; font-size: 11px; }
   .personal-save-bar .primary-cta { margin: 0; }
@@ -22,3 +42,9 @@
   .personal-workout-meta { color: var(--lime); font-size: 12px; }
   .player-history-row small { flex-basis: 100%; }
 }
+.pt-player .personal-coach-preview { margin-top: 20px; }
+.pt-player .personal-coach-preview .personal-prescription-list { list-style: none; padding: 0; }
+.pt-player .personal-coach-preview .personal-duration { display: flex; flex-wrap: wrap; gap: 20px; }
+.pt-player .personal-coach-preview .personal-duration :is(strong, small) { display: block; }
+.pt-player .player-chat:has(.personal-coach-creation, .personal-coach-preview) .player-chat-messages { height: auto; max-height: none; overflow: visible; }
+.pt-player .chat-message:has(.personal-coach-creation, .personal-coach-preview) { width: 100%; max-width: 100%; padding-inline: 14px; }
