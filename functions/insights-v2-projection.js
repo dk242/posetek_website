@@ -89,12 +89,12 @@ function createInsightProjection({ db, bucket, HttpsError, now = () => Date.now(
     const testing = await mapBounded(reps, 8, async rep => {
       const evidence = duplicates.has(rep.id) ? {} : await readEvidence(playerId, rep, cache, failures);
       for (const failure of evidence.failures || []) linkedFailures.add(failure);
-      return qualifyRep(rep, evidence, duplicates.has(rep.id));
+      return { ...qualifyRep(rep, evidence, duplicates.has(rep.id)), id: rep.id };
     });
     if (logDocs.length + personalLogs.length > maxWorkouts) throw new HttpsError("resource-exhausted", "The complete workout history exceeds the reporting bound. No partial total was returned.");
     const workouts = workoutEvents([...logDocs.map(doc => ({ ...doc.data(), id: doc.id })),
       ...personalLogs.map(doc => ({ ...doc.data(), id: doc.id, source: "personal" }))]);
-    const failureEvents = failures.map(failure => ({ at: millis(failure.createdAt), linked: linkedFailures.has(failure) ? 1 : 0, unmatched: linkedFailures.has(failure) ? 0 : 1 }));
+    const failureEvents = failures.map(failure => ({ id: failure.id, at: millis(failure.createdAt), linked: linkedFailures.has(failure) ? 1 : 0, unmatched: linkedFailures.has(failure) ? 0 : 1 }));
     const grouped = new Map();
     for (const [type, values] of [["testing", testing], ["workouts", workouts], ["failures", failureEvents]]) for (const event of values) {
       const day = event.at === null ? "undated" : event.at > now() ? "future" : new Date(event.at).toISOString().slice(0, 10);

@@ -21,7 +21,7 @@ exports.cleanupDiagnosticArtifacts = functions.runWith({ timeoutSeconds: 120, me
 const insightEntrypoints = require("./insights-entrypoints").createInsightsEntrypoints(functions, admin, requireCaller);
 Object.assign(exports, insightEntrypoints);
 // AI observability Phase 1: projectFailedLlmJobs + foldAiIncidents (aiIncidents).
-Object.assign(exports, require("./ai-incidents").createAiIncidentEntrypoints(functions, admin));
+Object.assign(exports, require("./ai-incidents").createAiIncidentEntrypoints(functions, admin, requireCaller));
 const { createPlayerInvitations } = require("./player-invitations");
 const playerInvitations = createPlayerInvitations({ db, FieldValue: admin.firestore.FieldValue, HttpsError: functions.https.HttpsError });
 const { createPlayerInvitationChecks } = require("./player-invitation-checks");

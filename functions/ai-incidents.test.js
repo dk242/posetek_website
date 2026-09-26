@@ -103,6 +103,37 @@ test("test accounts from config/llm.testUids are labelled server-side", async ()
   assert.equal(lines[0]["logging.googleapis.com/labels"].isTest, "true");
 });
 
+test("client-only incident and later report fold once in either arrival order", async () => {
+  const own = "8a1e0f5c-1f0e-4b7a-9a8f-2c3d4e5f6a7b";
+  const originalId = `client-${own}`, followId = "client-1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d";
+  const original = { requestedByUid: "athlete", requestId: own, stage: "upload", client: { detail: "diagnostic" } };
+  const follow = { requestedByUid: "athlete", requestId: own, stage: "user_report", userReport: { note: "Please investigate" } };
+  for (const first of [originalId, followId]) {
+    const { db, incidents } = setup({ [`aiIncidents/${first}`]: first === originalId ? original : follow });
+    await incidents.foldIncident(first, first === originalId ? original : follow);
+    const second = first === originalId ? followId : originalId;
+    db.docs.set(`aiIncidents/${second}`, second === originalId ? original : follow);
+    await incidents.foldIncident(second, second === originalId ? original : follow);
+    await incidents.foldIncident(followId, follow);
+    assert.equal(db.snapshot(`aiIncidents/${followId}`).foldedInto, originalId);
+    assert.deepEqual(db.snapshot(`aiIncidents/${originalId}`).userReport, follow.userReport);
+    assert.deepEqual(db.snapshot(`aiIncidents/${originalId}`).client, original.client);
+  }
+});
+
+test("client-only follow-up refuses another account and server labels test traffic", async () => {
+  const own = "8a1e0f5c-1f0e-4b7a-9a8f-2c3d4e5f6a7b";
+  const originalId = `client-${own}`, followId = "client-1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d";
+  const original = { requestedByUid: "test-athlete", requestId: own, stage: "upload", isTest: false };
+  const follow = { requestedByUid: "other-athlete", requestId: own, stage: "user_report", isTest: true };
+  const { db, incidents } = setup({ "config/llm": { testUids: ["test-athlete"] }, [`aiIncidents/${originalId}`]: original, [`aiIncidents/${followId}`]: follow });
+  await incidents.foldIncident(originalId, original);
+  await incidents.foldIncident(followId, follow);
+  assert.equal(db.snapshot(`aiIncidents/${originalId}`).isTest, true);
+  assert.equal(db.snapshot(`aiIncidents/${followId}`).isTest, false);
+  assert.equal(db.snapshot(`aiIncidents/${followId}`).foldRejected, "uidMismatch");
+});
+
 test("backfill projections are flagged and otherwise identical", () => {
   const job = failedJob();
   const live = projectionFor("JobB", job, { Timestamp: FakeTimestamp, FieldValue, nowMillis: NOW });

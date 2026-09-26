@@ -2,9 +2,9 @@
 // page's AI section. AI_OBSERVABILITY_AND_IMPROVEMENT_PLAN §3.4 (mobile repo,
 // docs/plans/), with the record shape from §3.1 and contract §16.
 //
-// One bounded read, newest first, filtered and grouped client-side like the
-// drill library: incidents are well under 50 a day, so 500 documents is weeks
-// of history and a query per filter change would cost more than it saves.
+// The admin list is server-paged with complete filtered counts. The athlete
+// detail keeps its small direct query. The normalizers and grouping helpers
+// are also used by legacy fixtures and the detail drawer.
 // normalize / group are a port of failureDashboard.html's, without its
 // innerHTML: every string here ends up as a JSX text node, never markup.
 //
@@ -15,10 +15,10 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import firebase, { auth, db } from "../../../lib/firebase";
+import firebase, { auth, cloud, db } from "../../../lib/firebase";
 
 export const INCIDENT_COLLECTION = "aiIncidents";
-export const INCIDENT_LIMIT = 500;
+export const INCIDENT_PAGE_SIZE = 50;
 export const PLAYER_INCIDENT_LIMIT = 10;
 export const PACIFIC = "America/Los_Angeles";
 export const LOG_PROJECT = "kickai-69dd0";
@@ -194,14 +194,12 @@ export function normalizeIncident(id: string, data: any): AiIncident {
 export const whenOf = (incident: AiIncident): Date | null => incident.occurredAt ?? incident.createdAt;
 
 /**
- * A phone half the fold merged into a canonical `req-`/`job-` doc is part of
- * that incident, not a second one (§2 "exactly one countable"). It is hidden
- * only when its canonical doc is in the loaded window, so a half whose
- * canonical fell outside the 500 never silently disappears.
+ * Folded phone documents are evidence attached to their canonical incident,
+ * never another incident. The newest-500 window can still omit an older
+ * canonical incident; the dashboard labels this window separately.
  */
 export function countable(incidents: AiIncident[]): AiIncident[] {
-  const ids = new Set(incidents.map(incident => incident.id));
-  return incidents.filter(incident => !(incident.foldedInto && ids.has(incident.foldedInto)));
+  return incidents.filter(incident => !incident.foldedInto);
 }
 
 // MARK: - Pacific time (§3.4: every timestamp renders in Pacific; `day` is UTC and never shown)
@@ -459,9 +457,23 @@ export function triagePayload(draft: TriageDraft, updatedBy: string, updatedAt: 
 
 // MARK: - Firestore
 
-export async function loadIncidents(): Promise<AiIncident[]> {
-  const snapshot = await db.collection(INCIDENT_COLLECTION).orderBy("createdAt", "desc").limit(INCIDENT_LIMIT).get();
-  return snapshot.docs.map(doc => normalizeIncident(doc.id, doc.data()));
+export interface IncidentPage {
+  total: number; pageSize: number; nextCursor: string | null; rows: AiIncident[]; names: PlayerNames;
+  breakdown: GroupRow[];
+  facets: Record<"capability" | "code" | "kind" | "source", { value: string; count: number }[]>;
+}
+export async function loadIncidents(filters: IncidentFilters = EMPTY_FILTERS, group: GroupMode = "code", cursor?: string): Promise<IncidentPage> {
+  const response = await cloud.httpsCallable("listAiIncidents")({ filters, group, ...(cursor ? { cursor } : {}) });
+  const data = response.data as any;
+  if (!data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total)) throw new Error("The incident page was incomplete.");
+  const names: PlayerNames = new Map();
+  const rows = data.rows.map((row: any) => {
+    if (typeof row.playerName === "string" && row.playerName && row.data?.playerId) names.set(row.data.playerId, row.playerName);
+    return normalizeIncident(String(row.id), row.data);
+  });
+  return { total: data.total, pageSize: data.pageSize, nextCursor: data.nextCursor || null, rows, names,
+    breakdown: Array.isArray(data.breakdown) ? data.breakdown.map((row: any) => ({ label: String(row.label), value: ["code", "capability", "kind", "source"].includes(group) || group === "day" && /^\d{4}-\d{2}-\d{2}$/.test(String(row.label)) ? String(row.label) : "", count: Number(row.count), newest: null })) : [],
+    facets: data.facets || { capability: [], code: [], kind: [], source: [] } };
 }
 
 export async function loadIncident(id: string): Promise<AiIncident | null> {

@@ -48,6 +48,7 @@ export default function AdminHeader({ ready, email, preview = false, onSignOut }
 
   const organization = choices?.organizations.find(row => row.id === context.orgId);
   const team = organization?.teams.find(row => row.id === context.teamId);
+  const globalTool = ["/admin/analysis", "/admin/drills", "/admin/ai-incidents"].some(path => location.pathname.startsWith(path));
   const scopeLabel = team ? `${organization?.name} · ${team.name}` : organization?.name || "All organizations";
   const scopedSearch = useMemo(() => {
     const query = new URLSearchParams();
@@ -73,7 +74,8 @@ export default function AdminHeader({ ready, email, preview = false, onSignOut }
           <span className="admin-wordmark">POSETEK</span>
           <span className="admin-badge">Admin</span>
         </Link>
-        {ready && <details className="admin-scope-menu">
+        {ready && globalTool && <span className="admin-global-tool" aria-label="Global admin tool">All organizations · global tool</span>}
+        {ready && !globalTool && <details className="admin-scope-menu">
           <summary aria-label={`Current scope: ${scopeLabel}`}>
             <span className="material-symbols-outlined" aria-hidden="true">domain</span>
             <span>{scopeLabel}</span>

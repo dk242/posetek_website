@@ -94,6 +94,25 @@ function summarizeWorkouts(events, period, now) {
   output.status = ["completed", "inProgress", "endedEarly", "abandoned"].find(key => output[key] > 0) || "none";
   return { ...output, events: safe };
 }
+function issueDetails(rows, issueClass, period, validEnd, generatedAtMillis) {
+  if (!issueClass) return { rows: [], undatedRows: [], futureRows: [], undated: 0, futureDated: 0 };
+  const source = rows.flatMap(row => {
+    const events = issueClass === "needsReview" ? row.history.testing : row.history.failures;
+    return events.filter(event => issueClass === "needsReview" ? event.needsReview === 1 : event.unmatched === 1)
+      .map((event, index) => ({ event, row, index }));
+  });
+  const periodOnly = issueClass === "unmatchedFailures" || period.testingMode === "period";
+  const dated = source.filter(({ event }) => event.at !== null && event.at < validEnd
+    && (!periodOnly || event.at >= period.startMillis));
+  const present = ({ event, row, index }) => ({ key: `${row.id}:${event.id || `${event.at}:${index}`}`, playerId: row.id,
+    playerName: `${row.firstName} ${row.lastName}`.trim() || row.id, organizationName: row.organizationName, teamName: row.teamName,
+    recordId: event.id || null, atMillis: event.at, drill: event.drill || null, reason: event.reason || null });
+  const issues = dated.map(present)
+    .sort((a, b) => b.atMillis - a.atMillis || a.key.localeCompare(b.key));
+  const undatedRows = source.filter(({ event }) => event.at === null).map(present);
+  const futureRows = source.filter(({ event }) => event.at > generatedAtMillis).map(present);
+  return { rows: issues, undatedRows, futureRows, undated: undatedRows.length, futureDated: futureRows.length };
+}
 function createInsightsV2({ db, bucket, HttpsError, now = () => Date.now(), maxPlayers = 5000,
   maxOrganizations = 500, maxTeams = 2000, maxRebuilds = 25, projection: suppliedProjection,
   usageReader = readPlayerUsage, ...projectionOptions }) {
@@ -153,6 +172,11 @@ function createInsightsV2({ db, bucket, HttpsError, now = () => Date.now(), maxP
     if (typeof filters !== "object" || Array.isArray(filters) || Object.entries(filters).some(([key, value]) => !Object.hasOwn(FILTERS, key) || !FILTERS[key].includes(value))) fail("invalid-argument", "Choose valid report filters.");
     const pageSize = data.pageSize ?? 50;
     if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) fail("invalid-argument", "Choose a page size between 1 and 100.");
+    const issueClass = data.issueClass ?? null, issuePage = data.issuePage ?? 0;
+    if (issueClass !== null && !["needsReview", "unmatchedFailures"].includes(issueClass)) fail("invalid-argument", "Choose a supported issue queue.");
+    const issueDate = data.issueDate ?? "dated";
+    if (!["dated", "undated", "future"].includes(issueDate)) fail("invalid-argument", "Choose a valid issue date category.");
+    if (!Number.isSafeInteger(issuePage) || issuePage < 0) fail("invalid-argument", "Choose a valid issue page.");
     const choices = await directory(caller), scope = resolveScope(data.scope, choices);
     const orgs = scope.kind === "global" ? choices.organizations : choices.organizations.filter(org => org.id === scope.organizationId);
     const snapshots = [];
@@ -237,6 +261,10 @@ function createInsightsV2({ db, bucket, HttpsError, now = () => Date.now(), maxP
     for (let date = period.startDate; date <= period.endDate; date = shiftDate(date, 1)) dates.push(date);
     const selectedTests = rows.flatMap(row => row.selected), allTests = rows.flatMap(row => row.history.testing), allFailures = rows.flatMap(row => row.history.failures),
       selectedFailures = allFailures.filter(event => event.at !== null && event.at >= period.startMillis && event.at < validEnd), workoutRows = rows.map(row => row.workouts), usageRows = rows.map(row => row.usage);
+    const issueData = issueDetails(rows, issueClass, { ...period, testingMode }, validEnd, generatedAtMillis);
+    const issueRows = issueDate === "undated" ? issueData.undatedRows : issueDate === "future" ? issueData.futureRows : issueData.rows;
+    const issuePageSize = 25;
+    if (issueClass && issuePage * issuePageSize >= issueRows.length && issuePage !== 0) fail("invalid-argument", "The issue page changed. Return to the first page.");
     const testDays = new Map(), workoutDays = new Map(), usageDays = new Map();
     for (const event of allTests) if (event.at !== null && event.at >= period.startMillis && event.at < validEnd) {
       const date = localDate(event.at, period.timeZone), value = testDays.get(date) || { date, recordedDocuments: 0, distinctAttempts: 0, qualifyingTests: 0, failureReports: 0, linkedFailureReports: 0, unmatchedFailureReports: 0 };
@@ -312,9 +340,12 @@ function createInsightsV2({ db, bucket, HttpsError, now = () => Date.now(), maxP
       scopeBreakdown: { organizations: fresh.choices.organizations.map(org => ({ id: org.id, name: org.name, count: rows.filter(row => row.organizationId === org.id).length })),
         teams: fresh.choices.organizations.filter(org => fresh.scope.kind === "global" || org.id === fresh.scope.organizationId)
           .flatMap(org => [...org.teams, ...(org.role === "coach" ? [] : [{ id: null, name: "Unassigned" }])].map(team => ({ id: team.id, organizationId: org.id, name: team.name, count: rows.filter(row => row.organizationId === org.id && row.teamId === team.id).length }))) },
-      testing, workouts, usage, players: page, pagination: { total: rows.length, pageSize,
+      testing, workouts, usage, ...(issueClass ? { issues: { kind: issueClass, dateBucket: issueDate, datedTotal: issueData.rows.length, total: issueRows.length, page: issuePage,
+        pageSize: issuePageSize, undated: issueData.undated, futureDated: issueData.futureDated,
+        rows: issueRows.slice(issuePage * issuePageSize, (issuePage + 1) * issuePageSize) } } : {}),
+      players: page, pagination: { total: rows.length, pageSize,
         nextCursor: offset + pageSize < rows.length ? Buffer.from(JSON.stringify({ offset: offset + pageSize, fingerprint })).toString("base64url") : null } };
   }
   return { getClubInsightsV2, ...projection };
 }
-module.exports = { createInsightsV2, periodOf, localDate, midnight, shiftDate, summarizeWorkouts, verifiedProgress, FILTERS };
+module.exports = { createInsightsV2, periodOf, localDate, midnight, shiftDate, summarizeWorkouts, verifiedProgress, issueDetails, FILTERS };

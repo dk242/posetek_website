@@ -59,10 +59,15 @@ export default function PlayerDetail() {
   const [note, setNote] = useState<CoachNote | null>(null);
   const [adjustments, setAdjustments] = useState<any[]>([]);
   const [reps, setReps] = useState<any[]>([]);
+  const [repsState, setRepsState] = useState<"loading" | "ready" | "unavailable">("loading");
+  const [noteUnavailable, setNoteUnavailable] = useState(false);
+  const [adjustmentsUnavailable, setAdjustmentsUnavailable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
+    setNoteUnavailable(false);
+    setAdjustmentsUnavailable(false);
     const found = await loadPlayer(playerId);
     if (!found) throw new Error("That athlete could not be found.");
     setPlayer(found);
@@ -70,25 +75,36 @@ export default function PlayerDetail() {
       loadCoachOfPlayer(found).catch(() => null),
       loadPlayerPlans(playerId),
       loadWorkoutLogs(playerId),
-      loadCoachNote(playerId).catch(() => null),
+      loadCoachNote(playerId).catch(() => { setNoteUnavailable(true); return null; }),
     ]);
     setCoach(foundCoach);
     setPlans(foundPlans);
     setLogs(foundLogs);
     setNote(foundNote);
+    if (foundNote) setNoteUnavailable(false);
     const active = activePlan(foundPlans);
-    setAdjustments(active ? await loadPlanAdjustments(playerId, active.id).catch(() => []) : []);
+    setAdjustments(active ? await loadPlanAdjustments(playerId, active.id).then(rows => { setAdjustmentsUnavailable(false); return rows; }).catch(() => { setAdjustmentsUnavailable(true); return []; }) : []);
+  }, [playerId]);
+
+  const reloadReps = useCallback(async () => {
+    setRepsState("loading");
+    try {
+      const bundle = await loadAthleteBundle(playerId);
+      setReps(bundle.reps);
+      setRepsState("ready");
+    } catch { setRepsState("unavailable"); }
   }, [playerId]);
 
   useEffect(() => {
     document.title = "Athlete | PoseTek admin";
     let live = true;
+    setReps([]); setRepsState("loading");
     reload()
-      .then(() => loadAthleteBundle(playerId).then(bundle => { if (live) setReps(bundle.reps); }).catch(() => undefined))
+      .then(() => { if (live) void reloadReps(); })
       .catch((loadError: any) => { if (live) setError(loadError?.message || "That athlete could not be loaded."); })
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
-  }, [playerId, reload]);
+  }, [playerId, reload, reloadReps]);
 
   const plan = useMemo(() => activePlan(plans), [plans]);
   const resolvedAge = useMemo(() => (player ? resolvePlayerAge(player.raw) : null), [player]);
@@ -124,7 +140,10 @@ export default function PlayerDetail() {
 
       {error && <p className="form-message" role="alert">{error}</p>}
 
-      <ResultsCard playerId={player.id} reps={reps} context={accountQuery(navigation)} />
+      <ResultsCard playerId={player.id} reps={reps} state={repsState} onRetry={reloadReps} context={accountQuery(navigation)} />
+
+      {noteUnavailable && <p className="form-message" role="alert">Coach note unavailable. <button type="button" onClick={() => void reload()}>Retry</button></p>}
+      {adjustmentsUnavailable && <p className="form-message" role="alert">Plan adjustments unavailable. <button type="button" onClick={() => void reload()}>Retry</button></p>}
 
       <div className="admin-grid-two">
         <ProfileCard key={String(player.raw?.updatedAt?.seconds ?? player.id)} player={player} coach={coach} onSaved={reload} />
@@ -149,7 +168,7 @@ export default function PlayerDetail() {
 
 // MARK: - Recorded results → the rep tools
 
-function ResultsCard({ playerId, reps, context }: { playerId: string; reps: any[]; context: string }) {
+function ResultsCard({ playerId, reps, state, onRetry, context }: { playerId: string; reps: any[]; state: "loading" | "ready" | "unavailable"; onRetry: () => Promise<void>; context: string }) {
   return (
     <section className="admin-card">
       <div className="admin-heading" style={{ marginBottom: 8 }}>
@@ -158,7 +177,9 @@ function ResultsCard({ playerId, reps, context }: { playerId: string; reps: any[
           <p>Every drill this athlete has recorded. Open one to inspect its sessions and reps, or to fix a rep that did not process correctly.</p>
         </div>
       </div>
-      <div className="admin-results-grid">
+      {state === "loading" && <p role="status">Loading recorded results…</p>}
+      {state === "unavailable" && <p role="alert">Recorded results are unavailable. <button type="button" className="quiet-button" onClick={() => void onRetry()}>Retry results</button></p>}
+      {state === "ready" && <div className="admin-results-grid">
         {RESULT_DRILLS.map(drill => {
           const count = reps.filter(rep => rep._statsDrill === drill.key).length;
           return (
@@ -169,7 +190,7 @@ function ResultsCard({ playerId, reps, context }: { playerId: string; reps: any[
             </Link>
           );
         })}
-      </div>
+      </div>}
     </section>
   );
 }

@@ -35,6 +35,8 @@ export interface ExpandedInsights {
   usage: { statuses: CountGroup[]; collectedPlayers: number; notCollectedPlayers: number; webCollectedPlayers: number; iosCollectedPlayers: number; activePlayers: number; returningPlayers: number; activeMinutes: number; webMinutes: number; iosMinutes: number; overlapMinutes: number; collectionStartedAtMillis: number | null; webCollectionStartedAtMillis: number | null; iosCollectionStartedAtMillis: number | null; featureMinutes: Record<string, number>;
     days: { date: string; activeMinutes: number | null; webMinutes: number | null; iosMinutes: number | null; collectedPlayers?: number; webCollectedPlayers?: number; iosCollectedPlayers?: number }[] };
   players: ExpandedPlayer[];
+  issues?: { kind: "needsReview" | "unmatchedFailures"; dateBucket: "dated" | "undated" | "future"; datedTotal: number; total: number; page: number; pageSize: number; undated: number; futureDated: number;
+    rows: { key: string; playerId: string; playerName: string; organizationName: string; teamName: string | null; recordId: string | null; atMillis: number | null; drill: string | null; reason: string | null }[] };
   pagination: { total: number; pageSize: number; nextCursor: string | null };
 }
 export const TESTING_LABELS: Record<string, string> = { fullyTested: "Fully tested", partiallyTested: "Partially tested", noSuccessfulTests: "No successful tests", noRecordedTests: "No recorded tests" };
@@ -53,7 +55,8 @@ export function sameScope(a: InsightScope, b: InsightScope) {
 }
 export function reportPayload(request: ExpandedRequest, scope: InsightScope, cursor?: string) {
   const filters = Object.fromEntries((["division", "ageBand", "testingStatus", "workoutStatus", "usageStatus", "usagePlatform", "usageFeature", "teamAssignment"] as const).filter(key => request[key]).map(key => [key, request[key]]));
-  return { scope, timeZone: request.timezone, startDate: request.startDate, endDate: request.endDate, testingMode: request.testingWindow, filters, pageSize: 25, ...(cursor ? { cursor } : {}) };
+  return { scope, timeZone: request.timezone, startDate: request.startDate, endDate: request.endDate, testingMode: request.testingWindow, filters, pageSize: 25,
+    ...(request.issue ? { issueClass: request.issue, issuePage: request.issuePage, issueDate: request.issueDate } : {}), ...(cursor ? { cursor } : {}) };
 }
 export function assertReportScope(report: ExpandedInsights, scope: InsightScope, request: ExpandedRequest) {
   const expectedFilters = reportPayload(request, scope).filters;
