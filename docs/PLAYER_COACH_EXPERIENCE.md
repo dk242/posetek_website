@@ -32,7 +32,7 @@ historical coach mirrors do not override a migrated roster.
 
 | Component | Candidate source |
 | --- | --- |
-| Website player, coach and reporting UI | `dk242/posetek_website`, `codex/player-coach-experience` |
+| Website player, coach and reporting UI | `posetek/posetek_website`, `codex/player-coach-experience` |
 | Job validation, personal workouts, AI, shared workload | `posetek/posetek-backend`, `codex/personal-workouts-experience`, `Services/agent-gateway/` |
 | Native follow-up and canonical access rules | `posetek/posetek-mobile-app`, `personal-workouts-experience` |
 
@@ -40,6 +40,8 @@ The former `Athelytics/python-video-processor` repository redirects to
 `posetek/posetek-backend` (confirmed by GitHub during the candidate push).
 The former `athelyticsOG/posetek-mobile-app` similarly redirects to
 `posetek/posetek-mobile-app` (confirmed during its feature-branch push).
+The required shared website repository `dk242/posetek_website` redirects to
+`posetek/posetek_website`; its feature-branch push reached that shared repository.
 `Services/agent-gateway/PERSONAL_WORKOUTS.md` in that repository is the shared
 personal-workout wire contract. The website does not carry a gateway/rules copy.
 

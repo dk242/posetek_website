@@ -28,6 +28,8 @@ GitHub now redirects `Athelytics/python-video-processor` to
 `posetek/posetek-backend`. GitHub also redirects `athelyticsOG/posetek-mobile-app`
 to `posetek/posetek-mobile-app`. Rules are only in `PoseTek-mobile-app/firebase/`.
 Their respective canonical release commands in `AGENTS.md` remain binding.
+The required shared website remote `dk242/posetek_website` now redirects to
+`posetek/posetek_website`, confirmed when this candidate branch was pushed.
 
 ## Station recovery and ending follow-up (2026-09-22, not deployed)
 
