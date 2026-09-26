@@ -13,16 +13,17 @@ This branch is website source only. It was not deployed and did not modify produ
 
 ## Remaining before production release
 
-- Add server-side issue-list endpoints and a filtered UI for `needsReview` and unmatched failure reports. The current testing audits provide aggregate diagnostics, not affected record lists.
-- Add a safe, idempotent repair for pre-existing client-only pairs and missing `isTest` values. The create trigger only handles new documents; no historical write was performed here.
+- The second pass adds a 25-record server-paged issue queue for `needsReview` reps and unmatched failure reports. It derives rows from the same authorized, filtered projection as the Insights counts and checks their dated total against the report. Staff can switch to separate date-missing and future-date queues. Freshly rebuilt projections include source IDs; older projections without IDs are labeled and link to the athlete's result list. Unmatched failure rows show their failure-case ID but the athlete results view has no failure-case detail route yet.
+- `functions/ai-incidents-repair-plan.js` computes read-only, idempotent proposed patches for legacy client-only report pairs and `isTest` labels. It rejects UID mismatches and ambiguous existing reports. There is no Firestore write path, and no historical production data was changed. A reviewed migration and live snapshot audit remain necessary before applying any plan.
 - Add server-paged incident search and counts. The admin view still loads only the newest 500 documents. A canonical document older than that window is absent from the visible list; its folded half is now correctly excluded as a separate incident.
-- Add a real keyboard dialog primitive and tab interaction tests. Current incident drawer semantics remain incomplete.
+- The incident drawer now has initial focus, contained Tab/Shift+Tab, Escape, background inertness, a labeled heading, and focus restoration. Insights tabs use roving tab focus and arrow/Home/End keys. A DOM interaction test covers these behaviors. A signed-in browser and screen-reader check remain for release acceptance.
 - Verify the embedded Insights page-2 to 4-week transition in a signed-in browser or synthetic interactive harness. The key reset was validated structurally and by existing unit tests, but no interactive browser run was performed here.
 
 ## Validation
 
 - `node --test functions/ai-incidents.test.js`
+- `node --test functions/ai-incidents-repair-plan.test.js functions/insights-v2-issues.test.js`
 - `node app/node_modules/vitest/vitest.mjs run app/src/pages/admin app/src/pages/insights`
 - `app/node_modules/.bin/tsc --noEmit -p app/tsconfig.json`
 
-Dependencies were installed locally from `app/package-lock.json` with `npm --prefix app ci --ignore-scripts`; generated dependencies are ignored by Git.
+`happy-dom` was added as a development dependency for DOM interaction tests.
